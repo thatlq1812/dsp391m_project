@@ -56,9 +56,43 @@ def compute_congestion(speed_kmh):
 
 
 def color_for_congestion(c):
-    # Map 1..5 to colors (green -> red)
-    mapping = {1: '#2ecc71', 2: '#f1c40f', 3: '#f39c12', 4: '#e67e22', 5: '#e74c3c'}
-    return mapping.get(int(c), '#95a5a6')
+  # Smooth color from green -> yellow -> red using HSL interpolation.
+  # c expected 1..5 (1 low congestion -> green, 5 high -> red)
+  try:
+    level = float(c)
+  except Exception:
+    level = 3.0
+  # normalize 0..1
+  t = max(0.0, min(1.0, (level - 1.0) / 4.0))
+  # hue from 120 (green) to 0 (red)
+  hue = (1.0 - t) * 120
+  sat = 0.75
+  light = 0.5
+
+  # convert HSL to RGB
+  def hsl_to_rgb(h, s, l):
+    c = (1 - abs(2 * l - 1)) * s
+    hp = h / 60.0
+    x = c * (1 - abs(hp % 2 - 1))
+    r1 = g1 = b1 = 0
+    if 0 <= hp < 1:
+      r1, g1, b1 = c, x, 0
+    elif 1 <= hp < 2:
+      r1, g1, b1 = x, c, 0
+    elif 2 <= hp < 3:
+      r1, g1, b1 = 0, c, x
+    elif 3 <= hp < 4:
+      r1, g1, b1 = 0, x, c
+    elif 4 <= hp < 5:
+      r1, g1, b1 = x, 0, c
+    elif 5 <= hp < 6:
+      r1, g1, b1 = c, 0, x
+    m = l - c / 2
+    r, g, b = r1 + m, g1 + m, b1 + m
+    return int(round(r * 255)), int(round(g * 255)), int(round(b * 255))
+
+  r, g, b = hsl_to_rgb(hue, sat, light)
+  return '#%02x%02x%02x' % (r, g, b)
 
 
 @app.get('/', response_class=HTMLResponse)
@@ -86,8 +120,12 @@ def index():
     const markers = {};
 
     function congestionColor(level) {
-      const map = {1: '#2ecc71', 2: '#f1c40f', 3: '#f39c12', 4: '#e67e22', 5: '#e74c3c'};
-      return map[level] || '#95a5a6';
+      // Smooth HSL scale from green (level=1) to red (level=5)
+      const t = Math.max(0, Math.min(1, (level - 1) / 4));
+      const hue = (1 - t) * 120; // 120 green -> 0 red
+      const s = 75; // percent
+      const l = 50; // percent
+      return `hsl(${hue}, ${s}%, ${l}%)`;
     }
 
     async function update() {
@@ -100,16 +138,13 @@ def index():
           const lon = +n.lon;
           const level = +n.congestion;
           const color = congestionColor(level);
-          // Use pixel-radius circle markers for consistent display across zoom levels.
-          // Make higher congestion larger: level 1 (low) -> small, level 5 (high) -> larger.
-          const radiusPx = 4 + level * 3; // level 1 -> 7px, level 5 -> 19px
-
+          // Fixed small pixel-size markers: make them 1/10 of previous approx.
+          const radiusPx = 2; // small marker
           if (markers[id]) {
             markers[id].setLatLng([lat, lon]);
             markers[id].setStyle({color: color, fillColor: color});
-            if (typeof markers[id].setRadius === 'function') markers[id].setRadius(radiusPx);
           } else {
-            const marker = L.circleMarker([lat, lon], {radius: radiusPx, color: color, fillColor: color, fillOpacity: 0.8, weight: 1});
+            const marker = L.circleMarker([lat, lon], {radius: radiusPx, color: color, fillColor: color, fillOpacity: 0.9, weight: 0});
             marker.addTo(map);
             markers[id] = marker;
           }
