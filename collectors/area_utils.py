@@ -30,14 +30,21 @@ def bbox_from_point_radius(lon, lat, radius_m):
     return [min_lat, min_lon, max_lat, max_lon]
 
 
-def load_area_config(collector_name):
+def load_area_config(collector_name, cli_area=None):
     """Load area config for a given collector from configs/project_config.yaml.
-    Supports env overrides: <COLLECTOR>_MODE, <COLLECTOR>_BBOX, <COLLECTOR>_CENTER, <COLLECTOR>_RADIUS
+    Priority: CLI overrides (cli_area) > environment variables > config file.
+
+    cli_area: optional dict with keys mode, bbox, center, radius_m.
+
     Returns a dict with keys: mode and bbox (min_lat,min_lon,max_lat,max_lon).
     """
     cfg = yaml.safe_load(open('configs/project_config.yaml'))
     c = cfg.get('collectors', {}).get(collector_name, {})
-    area = c.get('area', {})
+    area = c.get('area', {}) or {}
+
+    # Apply CLI overrides first (highest priority)
+    if cli_area:
+        area.update({k: v for k, v in cli_area.items() if v is not None})
 
     # Env overrides
     env_mode = os.getenv(f"{collector_name.upper()}_MODE")
@@ -45,16 +52,16 @@ def load_area_config(collector_name):
     env_center = os.getenv(f"{collector_name.upper()}_CENTER")
     env_radius = os.getenv(f"{collector_name.upper()}_RADIUS")
 
-    if env_mode:
+    if env_mode and 'mode' not in area:
         area['mode'] = env_mode
-    if env_bbox:
+    if env_bbox and 'bbox' not in area:
         # expected as min_lat,min_lon,max_lat,max_lon
         area['mode'] = 'bbox'
         area['bbox'] = list(map(float, env_bbox.split(',')))
-    if env_center:
+    if env_center and 'center' not in area:
         area['mode'] = 'point_radius'
         area['center'] = list(map(float, env_center.split(',')))
-    if env_radius:
+    if env_radius and 'radius_m' not in area:
         area['mode'] = 'point_radius'
         area['radius_m'] = float(env_radius)
 

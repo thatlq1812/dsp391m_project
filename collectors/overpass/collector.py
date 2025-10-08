@@ -6,6 +6,7 @@ import requests
 import json
 import os
 from collectors.area_utils import load_area_config
+import argparse
 
 OVERPASS_URL = os.getenv('OVERPASS_URL', 'https://overpass-api.de/api/interpreter')
 
@@ -42,7 +43,24 @@ def extract_nodes(data):
 
 
 def run_overpass_collector():
-    area_cfg = load_area_config('overpass')
+    parser = argparse.ArgumentParser(description='Overpass OSM collector')
+    parser.add_argument('--mode', choices=['bbox', 'point_radius', 'circle'], help='Area selection mode')
+    parser.add_argument('--bbox', help='bbox as min_lat,min_lon,max_lat,max_lon')
+    parser.add_argument('--center', help='center as lon,lat')
+    parser.add_argument('--radius', type=float, help='radius in meters')
+    args = parser.parse_args()
+
+    cli_area = {}
+    if args.mode:
+        cli_area['mode'] = args.mode
+    if args.bbox:
+        cli_area['bbox'] = list(map(float, args.bbox.split(',')))
+    if args.center:
+        cli_area['center'] = list(map(float, args.center.split(',')))
+    if args.radius:
+        cli_area['radius_m'] = args.radius
+
+    area_cfg = load_area_config('overpass', cli_area=cli_area)
     data = query_overpass(area_cfg['bbox'])
     nodes = extract_nodes(data)
 

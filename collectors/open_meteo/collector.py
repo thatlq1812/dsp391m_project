@@ -10,6 +10,7 @@ from collections import defaultdict
 import yaml
 
 from collectors.area_utils import load_area_config
+import argparse
 
 OPENMETEO_BASE_URL = os.getenv('OPENMETEO_BASE_URL', 'https://api.open-meteo.com/v1/forecast')
 
@@ -74,8 +75,25 @@ def project_weather_to_nodes(grid, weather_data):
 
 
 def run_open_meteo_collector():
-    # load config area
-    area_cfg = load_area_config('open_meteo')
+    parser = argparse.ArgumentParser(description='Open-Meteo collector')
+    parser.add_argument('--mode', choices=['bbox', 'point_radius', 'circle'], help='Area selection mode')
+    parser.add_argument('--bbox', help='bbox as min_lat,min_lon,max_lat,max_lon')
+    parser.add_argument('--center', help='center as lon,lat')
+    parser.add_argument('--radius', type=float, help='radius in meters')
+    args = parser.parse_args()
+
+    cli_area = {}
+    if args.mode:
+        cli_area['mode'] = args.mode
+    if args.bbox:
+        cli_area['bbox'] = list(map(float, args.bbox.split(',')))
+    if args.center:
+        cli_area['center'] = list(map(float, args.center.split(',')))
+    if args.radius:
+        cli_area['radius_m'] = args.radius
+
+    # load config area (CLI overrides applied)
+    area_cfg = load_area_config('open_meteo', cli_area=cli_area)
     nodes = load_nodes()
 
     # filter nodes by computed bbox

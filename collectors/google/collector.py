@@ -11,6 +11,7 @@ from math import radians, sin, cos, sqrt, atan2
 import yaml
 
 from collectors.area_utils import load_area_config
+import argparse
 
 def haversine(lat1, lon1, lat2, lon2):
     """Calculate distance between two points in km."""
@@ -58,11 +59,28 @@ def mock_directions_api(origin, dest, config):
     }
 
 def run_google_collector():
+    parser = argparse.ArgumentParser(description='Google Directions collector')
+    parser.add_argument('--mode', choices=['bbox', 'point_radius', 'circle'], help='Area selection mode')
+    parser.add_argument('--bbox', help='bbox as min_lat,min_lon,max_lat,max_lon')
+    parser.add_argument('--center', help='center as lon,lat')
+    parser.add_argument('--radius', type=float, help='radius in meters')
+    args = parser.parse_args()
+
+    cli_area = {}
+    if args.mode:
+        cli_area['mode'] = args.mode
+    if args.bbox:
+        cli_area['bbox'] = list(map(float, args.bbox.split(',')))
+    if args.center:
+        cli_area['center'] = list(map(float, args.center.split(',')))
+    if args.radius:
+        cli_area['radius_m'] = args.radius
+
     config = yaml.safe_load(open('configs/project_config.yaml', 'r'))
     collector_config = config['collectors']['google']
 
-    # resolve area and filter nodes
-    area_cfg = load_area_config('google')
+    # resolve area and filter nodes (apply CLI overrides)
+    area_cfg = load_area_config('google', cli_area=cli_area)
 
     nodes = load_nodes()
     nodes = [n for n in nodes if (area_cfg['bbox'][0] <= n['lat'] <= area_cfg['bbox'][2] and area_cfg['bbox'][1] <= n['lon'] <= area_cfg['bbox'][3])]
