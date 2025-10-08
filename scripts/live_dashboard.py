@@ -100,16 +100,18 @@ def index():
           const lon = +n.lon;
           const level = +n.congestion;
           const color = congestionColor(level);
-          const radius = 50 + (6 - level) * 30; // visual radius
+          // Use pixel-radius circle markers for consistent display across zoom levels.
+          // Make higher congestion larger: level 1 (low) -> small, level 5 (high) -> larger.
+          const radiusPx = 4 + level * 3; // level 1 -> 7px, level 5 -> 19px
 
           if (markers[id]) {
             markers[id].setLatLng([lat, lon]);
             markers[id].setStyle({color: color, fillColor: color});
-            markers[id].setRadius(radius);
+            if (typeof markers[id].setRadius === 'function') markers[id].setRadius(radiusPx);
           } else {
-            const circle = L.circle([lat, lon], {radius: radius, color: color, fillColor: color, fillOpacity: 0.6});
-            circle.addTo(map);
-            markers[id] = circle;
+            const marker = L.circleMarker([lat, lon], {radius: radiusPx, color: color, fillColor: color, fillOpacity: 0.8, weight: 1});
+            marker.addTo(map);
+            markers[id] = marker;
           }
         });
       } catch (err) {
