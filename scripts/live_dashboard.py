@@ -95,6 +95,28 @@ def color_for_congestion(c):
   return '#%02x%02x%02x' % (r, g, b)
 
 
+def speed_to_hex(speed, free_flow_kmh=50.0, jam_kmh=5.0, use_black_for_jam=True):
+  try:
+    import colorsys
+  except Exception:
+    return '#999999'
+  if speed is None:
+    return '#999999'
+  try:
+    sp = float(speed)
+  except Exception:
+    return '#999999'
+  if sp <= jam_kmh and use_black_for_jam:
+    return '#000000'
+  norm = max(0.0, min(1.0, sp / float(free_flow_kmh)))
+  hue_deg = 120.0 * norm
+  h = hue_deg / 360.0
+  s = 0.9
+  v = 0.35 + 0.65 * norm
+  r, g, b = colorsys.hsv_to_rgb(h, s, v)
+  return '#{:02x}{:02x}{:02x}'.format(int(r*255), int(g*255), int(b*255))
+
+
 @app.get('/', response_class=HTMLResponse)
 def index():
     html = """
@@ -128,7 +150,7 @@ def index():
       return `hsl(${hue}, ${s}%, ${l}%)`;
     }
 
-    async function update() {
+  async function update() {
       try {
         const res = await fetch('/nodes');
         const data = await res.json();
@@ -136,8 +158,8 @@ def index():
           const id = n.id;
           const lat = +n.lat;
           const lon = +n.lon;
-          const level = +n.congestion;
-          const color = congestionColor(level);
+          // prefer server-provided color if available
+          const color = n.color || congestionColor(+n.congestion);
           // Fixed small pixel-size markers: make them 1/10 of previous approx.
           const radiusPx = 2; // small marker
           if (markers[id]) {
@@ -158,6 +180,13 @@ def index():
     update();
     setInterval(update, 5000);
   </script>
+  <div style="position:absolute; right:10px; top:10px; background:white; padding:8px; border-radius:4px; box-shadow:0 0 6px rgba(0,0,0,0.2); font-size:12px;">
+    <div style="font-weight:600; margin-bottom:4px">Legend</div>
+    <div><span style="display:inline-block;width:14px;height:14px;background:green;margin-right:6px;"></span>Free-flow</div>
+    <div><span style="display:inline-block;width:14px;height:14px;background:yellow;margin-right:6px;"></span>Moderate</div>
+    <div><span style="display:inline-block;width:14px;height:14px;background:red;margin-right:6px;"></span>Slow</div>
+    <div><span style="display:inline-block;width:14px;height:14px;background:black;margin-right:6px;"></span>Jam</div>
+  </div>
 </body>
 </html>
 """
@@ -185,8 +214,10 @@ def nodes():
         lat = n.get('lat')
         lon = n.get('lon')
         speed = speed_map.get(nid)
+        # prefer direct speed -> color mapping
+        color = speed_to_hex(speed)
         congestion = compute_congestion(speed) if speed is not None else 3
-        out.append({'id': nid, 'lat': lat, 'lon': lon, 'speed': speed, 'congestion': congestion, 'color': color_for_congestion(congestion)})
+        out.append({'id': nid, 'lat': lat, 'lon': lon, 'speed': speed, 'congestion': congestion, 'color': color})
 
     return JSONResponse({'nodes': out})
 

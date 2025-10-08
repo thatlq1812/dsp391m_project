@@ -2,15 +2,17 @@ project:
   name: traffic-forecast-node-radius
   version: v2.0
   timezone: Asia/Ho_Chi_Minh
-  bbox: [10.67, 106.60, 10.90, 106.84] # HCMC Ben Thanh marke
+  bbox: [10.67, 106.60, 10.90, 106.84] # HCMC Ben Thanh market
 
 # Global runtime parameters (used by collectors and runners)
 globals:
   # Default area used when collector-specific area is not provided
   area:
     mode: point_radius
-    center: [106.697794, 10.772465]
-    radius_m: 3000
+    center: [106.697794, 10.772465] # default center (lon, lat) for point_radius mode, alternatively use bbox with [south, west, north, east]
+    radius_m: 512
+  # Node sampling spacing along roads (metres). Collectors will sample points along way geometries at this spacing.
+  node_spacing_m: 500
   # Base directory to store run outputs (each run will create a timestamped subfolder)
   output_base: data_runs
 
@@ -25,123 +27,128 @@ collectors:
     url: https://overpass-api.de/api/interpreter
     query_timeout: 120
     output: data/nodes.json
-    # Area selection: supports mode = bbox | point_radius
-    # bbox format: [min_lat, min_lon, max_lat, max_lon] (matches Overpass south,west,north,east)
-    area:
-      # mode: bbox
-      mode: point_radius
-      # bbox: [10.67, 106.60, 10.90, 106.84]
-      center: [106.697794, 10.772465] # lon, lat (only for point_radius)
-      radius_m: 3000
+    project:
+      name: traffic-forecast-node-radius # project identifier
+      version: v2.0 # semantic version for compatibility tracking
+      timezone: Asia/Ho_Chi_Minh # default timezone for scheduling and timestamps
+
+    # Global runtime parameters (used by collectors and runners)
+    globals:
+      area: # default area used when collector-specific area is not provided
+        mode: point_radius # area selection mode: 'bbox' or 'point_radius'
+        center: [106.697794, 10.772465] # default center (lon, lat) for point_radius mode
+        radius_m: 512 # default radius in metres when using point_radius
+      output_base: data_runs # base dir where timestamped run folders are created
+
+    data:
+      parquet_dir: ./data/parquet # directory for parquet-formatted datasets
+      json_dir: ./data # directory for JSON outputs and cached blobs
+      cache_dir: ./cache # transient cache location for intermediate files
+
+    collectors:
+  overpass:
+    enabled: true # toggle this collector on/off
+    url: https://overpass-api.de/api/interpreter # Overpass API endpoint
+    query_timeout: 120 # timeout (s) for Overpass queries
+    cache_enabled: true # enable caching to avoid repeated API calls
+    cache_expiry_hours: 2160 # cache expiry in hours (7 days for static road data)
+    area: # area selection for Overpass (overrides globals.area)
+      mode: point_radius # choose 'bbox' or 'point_radius'
+      center: [106.697794, 10.772465] # lon, lat used when mode=point_radius
+      radius_m: 512 # radius (m) used when mode=point_radius
 
   open_meteo:
-    enabled: true
-    base_url: https://api.open-meteo.com/v1/forecast
-    grid_size: 0.05
-    current_params: [temperature_2m, precipitation, wind_speed_10m]
-    forecast_params: [temperature_2m, precipitation, wind_speed_10m]
-    horizons_min: [5, 15, 30, 60]
-    output_current: data/weather_snapshot.json
-    output_forecast: data/weather_forecast.json
-    # Area selection for Open-Meteo collector
+    enabled: true # toggle this collector on/off
+    base_url: https://api.open-meteo.com/v1/forecast # Open-Meteo base endpoint
+    grid_size: 0.05 # resolution for sampling weather grid (degrees)
+    current_params: [temperature_2m, precipitation, wind_speed_10m] # fields to request for current weather
+    forecast_params: [temperature_2m, precipitation, wind_speed_10m] # fields to request for forecasts
+    horizons_min: [5, 15, 30, 60] # forecast horizons (minutes) to prepare
+    cache_enabled: true # enable caching for weather data
+    cache_expiry_hours: 1 # cache expiry in hours (weather changes slowly)
     area:
-      mode: bbox # or point_radius
-      # bbox: [10.67, 106.60, 10.90, 106.84]
-      center: [106.697794, 10.772465] # lon, lat (only for point_radius)
-      radius_m: 3000
+      mode: point_radius # default for Open-Meteo collector: 'bbox' or 'point_radius'
+      center: [106.697794, 10.772465] # lon, lat (used only if mode=point_radius)
+      radius_m: 512 # radius (m) used when mode=point_radius
 
   google_directions:
-    enabled: true
-    api_key_env: GOOGLE_MAPS_API_KEY
-    k_neighbors: 3
-    radius_km: 0.8
-    output: data/traffic_edges.json
-    # Area selection for Google Directions collector (used to filter nodes before kNN)
+    enabled: true # toggle this collector on/off
+    api_key_env: GOOGLE_MAPS_API_KEY # environment variable name for Google API key
+    k_neighbors: 3 # number of nearest neighbors to query per node
+    radius_km: 0.512 # search radius (km) when building kNN requests - reduced from 0.8km
+    base_speed_kmh: 30 # base speed for mock traffic generation
+    traffic_factor_min: 0.5 # minimum traffic factor multiplier
+    traffic_factor_max: 1.5 # maximum traffic factor multiplier
+    rate_limit_requests_per_minute: 2800 # Full quota utilization (3000 req/min = 50 req/sec)
     area:
-      # mode: bbox
-      # bbox: [10.67, 106.60, 10.90, 106.84]
-      mode: point_radius
-      center: [106.697794, 10.772465] # lon, lat (only for point_radius)
-      radius_m: 3000
+      mode: point_radius # area selection for Google Directions collector
+      center: [106.697794, 10.772465] # lon, lat for point_radius
+      radius_m: 512 # Increased from 256m for better coverage
 
-pipelines:
-  normalize:
-    resample_minutes: 10
-    output: data/traffic_snapshot_normalized.json
+    pipelines:
+      normalize:
+        resample_minutes: 10 # resample rate (min) for time series normalization
 
-  enrich:
-    geocode_fallback: nominatim
-    impact_radius_km: 2.0
-    output_events: data/events_enriched.json
-    output_impacts: data/event_impacts.json
+      enrich:
+        geocode_fallback: nominatim # fallback geocoder for reverse lookups
+        impact_radius_km: 2.0 # radius used when computing event impacts (km)
 
-  features:
-    schema: configs/nodes_schema_v2.json
-    output: data/features_nodes_v2.json
+      features:
+        schema: configs/nodes_schema_v2.json # path to node/features schema
 
-  model:
-    type: linear_regression # or lstm
-    test_size: 0.2
-    random_state: 42
-    output_model: models/linear_v2.pkl
-    predictions_file: data/predictions.json
-    infer_limit: 1000
-    # For LSTM:
-    # seq_length: 5
-    # epochs: 10
-    # batch_size: 32
+      model:
+        type: linear_regression # model type to use for training/inference
+        test_size: 0.2 # fraction of data reserved for testing
+        random_state: 42 # RNG seed for reproducibility
+        infer_limit: 1000 # max number of examples to infer at once
 
-scheduler:
-  interval_minutes: 10
-  jobs:
-    - overpass
-    - open_meteo_current
-    - open_meteo_forecast
-    - google_directions
-    - normalize
-    - enrich
-    - build_features
-    - infer_batch
+    scheduler:
+      interval_minutes: 10 # default scheduler interval (minutes)
+      jobs: # ordered list of jobs the scheduler will run
+        - overpass
+        - open_meteo_current
+        - open_meteo_forecast
+        - google_directions
+        - normalize
+        - enrich
+        - build_features
+        - infer_batch
 
-api:
-  title: Traffic Forecast API
-  description: API for traffic speed predictions
-  host: 0.0.0.0
-  port: 8000
-  predictions_file: data/predictions.json
+    api:
+      title: Traffic Forecast API # service title (used by documentation)
+      description: API for traffic speed predictions # brief description
+      host: 0.0.0.0 # bind address for API server
+      port: 8000 # port for API server
 
-visualize:
-  nodes_map:
-    figsize: [10, 8]
-    s: 1
-    alpha: 0.5
-    color: blue
-    label: Nodes
-    title: Traffic Nodes in HCMC
-    xlabel: Longitude
-    ylabel: Latitude
-    save_path: data/nodes_map.png
-    limit_nodes: 10000
+    visualize:
+      nodes_map:
+        figsize: [10, 10] # matplotlib figure size (width, height)
+        s: 1 # marker size for node scatter
+        alpha: 0.5 # marker alpha (opacity)
+        color: blue # default node color
+        label: Nodes # legend label
+        title: Traffic Nodes in HCMC # plot title
+        xlabel: Longitude # x-axis label
+        ylabel: Latitude # y-axis label
+        limit_nodes: 10000 # max nodes to plot for speed
 
-  traffic_heatmap:
-    figsize: [10, 8]
-    s: 5
-    alpha: 0.7
-    cmap: RdYlGn_r
-    title: Traffic Speed Heatmap
-    xlabel: Longitude
-    ylabel: Latitude
-    save_path: data/traffic_heatmap.png
+      traffic_heatmap:
+        figsize: [10, 10] # figure size for heatmap
+        s: 5 # marker size for heatmap points
+        alpha: 0.7 # marker opacity
+        cmap: RdYlGn_r # colormap for speed (reversed RdYlGn)
+        title: Traffic Speed Heatmap # plot title
+        xlabel: Longitude # x-axis label
+        ylabel: Latitude # y-axis label
 
-  events_map:
-    figsize: [10, 8]
-    node_s: 1
-    node_alpha: 0.3
-    node_color: blue
-    event_s: 100
-    event_color: red
-    event_marker: x
-    title: Events and Nodes
-    xlabel: Longitude
-    ylabel: Latitude
-    save_path: data/events_map.png
+      events_map:
+        figsize: [10, 10] # figure size for events + nodes plot
+        node_s: 1 # node marker size
+        node_alpha: 0.3 # node marker alpha
+        node_color: blue # node marker color
+        event_s: 100 # event marker size (visual emphasis)
+        event_color: red # color for events
+        event_marker: x # matplotlib marker for events
+        title: Events and Nodes # plot title
+        xlabel: Longitude # x-axis label
+        ylabel: Latitude # y-axis label

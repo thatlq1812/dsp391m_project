@@ -11,19 +11,35 @@ if str(ROOT) not in sys.path:
 import requests
 import json
 import os
+from dotenv import load_dotenv
 from datetime import datetime
 from collections import defaultdict
 import yaml
 
+load_dotenv()
 from collectors.area_utils import load_area_config
+from collectors.cache_utils import get_or_create_cache
 import argparse
 
 OPENMETEO_BASE_URL = os.getenv('OPENMETEO_BASE_URL', 'https://api.open-meteo.com/v1/forecast')
 
 
 def load_nodes():
-    with open('data/nodes.json', 'r') as f:
-        return json.load(f)
+    # Try RUN_DIR first (when run from collect_and_render.py)
+    run_dir = os.getenv('RUN_DIR')
+    if run_dir:
+        nodes_path = os.path.join(run_dir, 'collectors', 'overpass', 'nodes.json')
+        if os.path.exists(nodes_path):
+            with open(nodes_path, 'r') as f:
+                return json.load(f)
+    
+    # Fallback to global nodes.json
+    nodes_path = 'data/nodes.json'
+    if os.path.exists(nodes_path):
+        with open(nodes_path, 'r') as f:
+            return json.load(f)
+    
+    raise FileNotFoundError("Could not find nodes.json in RUN_DIR or data/")
 
 
 def filter_nodes_by_bbox(nodes, bbox):
@@ -50,7 +66,7 @@ def fetch_weather(lat, lon):
         'current_weather': True,
         'timezone': 'Asia/Ho_Chi_Minh'
     }
-    response = requests.get(OPENMETEO_BASE_URL, params=params)
+    response = requests.get(OPENMETEO_BASE_URL, params=params, timeout=30)
     try:
         data = response.json()
     except Exception:
@@ -148,17 +164,50 @@ def run_open_meteo_collector():
     nodes = filter_nodes_by_bbox(nodes, area_cfg['bbox'])
     grid = group_nodes_by_grid(nodes, grid_size=float(os.getenv('OPENMETEO_GRID_SIZE', 0.05)))
 
+    # Load config for cache settings
+    cfg = yaml.safe_load(open('configs/project_config.yaml', 'r'))
+    collector_cfg = cfg['collectors']['open_meteo']
+    cache_enabled = collector_cfg.get('cache_enabled', False)
+    cache_expiry_hours = collector_cfg.get('cache_expiry_hours', 1)
+    cache_dir = cfg['data'].get('cache_dir', './cache')
+
     all_snapshots = []
     for (lat, lon), _ in grid.items():
-        weather = fetch_weather(lat, lon)
+        # Define fetch function for this grid point
+        def fetch_weather_for_point():
+            return fetch_weather(lat, lon)
+
+        # Get weather data from cache or fetch fresh
+        if cache_enabled:
+            cache_params = {
+                'lat': lat,
+                'lon': lon,
+                'grid_size': float(os.getenv('OPENMETEO_GRID_SIZE', 0.05))
+            }
+            weather = get_or_create_cache(
+                collector_name='open_meteo',
+                params=cache_params,
+                cache_dir=cache_dir,
+                expiry_hours=cache_expiry_hours,
+                fetch_func=fetch_weather_for_point
+            )
+        else:
+            weather = fetch_weather_for_point()
+
         snapshots = project_weather_to_nodes({(lat, lon): grid[(lat, lon)]}, weather)
         all_snapshots.extend(snapshots)
 
-    os.makedirs('data', exist_ok=True)
-    with open('data/weather_snapshot.json', 'w') as f:
+    run_dir = os.getenv('RUN_DIR')
+    if run_dir:
+        out_dir = os.path.join(run_dir, 'collectors', 'open_meteo')
+    else:
+        out_dir = os.path.join('data')
+    os.makedirs(out_dir, exist_ok=True)
+    out_path = os.path.join(out_dir, 'weather_snapshot.json')
+    with open(out_path, 'w', encoding='utf-8') as f:
         json.dump(all_snapshots, f, indent=2)
 
-    print(f"Collected weather for {len(all_snapshots)} nodes.")
+    print(f"Collected weather for {len(all_snapshots)} nodes. Saved to {out_path}")
 
 
 if __name__ == "__main__":
