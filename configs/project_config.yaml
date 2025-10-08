@@ -1,0 +1,116 @@
+project:
+  name: traffic-forecast-node-radius
+  version: v2.0
+  timezone: Asia/Ho_Chi_Minh
+  bbox: [10.67, 106.60, 10.90, 106.84] # HCMC
+
+data:
+  parquet_dir: ./data/parquet
+  json_dir: ./data
+  cache_dir: ./cache
+
+collectors:
+  overpass:
+    enabled: true
+    url: https://overpass-api.de/api/interpreter
+    query_timeout: 120
+    output: data/nodes.json
+
+  open_meteo:
+    enabled: true
+    base_url: https://api.open-meteo.com/v1/forecast
+    grid_size: 0.05
+    current_params: [temperature_2m, precipitation, wind_speed_10m]
+    forecast_params: [temperature_2m, precipitation, wind_speed_10m]
+    horizons_min: [5, 15, 30, 60]
+    output_current: data/weather_snapshot.json
+    output_forecast: data/weather_forecast.json
+
+  google_directions:
+    enabled: true
+    api_key_env: GOOGLE_MAPS_API_KEY
+    k_neighbors: 3
+    radius_km: 0.8
+    output: data/traffic_edges.json
+
+pipelines:
+  normalize:
+    resample_minutes: 10
+    output: data/traffic_snapshot_normalized.json
+
+  enrich:
+    geocode_fallback: nominatim
+    impact_radius_km: 2.0
+    output_events: data/events_enriched.json
+    output_impacts: data/event_impacts.json
+
+  features:
+    schema: configs/nodes_schema_v2.json
+    output: data/features_nodes_v2.json
+
+  model:
+    type: linear_regression # or lstm
+    test_size: 0.2
+    random_state: 42
+    output_model: models/linear_v2.pkl
+    predictions_file: data/predictions.json
+    infer_limit: 1000
+    # For LSTM:
+    # seq_length: 5
+    # epochs: 10
+    # batch_size: 32
+
+scheduler:
+  interval_minutes: 10
+  jobs:
+    - overpass
+    - open_meteo_current
+    - open_meteo_forecast
+    - google_directions
+    - normalize
+    - enrich
+    - build_features
+    - infer_batch
+
+api:
+  title: Traffic Forecast API
+  description: API for traffic speed predictions
+  host: 0.0.0.0
+  port: 8000
+  predictions_file: data/predictions.json
+
+visualize:
+  nodes_map:
+    figsize: [10, 8]
+    s: 1
+    alpha: 0.5
+    color: blue
+    label: Nodes
+    title: Traffic Nodes in HCMC
+    xlabel: Longitude
+    ylabel: Latitude
+    save_path: data/nodes_map.png
+    limit_nodes: 10000
+
+  traffic_heatmap:
+    figsize: [10, 8]
+    s: 5
+    alpha: 0.7
+    cmap: RdYlGn_r
+    title: Traffic Speed Heatmap
+    xlabel: Longitude
+    ylabel: Latitude
+    save_path: data/traffic_heatmap.png
+
+  events_map:
+    figsize: [10, 8]
+    node_s: 1
+    node_alpha: 0.3
+    node_color: blue
+    event_s: 100
+    event_color: red
+    event_marker: x
+    title: Events and Nodes
+    xlabel: Longitude
+    ylabel: Latitude
+    save_path: data/events_map.png

@@ -1,0 +1,4 @@
+project: traffic-forecast-node-radius
+timezone: Asia/Ho_Chi_Minh
+cadence: { traffic_minutes: 10, weather_minutes: 10, inference_sla_seconds: 60 }
+horizons_min: [5, 15, 30, 60]
