@@ -196,4 +196,3 @@ yarn-error.log*
 # Private documents
 .env
 /doc
-*.md
