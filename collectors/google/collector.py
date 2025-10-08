@@ -3,6 +3,12 @@ Google Directions collector for traffic speeds.
 Mock implementation since API key not provided.
 """
 
+import sys
+import pathlib
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 import json
 import os
 import random

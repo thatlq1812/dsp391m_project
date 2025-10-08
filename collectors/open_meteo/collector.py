@@ -2,6 +2,12 @@
 Open-Meteo collector for weather data.
 """
 
+import sys
+import pathlib
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 import requests
 import json
 import os
@@ -41,23 +47,65 @@ def fetch_weather(lat, lon):
         'latitude': lat,
         'longitude': lon,
         'hourly': 'temperature_2m,precipitation,wind_speed_10m',
-        'current': 'temperature_2m,precipitation,wind_speed_10m',
+        'current_weather': True,
         'timezone': 'Asia/Ho_Chi_Minh'
     }
     response = requests.get(OPENMETEO_BASE_URL, params=params)
-    return response.json()
+    try:
+        data = response.json()
+    except Exception:
+        data = {'error': 'invalid_json', 'status_code': response.status_code, 'text': response.text}
+
+    # Optional debug: save raw response for inspection
+    if os.getenv('OPENMETEO_DEBUG'):
+        os.makedirs('data/open_meteo_raw', exist_ok=True)
+        fname = f"data/open_meteo_raw/{lat}_{lon}.json"
+        try:
+            with open(fname, 'w', encoding='utf-8') as fh:
+                json.dump({'url': response.url, 'status': response.status_code, 'payload': data}, fh, indent=2)
+        except Exception:
+            pass
+
+    return data
 
 
 def project_weather_to_nodes(grid, weather_data):
     """Project grid weather to all nodes in that grid."""
     snapshots = []
-    current = weather_data.get('current', {})
-    hourly = weather_data.get('hourly', {})
+    # Open-Meteo may return `current_weather` and/or `hourly`.
+    current = weather_data.get('current_weather') or {}
+    hourly = weather_data.get('hourly', {}) or {}
 
-    # Use current for snapshot
-    temp = current.get('temperature_2m')
-    precip = current.get('precipitation')
-    wind = current.get('wind_speed_10m')
+    # Determine temperature
+    temp = None
+    if current:
+        temp = current.get('temperature') or current.get('temperature_2m')
+
+    # precipitation doesn't exist in current_weather -> use hourly last value
+    precip = None
+    # Determine wind: prefer current_weather.windspeed (km/h per API), otherwise use hourly wind (m/s -> km/h)
+    wind = None
+    if current:
+        wind = current.get('windspeed') or current.get('wind_speed_10m')
+
+    # If any of values missing, fallback to last hourly value
+    try:
+        if temp is None and 'temperature_2m' in hourly:
+            arr = hourly.get('temperature_2m')
+            if isinstance(arr, list) and len(arr) > 0:
+                temp = arr[-1]
+        if precip is None and 'precipitation' in hourly:
+            arr = hourly.get('precipitation')
+            if isinstance(arr, list) and len(arr) > 0:
+                precip = arr[-1]
+        if wind is None and 'wind_speed_10m' in hourly:
+            arr = hourly.get('wind_speed_10m')
+            if isinstance(arr, list) and len(arr) > 0:
+                # hourly wind is provided in m/s; convert to km/h
+                wind = float(arr[-1]) * 3.6
+    except Exception:
+        # be robust to unexpected payloads
+        pass
 
     for grid_key, nodes in grid.items():
         lat, lon = grid_key
