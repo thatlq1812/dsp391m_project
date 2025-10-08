@@ -42,6 +42,12 @@ def load_area_config(collector_name, cli_area=None):
     c = cfg.get('collectors', {}).get(collector_name, {})
     area = c.get('area', {}) or {}
 
+    # fallback to global area if not provided
+    if not area:
+        glob_area = cfg.get('globals', {}).get('area')
+        if glob_area:
+            area = dict(glob_area)
+
     # Apply CLI overrides first (highest priority)
     if cli_area:
         area.update({k: v for k, v in cli_area.items() if v is not None})
@@ -82,3 +88,10 @@ def load_area_config(collector_name, cli_area=None):
         return {'mode': 'point_radius', 'bbox': bbox, 'center': center, 'radius_m': radius}
     else:
         raise ValueError(f"Unknown area mode: {mode}")
+
+
+def get_run_output_base():
+    """Return base output directory for runs. Priority: RUN_DIR env > globals.output_base > data_runs"""
+    cfg = yaml.safe_load(open('configs/project_config.yaml'))
+    base = os.getenv('RUN_DIR') or cfg.get('globals', {}).get('output_base') or 'data_runs'
+    return base

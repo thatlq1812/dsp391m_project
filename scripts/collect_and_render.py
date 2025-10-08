@@ -16,6 +16,10 @@ import subprocess
 import time
 import sys
 import os
+import datetime
+import yaml
+
+from collectors.area_utils import get_run_output_base
 
 
 def run_cmd(cmd, cwd=None):
@@ -36,7 +40,8 @@ def run_collectors(args):
     # Prefer run_collectors.py local helper if available
     runner = os.path.join(os.getcwd(), 'run_collectors.py')
     if os.path.exists(runner):
-        cmd = [sys.executable, runner]
+        cmd = [sys.executable, runner, '--run-dir', os.getenv('RUN_DIR', '')]
+        # If RUN_DIR empty string, run_collectors will resolve default
         return run_cmd(cmd)
 
     # Fallback: run individual collectors (overpass -> open_meteo -> google)
@@ -56,7 +61,8 @@ def run_visualization():
     if not os.path.exists(vis):
         print('visualize.py not found')
         return False
-    return run_cmd([sys.executable, vis])
+    # pass RUN_DIR to visualization so images are saved under run_dir/images
+    return run_cmd([sys.executable, vis, '--run-dir', os.getenv('RUN_DIR', '')])
 
 
 def main():
@@ -67,6 +73,14 @@ def main():
     parser.add_argument('--no-visualize', action='store_true', help='Skip visualization step')
     args = parser.parse_args()
 
+    # create timestamped run folder under configured output_base
+    base = get_run_output_base()
+    ts = datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
+    run_dir = os.path.join(base, ts)
+    os.makedirs(run_dir, exist_ok=True)
+    # export RUN_DIR so child processes pick it up
+    os.environ['RUN_DIR'] = run_dir
+
     if args.once or args.interval <= 0:
         ok = run_collectors(args)
         if ok and not args.no_visualize:
@@ -76,8 +90,8 @@ def main():
     print(f"Starting collection loop every {args.interval} seconds. Press Ctrl+C to stop.")
     try:
         while True:
-            ts = time.strftime('%Y-%m-%d %H:%M:%S')
-            print(f"\n=== Run at {ts} ===")
+            ts_now = time.strftime('%Y-%m-%d %H:%M:%S')
+            print(f"\n=== Run at {ts_now} (run_dir={run_dir}) ===")
             ok = run_collectors(args)
             if ok and not args.no_visualize:
                 run_visualization()

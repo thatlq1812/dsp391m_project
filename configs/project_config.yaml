@@ -2,7 +2,17 @@ project:
   name: traffic-forecast-node-radius
   version: v2.0
   timezone: Asia/Ho_Chi_Minh
-  bbox: [10.67, 106.60, 10.90, 106.84] # HCMC
+  bbox: [10.67, 106.60, 10.90, 106.84] # HCMC Ben Thanh marke
+
+# Global runtime parameters (used by collectors and runners)
+globals:
+  # Default area used when collector-specific area is not provided
+  area:
+    mode: point_radius
+    center: [106.697794, 10.772465]
+    radius_m: 3000
+  # Base directory to store run outputs (each run will create a timestamped subfolder)
+  output_base: data_runs
 
 data:
   parquet_dir: ./data/parquet
@@ -21,8 +31,8 @@ collectors:
       # mode: bbox
       mode: point_radius
       # bbox: [10.67, 106.60, 10.90, 106.84]
-      center: [106.7, 10.7] # lon, lat (only for point_radius)
-      radius_m: 5000
+      center: [106.697794, 10.772465] # lon, lat (only for point_radius)
+      radius_m: 3000
 
   open_meteo:
     enabled: true
@@ -37,8 +47,8 @@ collectors:
     area:
       mode: bbox # or point_radius
       # bbox: [10.67, 106.60, 10.90, 106.84]
-      center: [106.7, 10.7] # lon, lat (only for point_radius)
-      radius_m: 5000
+      center: [106.697794, 10.772465] # lon, lat (only for point_radius)
+      radius_m: 3000
 
   google_directions:
     enabled: true
@@ -51,8 +61,8 @@ collectors:
       # mode: bbox
       # bbox: [10.67, 106.60, 10.90, 106.84]
       mode: point_radius
-      center: [106.7, 10.7] # lon, lat (only for point_radius)
-      radius_m: 5000
+      center: [106.697794, 10.772465] # lon, lat (only for point_radius)
+      radius_m: 3000
 
 pipelines:
   normalize:
