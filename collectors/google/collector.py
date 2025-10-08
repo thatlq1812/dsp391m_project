@@ -10,9 +10,7 @@ from datetime import datetime
 from math import radians, sin, cos, sqrt, atan2
 import yaml
 
-def load_config():
-    with open('configs/project_config.yaml', 'r') as f:
-        return yaml.safe_load(f)
+from collectors.area_utils import load_area_config
 
 def haversine(lat1, lon1, lat2, lon2):
     """Calculate distance between two points in km."""
@@ -60,10 +58,14 @@ def mock_directions_api(origin, dest, config):
     }
 
 def run_google_collector():
-    config = load_config()
+    config = yaml.safe_load(open('configs/project_config.yaml', 'r'))
     collector_config = config['collectors']['google']
-    
+
+    # resolve area and filter nodes
+    area_cfg = load_area_config('google')
+
     nodes = load_nodes()
+    nodes = [n for n in nodes if (area_cfg['bbox'][0] <= n['lat'] <= area_cfg['bbox'][2] and area_cfg['bbox'][1] <= n['lon'] <= area_cfg['bbox'][3])]
     edges = find_nearest_neighbors(nodes, config)
     
     traffic_data = []
@@ -79,7 +81,8 @@ def run_google_collector():
         })
     
     os.makedirs('data', exist_ok=True)
-    with open(collector_config['output_file'], 'w') as f:
+    output_file = collector_config.get('output', 'data/traffic_edges.json')
+    with open(output_file, 'w') as f:
         json.dump(traffic_data, f, indent=2)
     
     print(f"Collected traffic for {len(traffic_data)} edges.")

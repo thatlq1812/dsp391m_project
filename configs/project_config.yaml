@@ -15,6 +15,14 @@ collectors:
     url: https://overpass-api.de/api/interpreter
     query_timeout: 120
     output: data/nodes.json
+    # Area selection: supports mode = bbox | point_radius
+    # bbox format: [min_lat, min_lon, max_lat, max_lon] (matches Overpass south,west,north,east)
+    area:
+      # mode: bbox
+      mode: point_radius
+      # bbox: [10.67, 106.60, 10.90, 106.84]
+      center: [106.7, 10.7] # lon, lat (only for point_radius)
+      radius_m: 5000
 
   open_meteo:
     enabled: true
@@ -25,6 +33,12 @@ collectors:
     horizons_min: [5, 15, 30, 60]
     output_current: data/weather_snapshot.json
     output_forecast: data/weather_forecast.json
+    # Area selection for Open-Meteo collector
+    area:
+      mode: bbox # or point_radius
+      # bbox: [10.67, 106.60, 10.90, 106.84]
+      center: [106.7, 10.7] # lon, lat (only for point_radius)
+      radius_m: 5000
 
   google_directions:
     enabled: true
@@ -32,6 +46,13 @@ collectors:
     k_neighbors: 3
     radius_km: 0.8
     output: data/traffic_edges.json
+    # Area selection for Google Directions collector (used to filter nodes before kNN)
+    area:
+      # mode: bbox
+      # bbox: [10.67, 106.60, 10.90, 106.84]
+      mode: point_radius
+      center: [106.7, 10.7] # lon, lat (only for point_radius)
+      radius_m: 5000
 
 pipelines:
   normalize:
