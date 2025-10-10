@@ -9,7 +9,7 @@ globals:
   area:
     mode: point_radius
     center: [106.697794, 10.772465] # Central HCMC
-    radius_m: 1024 # Increased coverage
+    radius_m: 512 # Increased coverage
   node_spacing_m: 500 # Optimized spacing
   output_base: data_runs
 
@@ -27,7 +27,7 @@ collectors:
     area:
       mode: point_radius
       center: [106.697794, 10.772465]
-      radius_m: 1024
+      radius_m: 512
 
   open_meteo:
     enabled: true
@@ -39,7 +39,7 @@ collectors:
     area:
       mode: point_radius
       center: [106.697794, 10.772465]
-      radius_m: 1024
+      radius_m: 512
 
   google_directions:
     enabled: true
@@ -51,7 +51,7 @@ collectors:
     area:
       mode: point_radius
       center: [106.697794, 10.772465]
-      radius_m: 1024
+      radius_m: 512
 
 api:
   title: Traffic Forecast API
