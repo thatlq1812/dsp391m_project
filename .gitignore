@@ -194,7 +194,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # Private documents
-.env
 /doc
 
 # Miniconda installer (too large for GitHub)
