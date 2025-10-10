@@ -52,3 +52,9 @@ collectors:
       mode: point_radius
       center: [106.697794, 10.772465]
       radius_m: 1024
+
+api:
+  title: Traffic Forecast API
+  description: API serving node-level traffic forecasts
+  predictions_file: data/predictions.json
+  port: 8000
