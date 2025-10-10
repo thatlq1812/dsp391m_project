@@ -1,0 +1,6 @@
+gcloud compute ssh fxlqt@traffic-collector-vm --zone asia-southeast1-a --project shaped-ship-474607-f7 --command "\
+sudo useradd -m -s /bin/bash thatlq1812 || true; \
+echo 'thatlq1812:dsp391m' | sudo chpasswd; \
+sudo grep -q '^PasswordAuthentication' /etc/ssh/sshd_config && sudo sed -i 's/^PasswordAuthentication .*/PasswordAuthentication yes/' /etc/ssh/sshd_config || sudo bash -c \"echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config\"; \
+sudo grep -q '^ChallengeResponseAuthentication' /etc/ssh/sshd_config && sudo sed -i 's/^ChallengeResponseAuthentication .*/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config || sudo bash -c \"echo 'ChallengeResponseAuthentication no' >> /etc/ssh/sshd_config\"; \
+sudo systemctl restart ssh || sudo systemctl restart sshd; echo DONE"
