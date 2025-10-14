@@ -89,7 +89,7 @@ python -m traffic_forecast.collectors.google.collector
 ### 4.1. Chuẩn hóa dữ liệu (preprocess)
 Pipeline đọc `data/features_nodes_v2.json`, làm sạch, thống kê trực quan, chia train/val, lưu scaler và metadata:
 ```bash
-PYTHONPATH=. python3 -m traffic_forecast.pipelines.preprocess.preprocess
+python -m traffic_forecast.pipelines.preprocess.preprocess
 ```
 Đầu ra chính:
 - `data/processed/train.parquet`, `data/processed/val.parquet`
@@ -102,7 +102,7 @@ Mẹo: kiểm tra nhanh bằng `python3 -m json.tool data/processed/summary.json
 
 ### 4.2. Huấn luyện mô hình
 ```bash
-PYTHONPATH=. python3 -m traffic_forecast.pipelines.model.train
+python -m traffic_forecast.pipelines.model.train
 ```
 Lệnh tự động chạy preprocessing nếu thiếu artefact. Đầu ra:
 - `models/linear_v2.pkl` (hoặc model tương ứng cấu hình)
@@ -118,7 +118,7 @@ Các model nâng cao hơn (GNN, sequence-based) có thể tích hợp bằng cá
 
 ### 4.3. Suy luận hàng loạt
 ```bash
-PYTHONPATH=. python3 -m traffic_forecast.pipelines.model.infer
+python -m traffic_forecast.pipelines.model.infer
 ```
 Trả về:
 - `data/predictions.json`
@@ -208,9 +208,9 @@ Xóa thư mục trong `data/node` & `data/images` cũ hơn số ngày chỉ đ�
 2. **Thu thập dữ liệu**: chạy collectors (`python scripts/collect_and_render.py --once`) để lấy dữ liệu mẫu.
 3. **Chuẩn hóa & huấn luyện**:
    ```bash
-   PYTHONPATH=. python3 -m traffic_forecast.pipelines.features.build_features
-   PYTHONPATH=. python3 -m traffic_forecast.pipelines.preprocess.preprocess
-   PYTHONPATH=. python3 -m traffic_forecast.pipelines.model.train
+   python -m traffic_forecast.pipelines.features.build_features
+   python3 -m traffic_forecast.pipelines.preprocess.preprocess
+   python3 -m traffic_forecast.pipelines.model.train
    ```
 4. **Sinh dự báo**: `PYTHONPATH=. python3 -m traffic_forecast.pipelines.model.infer`.
 5. **Kiểm tra API/dashboard**: chạy FastAPI và dashboard nếu cần.
