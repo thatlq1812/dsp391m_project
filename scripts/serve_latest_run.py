@@ -9,14 +9,13 @@ Usage:
 
 This is a convenience helper for local development.
 """
-import os
 import sys
 import shutil
-import glob
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_NODE = os.path.join(ROOT, 'data', 'node')
-DATA_ROOT = os.path.join(ROOT, 'data')
+from traffic_forecast import PROJECT_ROOT
+
+DATA_NODE = PROJECT_ROOT / 'data' / 'node'
+DATA_ROOT = PROJECT_ROOT / 'data'
 
 
 def fail(msg):
@@ -24,36 +23,35 @@ def fail(msg):
     sys.exit(1)
 
 
-if not os.path.isdir(DATA_NODE):
+if not DATA_NODE.exists():
     fail('No data/node directory found. Run collectors first.')
 
-runs = [d for d in os.listdir(DATA_NODE) if os.path.isdir(os.path.join(DATA_NODE, d))]
+runs = [d for d in DATA_NODE.iterdir() if d.is_dir()]
 if not runs:
     fail('No run directories found under data/node')
 
 runs.sort()
 latest = runs[-1]
-print('Latest run:', latest)
+print('Latest run:', latest.name)
 
-collector_glob = os.path.join(DATA_NODE, latest, 'collectors', '*')
-collector_dirs = sorted(glob.glob(collector_glob))
+collector_dirs = sorted((latest / 'collectors').glob('*'))
 if not collector_dirs:
     fail('No collector output found in latest run')
 
 nodes_src = None
 traffic_src = None
 for c in collector_dirs:
-    n = os.path.join(c, 'nodes.json')
-    t1 = os.path.join(c, 'traffic_snapshot_normalized.json')
-    t2 = os.path.join(c, 'traffic_snapshot.json')
-    t3 = os.path.join(c, 'traffic_snapshot.csv')
-    if os.path.exists(n):
+    n = c / 'nodes.json'
+    t1 = c / 'traffic_snapshot_normalized.json'
+    t2 = c / 'traffic_snapshot.json'
+    t3 = c / 'traffic_snapshot.csv'
+    if n.exists():
         nodes_src = n
-        if os.path.exists(t1):
+        if t1.exists():
             traffic_src = t1
-        elif os.path.exists(t2):
+        elif t2.exists():
             traffic_src = t2
-        elif os.path.exists(t3):
+        elif t3.exists():
             traffic_src = t3
         break
 
@@ -62,16 +60,16 @@ if not nodes_src:
 
 
 def backup_if_exists(dst):
-    if os.path.exists(dst):
-        bak = dst + '.bak'
+    if dst.exists():
+        bak = dst.with_suffix(dst.suffix + '.bak')
         print(f'Backing up {dst} -> {bak}')
         shutil.copy2(dst, bak)
 
 
-dst_nodes = os.path.join(DATA_ROOT, 'nodes.json')
+dst_nodes = DATA_ROOT / 'nodes.json'
 dst_traffic = None
 if traffic_src:
-    dst_traffic = os.path.join(DATA_ROOT, os.path.basename(traffic_src))
+    dst_traffic = DATA_ROOT / traffic_src.name
 
 backup_if_exists(dst_nodes)
 shutil.copy2(nodes_src, dst_nodes)

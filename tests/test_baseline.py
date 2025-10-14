@@ -3,7 +3,7 @@ Unit tests for the platform.
 """
 
 import unittest
-from models.baseline import predict_speed_persistence
+from traffic_forecast.models.baseline import predict_speed_persistence
 
 class TestBaseline(unittest.TestCase):
     def test_persistence(self):

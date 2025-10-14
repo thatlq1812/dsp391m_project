@@ -3,10 +3,13 @@
 Cleanup old run folders under data/node and data/images.
 Usage: python scripts/cleanup_runs.py --days 7
 """
-import os
 import argparse
-import time
+import os
 import shutil
+import time
+from pathlib import Path
+
+from traffic_forecast import PROJECT_ROOT
 
 def rm_old(base_dir, days):
     cutoff = time.time() - days * 86400
@@ -31,6 +34,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--days', type=int, default=30, help='Remove runs older than DAYS')
     args = parser.parse_args()
-    r1 = rm_old(os.path.join('data', 'node'), args.days)
-    r2 = rm_old(os.path.join('data', 'images'), args.days)
+    node_root = PROJECT_ROOT / 'data' / 'node'
+    image_root = PROJECT_ROOT / 'data' / 'images'
+    r1 = rm_old(node_root, args.days)
+    r2 = rm_old(image_root, args.days)
     print(f'Removed {r1} node folders and {r2} image folders older than {args.days} days')

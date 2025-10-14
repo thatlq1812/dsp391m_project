@@ -4,11 +4,12 @@ Test schema v2 validation.
 
 import json
 import unittest
-import os
+from traffic_forecast import PROJECT_ROOT
 
 class TestSchemaV2(unittest.TestCase):
     def test_schema_fields(self):
-        with open('configs/nodes_schema_v2.json', 'r') as f:
+        schema_path = PROJECT_ROOT / 'configs' / 'nodes_schema_v2.json'
+        with schema_path.open('r', encoding='utf-8') as f:
             schema = json.load(f)
         
         required_fields = [f['name'] for f in schema['fields'] if f.get('required')]
@@ -18,8 +19,9 @@ class TestSchemaV2(unittest.TestCase):
         self.assertEqual(len(forecast_fields), 12)  # 12 forecast fields
         
         # Check data
-        if os.path.exists('data/features_nodes_v2.json'):
-            with open('data/features_nodes_v2.json', 'r') as f:
+        features_path = PROJECT_ROOT / 'data' / 'features_nodes_v2.json'
+        if features_path.exists():
+            with features_path.open('r', encoding='utf-8') as f:
                 data = json.load(f)
             
             if data:

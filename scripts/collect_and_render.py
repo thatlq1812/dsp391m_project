@@ -9,7 +9,7 @@ Usage examples:
   # run collectors every 10 minutes
   python scripts/collect_and_render.py --interval 600
 
-This script calls `run_collectors.py` (or individual collectors) then `visualize.py`.
+This script runs the packaged collectors and visualization modules.
 """
 import argparse
 import subprocess
@@ -17,15 +17,12 @@ import time
 import sys
 import os
 import datetime
-import yaml
+import pathlib
 
 # bootstrap project root so scripts can be run directly (avoids ModuleNotFoundError)
-import pathlib
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-
-from collectors.area_utils import get_run_output_base
 
 
 def run_cmd(cmd, cwd=None):
@@ -43,32 +40,15 @@ def run_cmd(cmd, cwd=None):
 
 
 def run_collectors(args):
-    # Prefer run_collectors.py local helper if available
-    runner = os.path.join(os.getcwd(), 'run_collectors.py')
-    if os.path.exists(runner):
-        cmd = [sys.executable, runner, '--run-dir', os.getenv('RUN_DIR', '')]
-        # If RUN_DIR empty string, run_collectors will resolve default
-        return run_cmd(cmd)
-
-    # Fallback: run individual collectors (overpass -> open_meteo -> google)
-    collectors = [
-        ['python', 'collectors/overpass/collector.py', '--bbox', args.bbox] if args.bbox else ['python', 'collectors/overpass/collector.py'],
-        ['python', 'collectors/open_meteo/collector.py', '--bbox', args.bbox] if args.bbox else ['python', 'collectors/open_meteo/collector.py'],
-        ['python', 'collectors/google/collector.py', '--bbox', args.bbox] if args.bbox else ['python', 'collectors/google/collector.py'],
-    ]
-    for c in collectors:
-        if not run_cmd([sys.executable if c[0] == 'python' else c[0]] + c[1:]):
-            return False
-    return True
+    cmd = [sys.executable, '-m', 'traffic_forecast.cli.run_collectors']
+    if args.bbox:
+        cmd.extend(['--bbox', args.bbox])
+    return run_cmd(cmd)
 
 
 def run_visualization():
-    vis = os.path.join(os.getcwd(), 'visualize.py')
-    if not os.path.exists(vis):
-        print('visualize.py not found')
-        return False
-    # pass RUN_DIR to visualization so images are saved under run_dir/images
-    return run_cmd([sys.executable, vis, '--run-dir', os.getenv('RUN_DIR', '')])
+    cmd = [sys.executable, '-m', 'traffic_forecast.cli.visualize']
+    return run_cmd(cmd)
 
 
 def main():

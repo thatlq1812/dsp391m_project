@@ -51,7 +51,7 @@ This project implements a cutting-edge traffic forecasting system for Ho Chi Min
 ### Core Innovations
 
 #### 1. Intelligent Caching System
-- **Overpass API**: 7-day cache for static road network data
+- **Overpass API**: 90-day cache for static road network data
 - **Open-Meteo API**: 1-hour cache for weather data
 - **Smart Expiry**: Automatic cache invalidation based on data characteristics
 - **Performance Boost**: 90% reduction in API calls and execution time
@@ -106,27 +106,18 @@ This project implements a cutting-edge traffic forecasting system for Ho Chi Min
 
 ```
 traffic-forecast-node-radius/
-├── collectors/           # Data collection modules
-│   ├── overpass/           # OSM road network data
-│   ├── open_meteo/         # Weather forecasting
-│   ├── google/            # Traffic directions (mock)
-│   └── cache_utils.py     # Intelligent caching system
-├── configs/             # Configuration files
-│   ├── project_config.yaml # Main configuration
-│   └── nodes_schema_v2.json # Data validation
-├── models/              # ML models & pipelines
-│   ├── baseline.py        # Linear regression baseline
-│   ├── lstm_v2.h5         # LSTM neural network
-│   └── scaler.npy         # Feature scaling
-├── scripts/             # Automation scripts
-│   ├── collect_and_render.py # Main collection pipeline
-│   ├── live_dashboard.py  # FastAPI server
-│   └── deploy.sh          # Production deployment
-├── data/                # Data storage
-│   ├── node/              # Timestamped collections
-│   ├── images/            # Generated visualizations
-│   └── cache/             # Intelligent cache storage
-└── tests/               # Unit tests & validation
+├── traffic_forecast/       # Application source package
+│   ├── api/                  # FastAPI application
+│   ├── collectors/           # Overpass, Open-Meteo, Google collectors
+│   ├── pipelines/            # Normalize, enrich, feature, model pipelines
+│   ├── models/               # Baseline utilities and stored artefacts
+│   └── scheduler/            # APScheduler entrypoint
+├── configs/                # Project configuration and schemas
+├── data/                   # Raw and processed datasets
+├── doc/                    # Reports and internal documentation
+├── scripts/                # Operational helper scripts (wrappers around package modules)
+├── tests/                  # Unit tests & validation helpers
+└── run_collectors.py       # Convenience CLI bundling the collectors
 ```
 
 ---
@@ -197,11 +188,14 @@ python scripts/collect_and_render.py --once
 # Continuous collection (15-minute intervals)
 python scripts/collect_and_render.py --interval 900
 
+# Run collectors directly
+python -m traffic_forecast.cli.run_collectors
+
 # Start API server
 python scripts/live_dashboard.py
 
 # Generate visualizations only
-python visualize.py --run-dir data/node/latest
+python -m traffic_forecast.cli.visualize --run-dir data/node/latest
 ```
 
 ---
@@ -361,7 +355,7 @@ curl http://localhost:8000/health
 
 ---
 
-## Recent Optimizations (v3.0) 🚀
+## Recent Optimizations (v3.0)
 
 ### Major Performance Improvements
 
@@ -397,11 +391,11 @@ curl http://localhost:8000/health
 ### Validation Results
 
 **System Testing (October 2025):**
-- ✅ **Overpass Collector**: 1055 nodes, 1138 edges, 296 ways
-- ✅ **Open-Meteo**: Weather data for 935 nodes collected
-- ✅ **Google Directions**: 87 intersection edges processed
-- ✅ **Visualization**: Traffic heatmap and basemap generated
-- ✅ **API Performance**: 99.9% reliability maintained
+- **Overpass Collector**: 1055 nodes, 1138 edges, 296 ways
+- **Open-Meteo**: Weather data for 935 nodes collected
+- **Google Directions**: 87 intersection edges processed
+- **Visualization**: Traffic heatmap and basemap generated
+- **API Performance**: 99.9% reliability maintained
 
 **Performance Metrics:**
 | Metric | Before (v2.0) | After (v3.0) | Improvement |
@@ -676,7 +670,7 @@ Updated: October 09, 2025
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   GCP VM        │    │   Cloud Storage │    │   BigQuery      │
-│   (Compute)     │◄──►│   (Data Lake)   │◄──►│   (Data Warehouse│
+│   (Compute)     │◄──►│   (Data Lake)   │◄──►│   Data Warehouse│
 │                 │    │                 │    │                 │
 │ • Collectors    │    │ • Raw data      │    │ • Analytics     │
 │ • Training      │    │ • Models        │    │ • Reports       │

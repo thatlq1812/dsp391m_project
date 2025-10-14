@@ -4,37 +4,41 @@ import json
 import os
 from typing import List
 
+from traffic_forecast import PROJECT_ROOT
+
 app = FastAPI()
 
 
 def load_nodes() -> List[dict]:
-    path = 'data/nodes.json'
-    if not os.path.exists(path):
+    path = PROJECT_ROOT / 'data' / 'nodes.json'
+    if not path.exists():
         return []
-    with open(path, 'r', encoding='utf-8') as f:
+    with path.open('r', encoding='utf-8') as f:
         return json.load(f)
 
 
 def load_traffic_snapshot() -> List[dict]:
     # Try normalized snapshot first
-    paths = ['data/traffic_snapshot_normalized.json', 'data/traffic_snapshot.json', 'data/traffic_snapshot.csv']
-    for p in paths:
-        if os.path.exists(p):
-            try:
-                if p.endswith('.json'):
-                    with open(p, 'r', encoding='utf-8') as f:
-                        return json.load(f)
-                else:
-                    # CSV fallback: load minimal fields
-                    import csv
-                    rows = []
-                    with open(p, 'r', encoding='utf-8') as f:
-                        reader = csv.DictReader(f)
-                        for r in reader:
-                            rows.append(r)
-                    return rows
-            except Exception:
-                return []
+    candidates = [
+        PROJECT_ROOT / 'data' / 'traffic_snapshot_normalized.json',
+        PROJECT_ROOT / 'data' / 'traffic_snapshot.json',
+        PROJECT_ROOT / 'data' / 'traffic_snapshot.csv',
+    ]
+    for path in candidates:
+        if not path.exists():
+            continue
+        try:
+            if path.suffix == '.json':
+                with path.open('r', encoding='utf-8') as f:
+                    return json.load(f)
+            if path.suffix == '.csv':
+                import csv
+
+                with path.open('r', encoding='utf-8') as f:
+                    reader = csv.DictReader(f)
+                    return list(reader)
+        except Exception:
+            return []
     return []
 
 
