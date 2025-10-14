@@ -196,6 +196,15 @@ python scripts/live_dashboard.py
 
 # Generate visualizations only
 python -m traffic_forecast.cli.visualize --run-dir data/node/latest
+
+# Preprocess features for training
+python -m traffic_forecast.pipelines.preprocess.preprocess
+
+# Train regression model
+python -m traffic_forecast.pipelines.model.train
+
+# Run batch inference
+python -m traffic_forecast.pipelines.model.infer
 ```
 
 ---

@@ -1,7 +1,0 @@
-GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
-OPENMETEO_BASE_URL=https://api.open-meteo.com/v1/forecast
-OVERPASS_URL=https://overpass-api.de/api/interpreter
-PARQUET_DIR=./data/parquet
-REDIS_URL=redis://localhost:6379/0
-POSTGRES_DSN=postgresql://user:pass@localhost:5432/traffic
-TZ=Asia/Ho_Chi_Minh

@@ -58,3 +58,42 @@ api:
   description: API serving node-level traffic forecasts
   predictions_file: data/predictions.json
   port: 8000
+
+pipelines:
+  preprocess:
+    features_file: data/features_nodes_v2.json
+    output_dir: data/processed
+    target_column: avg_speed_kmh
+    feature_columns:
+      - temperature_c
+      - rain_mm
+      - wind_speed_kmh
+      - forecast_temp_t5_c
+      - forecast_temp_t15_c
+      - forecast_temp_t30_c
+      - forecast_temp_t60_c
+      - forecast_rain_t5_mm
+      - forecast_rain_t15_mm
+      - forecast_rain_t30_mm
+      - forecast_rain_t60_mm
+      - forecast_wind_t5_kmh
+      - forecast_wind_t15_kmh
+      - forecast_wind_t30_kmh
+      - forecast_wind_t60_kmh
+    keep_columns:
+      - node_id
+      - ts
+    drop_na_threshold: 0.0
+    test_size: 0.2
+    random_state: 42
+    scaler_path: models/feature_scaler.pkl
+    metadata_path: data/processed/metadata.json
+  model:
+    type: linear_regression
+    test_size: 0.2
+    random_state: 42
+    output_model: models/linear_v2.pkl
+    predictions_file: data/predictions.json
+    infer_limit: 1000
+    target_column: avg_speed_kmh
+    metadata_path: models/model_metadata.json
