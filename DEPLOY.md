@@ -25,7 +25,7 @@ Complete guide for deploying the Traffic Forecast system on Google Cloud VM or a
 
 ### System Requirements
 
-- **OS**: Ubuntu 20.04+ or Debian 11+
+- **OS**: Ubuntu 22.04+ or Debian 11+
 - **CPU**: 2+ cores
 - **RAM**: 4GB minimum, 8GB recommended
 - **Storage**: 20GB minimum, 50GB recommended
