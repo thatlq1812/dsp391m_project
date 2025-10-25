@@ -773,126 +773,7 @@ Light, practical README for running the project locally and on a Google Cloud VM
 - Project: traffic forecasting for Ho Chi Minh City using node-radius graphs, weather, and ML.
 - Collectors support area selection modes: `bbox` and `point_radius` (also called `circle`).
 - Priority for area selection: CLI args > environment variables > `configs/project_config.yaml`.
-
-# DSP391m — Hệ thống thu thập và trực quan hóa dữ liệu giao thông (local dev)
-
-Phiên bản README thay thế, tập trung hướng dẫn chạy nhanh trên máy dev dùng Miniconda/Conda.
-
-## Tổng quan ngắn
-
-- Dự án thu thập dữ liệu giao thông (mock/real), lưu từng lần chạy (run) theo timestamp, sinh node theo bán kính + spacing, và xuất ảnh/ dashboard để xem kết quả.
-- Các script chính: `scripts/collect_and_render.py`, `run_collectors.py` (mock), `visualize.py`, `scripts/live_dashboard.py`.
-
-## Ghi chú quan trọng
-
-- Bạn dùng Miniconda / Conda — các hướng dẫn dưới đây dùng `conda` để tạo và quản lý môi trường (không dùng pyenv).
-
-## Yêu cầu
-
-- Miniconda/Conda
-- Python 3.8+ (recommend 3.10)
-- Git (tùy chọn)
-
-## Cài đặt nhanh (Miniconda)
-
-Mở terminal (Git Bash / WSL / cmd) và chạy:
-
-```bash
-# tạo và kích hoạt môi trường conda
-conda create -n dsp python=3.10 -y
-conda activate dsp
-
-# cài các phụ thuộc cơ bản
-python -m pip install -r requirements.txt
-# nếu chưa có requirements.txt, cài các gói tối thiểu
-python -m pip install fastapi uvicorn matplotlib pyyaml requests python-dotenv
-```
-
-Gợi ý: nếu bạn muốn nhanh hơn, thay `conda create` bằng `mamba create` nếu cài `mamba`.
-
-## Cấu trúc quan trọng
-
-- `configs/project_config.yaml` — cấu hình chung (area, node_spacing_m, output_base, ...)
-- `run_collectors.py` — mock collector (sinh nodes/traffic/events)
-- `scripts/collect_and_render.py` — orchestrator tạo run dir timestamped, chạy collectors rồi visualize
-- `visualize.py` — xuất ảnh tĩnh vào `RUN_IMAGE_DIR`
-- `scripts/live_dashboard.py` — FastAPI + Leaflet để xem live
-- `data/node/<ts>` và `data/images/<ts>` — nơi lưu outputs cho từng run
-
-## Chạy nhanh (Quick start)
-
-1. Kích hoạt môi trường conda như trên.
-
-2. Chạy một lần (collect + visualize):
-
-```bash
-   uvicorn apps.api.main:app --reload --port 8000
-
-   # Scheduler (terminal 2)
-   python apps/scheduler/main.py
-```
-
-3. Xem ảnh kết quả mới nhất:
-
-````bash
-
-5. **Trực quan hóa kết quả**:
-
-4) Chuẩn bị dữ liệu và chạy dashboard:
-
-```bash
-   ```bash
-   python visualize.py
-````
-
-#### Sử dụng API
-
-````bash
-
-5) Chạy lặp theo interval (ví dụ 5 phút):
-
-```bash
-# Lấy dự đoán cho nút
-curl "http://localhost:8000/v1/nodes/node_123/forecast?horizon=15"
-
-# Phản hồi
-
-## Thiết lập mật độ node (node spacing)
-
-- Tham số `globals.node_spacing_m` trong `configs/project_config.yaml` điều khiển khoảng cách (m) mong muốn giữa các node.
-- `run_collectors.py` hiện tính số node tự động từ `radius_m` và `node_spacing_m` (trước đây cố định `N=200`).
-- Đổi `node_spacing_m` nhỏ hơn để tăng mật độ node; tăng để giảm.
-
-## VS Code tasks
-- Đã có tasks mẫu trong `.vscode/tasks.json` để chạy: Collect Once, Collect Loop, Show Visualization, Run Dashboard.
-
-## Lưu ý khi dùng collectors thật
-- `collectors/overpass/collector.py` cần mạng và có thể gặp rate-limit. Cấu hình URL/timeout ở `configs/project_config.yaml`.
-- `collectors/open_meteo/collector.py` dùng Open-Meteo (không cần key). Bật debug raw response bằng `OPENMETEO_DEBUG=1` nếu cần.
-- Google Directions hiện là mock; để dùng API thật hãy export `GOOGLE_MAPS_API_KEY`.
-
-## Troubleshooting nhanh
-- Dashboard không hiện: kiểm tra port 8070 đã bị chiếm hay chưa.
-- Không thấy ảnh: kiểm tra `RUN_IMAGE_DIR`/`RUN_DIR` có được tạo và có quyền ghi.
-- Nếu collector thật lỗi: kiểm tra biến môi trường, kết nối mạng, và logs stdout/stderr từ scripts.
-
-## Muốn nâng cấp node generation?
-- Tôi có thể đổi từ random sampling sang grid/hex-grid (để spacing chính xác hơn), hoặc thêm `max_nodes` config để giới hạn.
-Nói tôi biết bạn muốn kiểu nào, tôi sẽ implement.
-
----
-Nếu bạn muốn, tôi sẽ thêm `environment.yml` cho conda hoặc `requirements.txt` (nếu chưa có) để cài nhanh. Bạn muốn tạo file nào?
-
-Updated: October 09, 2025
-{
-  "node_id": "node_123",
-  "horizon_min": 15,
-  "speed_kmh_pred": 41.08,
-  "congestion_level": 2
-}
-````
-
-### Tài liệu API
+- Default area: center at (10.762622, 106.660172) with radius 2048m.
 
 - **Base URL**: `http://localhost:8000`
 - **Swagger UI**: `http://localhost:8000/docs`
@@ -900,40 +781,14 @@ Updated: October 09, 2025
 
 #### Endpoints
 
-| Phương thức | Endpoint                       | Mô tả             |
-| ----------- | ------------------------------ | ----------------- |
-| GET         | `/`                            | Kiểm tra sức khỏe |
-| GET         | `/v1/nodes/{node_id}/forecast` | Lấy dự báo tốc độ |
+| Method | Endpoint                       | Description        |
+| ------ | ------------------------------ | ------------------ |
+| GET    | `/`                            | Health check       |
+| GET    | `/v1/nodes/{node_id}/forecast` | Get speed forecast |
 
-### Cấu trúc dự án
+### Deploy on Google Cloud
 
-```
- apps/                    # Ứng dụng
-    api/                # Dịch vụ FastAPI
-    scheduler/          # Jobs APScheduler
- collectors/             # Thu thập dữ liệu
-    google/            # Google Directions
-    open_meteo/        # Dữ liệu thời tiết
-    overpass/          # Nút OSM
- configs/               # File cấu hình
- data/                  # Lưu trữ dữ liệu
- doc/                   # Tài liệu
- infra/                 # Cơ sở hạ tầng (Docker, etc.)
- models/                # Mô hình đã huấn luyện
- pipelines/             # Xử lý dữ liệu
-    features/         # Kỹ thuật đặc trưng
-    model/            # Huấn luyện/suy luận ML
-    normalize/        # Chuẩn hóa dữ liệu
- tests/                 # Unit tests
- .env_template         # Template environment
- requirements.txt      # Dependencies Python
- visualize.py          # Script trực quan hóa
- README.md
-```
-
-### Triển khai trên Google Cloud
-
-#### Tổng quan kiến trúc
+#### Architecture Overview
 
 ```
 
@@ -953,9 +808,9 @@ Updated: October 09, 2025
 
 ```
 
-#### Thiết lập VM (Compute Engine)
+#### Deploy on GCP VM
 
-1. **Tạo VM Instance**:
+1. **Create VM instance**:
 
    ```bash
    gcloud compute instances create traffic-forecast-vm \
@@ -967,7 +822,7 @@ Updated: October 09, 2025
      --scopes=https://www.googleapis.com/auth/cloud-platform
    ```
 
-2. **Cài đặt Dependencies**:
+2. **Setup environment**:
 
    ```bash
    sudo apt update
@@ -977,7 +832,7 @@ Updated: October 09, 2025
    pip install -r requirements.txt
    ```
 
-3. **Cấu hình Service Account**:
+3. **Define IAM Roles**:
 
    ```bash
    # Tạo service account
@@ -995,7 +850,7 @@ Updated: October 09, 2025
      --role="roles/bigquery.admin"
    ```
 
-4. **Thiết lập Cloud Storage**:
+4. **Setup Cloud Storage**:
 
    ```bash
    # Tạo bucket
@@ -1005,7 +860,7 @@ Updated: October 09, 2025
    gsutil cp configs/project_config.yaml gs://traffic-forecast-data/config/
    ```
 
-5. **Chạy Job Training**:
+5. **Run Training Job**:
 
    ```bash
    # Download dữ liệu mới nhất
@@ -1020,7 +875,7 @@ Updated: October 09, 2025
 
 #### Jobs theo lịch với Cloud Scheduler
 
-1. **Tạo Cloud Function cho Thu thập dữ liệu**:
+1. **Create Cloud Function**:
 
    ```python
    # functions/main.py
@@ -1265,7 +1120,7 @@ pytest tests/ --cov=traffic_forecast --cov-report=html
 
 ### Future Work
 
-#### Phase 1: Foundation Hardening (1-2 months)
+#### Phase 1: Foundation Hardening
 
 **Testing & Quality**:
 
@@ -1323,7 +1178,7 @@ Deployment:
   - [ ] Canary releases
 ```
 
-#### Phase 3: Advanced Features (3-6 months)
+#### Phase 3: Advanced Features
 
 **Machine Learning**:
 
@@ -1350,7 +1205,7 @@ Deployment:
 - [ ] Predictive maintenance
 - [ ] Traffic pattern recognition
 
-#### Phase 4: Scalability (6-12 months)
+#### Phase 4: Scalability
 
 **Distributed Systems**:
 
@@ -1371,7 +1226,7 @@ Deployment:
 
 ## Implementation Priority
 
-### Critical (Do Now)
+### Critical
 
 1. [DONE] **Data Pipeline Optimization** - COMPLETED
 2. [DONE] **ML Model Enhancement** - COMPLETED
@@ -1451,16 +1306,6 @@ High Availability:
   - Disaster recovery plan
 ```
 
----
+### License
 
-## Contributing
-
-1. Fork repository
-2. Tạo nhánh tính năng: `git checkout -b feature/new-feature`
-3. Commit thay đổi: `git commit -am 'Add new feature'`
-4. Push lên nhánh: `git push origin feature/new-feature`
-5. Tạo Pull Request
-
-### Giấy phép
-
-Giấy phép MIT - xem [LICENSE](LICENSE) để biết chi tiết.
+MIT License - xem file [LICENSE](LICENSE) để biết chi tiết.

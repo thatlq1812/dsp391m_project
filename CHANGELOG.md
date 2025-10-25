@@ -23,6 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Environment template (`.env.template`) for easy configuration
 - Team access guide for multi-user GVM collaboration
 - Research-focused ASTGCN deep learning module with multi-component attention fusion
+- Comprehensive standalone Internal Report IR-05 (`docs/reports/internal_report_05.md`):
+  - Complete data structure documentation (SQL schemas, Pydantic validation models)
+  - Detailed collection pipeline (Overpass, Google Directions, Open-Meteo with rate limits)
+  - Full preprocessing & feature engineering guide (lag features, temporal encoding, spatial aggregation)
+  - Production model portfolio with architecture details (Linear, Tree ensembles, LSTM, ASTGCN)
+  - Pre-cloud deployment checklist with systemd configurations and smoke tests
+  - No external links - all critical information inlined for team distribution
 
 #### Changed - Cost Optimization
 
@@ -45,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Systemd service configuration
 - Health check and monitoring
 - Comprehensive documentation
+- Team onboarding materials with standalone distributable reports
 
 ## [3.0.0] - 2025-10-25
 

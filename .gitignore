@@ -221,6 +221,7 @@ yarn-error.log*
 
 # Private documents
 /doc
+/docs
 
 # Miniconda installer (too large for GitHub)
 miniconda.sh
