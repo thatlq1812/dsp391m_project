@@ -1,17 +1,65 @@
-# Optimized Traffic Forecasting Configuration v3.0
+# Academic Traffic Forecasting Configuration v4.0
+# Optimized for cost efficiency with adaptive scheduling
 project:
-  name: traffic-forecast-optimized
-  version: v3.0
+  name: traffic-forecast-academic
+  version: v4.0
   timezone: Asia/Ho_Chi_Minh
   bbox: [10.67, 106.60, 10.90, 106.84]
+
+# Adaptive Collection Scheduler (NEW in v4.0)
+scheduler:
+  enabled: true
+  mode: adaptive # Options: fixed, adaptive
+
+  # Fixed interval mode (legacy)
+  fixed_interval_minutes: 15
+
+  # Adaptive mode (cost-optimized for academic use)
+  adaptive:
+    # Peak hours: Higher traffic variability, more frequent collections
+    # Adjusted for Vietnam urban traffic patterns
+    peak_hours:
+      enabled: true
+      time_ranges: # 24-hour format
+        - start: "06:30"
+          end: "07:30" # Morning rush (6:30-7:30 AM)
+        - start: "10:30"
+          end: "11:30" # Late morning rush (10:30-11:30 AM)
+        - start: "13:00"
+          end: "13:30" # Lunch return (1:00-1:30 PM)
+        - start: "16:30"
+          end: "19:30" # Evening rush (4:30-7:30 PM)
+      interval_minutes: 30 # Collect every 30 min during peak
+
+    # Off-peak hours: Lower variability, reduce frequency
+    offpeak:
+      interval_minutes: 60 # Collect every 60 min during off-peak
+
+    # Weekend schedule (optional - lower traffic overall)
+    weekend:
+      enabled: true
+      use_offpeak_only: true # Treat all weekend as off-peak
+      interval_minutes: 90 # Even less frequent on weekends
 
 globals:
   area:
     mode: point_radius
     center: [106.697794, 10.772465] # Central HCMC
-    radius_m: 512 # Increased coverage
-  node_spacing_m: 500 # Optimized spacing
+    radius_m: 1024 # Academic optimization - focus on core area
+  node_spacing_m: 500
   output_base: data_runs
+
+# Node Selection Configuration (Academic v4.0 - Cost Optimized)
+node_selection:
+  min_degree: 6 # Major intersections only (6+ connecting roads)
+  min_importance_score: 40.0 # High-importance nodes only (highways, arterials)
+  max_nodes: 64 # Academic project limit (64 nodes * k=3 = 192 edges/collection)
+  road_type_filter:
+    - motorway
+    - trunk
+    - primary # Only major highways and primary roads
+  require_street_names: true # Collect street names from OSM
+  min_street_name_count: 2 # At least 2 named streets at intersection
 
 data:
   parquet_dir: ./data/parquet
@@ -22,24 +70,24 @@ collectors:
   overpass:
     enabled: true
     url: https://overpass-api.de/api/interpreter
-    query_timeout: 60 # Reduced
+    query_timeout: 120 # Increased for larger area
     cache_expiry_hours: 168 # 1 week
     area:
       mode: point_radius
       center: [106.697794, 10.772465]
-      radius_m: 512
+      radius_m: 1024 # Match global radius (academic optimization)
 
   open_meteo:
     enabled: true
     base_url: https://api.open-meteo.com/v1/forecast
     current_params: [temperature_2m, precipitation, wind_speed_10m]
     forecast_params: [temperature_2m, precipitation, wind_speed_10m]
-    horizons_min: [5, 15, 30, 60] # Reduced horizons
+    horizons_min: [5, 15, 30, 60]
     cache_expiry_hours: 1
     area:
       mode: point_radius
       center: [106.697794, 10.772465]
-      radius_m: 512
+      radius_m: 1024 # Match global radius (academic optimization)
 
   google_directions:
     enabled: true
@@ -48,10 +96,14 @@ collectors:
     traffic_factor_min: 0.5
     traffic_factor_max: 1.5
     rate_limit_requests_per_minute: 2800
+    radius_km: 1.024 # Match radius_m 1024m = 1.024km (academic optimization)
+    k_neighbors: 3 # 64*3=192 edges per collection (cost-optimized)
+    limit_nodes: 64 # Academic limit (reduced from 128)
+    use_mock_api: true # Set to false to use real Google API (costs money!)
     area:
       mode: point_radius
       center: [106.697794, 10.772465]
-      radius_m: 512
+      radius_m: 1024 # Match global radius (academic optimization)
 
 api:
   title: Traffic Forecast API
@@ -64,10 +116,19 @@ pipelines:
     features_file: data/features_nodes_v2.json
     output_dir: data/processed
     target_column: avg_speed_kmh
+
+    # Enhanced feature configuration (v3.1)
     feature_columns:
+      # Current traffic
+      - avg_speed_kmh
+      - congestion_level
+
+      # Current weather
       - temperature_c
       - rain_mm
       - wind_speed_kmh
+
+      # Weather forecasts
       - forecast_temp_t5_c
       - forecast_temp_t15_c
       - forecast_temp_t30_c
@@ -80,6 +141,65 @@ pipelines:
       - forecast_wind_t15_kmh
       - forecast_wind_t30_kmh
       - forecast_wind_t60_kmh
+
+      # Traffic lag features (NEW - v3.1)
+      - speed_lag_5min
+      - speed_lag_15min
+      - speed_lag_30min
+      - speed_lag_60min
+      - congestion_lag_5min
+      - congestion_lag_15min
+      - congestion_lag_30min
+      - congestion_lag_60min
+
+      # Rolling statistics (NEW - v3.1)
+      - speed_rolling_mean_15min
+      - speed_rolling_std_15min
+      - speed_rolling_min_15min
+      - speed_rolling_max_15min
+
+      # Speed changes (NEW - v3.1)
+      - speed_change_5min
+      - speed_pct_change_5min
+
+      # Temporal features (NEW - v3.1)
+      - hour_sin
+      - hour_cos
+      - day_of_week_sin
+      - day_of_week_cos
+      - is_rush_hour
+      - is_morning_rush
+      - is_evening_rush
+      - is_weekend
+      - is_holiday
+
+      # Spatial features (NEW - v3.1)
+      - neighbor_avg_speed
+      - neighbor_min_speed
+      - neighbor_max_speed
+      - neighbor_std_speed
+
+    # Lag feature configuration
+    lag_config:
+      enabled: true
+      lag_minutes: [5, 15, 30, 60]
+      rolling_windows: [3, 6, 12] # 15min, 30min, 60min (assuming 5min intervals)
+
+    # Temporal feature configuration
+    temporal_config:
+      enabled: true
+      cyclical_encoding: true
+      rush_hours:
+        morning: [7, 9]
+        evening: [17, 19]
+        lunch: [11, 13]
+
+    # Spatial feature configuration
+    spatial_config:
+      enabled: true
+      neighbor_hops: 1
+      include_upstream_downstream: false # Future enhancement
+
     keep_columns:
       - node_id
       - ts

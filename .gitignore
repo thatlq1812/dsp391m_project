@@ -1,12 +1,15 @@
-# Byte-compiled / optimized / DLL files
+# Traffic Forecast System - .gitignore
+# Updated: October 25, 2025
+
+# Github
+.github/
+/instructions
+
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
-
-# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -130,28 +133,51 @@ dmypy.json
 
 # Project specific
 # Data files (large files)
-data/
-*.csv
-*.json
-*.parquet
+data/node/*/
+data/archive/
+data/*.csv
+data/*.parquet
 *.pkl
 *.h5
 *.hdf5
 
+# Keep important data files
+!data/nodes.json
+!data/features_nodes_v2.json
+!data/processed/metadata.json
+!data/processed/summary.json
+
 # Models
-models/
-*.keras
-*.h5
+models/*.keras
+models/*.h5
+models/*.pkl
+models/*.pt
+models/*.ckpt
+models/*.bin
+models/*.pth
+models/*.onnx
+models/research/*
+
+# Keep model metadata
+!models/model_metadata.json
+!models/training_report.json
 
 # Logs
 logs/
 *.log
+
+# Cache
+cache/
+.cache/
 
 # Temporary files
 tmp/
 temp/
 *.tmp
 *.temp
+
+# Test fixtures (keep versioned)
+!tests/fixtures/*.json
 
 # OS generated files
 .DS_Store

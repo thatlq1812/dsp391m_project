@@ -1,0 +1,92 @@
+[
+  {
+    "node_a_id": "node-10.765723-106.705841",
+    "node_b_id": "node-10.766001-106.705734",
+    "distance_km": 0.031,
+    "duration_sec": 7,
+    "speed_kmh": 15.942857142857143,
+    "timestamp": "2025-10-09T00:00:00",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.765723-106.705841",
+    "node_b_id": "node-10.766174-106.706130",
+    "distance_km": 0.079,
+    "duration_sec": 38,
+    "speed_kmh": 7.484210526315789,
+    "timestamp": "2025-10-09T00:00:00",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.765723-106.705841",
+    "node_b_id": "node-10.766334-106.705526",
+    "distance_km": 0.076,
+    "duration_sec": 25,
+    "speed_kmh": 10.944,
+    "timestamp": "2025-10-09T00:00:00",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.764800-106.706209",
+    "node_b_id": "node-10.764818-106.706255",
+    "distance_km": 0.385,
+    "duration_sec": 128,
+    "speed_kmh": 10.828125,
+    "timestamp": "2025-10-09T00:00:00",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.764800-106.706209",
+    "node_b_id": "node-10.764712-106.706302",
+    "distance_km": 0.248,
+    "duration_sec": 34,
+    "speed_kmh": 26.258823529411764,
+    "timestamp": "2025-10-09T00:00:00",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.764800-106.706209",
+    "node_b_id": "node-10.764653-106.706169",
+    "distance_km": 0.24,
+    "duration_sec": 45,
+    "speed_kmh": 19.2,
+    "timestamp": "2025-10-09T00:00:00",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.765900-106.704636",
+    "node_b_id": "node-10.765837-106.704662",
+    "distance_km": 0.008,
+    "duration_sec": 0,
+    "speed_kmh": 30,
+    "timestamp": "2025-10-09T00:00:00",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.765900-106.704636",
+    "node_b_id": "node-10.765865-106.704553",
+    "distance_km": 0.01,
+    "duration_sec": 2,
+    "speed_kmh": 18.0,
+    "timestamp": "2025-10-09T00:00:00",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.765900-106.704636",
+    "node_b_id": "node-10.766016-106.704586",
+    "distance_km": 0.013,
+    "duration_sec": 1,
+    "speed_kmh": 46.8,
+    "timestamp": "2025-10-09T00:00:00",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.765865-106.704553",
+    "node_b_id": "node-10.765900-106.704636",
+    "distance_km": 0.01,
+    "duration_sec": 3,
+    "speed_kmh": 12.0,
+    "timestamp": "2025-10-09T00:00:00",
+    "api_type": "real"
+  }
+]
