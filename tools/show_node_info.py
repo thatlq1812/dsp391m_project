@@ -46,19 +46,19 @@ def show_current_capabilities():
     
     try:
         info = analyze_node_structure("data/nodes.json")
-        print(f"📊 Total nodes: {info['total_nodes']}")
-        print(f"\n📋 Available fields:")
+        print(f"Total nodes: {info['total_nodes']}")
+        print(f"\nAvailable fields:")
         for field in info['available_fields']:
             print(f"   ✓ {field}")
         
-        print(f"\n📄 Sample node (first node):")
+        print(f"\nSample node (first node):")
         sample = info['sample_node']
         for key, value in sample.items():
             print(f"   {key}: {value}")
     except FileNotFoundError:
-        print("   ❌ File not found")
+        print("   File not found")
     except Exception as e:
-        print(f"   ❌ Error: {e}")
+        print(f"   Error: {e}")
     
     # Analyze features_nodes_v2.json
     print("\n\n2️⃣  FEATURES_NODES_V2.JSON")
@@ -66,12 +66,12 @@ def show_current_capabilities():
     
     try:
         info = analyze_node_structure("data/features_nodes_v2.json")
-        print(f"📊 Total records: {info['total_nodes']}")
-        print(f"\n📋 Available fields:")
+        print(f"Total records: {info['total_nodes']}")
+        print(f"\nAvailable fields:")
         for field in info['available_fields']:
             print(f"   ✓ {field}")
         
-        print(f"\n📄 Sample record (first record):")
+        print(f"\nSample record (first record):")
         sample = info['sample_node']
         for key, value in sample.items():
             if key == 'feature_vector':
@@ -79,15 +79,15 @@ def show_current_capabilities():
             else:
                 print(f"   {key}: {value}")
     except FileNotFoundError:
-        print("   ❌ File not found")
+        print("   File not found")
     except Exception as e:
-        print(f"   ❌ Error: {e}")
+        print(f"   Error: {e}")
     
     # Show what we CAN extract
     print("\n\n3️⃣  WHAT CAN BE EXTRACTED")
     print("-" * 80)
     print("""
-✅ CURRENTLY AVAILABLE:
+CURRENTLY AVAILABLE:
    • node_id (unique identifier)
    • lat, lon (coordinates)
    • road_type (primary, secondary, tertiary, etc.)
@@ -95,12 +95,12 @@ def show_current_capabilities():
    • speed_limit (speed limit if available)
    • Google Maps link (can be generated from lat/lon)
    
-✅ CAN BE CALCULATED:
+CAN BE CALCULATED:
    • Google Maps URL: https://www.google.com/maps?q={lat},{lon}
    • Distance between nodes
    • Bounding box
    
-❌ NOT CURRENTLY STORED (but CAN be queried from OSM):
+NOT CURRENTLY STORED (but CAN be queried from OSM):
    • Street names at intersection
    • Official intersection name
    • Connected way names
@@ -171,12 +171,12 @@ def generate_quick_csv():
                     node.get('speed_limit', '')
                 ])
         
-        print(f"\n✅ Quick CSV generated: {output_file}")
+        print(f"\nQuick CSV generated: {output_file}")
         print(f"   Total nodes: {len(nodes)}")
         return output_file
     
     except Exception as e:
-        print(f"\n❌ Error generating CSV: {e}")
+        print(f"\nError generating CSV: {e}")
         return None
 
 

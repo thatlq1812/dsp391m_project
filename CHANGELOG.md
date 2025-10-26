@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.1] - 2025-10-26
+
+### Fixed - Production Issue
+
+#### Troubleshooting Session
+
+- **Issue:** FileNotFoundError preventing data collection after 26 hours of successful operation
+  - Error: "Could not find nodes.json in RUN_DIR or data/"
+  - Root cause: Cache format incompatibility causing KeyError in Overpass collector
+  - Impact: ~38 minutes outage (Oct 26 13:23 UTC to 14:01 UTC)
+- **Resolution Applied:**
+  1. Copied valid nodes.json from successful run to global data/ directory
+  2. Cleared corrupted cache: `rm -rf cache/*`
+  3. Disabled caching in `configs/project_config.yaml` (cache.enabled: false)
+- **Scripts Added:**
+  - `scripts/fix_nodes_issue.sh` - Automated fix for nodes.json missing error
+  - Updated `scripts/download_data.sh` - Downloads now save to `data/downloads/` directory
+- **Documentation Added:**
+  - `doc/TROUBLESHOOTING_NODES_MISSING.md` - Complete troubleshooting guide
+  - Updated `doc/README.md` - Added troubleshooting reference
+- **Data Collection Results:**
+  - Total runtime: 26+ hours (Oct 25 11:22 UTC to Oct 26 13:23 UTC)
+  - Successful collections: 48-50 out of 56 total runs
+  - Data downloaded: 692 KB (87 files) for inspection
+
+#### Changed
+
+- Project reorganization:
+  - Moved `doc/DEPLOYMENT_SUCCESS_SUMMARY.md` to `doc/archive/`
+  - Moved `doc/TEAM_ACCESS_GUIDE.md` to `doc/archive/`
+  - Data downloads now stored in `data/downloads/` instead of root directory
+  - Download script generates simplified README.md without dynamic content
+- Enhanced `.github/instructions/github_copilot.instructions.md`:
+  - Expanded from 6 brief points to comprehensive 10-section guide
+  - Added detailed workflow preferences and Vietnamese language support
+  - Documented project-specific conventions (conda env, GCP deployment, data organization)
+  - Included quality checklist and troubleshooting guidelines
+  - Based on actual working patterns from production deployment experience
+
 ## [4.0.0] - 2025-10-25
 
 ### Production Deployment

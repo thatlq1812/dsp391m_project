@@ -4,7 +4,7 @@
 
 INSTANCE_NAME="${1:-traffic-collector-v4}"
 ZONE="${2:-asia-southeast1-b}"
-OUTPUT_DIR="${3:-./data_downloaded_$(date +%Y%m%d_%H%M%S)}"
+OUTPUT_DIR="${3:-./data/downloads/download_$(date +%Y%m%d_%H%M%S)}"
 
 echo "Downloading data from $INSTANCE_NAME..."
 echo "Output directory: $OUTPUT_DIR"
@@ -13,61 +13,62 @@ mkdir -p "$OUTPUT_DIR"
 
 # Download data directory
 echo "Downloading data files..."
-gcloud compute scp --recurse $INSTANCE_NAME:~/dsp391m_project/data/ "$OUTPUT_DIR/data/" \
+gcloud compute scp --recurse $INSTANCE_NAME:/home/thatlqse183256_fpt_edu_vn/dsp391m_project/data/ "$OUTPUT_DIR/data/" \
     --zone=$ZONE \
     --strict-host-key-checking=no
 
 # Download database
 echo "Downloading database..."
-gcloud compute scp $INSTANCE_NAME:~/dsp391m_project/traffic_history.db "$OUTPUT_DIR/" \
+gcloud compute scp $INSTANCE_NAME:/home/thatlqse183256_fpt_edu_vn/dsp391m_project/traffic_history.db "$OUTPUT_DIR/" \
     --zone=$ZONE \
-    --strict-host-key-checking=no
+    --strict-host-key-checking=no 2>/dev/null || echo "  (Database file not found - using file storage)"
 
 # Download logs
 echo "Downloading logs..."
-gcloud compute scp --recurse $INSTANCE_NAME:~/dsp391m_project/logs/ "$OUTPUT_DIR/logs/" \
+gcloud compute scp --recurse $INSTANCE_NAME:/home/thatlqse183256_fpt_edu_vn/dsp391m_project/logs/ "$OUTPUT_DIR/logs/" \
     --zone=$ZONE \
     --strict-host-key-checking=no
 
 # Create summary
 echo "Creating summary..."
-cat > "$OUTPUT_DIR/README.md" << EOF
+cat > "$OUTPUT_DIR/README.md" << 'EOF'
 # Downloaded Traffic Data
 
-**Downloaded:** $(date)
-**Instance:** $INSTANCE_NAME
-**Zone:** $ZONE
+**Downloaded at:** $(date)
+**Source instance:** traffic-collector-v4
+**Zone:** asia-southeast1-b
 
 ## Contents
 
-- \`data/\` - Collected traffic data (nodes, edges, weather)
-- \`traffic_history.db\` - SQLite database with historical snapshots
-- \`logs/\` - Collection logs
+- `data/` - Collected traffic data (nodes, edges, weather)
+- `traffic_history.db` - SQLite database with historical snapshots (if exists)
+- `logs/` - Collection logs
 
-## Data Files
+## Directory Structure
 
-\`\`\`
-$(ls -lh "$OUTPUT_DIR/data/" | tail -20)
-\`\`\`
+Run the following to inspect the downloaded data:
 
-## Database Size
+```bash
+# View data files
+ls -lh data/
 
-\`\`\`
-$(du -sh "$OUTPUT_DIR/traffic_history.db")
-\`\`\`
+# View recent runs
+ls -lht data/ | head -20
 
-## Collection Logs
+# Check log files
+ls -lh logs/
 
-\`\`\`
-$(tail -50 "$OUTPUT_DIR/logs/collector.log" 2>/dev/null || echo "No logs found")
-\`\`\`
+# Search for errors in logs
+grep -i error logs/collector.log
+```
 
 ## Next Steps
 
-1. Analyze data with notebooks
-2. Train models
-3. Generate visualizations
-4. Write results report
+1. Review logs for collection errors
+2. Validate data completeness
+3. Check nodes.json and edges.json integrity
+4. Analyze collection timing and intervals
+5. Use notebooks for data exploration
 
 EOF
 

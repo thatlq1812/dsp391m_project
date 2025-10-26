@@ -2,7 +2,7 @@
 
 Collection of automated scripts for deploying and managing the Traffic Forecast system on Google Cloud Platform.
 
-## 📋 Overview
+## Overview
 
 | Script                      | Purpose                                        | Usage                                 |
 | --------------------------- | ---------------------------------------------- | ------------------------------------- |
@@ -392,7 +392,7 @@ sudo systemctl restart traffic-collector
 
 ---
 
-## 📊 Expected Results
+## Expected Results
 
 ### Collections per Day (Adaptive Schedule)
 

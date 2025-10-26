@@ -18,9 +18,9 @@
 
 ## Quick Links
 
-- **[DEPLOYMENT_QUICKSTART.md](DEPLOYMENT_QUICKSTART.md)** - ⭐ NEW: Your deployment is RUNNING! Essential commands and monitoring
-- **[Cloud Deployment Guide](CLOUD_DEPLOY.md)** - ⭐ NEW: Automated 1-week data collection on GCP
-- **[Deployment Success Report](doc/DEPLOYMENT_SUCCESS_SUMMARY.md)** - ⭐ NEW: Complete deployment summary and lessons learned
+- **[DEPLOYMENT_QUICKSTART.md](DEPLOYMENT_QUICKSTART.md)** - NEW: Your deployment is RUNNING! Essential commands and monitoring
+- **[Cloud Deployment Guide](CLOUD_DEPLOY.md)** - NEW: Automated 1-week data collection on GCP
+- **[Deployment Success Report](doc/DEPLOYMENT_SUCCESS_SUMMARY.md)** - NEW: Complete deployment summary and lessons learned
 - [Deployment Guide](DEPLOY.md) - Complete deployment instructions for GVM
 - [Quick Start Script](scripts/quick_start.sh) - Interactive setup
 - [Runbook](notebooks/RUNBOOK.ipynb) - Interactive Jupyter notebook guide
@@ -35,11 +35,11 @@
 
 ### Essential Guides
 
-- **[DEPLOYMENT_QUICKSTART.md](DEPLOYMENT_QUICKSTART.md)** - ⭐ YOUR DEPLOYMENT IS RUNNING! Essential commands
-- **[CLOUD_DEPLOY.md](CLOUD_DEPLOY.md)** - ⭐ NEW: Automated 1-week cloud deployment (35KB guide)
-- **[CLOUD_DEPLOY_VI.md](CLOUD_DEPLOY_VI.md)** - ⭐ NEW: Vietnamese quick start guide
-- **[DEPLOY_NOW.md](DEPLOY_NOW.md)** - ⭐ NEW: Step-by-step deployment guide
-- **[doc/DEPLOYMENT_SUCCESS_SUMMARY.md](doc/DEPLOYMENT_SUCCESS_SUMMARY.md)** - ⭐ Complete deployment report
+- **[DEPLOYMENT_QUICKSTART.md](DEPLOYMENT_QUICKSTART.md)** - YOUR DEPLOYMENT IS RUNNING! Essential commands
+- **[CLOUD_DEPLOY.md](CLOUD_DEPLOY.md)** - NEW: Automated 1-week cloud deployment (35KB guide)
+- **[CLOUD_DEPLOY_VI.md](CLOUD_DEPLOY_VI.md)** - NEW: Vietnamese quick start guide
+- **[DEPLOY_NOW.md](DEPLOY_NOW.md)** - NEW: Step-by-step deployment guide
+- **[doc/DEPLOYMENT_SUCCESS_SUMMARY.md](doc/DEPLOYMENT_SUCCESS_SUMMARY.md)** - Complete deployment report
 - **[CLOUD_IMPLEMENTATION_SUMMARY.md](CLOUD_IMPLEMENTATION_SUMMARY.md)** - Technical implementation details
 - **[DEPLOY.md](DEPLOY.md)** - Complete deployment guide for production
 - **[CHANGELOG.md](CHANGELOG.md)** - Version history and changes
@@ -54,9 +54,9 @@
 
 ### Deployment & Operations
 
-- **[Cloud Deployment](CLOUD_DEPLOY.md)** - ⭐ NEW: Automated GCP deployment for 7-day collection
-- **[Cloud Scripts](scripts/CLOUD_SCRIPTS_README.md)** - ⭐ NEW: Complete scripts documentation (16KB)
-- **[Deployment Quickstart](DEPLOYMENT_QUICKSTART.md)** - ⭐ Essential commands for running deployment
+- **[Cloud Deployment](CLOUD_DEPLOY.md)** - NEW: Automated GCP deployment for 7-day collection
+- **[Cloud Scripts](scripts/CLOUD_SCRIPTS_README.md)** - NEW: Complete scripts documentation (16KB)
+- **[Deployment Quickstart](DEPLOYMENT_QUICKSTART.md)** - Essential commands for running deployment
 - [Deployment Guide](DEPLOY.md) - Complete deployment for GVM
 - [Team Access Setup](scripts/setup_users.sh) - Multi-user configuration
 - [Health Monitoring](scripts/health_check.sh) - System health checks

@@ -170,7 +170,7 @@ def create_coverage_map(
     
     # Save map
     m.save(output_file)
-    print(f"✅ Map saved to: {output_file}")
+    print(f"Map saved to: {output_file}")
     print(f"   Total nodes: {len(nodes)}")
     print(f"   Center: {center}")
     print(f"   Radius: {radius_m}m")
@@ -187,7 +187,7 @@ def analyze_node_distribution(nodes):
     lats = [n['lat'] for n in nodes]
     lons = [n['lon'] for n in nodes]
     
-    print("\n📊 Node Distribution Analysis")
+    print("\nNode Distribution Analysis")
     print("=" * 60)
     print(f"Total nodes: {len(nodes)}")
     print(f"\nLatitude range: {min(lats):.6f} to {max(lats):.6f}")
@@ -208,7 +208,7 @@ def analyze_node_distribution(nodes):
     # Importance score distribution (if available)
     if any('importance_score' in n for n in nodes):
         scores = [n.get('importance_score', 0) for n in nodes if 'importance_score' in n]
-        print(f"\n⭐ Importance Score:")
+        print(f"\nImportance Score:")
         print(f"  Min:  {min(scores):.1f}")
         print(f"  Max:  {max(scores):.1f}")
         print(f"  Mean: {np.mean(scores):.1f}")
@@ -271,7 +271,7 @@ def create_comparison_map(
     folium.LayerControl().add_to(m)
     
     m.save(output_file)
-    print(f"✅ Comparison map saved to: {output_file}")
+    print(f"Comparison map saved to: {output_file}")
 
 
 def main():
@@ -294,14 +294,14 @@ def main():
     print("📍 Loading nodes...")
     nodes = load_nodes(args.input)
     
-    print("\n📊 Analyzing distribution...")
+    print("\nAnalyzing distribution...")
     analyze_node_distribution(nodes)
     
     print("\n🗺️  Creating map...")
     center = [args.center_lat, args.center_lon]
     create_coverage_map(nodes, center, args.radius, args.output)
     
-    print(f"\n✅ Done! Open {args.output} in your browser to view the map.")
+    print(f"\nDone! Open {args.output} in your browser to view the map.")
 
 
 if __name__ == '__main__':
