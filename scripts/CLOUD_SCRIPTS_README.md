@@ -4,15 +4,15 @@ Collection of automated scripts for deploying and managing the Traffic Forecast 
 
 ## Overview
 
-| Script                      | Purpose                                        | Usage                                 |
+| Script | Purpose | Usage |
 | --------------------------- | ---------------------------------------------- | ------------------------------------- |
-| `preflight_check.sh`        | Verify prerequisites before deployment         | `./scripts/preflight_check.sh`        |
+| `preflight_check.sh` | Verify prerequisites before deployment | `./scripts/preflight_check.sh` |
 | `deploy_week_collection.sh` | Full automated deployment for 7-day collection | `./scripts/deploy_week_collection.sh` |
-| `monitor_collection.sh`     | Quick status check of running collection       | `./scripts/monitor_collection.sh`     |
-| `download_data.sh`          | Download collected data from VM                | `./scripts/download_data.sh`          |
-| `cloud_quickref.sh`         | Quick reference for common commands            | `./scripts/cloud_quickref.sh`         |
+| `monitor_collection.sh` | Quick status check of running collection | `./scripts/monitor_collection.sh` |
+| `download_data.sh` | Download collected data from VM | `./scripts/download_data.sh` |
+| `cloud_quickref.sh` | Quick reference for common commands | `./scripts/cloud_quickref.sh` |
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Pre-flight Check
 
@@ -25,12 +25,12 @@ chmod +x scripts/*.sh
 
 **What it checks:**
 
-- ✓ gcloud CLI installed
-- ✓ Authenticated with GCP
-- ✓ Project ID configured
-- ✓ Billing enabled
-- ✓ Required files exist
-- ✓ API key (if using real API)
+- gcloud CLI installed
+- Authenticated with GCP
+- Project ID configured
+- Billing enabled
+- Required files exist
+- API key (if using real API)
 
 ### 2. Deploy Collection System
 
@@ -57,7 +57,7 @@ USE_REAL_API=true ./scripts/deploy_week_collection.sh
 
 # View logs live
 gcloud compute ssh traffic-collector-v4 --zone=asia-southeast1-b \
-  --command="tail -f ~/dsp391m_project/logs/collector.log"
+ --command="tail -f ~/dsp391m_project/logs/collector.log"
 ```
 
 ### 4. Download Data
@@ -68,7 +68,7 @@ After 7 days (or anytime):
 ./scripts/download_data.sh
 ```
 
-## 📖 Detailed Script Documentation
+## Detailed Script Documentation
 
 ### `preflight_check.sh`
 
@@ -93,23 +93,23 @@ After 7 days (or anytime):
 **Example output:**
 
 ```
-═══════════════════════════════════════════
-  Pre-flight Check for Cloud Deployment
-═══════════════════════════════════════════
 
-✓ gcloud CLI installed (version: 450.0.0)
-✓ Authenticated as: your-email@gmail.com
-✓ GCP_PROJECT_ID set: traffic-forecast-391
-✓ Configuration file exists
-✓ Deployment script ready
-⚠ Billing status unknown
-✓ Using Mock API (FREE)
+ Pre-flight Check for Cloud Deployment
 
-Checks passed:   6
-Checks failed:   0
-Warnings:        1
 
-✓ All critical checks passed!
+ gcloud CLI installed (version: 450.0.0)
+ Authenticated as: your-email@gmail.com
+ GCP_PROJECT_ID set: traffic-forecast-391
+ Configuration file exists
+ Deployment script ready
+ Billing status unknown
+ Using Mock API (FREE)
+
+Checks passed: 6
+Checks failed: 0
+Warnings: 1
+
+ All critical checks passed!
 ```
 
 ---
@@ -132,13 +132,13 @@ Warnings:        1
 **Environment variables:**
 
 ```bash
-GCP_PROJECT_ID       # Required: Your GCP project ID
-GCP_ZONE             # Optional: Default asia-southeast1-b
-GCP_REGION           # Optional: Default asia-southeast1
-INSTANCE_NAME        # Optional: Default traffic-collector-v4
-MACHINE_TYPE         # Optional: Default e2-standard-2
-USE_REAL_API         # Optional: true/false (default: false)
-GOOGLE_MAPS_API_KEY  # Required if USE_REAL_API=true
+GCP_PROJECT_ID # Required: Your GCP project ID
+GCP_ZONE # Optional: Default asia-southeast1-b
+GCP_REGION # Optional: Default asia-southeast1
+INSTANCE_NAME # Optional: Default traffic-collector-v4
+MACHINE_TYPE # Optional: Default e2-standard-2
+USE_REAL_API # Optional: true/false (default: false)
+GOOGLE_MAPS_API_KEY # Required if USE_REAL_API=true
 ```
 
 **Example:**
@@ -183,9 +183,9 @@ MACHINE_TYPE="e2-standard-4" \
 
 ```
 === Traffic Collection Status ===
-● traffic-collector.service - Traffic Forecast Data Collection
-   Loaded: loaded (/etc/systemd/system/traffic-collector.service)
-   Active: active (running) since Fri 2025-10-25 14:00:00 UTC
+ traffic-collector.service - Traffic Forecast Data Collection
+ Loaded: loaded (/etc/systemd/system/traffic-collector.service)
+ Active: active (running) since Fri 2025-10-25 14:00:00 UTC
 
 === Recent Logs ===
 2025-10-25 14:30:15 - INFO - Collection cycle completed
@@ -193,7 +193,7 @@ MACHINE_TYPE="e2-standard-4" \
 2025-10-25 14:30:17 - INFO - Next collection: 15:00:15
 
 === Disk Usage ===
-/dev/sda1        50G   5.2G   42G  12% /
+/dev/sda1 50G 5.2G 42G 12% /
 
 === Data Files ===
 run_20251025_140015/
@@ -236,8 +236,8 @@ run_20251025_150015/
 # Downloading database...
 # Downloading logs...
 # Creating summary...
-# ✓ Download complete!
-#   Location: ./data_downloaded_20251101_120000
+# Download complete!
+# Location: ./data_downloaded_20251101_120000
 ```
 
 ---
@@ -265,7 +265,7 @@ run_20251025_150015/
 
 ---
 
-## 💡 Common Workflows
+## Common Workflows
 
 ### Workflow 1: First-time Deployment
 
@@ -284,7 +284,7 @@ export GCP_PROJECT_ID="your-project-id"
 
 # 5. Check logs
 gcloud compute ssh traffic-collector-v4 --zone=asia-southeast1-b \
-  --command="tail -f ~/dsp391m_project/logs/collector.log"
+ --command="tail -f ~/dsp391m_project/logs/collector.log"
 ```
 
 ### Workflow 2: Production Deployment (Real API)
@@ -333,11 +333,11 @@ gcloud compute instances delete traffic-collector-v4 --zone=asia-southeast1-b
 
 # 2. Check service status
 gcloud compute ssh traffic-collector-v4 --zone=asia-southeast1-b \
-  --command="sudo systemctl status traffic-collector"
+ --command="sudo systemctl status traffic-collector"
 
 # 3. View error logs
 gcloud compute ssh traffic-collector-v4 --zone=asia-southeast1-b \
-  --command="tail -50 ~/dsp391m_project/logs/collector.error.log"
+ --command="tail -50 ~/dsp391m_project/logs/collector.error.log"
 
 # 4. Manual test
 gcloud compute ssh traffic-collector-v4 --zone=asia-southeast1-b
@@ -351,7 +351,7 @@ sudo systemctl restart traffic-collector
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
 ### Custom Instance Configuration
 
@@ -359,14 +359,14 @@ Edit `deploy_week_collection.sh` variables:
 
 ```bash
 # VM Configuration
-ZONE="asia-southeast1-b"           # Closest to Vietnam
-MACHINE_TYPE="e2-standard-2"       # 2 vCPU, 8GB RAM
-DISK_SIZE="50GB"                   # Storage size
-IMAGE_FAMILY="ubuntu-2204-lts"     # OS image (Ubuntu 22.04 LTS)
+ZONE="asia-southeast1-b" # Closest to Vietnam
+MACHINE_TYPE="e2-standard-2" # 2 vCPU, 8GB RAM
+DISK_SIZE="50GB" # Storage size
+IMAGE_FAMILY="ubuntu-2204-lts" # OS image (Ubuntu 22.04 LTS)
 
 # Collection Configuration
-COLLECTION_DURATION_DAYS=7         # Collection period
-USE_REAL_API="false"               # true/false
+COLLECTION_DURATION_DAYS=7 # Collection period
+USE_REAL_API="false" # true/false
 ```
 
 ### Custom Schedule
@@ -378,13 +378,13 @@ vim ~/dsp391m_project/configs/project_config.yaml
 
 # Change intervals:
 scheduler:
-  adaptive:
-    peak_hours:
-      interval_minutes: 30  # Change to 15, 30, 60, etc.
-    offpeak:
-      interval_minutes: 60
-    weekend:
-      interval_minutes: 90
+ adaptive:
+ peak_hours:
+ interval_minutes: 30 # Change to 15, 30, 60, etc.
+ offpeak:
+ interval_minutes: 60
+ weekend:
+ interval_minutes: 90
 
 # Restart service
 sudo systemctl restart traffic-collector
@@ -396,23 +396,23 @@ sudo systemctl restart traffic-collector
 
 ### Collections per Day (Adaptive Schedule)
 
-| Period              | Interval | Collections | Percentage |
+| Period | Interval | Collections | Percentage |
 | ------------------- | -------- | ----------- | ---------- |
-| Peak (5h)           | 30 min   | 10          | 29%        |
-| Off-peak (19h)      | 60 min   | 19          | 56%        |
-| Weekend (48h total) | 90 min   | ~32         | 15%        |
-| **Total/Week**      | -        | **~235**    | 100%       |
+| Peak (5h) | 30 min | 10 | 29% |
+| Off-peak (19h) | 60 min | 19 | 56% |
+| Weekend (48h total) | 90 min | ~32 | 15% |
+| **Total/Week** | - | **~235** | 100% |
 
 ### Data Volume
 
-| Component    | Per Collection | 7 Days     |
+| Component | Per Collection | 7 Days |
 | ------------ | -------------- | ---------- |
-| Nodes JSON   | ~50KB          | ~12MB      |
-| Edges JSON   | ~150KB         | ~35MB      |
-| Weather JSON | ~5KB           | ~1MB       |
-| Database     | grows          | ~100MB     |
-| Logs         | ~10KB          | ~2MB       |
-| **Total**    | ~215KB         | **~150MB** |
+| Nodes JSON | ~50KB | ~12MB |
+| Edges JSON | ~150KB | ~35MB |
+| Weather JSON | ~5KB | ~1MB |
+| Database | grows | ~100MB |
+| Logs | ~10KB | ~2MB |
+| **Total** | ~215KB | **~150MB** |
 
 ### Costs
 
@@ -430,7 +430,7 @@ sudo systemctl restart traffic-collector
 
 ---
 
-## 🆘 Support
+## Support
 
 ### Documentation
 
@@ -452,5 +452,5 @@ sudo systemctl restart traffic-collector
 
 ---
 
-**Last Updated:** October 25, 2025  
+**Last Updated:** October 25, 2025 
 **Version:** Academic v4.0

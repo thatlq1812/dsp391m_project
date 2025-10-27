@@ -219,9 +219,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Private documents
-/doc
-/docs
+# Temporary/build artifacts
+*.log
+*.tmp
+*.temp
+log.txt
+=*
 
 # Miniconda installer (too large for GitHub)
 miniconda.sh

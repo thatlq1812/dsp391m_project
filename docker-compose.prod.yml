@@ -9,16 +9,19 @@ services:
       - "8000:8000"
     environment:
       - ENVIRONMENT=production
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
     volumes:
       - ./data:/app/data
       - ./models:/app/models
       - ./logs:/app/logs
+      - ./configs:/app/configs
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 10s
     networks:
       - traffic-network
 
@@ -28,10 +31,12 @@ services:
       dockerfile: Dockerfile.scheduler
     environment:
       - ENVIRONMENT=production
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
     volumes:
       - ./data:/app/data
       - ./models:/app/models
       - ./logs:/app/logs
+      - ./configs:/app/configs
     restart: unless-stopped
     depends_on:
       - traffic-api
@@ -59,6 +64,11 @@ services:
     volumes:
       - redis_data:/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     networks:
       - traffic-network
 
@@ -67,22 +77,28 @@ services:
     environment:
       POSTGRES_DB: traffic_forecast
       POSTGRES_USER: traffic_user
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./infra/sql/schema.sql:/docker-entrypoint-initdb.d/init.sql
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U traffic_user -d traffic_forecast"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     networks:
       - traffic-network
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:latest
     ports:
       - "9090:9090"
     volumes:
       - ./infra/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -93,15 +109,18 @@ services:
       - traffic-network
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:latest
     ports:
       - "3000:3000"
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
       - grafana_data:/var/lib/grafana
       - ./infra/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
     restart: unless-stopped
+    depends_on:
+      - prometheus
     networks:
       - traffic-network
 
@@ -109,6 +128,7 @@ volumes:
   redis_data:
   postgres_data:
   grafana_data:
+  prometheus_data:
 
 networks:
   traffic-network:

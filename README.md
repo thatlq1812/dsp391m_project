@@ -11,10 +11,10 @@
 ## Author
 
 - Le Quang That (THAT Le Quang) – SE183256
-  - Nickname: Xiel
-  - GitHub: [thatlq1812](https://github.com/thatlq1812)
-  - Email: fxlqthat@gmail.com / thatlqse183256@fpt.edu.com / thatlq1812@gmail.com
-  - Phone: +84 33 863 6369 / +84 39 730 6450
+ - Nickname: Xiel
+ - GitHub: [thatlq1812](https://github.com/thatlq1812)
+ - Email: fxlqthat@gmail.com / thatlqse183256@fpt.edu.com / thatlq1812@gmail.com
+ - Phone: +84 33 863 6369 / +84 39 730 6450
 
 ## Quick Links
 
@@ -136,29 +136,29 @@ This project implements a cost-optimized traffic forecasting system for Ho Chi M
 
 1. **Adaptive Scheduler** - NEW
 
-   - Peak hours (6:30-7:30, 10:30-11:30, 13:00-13:30, 16:30-19:30): 30 min intervals
-   - Off-peak hours: 60 min intervals
-   - Weekend: 90 min intervals
-   - Result: 96 collections/day to 25 collections/day (74% reduction)
+ - Peak hours (6:30-7:30, 10:30-11:30, 13:00-13:30, 16:30-19:30): 30 min intervals
+ - Off-peak hours: 60 min intervals
+ - Weekend: 90 min intervals
+ - Result: 96 collections/day to 25 collections/day (74% reduction)
 
 2. **Focused Coverage**
 
-   - Radius: 4096m to 1024m (core area focus)
-   - Nodes: 128 to 64 (major intersections only)
-   - Road types: Only motorway, trunk, primary
-   - Quality: min_degree 6, min_importance 40
+ - Radius: 4096m to 1024m (core area focus)
+ - Nodes: 128 to 64 (major intersections only)
+ - Road types: Only motorway, trunk, primary
+ - Quality: min_degree 6, min_importance 40
 
 3. **Cost Reduction**
 
-   - Monthly cost: $5,530 to $720 (87% savings)
-   - Collections per day: 96 to 25 (74% reduction)
-   - API requests: 36,864/day to 4,800/day
+ - Monthly cost: $5,530 to $720 (87% savings)
+ - Collections per day: 96 to 25 (74% reduction)
+ - API requests: 36,864/day to 4,800/day
 
 4. **New Features**
-   - Traffic history storage with SQLite
-   - Lag features (5, 15, 30, 60 min)
-   - Mock API mode for FREE development
-   - Enhanced documentation with cost analysis
+ - Traffic history storage with SQLite
+ - Lag features (5, 15, 30, 60 min)
+ - Mock API mode for FREE development
+ - Enhanced documentation with cost analysis
 
 **See**: [Academic v4.0 Summary](doc/reference/ACADEMIC_V4_SUMMARY.md) for complete details.
 
@@ -215,20 +215,20 @@ This project implements a cost-optimized traffic forecasting system for Ho Chi M
 
 ```
 
-   Data Sources      Intelligent       ML Pipeline
-                       Caching System
- • Google Maps                              • Feature Eng.
- • Open-Meteo         • Overpass: 7d        • LSTM Model
- • OpenStreetMap      • Weather: 1h         • Batch Infer.
+ Data Sources Intelligent ML Pipeline
+ Caching System
+ • Google Maps • Feature Eng.
+ • Open-Meteo • Overpass: 7d • LSTM Model
+ • OpenStreetMap • Weather: 1h • Batch Infer.
 
 
 
 
-  FastAPI              Visualization         Google Cloud
-  REST API             Dashboard             VM Deployment
+ FastAPI Visualization Google Cloud
+ REST API Dashboard VM Deployment
 
- • Auto Docs          • Traffic Maps        • Cron Jobs
- • Health Checks      • Heatmaps            • Monitoring
+ • Auto Docs • Traffic Maps • Cron Jobs
+ • Health Checks • Heatmaps • Monitoring
 
 ```
 
@@ -236,18 +236,18 @@ This project implements a cost-optimized traffic forecasting system for Ho Chi M
 
 ```
 traffic-forecast-node-radius/
- traffic_forecast/       # Application source package
-    api/                  # FastAPI application
-    collectors/           # Overpass, Open-Meteo, Google collectors
-    pipelines/            # Normalize, enrich, feature, model pipelines
-   models/               # Baseline utilities, stored artifacts, research models
-    scheduler/            # APScheduler entrypoint
- configs/                # Project configuration and schemas
- data/                   # Raw and processed datasets
- doc/                    # Reports and internal documentation
- scripts/                # Operational helper scripts (wrappers around package modules)
- tests/                  # Unit tests & validation helpers
- run_collectors.py       # Convenience CLI bundling the collectors
+ traffic_forecast/ # Application source package
+ api/ # FastAPI application
+ collectors/ # Overpass, Open-Meteo, Google collectors
+ pipelines/ # Normalize, enrich, feature, model pipelines
+ models/ # Baseline utilities, stored artifacts, research models
+ scheduler/ # APScheduler entrypoint
+ configs/ # Project configuration and schemas
+ data/ # Raw and processed datasets
+ doc/ # Reports and internal documentation
+ scripts/ # Operational helper scripts (wrappers around package modules)
+ tests/ # Unit tests & validation helpers
+ run_collectors.py # Convenience CLI bundling the collectors
 ```
 
 ---
@@ -300,7 +300,7 @@ bash scripts/quick_start.sh
 ssh YOUR_USERNAME@SERVER_IP
 cd /opt/traffic-forecast
 conda activate dsp
-bash scripts/health_check.sh  # Check system status
+bash scripts/health_check.sh # Check system status
 ```
 
 **Need help?** Open [RUNBOOK.ipynb](notebooks/RUNBOOK.ipynb) or read [DEPLOY.md](DEPLOY.md)
@@ -311,38 +311,38 @@ bash scripts/health_check.sh  # Check system status
 
 1. **Clone repository**
 
-   ```bash
-   git clone https://github.com/thatlq1812/dsp391m_project.git
-   cd dsp391m_project
-   ```
+ ```bash
+ git clone https://github.com/thatlq1812/dsp391m_project.git
+ cd dsp391m_project
+ ```
 
 2. **Quick setup**
 
-   ```bash
-   bash scripts/quick_start.sh
-   # Select option 1 for development (FREE mock API)
-   ```
+ ```bash
+ bash scripts/quick_start.sh
+ # Select option 1 for development (FREE mock API)
+ ```
 
 3. **Or manual setup**
 
-   ```bash
-   # Create environment
-   conda env create -f environment.yml
-   conda activate dsp
+ ```bash
+ # Create environment
+ conda env create -f environment.yml
+ conda activate dsp
 
-   # Run single collection
-   python scripts/collect_and_render.py --once
-   ```
+ # Run single collection
+ python scripts/collect_and_render.py --once
+ ```
 
 4. **View results**
 
-   ```bash
-   # Check collected data
-   ls data/node/
+ ```bash
+ # Check collected data
+ ls data/node/
 
-   # View schedule
-   python scripts/collect_and_render.py --print-schedule
-   ```
+ # View schedule
+ python scripts/collect_and_render.py --print-schedule
+ ```
 
 ---
 
@@ -409,27 +409,27 @@ python -m traffic_forecast.cli.visualize
 ```yaml
 # Adaptive scheduler
 scheduler:
-  mode: adaptive # or 'fixed' for legacy mode
-  adaptive:
-    peak_hours:
-      time_ranges:
-        - start: "06:30"
-          end: "07:30" # Morning rush
-        # ... more ranges
-      interval_minutes: 30
+ mode: adaptive # or 'fixed' for legacy mode
+ adaptive:
+ peak_hours:
+ time_ranges:
+ - start: "06:30"
+ end: "07:30" # Morning rush
+ # ... more ranges
+ interval_minutes: 30
 
 # Node selection
 node_selection:
-  max_nodes: 64
-  min_degree: 6
-  min_importance_score: 40.0
-  road_type_filter: [motorway, trunk, primary]
+ max_nodes: 64
+ min_degree: 6
+ min_importance_score: 40.0
+ road_type_filter: [motorway, trunk, primary]
 
 # Google Directions
 google_directions:
-  use_mock_api: true # FREE for development
-  limit_nodes: 64
-  k_neighbors: 3
+ use_mock_api: true # FREE for development
+ limit_nodes: 64
+ k_neighbors: 3
 ```
 
 ---
@@ -438,11 +438,11 @@ google_directions:
 
 ### Data Pipeline Overview
 
-| Data Source           | Update Frequency | Cache Strategy | Purpose               |
+| Data Source | Update Frequency | Cache Strategy | Purpose |
 | --------------------- | ---------------- | -------------- | --------------------- |
-| **Overpass API**      | Static           | 7 days         | Road network topology |
-| **Open-Meteo**        | Hourly           | 1 hour         | Weather forecasts     |
-| **Google Directions** | Adaptive (v4.0)  | No cache       | Traffic conditions    |
+| **Overpass API** | Static | 7 days | Road network topology |
+| **Open-Meteo** | Hourly | 1 hour | Weather forecasts |
+| **Google Directions** | Adaptive (v4.0) | No cache | Traffic conditions |
 
 ### Adaptive Collection (v4.0)
 
@@ -471,12 +471,12 @@ google_directions:
 ```python
 # Smart cache with automatic expiry
 def get_or_create_cache(collector_name, params, cache_dir, expiry_hours, fetch_func):
-    cache_key = generate_key(collector_name, params)
-    if cache_valid(cache_key, expiry_hours):
-        return load_cache(cache_key)
-    data = fetch_func()
-    save_cache(cache_key, data)
-    return data
+ cache_key = generate_key(collector_name, params)
+ if cache_valid(cache_key, expiry_hours):
+ return load_cache(cache_key)
+ data = fetch_func()
+ save_cache(cache_key, data)
+ return data
 ```
 
 #### Performance Impact
@@ -576,7 +576,7 @@ tail -f collect.log
 
 # Monitor data collection
 ls -la data/node/
-du -sh data/  # Check storage usage
+du -sh data/ # Check storage usage
 
 # Health checks
 curl http://localhost:8000/health
@@ -588,15 +588,15 @@ curl http://localhost:8000/health
 
 ### System Metrics
 
-| Metric              | Value                            | Notes                                                      |
+| Metric | Value | Notes |
 | ------------------- | -------------------------------- | ---------------------------------------------------------- |
-| **Collection Time** | 5-10s (cached) / 5-15s (fresh)   | 10x performance improvement with parallel processing       |
-| **Data Points**     | 88 intersection nodes + 87 edges | Optimized for cost-efficiency (90% coverage)               |
-| **API Calls**       | 87 calls per collection          | 86% reduction from 639 calls                               |
-| **API Reliability** | 99.9%                            | Intelligent caching + parallel processing + error handling |
-| **Memory Usage**    | < 500MB                          | Optimized for cloud deployment                             |
-| **Monthly Cost**    | ~$120                            | 80% savings from $600 with intersection modeling           |
-| **Storage Growth**  | ~50MB/day                        | Compressed data with cleanup                               |
+| **Collection Time** | 5-10s (cached) / 5-15s (fresh) | 10x performance improvement with parallel processing |
+| **Data Points** | 88 intersection nodes + 87 edges | Optimized for cost-efficiency (90% coverage) |
+| **API Calls** | 87 calls per collection | 86% reduction from 639 calls |
+| **API Reliability** | 99.9% | Intelligent caching + parallel processing + error handling |
+| **Memory Usage** | < 500MB | Optimized for cloud deployment |
+| **Monthly Cost** | ~$120 | 80% savings from $600 with intersection modeling |
+| **Storage Growth** | ~50MB/day | Compressed data with cleanup |
 
 ### Accuracy Benchmarks
 
@@ -793,10 +793,10 @@ Light, practical README for running the project locally and on a Google Cloud VM
 
 #### Endpoints
 
-| Method | Endpoint                       | Description        |
+| Method | Endpoint | Description |
 | ------ | ------------------------------ | ------------------ |
-| GET    | `/`                            | Health check       |
-| GET    | `/v1/nodes/{node_id}/forecast` | Get speed forecast |
+| GET | `/` | Health check |
+| GET | `/v1/nodes/{node_id}/forecast` | Get speed forecast |
 
 ### Deploy on Google Cloud
 
@@ -804,19 +804,19 @@ Light, practical README for running the project locally and on a Google Cloud VM
 
 ```
 
-   GCP VM               Cloud Storage        BigQuery
-   (Compute)        (Data Lake)      Data Warehouse
+ GCP VM Cloud Storage BigQuery
+ (Compute) (Data Lake) Data Warehouse
 
- • Collectors         • Raw data           • Analytics
- • Training           • Models             • Reports
- • API Service        • Configs
-
-
+ • Collectors • Raw data • Analytics
+ • Training • Models • Reports
+ • API Service • Configs
 
 
 
-                       Cloud Run
-                       (API)
+
+
+ Cloud Run
+ (API)
 
 ```
 
@@ -824,96 +824,96 @@ Light, practical README for running the project locally and on a Google Cloud VM
 
 1. **Create VM instance**:
 
-   ```bash
-   gcloud compute instances create traffic-forecast-vm \
-     --zone=asia-southeast1-a \
-     --machine-type=n1-standard-4 \
-     --image-family=ubuntu-2204-lts \
-     --image-project=ubuntu-os-cloud \
-     --boot-disk-size=50GB \
-     --scopes=https://www.googleapis.com/auth/cloud-platform
-   ```
+ ```bash
+ gcloud compute instances create traffic-forecast-vm \
+ --zone=asia-southeast1-a \
+ --machine-type=n1-standard-4 \
+ --image-family=ubuntu-2204-lts \
+ --image-project=ubuntu-os-cloud \
+ --boot-disk-size=50GB \
+ --scopes=https://www.googleapis.com/auth/cloud-platform
+ ```
 
 2. **Setup environment**:
 
-   ```bash
-   sudo apt update
-   sudo apt install python3 python3-pip git
-   git clone <repo>
-   cd traffic-forecast-node-radius
-   pip install -r requirements.txt
-   ```
+ ```bash
+ sudo apt update
+ sudo apt install python3 python3-pip git
+ git clone <repo>
+ cd traffic-forecast-node-radius
+ pip install -r requirements.txt
+ ```
 
 3. **Define IAM Roles**:
 
-   ```bash
-   # Tạo service account
-   gcloud iam service-accounts create traffic-forecast-sa \
-     --description="Service account for traffic forecast" \
-     --display-name="Traffic Forecast SA"
+ ```bash
+ # Tạo service account
+ gcloud iam service-accounts create traffic-forecast-sa \
+ --description="Service account for traffic forecast" \
+ --display-name="Traffic Forecast SA"
 
-   # Cấp quyền
-   gcloud projects add-iam-policy-binding PROJECT_ID \
-     --member="serviceAccount:traffic-forecast-sa@PROJECT_ID.iam.gserviceaccount.com" \
-     --role="roles/storage.admin"
+ # Cấp quyền
+ gcloud projects add-iam-policy-binding PROJECT_ID \
+ --member="serviceAccount:traffic-forecast-sa@PROJECT_ID.iam.gserviceaccount.com" \
+ --role="roles/storage.admin"
 
-   gcloud projects add-iam-policy-binding PROJECT_ID \
-     --member="serviceAccount:traffic-forecast-sa@PROJECT_ID.iam.gserviceaccount.com" \
-     --role="roles/bigquery.admin"
-   ```
+ gcloud projects add-iam-policy-binding PROJECT_ID \
+ --member="serviceAccount:traffic-forecast-sa@PROJECT_ID.iam.gserviceaccount.com" \
+ --role="roles/bigquery.admin"
+ ```
 
 4. **Setup Cloud Storage**:
 
-   ```bash
-   # Tạo bucket
-   gsutil mb -p PROJECT_ID -c regional -l asia-southeast1 gs://traffic-forecast-data
+ ```bash
+ # Tạo bucket
+ gsutil mb -p PROJECT_ID -c regional -l asia-southeast1 gs://traffic-forecast-data
 
-   # Upload config
-   gsutil cp configs/project_config.yaml gs://traffic-forecast-data/config/
-   ```
+ # Upload config
+ gsutil cp configs/project_config.yaml gs://traffic-forecast-data/config/
+ ```
 
 5. **Run Training Job**:
 
-   ```bash
-   # Download dữ liệu mới nhất
-   gsutil -m cp -r gs://traffic-forecast-data/data ./data
+ ```bash
+ # Download dữ liệu mới nhất
+ gsutil -m cp -r gs://traffic-forecast-data/data ./data
 
-   # Train model
-   python pipelines/model/train.py
+ # Train model
+ python pipelines/model/train.py
 
-   # Upload model
-   gsutil cp models/*.pkl gs://traffic-forecast-data/models/
-   ```
+ # Upload model
+ gsutil cp models/*.pkl gs://traffic-forecast-data/models/
+ ```
 
 #### Jobs theo lịch với Cloud Scheduler
 
 1. **Create Cloud Function**:
 
-   ```python
-   # functions/main.py
-   def collect_data(request):
-       import subprocess
-       result = subprocess.run(['python', 'run_collectors.py'])
-       return f'Collection completed with code {result.returncode}'
-   ```
+ ```python
+ # functions/main.py
+ def collect_data(request):
+ import subprocess
+ result = subprocess.run(['python', 'run_collectors.py'])
+ return f'Collection completed with code {result.returncode}'
+ ```
 
 2. **Deploy Function**:
 
-   ```bash
-   gcloud functions deploy collect-data \
-     --runtime python39 \
-     --trigger-http \
-     --allow-unauthenticated \
-     --source functions/
-   ```
+ ```bash
+ gcloud functions deploy collect-data \
+ --runtime python39 \
+ --trigger-http \
+ --allow-unauthenticated \
+ --source functions/
+ ```
 
 3. **Lên lịch với Cloud Scheduler**:
-   ```bash
-   gcloud scheduler jobs create http collect-daily \
-     --schedule="0 2 * * *" \
-     --uri="https://REGION-PROJECT_ID.cloudfunctions.net/collect-data" \
-     --http-method=POST
-   ```
+ ```bash
+ gcloud scheduler jobs create http collect-daily \
+ --schedule="0 2 * * *" \
+ --uri="https://REGION-PROJECT_ID.cloudfunctions.net/collect-data" \
+ --http-method=POST
+ ```
 
 ---
 
@@ -947,11 +947,11 @@ All data now validated with strict schemas:
 
 ```python
 class TrafficNode(BaseModel):
-    node_id: str
-    lat: float = Field(..., ge=-90, le=90)
-    degree: int = Field(..., ge=0)
-    importance_score: float
-    # Automatic validation + quality reports
+ node_id: str
+ lat: float = Field(..., ge=-90, le=90)
+ degree: int = Field(..., ge=0)
+ importance_score: float
+ # Automatic validation + quality reports
 ```
 
 **Features**:
@@ -1010,14 +1010,14 @@ Every collection run generates detailed quality reports:
 
 ### Performance Improvements
 
-| Metric          | v2.0    | v3.0   | Improvement      |
+| Metric | v2.0 | v3.0 | Improvement |
 | --------------- | ------- | ------ | ---------------- |
-| Nodes Collected | 301,000 | 87     | 99.97% reduction |
-| API Calls/Run   | 1,200+  | 150    | 87.5% reduction  |
-| Processing Time | 8 min   | 45 sec | 10.7x faster     |
-| Model RMSE      | 11.2    | 8.2    | 26.8% better     |
-| Model R²        | 0.76    | 0.89   | 17.1% better     |
-| Validation Rate | N/A     | 97.7%  | New feature      |
+| Nodes Collected | 301,000 | 87 | 99.97% reduction |
+| API Calls/Run | 1,200+ | 150 | 87.5% reduction |
+| Processing Time | 8 min | 45 sec | 10.7x faster |
+| Model RMSE | 11.2 | 8.2 | 26.8% better |
+| Model R² | 0.76 | 0.89 | 17.1% better |
+| Validation Rate | N/A | 97.7% | New feature |
 
 ---
 
@@ -1027,12 +1027,12 @@ Every collection run generates detailed quality reports:
 
 **Cost Optimization**:
 
-| Metric               | v3.1   | v4.0 | Improvement   |
+| Metric | v3.1 | v4.0 | Improvement |
 | -------------------- | ------ | ---- | ------------- |
-| Monthly Cost         | $5,530 | $720 | 87% reduction |
-| Collections/day      | 96     | 25   | 74% reduction |
-| Nodes                | 128    | 64   | 50% reduction |
-| API calls/collection | 384    | 192  | 50% reduction |
+| Monthly Cost | $5,530 | $720 | 87% reduction |
+| Collections/day | 96 | 25 | 74% reduction |
+| Nodes | 128 | 64 | 50% reduction |
+| API calls/collection | 384 | 192 | 50% reduction |
 
 **Data Collection**:
 
@@ -1118,12 +1118,12 @@ pip install pytest pytest-cov pytest-asyncio
 # 2. Create test structure
 tests/
  unit/
-    test_collectors.py
-    test_validation.py
-    test_models.py
+ test_collectors.py
+ test_validation.py
+ test_models.py
  integration/
-    test_pipeline.py
-    test_api.py
+ test_pipeline.py
+ test_api.py
  conftest.py
 
 # 3. Run tests
@@ -1176,18 +1176,18 @@ pytest tests/ --cov=traffic_forecast --cov-report=html
 ```yaml
 # Planned enhancements
 Monitoring:
-  - [ ] Prometheus metrics collection
-  - [ ] Grafana dashboards
-  - [ ] Alerting rules (PagerDuty/Slack)
-  - [ ] Log aggregation (ELK stack)
-  - [ ] Application Performance Monitoring (APM)
+ - [ ] Prometheus metrics collection
+ - [ ] Grafana dashboards
+ - [ ] Alerting rules (PagerDuty/Slack)
+ - [ ] Log aggregation (ELK stack)
+ - [ ] Application Performance Monitoring (APM)
 
 Deployment:
-  - [ ] Kubernetes orchestration
-  - [ ] Helm charts
-  - [ ] Auto-scaling policies
-  - [ ] Blue-green deployments
-  - [ ] Canary releases
+ - [ ] Kubernetes orchestration
+ - [ ] Helm charts
+ - [ ] Auto-scaling policies
+ - [ ] Blue-green deployments
+ - [ ] Canary releases
 ```
 
 #### Phase 3: Advanced Features
@@ -1277,12 +1277,12 @@ Currently, API is basic FastAPI with minimal endpoints. Future improvements:
 @app.get("/forecast/{node_id}")
 
 # Planned API v2
-@app.get("/api/v2/nodes")  # List all nodes
-@app.get("/api/v2/nodes/{node_id}")  # Node details
-@app.get("/api/v2/forecast/{node_id}")  # Forecast
-@app.post("/api/v2/predict")  # Batch predictions
-@app.get("/api/v2/stats")  # System statistics
-@app.ws("/api/v2/realtime")  # WebSocket for real-time
+@app.get("/api/v2/nodes") # List all nodes
+@app.get("/api/v2/nodes/{node_id}") # Node details
+@app.get("/api/v2/forecast/{node_id}") # Forecast
+@app.post("/api/v2/predict") # Batch predictions
+@app.get("/api/v2/stats") # System statistics
+@app.ws("/api/v2/realtime") # WebSocket for real-time
 
 # Authentication
 - JWT tokens
@@ -1297,25 +1297,25 @@ Current setup is development-focused. Production needs:
 
 ```yaml
 Security:
-  - Close exposed DB ports (5432, 6379)
-  - Enable Redis authentication
-  - HTTPS with Let's Encrypt
-  - Network policies
-  - Secrets rotation
+ - Close exposed DB ports (5432, 6379)
+ - Enable Redis authentication
+ - HTTPS with Let's Encrypt
+ - Network policies
+ - Secrets rotation
 
 Monitoring:
-  - Implement Prometheus metrics
-  - Create Grafana dashboards
-  - Setup alerts (uptime, errors, performance)
-  - Log aggregation
-  - Distributed tracing
+ - Implement Prometheus metrics
+ - Create Grafana dashboards
+ - Setup alerts (uptime, errors, performance)
+ - Log aggregation
+ - Distributed tracing
 
 High Availability:
-  - Database replication
-  - Redis clustering
-  - Load balancer (nginx/HAProxy)
-  - Backup strategy
-  - Disaster recovery plan
+ - Database replication
+ - Redis clustering
+ - Load balancer (nginx/HAProxy)
+ - Backup strategy
+ - Disaster recovery plan
 ```
 
 ### License

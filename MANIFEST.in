@@ -1,0 +1,25 @@
+# Manifest file for source distributions
+
+include README.md
+include LICENSE
+include CHANGELOG.md
+include requirements.txt
+include environment.yml
+include pytest.ini
+include pyproject.toml
+include .flake8
+
+recursive-include traffic_forecast *.py
+recursive-include configs *.yaml
+recursive-include scripts *.sh *.py
+recursive-include doc *.md
+
+recursive-exclude tests *
+recursive-exclude notebooks *
+recursive-exclude data *
+recursive-exclude .github *
+
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude *.so
+global-exclude .DS_Store

@@ -67,7 +67,7 @@ def fetch_weather(lat, lon):
     except Exception:
         data = {'error': 'invalid_json', 'status_code': response.status_code, 'text': response.text}
 
-    # Optional debug: save raw response for inspection
+    # Save raw response when OPENMETEO_DEBUG env var is set (for troubleshooting)
     if os.getenv('OPENMETEO_DEBUG'):
         raw_dir = PROJECT_ROOT / 'data' / 'open_meteo_raw'
         raw_dir.mkdir(parents=True, exist_ok=True)
@@ -209,4 +209,4 @@ def run_open_meteo_collector():
 
 
 if __name__ == "__main__":
-    run_open_meteo_collector()
+ run_open_meteo_collector()

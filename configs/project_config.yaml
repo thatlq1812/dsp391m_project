@@ -1,219 +1,332 @@
 # Academic Traffic Forecasting Configuration v4.0
 # Optimized for cost efficiency with adaptive scheduling
 project:
-  name: traffic-forecast-academic
-  version: v4.0
-  timezone: Asia/Ho_Chi_Minh
-  bbox: [10.67, 106.60, 10.90, 106.84]
+ name: traffic-forecast-academic
+ version: v4.0
+ timezone: Asia/Ho_Chi_Minh
+ bbox: [10.67, 106.60, 10.90, 106.84]
 
 # Adaptive Collection Scheduler (NEW in v4.0)
 scheduler:
-  enabled: true
-  mode: adaptive # Options: fixed, adaptive
+ enabled: true
+ mode: adaptive # Options: fixed, adaptive
 
-  # Fixed interval mode (legacy)
-  fixed_interval_minutes: 15
+ # Fixed interval mode (legacy)
+ fixed_interval_minutes: 15
 
-  # Adaptive mode (cost-optimized for academic use)
-  adaptive:
-    # Peak hours: Higher traffic variability, more frequent collections
-    # Adjusted for Vietnam urban traffic patterns
-    peak_hours:
-      enabled: true
-      time_ranges: # 24-hour format
-        - start: "06:30"
-          end: "07:30" # Morning rush (6:30-7:30 AM)
-        - start: "10:30"
-          end: "11:30" # Late morning rush (10:30-11:30 AM)
-        - start: "13:00"
-          end: "13:30" # Lunch return (1:00-1:30 PM)
-        - start: "16:30"
-          end: "19:30" # Evening rush (4:30-7:30 PM)
-      interval_minutes: 30 # Collect every 30 min during peak
+ # Adaptive mode (cost-optimized for academic use)
+ adaptive:
+ # Peak hours: Higher traffic variability, more frequent collections
+ # Adjusted for Vietnam urban traffic patterns
+ peak_hours:
+ enabled: true
+ time_ranges: # 24-hour format
+ - start: "06:30"
+ end: "07:30" # Morning rush (6:30-7:30 AM)
+ - start: "10:30"
+ end: "11:30" # Late morning rush (10:30-11:30 AM)
+ - start: "13:00"
+ end: "13:30" # Lunch return (1:00-1:30 PM)
+ - start: "16:30"
+ end: "19:30" # Evening rush (4:30-7:30 PM)
+ interval_minutes: 30 # Collect every 30 min during peak
 
-    # Off-peak hours: Lower variability, reduce frequency
-    offpeak:
-      interval_minutes: 60 # Collect every 60 min during off-peak
+ # Off-peak hours: Lower variability, reduce frequency
+ offpeak:
+ interval_minutes: 60 # Collect every 60 min during off-peak
 
-    # Weekend schedule (optional - lower traffic overall)
-    weekend:
-      enabled: true
-      use_offpeak_only: true # Treat all weekend as off-peak
-      interval_minutes: 90 # Even less frequent on weekends
+ # Weekend schedule (optional - lower traffic overall)
+ weekend:
+ enabled: true
+ use_offpeak_only: true # Treat all weekend as off-peak
+ interval_minutes: 90 # Even less frequent on weekends
 
 globals:
-  area:
-    mode: point_radius
-    center: [106.697794, 10.772465] # Central HCMC
-    radius_m: 1024 # Academic optimization - focus on core area
-  node_spacing_m: 500
-  output_base: data_runs
+ area:
+ mode: point_radius
+ center: [106.697794, 10.772465] # Central HCMC
+ radius_m: 1024 # Academic optimization - focus on core area
+ node_spacing_m: 500
+ output_base: data_runs
 
 # Node Selection Configuration (Academic v4.0 - Cost Optimized)
 node_selection:
-  min_degree: 6 # Major intersections only (6+ connecting roads)
-  min_importance_score: 40.0 # High-importance nodes only (highways, arterials)
-  max_nodes: 64 # Academic project limit (64 nodes * k=3 = 192 edges/collection)
-  road_type_filter:
-    - motorway
-    - trunk
-    - primary # Only major highways and primary roads
-  require_street_names: true # Collect street names from OSM
-  min_street_name_count: 2 # At least 2 named streets at intersection
+ min_degree: 6 # Major intersections only (6+ connecting roads)
+ min_importance_score: 40.0 # High-importance nodes only (highways, arterials)
+ max_nodes: 64 # Academic project limit (64 nodes * k=3 = 192 edges/collection)
+ road_type_filter:
+ - motorway
+ - trunk
+ - primary # Only major highways and primary roads
+ require_street_names: true # Collect street names from OSM
+ min_street_name_count: 2 # At least 2 named streets at intersection
 
 data:
-  parquet_dir: ./data/parquet
-  json_dir: ./data
-  cache_dir: ./cache
+ parquet_dir: ./data/parquet
+ json_dir: ./data
+ cache_dir: ./cache
 
 collectors:
-  overpass:
-    enabled: true
-    url: https://overpass-api.de/api/interpreter
-    query_timeout: 120 # Increased for larger area
-    cache_expiry_hours: 168 # 1 week
-    area:
-      mode: point_radius
-      center: [106.697794, 10.772465]
-      radius_m: 1024 # Match global radius (academic optimization)
+ overpass:
+ enabled: true
+ url: https://overpass-api.de/api/interpreter
+ query_timeout: 120 # Increased for larger area
+ cache_expiry_hours: 168 # 1 week
+ area:
+ mode: point_radius
+ center: [106.697794, 10.772465]
+ radius_m: 1024 # Match global radius (academic optimization)
 
-  open_meteo:
-    enabled: true
-    base_url: https://api.open-meteo.com/v1/forecast
-    current_params: [temperature_2m, precipitation, wind_speed_10m]
-    forecast_params: [temperature_2m, precipitation, wind_speed_10m]
-    horizons_min: [5, 15, 30, 60]
-    cache_expiry_hours: 1
-    area:
-      mode: point_radius
-      center: [106.697794, 10.772465]
-      radius_m: 1024 # Match global radius (academic optimization)
+ open_meteo:
+ enabled: true
+ base_url: https://api.open-meteo.com/v1/forecast
+ current_params: [temperature_2m, precipitation, wind_speed_10m]
+ forecast_params: [temperature_2m, precipitation, wind_speed_10m]
+ horizons_min: [5, 15, 30, 60]
+ cache_expiry_hours: 1
+ area:
+ mode: point_radius
+ center: [106.697794, 10.772465]
+ radius_m: 1024 # Match global radius (academic optimization)
 
-  google_directions:
-    enabled: true
-    api_key_env: GOOGLE_MAPS_API_KEY
-    base_speed_kmh: 30
-    traffic_factor_min: 0.5
-    traffic_factor_max: 1.5
-    rate_limit_requests_per_minute: 2800
-    radius_km: 1.024 # Match radius_m 1024m = 1.024km (academic optimization)
-    k_neighbors: 3 # 64*3=192 edges per collection (cost-optimized)
-    limit_nodes: 64 # Academic limit (reduced from 128)
-    use_mock_api: true # Set to false to use real Google API (costs money!)
-    area:
-      mode: point_radius
-      center: [106.697794, 10.772465]
-      radius_m: 1024 # Match global radius (academic optimization)
+ google_directions:
+ enabled: true
+ api_key_env: GOOGLE_MAPS_API_KEY
+ base_speed_kmh: 30
+ traffic_factor_min: 0.5
+ traffic_factor_max: 1.5
+ rate_limit_requests_per_minute: 2800
+ radius_km: 1.024 # Match radius_m 1024m = 1.024km (academic optimization)
+ k_neighbors: 3 # 64*3=192 edges per collection (cost-optimized)
+ limit_nodes: 64 # Academic limit (reduced from 128)
+ use_mock_api: true # Set to false to use real Google API (costs money!)
+ area:
+ mode: point_radius
+ center: [106.697794, 10.772465]
+ radius_m: 1024 # Match global radius (academic optimization)
 
 api:
-  title: Traffic Forecast API
-  description: API serving node-level traffic forecasts
-  predictions_file: data/predictions.json
-  port: 8000
+ title: Traffic Forecast API
+ description: API serving node-level traffic forecasts
+ predictions_file: data/predictions.json
+ port: 8000
 
 pipelines:
-  preprocess:
-    features_file: data/features_nodes_v2.json
-    output_dir: data/processed
-    target_column: avg_speed_kmh
+ preprocess:
+ features_file: data/features_nodes_v2.json
+ output_dir: data/processed
+ target_column: avg_speed_kmh
 
-    # Enhanced feature configuration (v3.1)
-    feature_columns:
-      # Current traffic
-      - avg_speed_kmh
-      - congestion_level
+ # Enhanced feature configuration (v3.1)
+ feature_columns:
+ # Current traffic
+ - avg_speed_kmh
+ - congestion_level
 
-      # Current weather
-      - temperature_c
-      - rain_mm
-      - wind_speed_kmh
+ # Current weather
+ - temperature_c
+ - rain_mm
+ - wind_speed_kmh
 
-      # Weather forecasts
-      - forecast_temp_t5_c
-      - forecast_temp_t15_c
-      - forecast_temp_t30_c
-      - forecast_temp_t60_c
-      - forecast_rain_t5_mm
-      - forecast_rain_t15_mm
-      - forecast_rain_t30_mm
-      - forecast_rain_t60_mm
-      - forecast_wind_t5_kmh
-      - forecast_wind_t15_kmh
-      - forecast_wind_t30_kmh
-      - forecast_wind_t60_kmh
+ # Weather forecasts
+ - forecast_temp_t5_c
+ - forecast_temp_t15_c
+ - forecast_temp_t30_c
+ - forecast_temp_t60_c
+ - forecast_rain_t5_mm
+ - forecast_rain_t15_mm
+ - forecast_rain_t30_mm
+ - forecast_rain_t60_mm
+ - forecast_wind_t5_kmh
+ - forecast_wind_t15_kmh
+ - forecast_wind_t30_kmh
+ - forecast_wind_t60_kmh
 
-      # Traffic lag features (NEW - v3.1)
-      - speed_lag_5min
-      - speed_lag_15min
-      - speed_lag_30min
-      - speed_lag_60min
-      - congestion_lag_5min
-      - congestion_lag_15min
-      - congestion_lag_30min
-      - congestion_lag_60min
+ # Traffic lag features (NEW - v3.1)
+ - speed_lag_5min
+ - speed_lag_15min
+ - speed_lag_30min
+ - speed_lag_60min
+ - congestion_lag_5min
+ - congestion_lag_15min
+ - congestion_lag_30min
+ - congestion_lag_60min
 
-      # Rolling statistics (NEW - v3.1)
-      - speed_rolling_mean_15min
-      - speed_rolling_std_15min
-      - speed_rolling_min_15min
-      - speed_rolling_max_15min
+ # Rolling statistics (NEW - v3.1)
+ - speed_rolling_mean_15min
+ - speed_rolling_std_15min
+ - speed_rolling_min_15min
+ - speed_rolling_max_15min
 
-      # Speed changes (NEW - v3.1)
-      - speed_change_5min
-      - speed_pct_change_5min
+ # Speed changes (NEW - v3.1)
+ - speed_change_5min
+ - speed_pct_change_5min
 
-      # Temporal features (NEW - v3.1)
-      - hour_sin
-      - hour_cos
-      - day_of_week_sin
-      - day_of_week_cos
-      - is_rush_hour
-      - is_morning_rush
-      - is_evening_rush
-      - is_weekend
-      - is_holiday
+ # Temporal features (NEW - v3.1)
+ - hour_sin
+ - hour_cos
+ - day_of_week_sin
+ - day_of_week_cos
+ - is_rush_hour
+ - is_morning_rush
+ - is_evening_rush
+ - is_weekend
+ - is_holiday
 
-      # Spatial features (NEW - v3.1)
-      - neighbor_avg_speed
-      - neighbor_min_speed
-      - neighbor_max_speed
-      - neighbor_std_speed
+ # Spatial features (NEW - v3.1)
+ - neighbor_avg_speed
+ - neighbor_min_speed
+ - neighbor_max_speed
+ - neighbor_std_speed
 
-    # Lag feature configuration
-    lag_config:
-      enabled: true
-      lag_minutes: [5, 15, 30, 60]
-      rolling_windows: [3, 6, 12] # 15min, 30min, 60min (assuming 5min intervals)
+ # Lag feature configuration
+ lag_config:
+ enabled: true
+ lag_minutes: [5, 15, 30, 60]
+ rolling_windows: [3, 6, 12] # 15min, 30min, 60min (assuming 5min intervals)
 
-    # Temporal feature configuration
-    temporal_config:
-      enabled: true
-      cyclical_encoding: true
-      rush_hours:
-        morning: [7, 9]
-        evening: [17, 19]
-        lunch: [11, 13]
+ # Temporal feature configuration
+ temporal_config:
+ enabled: true
+ cyclical_encoding: true
+ rush_hours:
+ morning: [7, 9]
+ evening: [17, 19]
+ lunch: [11, 13]
 
-    # Spatial feature configuration
-    spatial_config:
-      enabled: true
-      neighbor_hops: 1
-      include_upstream_downstream: false # Future enhancement
+ # Spatial feature configuration
+ spatial_config:
+ enabled: true
+ neighbor_hops: 1
+ include_upstream_downstream: false # Future enhancement
 
-    keep_columns:
-      - node_id
-      - ts
-    drop_na_threshold: 0.0
-    test_size: 0.2
-    random_state: 42
-    scaler_path: models/feature_scaler.pkl
-    metadata_path: data/processed/metadata.json
-  model:
-    type: linear_regression
-    test_size: 0.2
-    random_state: 42
-    output_model: models/linear_v2.pkl
-    predictions_file: data/predictions.json
-    infer_limit: 1000
-    target_column: avg_speed_kmh
-    metadata_path: models/model_metadata.json
+ keep_columns:
+ - node_id
+ - ts
+ drop_na_threshold: 0.0
+ test_size: 0.2
+ random_state: 42
+ scaler_path: models/feature_scaler.pkl
+ metadata_path: data/processed/metadata.json
+ model:
+ type: linear_regression
+ test_size: 0.2
+ random_state: 42
+ output_model: models/linear_v2.pkl
+ predictions_file: data/predictions.json
+ infer_limit: 1000
+ target_column: avg_speed_kmh
+ metadata_path: models/model_metadata.json
+
+# ML Pipeline Configuration (NEW in v4.2)
+ml_pipeline:
+ # Data sources
+ data_runs_dir: ./data_runs
+ output_dir: ./data/ml_ready
+ 
+ # Feature engineering
+ temporal_features: true
+ weather_features: true
+ spatial_features: true
+ historical_features: false # Set to true when you have enough historical data
+ 
+ # Historical windows (only used if historical_features=true)
+ lag_windows: [1, 2, 3, 6, 12] # hours
+ rolling_windows: [3, 6, 12, 24] # hours
+ 
+ # Train/test split
+ test_size: 0.2 # 20% for testing
+ validation_size: 0.1 # 10% for validation
+ random_state: 42
+ 
+ # Target variable
+ target_column: duration_in_traffic_s
+ prediction_horizons: [5, 15, 30, 60] # minutes
+ 
+ # Preprocessing
+ handle_missing: interpolate # Options: drop, interpolate, ffill
+ normalize: true
+ remove_outliers: true
+ outlier_std_threshold: 3.0
+
+# Model Training Configuration (NEW in v4.2)
+model_training:
+ # Output directory
+ experiments_dir: ./models/experiments
+ 
+ # MLflow tracking
+ use_mlflow: false # Set to true if you want experiment tracking
+ experiment_name: traffic_forecast
+ 
+ # Models to train (set enabled: true to include in training)
+ models:
+ ridge:
+ enabled: true
+ param_grid:
+ alpha: [0.1, 1.0, 10.0, 100.0]
+ solver: [auto, svd, lsqr]
+ search_type: grid
+ 
+ lasso:
+ enabled: true
+ param_grid:
+ alpha: [0.1, 1.0, 10.0, 100.0]
+ max_iter: [1000, 5000]
+ search_type: grid
+ 
+ elastic_net:
+ enabled: false
+ param_grid:
+ alpha: [0.1, 1.0, 10.0]
+ l1_ratio: [0.1, 0.5, 0.9]
+ max_iter: [1000, 5000]
+ search_type: grid
+ 
+ random_forest:
+ enabled: true
+ param_grid:
+ n_estimators: [50, 100, 200]
+ max_depth: [10, 20, 30, null]
+ min_samples_split: [2, 5, 10]
+ min_samples_leaf: [1, 2, 4]
+ search_type: random
+ n_iter: 20
+ 
+ gradient_boosting:
+ enabled: true
+ param_grid:
+ n_estimators: [50, 100, 200]
+ learning_rate: [0.01, 0.1, 0.2]
+ max_depth: [3, 5, 7]
+ subsample: [0.8, 1.0]
+ search_type: random
+ n_iter: 20
+ 
+ xgboost:
+ enabled: false # Requires: pip install xgboost
+ param_grid:
+ n_estimators: [50, 100, 200]
+ learning_rate: [0.01, 0.1, 0.2]
+ max_depth: [3, 5, 7]
+ subsample: [0.8, 1.0]
+ colsample_bytree: [0.8, 1.0]
+ search_type: random
+ n_iter: 20
+ 
+ lightgbm:
+ enabled: false # Requires: pip install lightgbm
+ param_grid:
+ n_estimators: [50, 100, 200]
+ learning_rate: [0.01, 0.1, 0.2]
+ max_depth: [3, 5, 7]
+ num_leaves: [31, 63, 127]
+ subsample: [0.8, 1.0]
+ search_type: random
+ n_iter: 20
+ 
+ # Cross-validation
+ cv_folds: 3
+ 
+ # Evaluation metrics (primary metric for model selection)
+ primary_metric: mae # Options: mae, rmse, r2
+

@@ -1,5 +1,5 @@
 # Multi-stage build for Python application
-FROM python:3.11-slim as base
+FROM python:3.10-slim as base
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -40,5 +40,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Expose port
 EXPOSE 8000
 
-# Default command
-CMD ["python", "-m", "uvicorn", "apps.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Default command - run FastAPI app
+CMD ["python", "-m", "uvicorn", "traffic_forecast.api.main:app", "--host", "0.0.0.0", "--port", "8000"]

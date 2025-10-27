@@ -2,8 +2,8 @@
 
 Complete guide for deploying the Traffic Forecast system on Google Cloud VM or any Linux server.
 
-**Version**: Academic v4.0  
-**Last Updated**: October 25, 2025  
+**Version**: Academic v4.0 
+**Last Updated**: October 25, 2025 
 **Estimated Time**: 30-45 minutes
 
 ---
@@ -97,13 +97,13 @@ Firewall: Allow HTTP/HTTPS traffic
 
 ```bash
 gcloud compute instances create traffic-forecast-vm \
-  --zone=asia-southeast1-a \
-  --machine-type=e2-medium \
-  --image-family=ubuntu-2204-lts \
-  --image-project=ubuntu-os-cloud \
-  --boot-disk-size=50GB \
-  --boot-disk-type=pd-ssd \
-  --tags=http-server,https-server
+ --zone=asia-southeast1-a \
+ --machine-type=e2-medium \
+ --image-family=ubuntu-2204-lts \
+ --image-project=ubuntu-os-cloud \
+ --boot-disk-size=50GB \
+ --boot-disk-type=pd-ssd \
+ --tags=http-server,https-server
 ```
 
 ### Step 2: Connect to VM
@@ -124,13 +124,13 @@ sudo apt update && sudo apt upgrade -y
 
 # Install essential tools
 sudo apt install -y \
-  git \
-  wget \
-  curl \
-  vim \
-  htop \
-  tmux \
-  build-essential
+ git \
+ wget \
+ curl \
+ vim \
+ htop \
+ tmux \
+ build-essential
 
 # Install Miniconda
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
@@ -190,8 +190,8 @@ GOOGLE_MAPS_API_KEY=your_api_key_here
 ```bash
 # No API key needed - uses mock API by default
 # Check configs/project_config.yaml:
-#   google_directions:
-#     use_mock_api: true
+# google_directions:
+# use_mock_api: true
 ```
 
 ### Step 7: Verify Setup
@@ -220,26 +220,26 @@ Edit `configs/project_config.yaml`:
 ```yaml
 # Project info
 project:
-  name: traffic-forecast-academic
-  version: v4.0
-  timezone: Asia/Ho_Chi_Minh
+ name: traffic-forecast-academic
+ version: v4.0
+ timezone: Asia/Ho_Chi_Minh
 
 # Scheduler (adaptive mode)
 scheduler:
-  enabled: true
-  mode: adaptive # or 'fixed'
+ enabled: true
+ mode: adaptive # or 'fixed'
 
 # Node selection
 node_selection:
-  max_nodes: 64
-  min_degree: 6
-  min_importance_score: 40.0
+ max_nodes: 64
+ min_degree: 6
+ min_importance_score: 40.0
 
 # Google API
 google_directions:
-  use_mock_api: true # Set false for production
-  limit_nodes: 64
-  k_neighbors: 3
+ use_mock_api: true # Set false for production
+ limit_nodes: 64
+ k_neighbors: 3
 ```
 
 ### Advanced Configuration
@@ -248,30 +248,30 @@ google_directions:
 
 ```yaml
 globals:
-  area:
-    center: [106.697794, 10.772465] # [lon, lat]
-    radius_m: 1024 # meters
+ area:
+ center: [106.697794, 10.772465] # [lon, lat]
+ radius_m: 1024 # meters
 ```
 
 **Adjust peak hours**:
 
 ```yaml
 scheduler:
-  adaptive:
-    peak_hours:
-      time_ranges:
-        - start: "06:30"
-          end: "07:30"
-        # Add more ranges as needed
+ adaptive:
+ peak_hours:
+ time_ranges:
+ - start: "06:30"
+ end: "07:30"
+ # Add more ranges as needed
 ```
 
 **Storage settings**:
 
 ```yaml
 data:
-  parquet_dir: ./data/parquet
-  json_dir: ./data
-  cache_dir: ./cache
+ parquet_dir: ./data/parquet
+ json_dir: ./data
+ cache_dir: ./cache
 ```
 
 ---
@@ -398,7 +398,7 @@ from traffic_forecast.scheduler import AdaptiveScheduler
 import yaml
 
 with open('configs/project_config.yaml') as f:
-    config = yaml.safe_load(f)
+ config = yaml.safe_load(f)
 
 scheduler = AdaptiveScheduler(config['scheduler'])
 cost = scheduler.get_cost_estimate(nodes=64, k_neighbors=3, days=30)
@@ -471,10 +471,10 @@ nano configs/project_config.yaml
 ### Logs Location
 
 ```
-logs/collector.log       - Collection logs
-logs/scheduler.log       - Scheduler logs
-/tmp/traffic-*.log       - Cron job logs
-journalctl               - Systemd service logs
+logs/collector.log - Collection logs
+logs/scheduler.log - Scheduler logs
+/tmp/traffic-*.log - Cron job logs
+journalctl - Systemd service logs
 ```
 
 ### Getting Help
@@ -505,7 +505,7 @@ sudo adduser teammate1
 sudo adduser teammate2
 
 # Add to necessary groups
-sudo usermod -aG sudo teammate1  # If need sudo access
+sudo usermod -aG sudo teammate1 # If need sudo access
 ```
 
 #### 2. Setup SSH Access
@@ -617,7 +617,7 @@ gcloud compute ssh traffic-forecast-vm --zone=asia-southeast1-a
 conda activate dsp
 
 # Navigate to project
-cd /opt/traffic-forecast  # or ~/dsp391m_project
+cd /opt/traffic-forecast # or ~/dsp391m_project
 
 # Check status
 python scripts/collect_and_render.py --print-schedule
@@ -724,5 +724,5 @@ cp traffic_history.db backups/traffic_history_$(date +%Y%m%d).db
 
 ---
 
-**Version**: Academic v4.0  
+**Version**: Academic v4.0 
 **Last Updated**: October 25, 2025
