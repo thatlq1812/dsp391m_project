@@ -1,140 +1,260 @@
-# Traffic Forecast v5.1
+# Traffic Forecast System - Ho Chi Minh City# Traffic Forecast v5.1
 
-Real-time traffic forecasting for Ho Chi Minh City with adaptive scheduling and cost optimization.
+Real-time traffic data collection system for Ho Chi Minh City using Google Maps API, deployed on Google Cloud Platform.Real-time traffic forecasting for Ho Chi Minh City with adaptive scheduling and cost optimization.
 
-[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
+## Project Overview[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
+
 [![Status](https://img.shields.io/badge/Status-Production--Ready-success.svg)]()
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> **DSP391m Data Science Project** - Academic project for real-time traffic prediction using Google Directions API, Open-Meteo weather data, and OpenStreetMap topology.
+This system continuously collects traffic data from 64 major intersections across Ho Chi Minh City, capturing:[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## ✨ Features
+- Real-time traffic speeds and congestion levels
 
-- **Adaptive Scheduling**: Peak/off-peak/night intervals (40% cost savings)
-- **Smart Caching**: Weather grid caching (95% API reduction), permanent topology cache
-- **Wide Coverage**: 4096m radius, 78 filtered nodes, 234 road segments
+- Weather conditions> **DSP391m Data Science Project** - Academic project for real-time traffic prediction using Google Directions API, Open-Meteo weather data, and OpenStreetMap topology.
+
+- Road network topology
+
+- Time-series traffic patterns## ✨ Features
+
+**Collection Period:** October 30 - November 2, 2025 (3 days)- **Adaptive Scheduling**: Peak/off-peak/night intervals (40% cost savings)
+
+**Data Points:** ~450-600 collection runs, ~150MB total data- **Smart Caching**: Weather grid caching (95% API reduction), permanent topology cache
+
+**Coverage:** 64 intersections, 144 traffic routes, 4km radius from city center- **Wide Coverage**: 4096m radius, 78 filtered nodes, 234 road segments
+
 - **Production Ready**: Automated GCP deployment, systemd service, monitoring
-- **Cost Optimized**: ~$45 for 3-day collection, ~$150 for 7 days
 
-## 🚀 Quick Start
+## Quick Start- **Cost Optimized**: ~$45 for 3-day collection, ~$150 for 7 days
 
-### 1. Setup (5 minutes)
+### For Team Members (Data Download Only)## 🚀 Quick Start
 
-```bash
-# Clone repository
+1. Install Google Cloud SDK: https://cloud.google.com/sdk/docs/install### 1. Setup (5 minutes)
+
+2. Authenticate: `gcloud auth login`
+
+3. Clone repository: `git clone https://github.com/thatlq1812/dsp391m_project.git````bash
+
+4. Download data: `./scripts/data/download_latest.sh`# Clone repository
+
 git clone <repo-url>
-cd project
 
-# Create environment
+See detailed guide: **docs/TEAM_GUIDE.md**cd project
+
+### For Developers (Deploy & Manage)# Create environment
+
 conda env create -f environment.yml
-conda activate dsp
 
-# Install package
-pip install -e .
+1. Clone and setup:conda activate dsp
 
-# Configure API key
-echo "GOOGLE_MAPS_API_KEY=your_api_key_here" > .env
-```
+   ````bash
 
-### 2. Test Collection
+   git clone https://github.com/thatlq1812/dsp391m_project.git# Install package
 
-```bash
-# Run single collection
+   cd dsp391m_projectpip install -e .
+
+   conda env create -f environment.yml
+
+   conda activate dsp# Configure API key
+
+   ```echo "GOOGLE_MAPS_API_KEY=your_api_key_here" > .env
+   ````
+
+````
+
+2. Configure gcloud:
+
+   ```bash### 2. Test Collection
+
+   gcloud init
+
+   gcloud auth login```bash
+
+   ```# Run single collection
+
 python scripts/collect_once.py
 
-# Use interactive dashboard
-bash scripts/control_panel.sh
-```
+3. Deploy changes:
 
-### 3. Deploy to GCP
+   ```bash# Use interactive dashboard
 
-```bash
+   ./scripts/deployment/deploy_git.shbash scripts/control_panel.sh
+
+````
+
+See detailed guide: **docs/DEVELOPER_GUIDE.md**### 3. Deploy to GCP
+
+## Documentation```bash
+
 # Interactive deployment wizard
-bash scripts/deploy_wizard.sh
 
-# Select option A for auto deployment
-```
+- **TEAM_GUIDE.md** - How to download and analyze collected databash scripts/deploy_wizard.sh
+
+- **DEVELOPER_GUIDE.md** - How to deploy changes and manage system
+
+- **scripts/deployment/README.md** - Scripts reference# Select option A for auto deployment
+
+````
+
+## System Architecture
 
 ## 📊 Adaptive Scheduling
 
-Cost-optimized collection strategy:
+**Collection Flow:**
 
-| Time Period                       | Interval | Rationale                |
-| --------------------------------- | -------- | ------------------------ |
-| **Peak** (6-9 AM, 4-7 PM)         | 15 min   | High traffic variability |
+1. Adaptive Scheduler determines collection time based on traffic patternsCost-optimized collection strategy:
+
+2. Overpass API provides road network topology (cached)
+
+3. Open-Meteo API provides weather data| Time Period                       | Interval | Rationale                |
+
+4. Google Maps Directions API provides real-time traffic data| --------------------------------- | -------- | ------------------------ |
+
+5. Data saved to JSON files with timestamps| **Peak** (6-9 AM, 4-7 PM)         | 15 min   | High traffic variability |
+
 | **Off-peak** (9 AM-4 PM, 7-10 PM) | 60 min   | Moderate traffic         |
-| **Night** (10 PM-6 AM)            | 120 min  | Stable traffic           |
 
-**3-Day Collection:**
+**Deployment:**| **Night** (10 PM-6 AM)            | 120 min  | Stable traffic           |
 
-- ~150 total collections
+- Platform: Google Cloud Platform
+
+- VM: traffic-forecast-collector (e2-small, asia-southeast1-a)**3-Day Collection:**
+
+- Service: systemd auto-restart enabled
+
+- Timezone: UTC+7 (Vietnam)- ~150 total collections
+
 - ~35,100 data points
-- ~$45 total cost (40% savings)
 
-## 📁 Project Structure
+## Data Collection Schedule- ~$45 total cost (40% savings)
 
-```
-project/
+
+
+**Peak Hours** (30-minute intervals):## 📁 Project Structure
+
+- Morning: 06:30 - 08:00
+
+- Lunch: 10:30 - 11:30```
+
+- Evening: 16:00 - 19:00project/
+
 ├── traffic_forecast/        # Main Python package
-│   ├── collectors/          # Data collectors
-│   ├── scheduler/           # Adaptive scheduler
+
+**Off-Peak Hours** (120-minute intervals):│   ├── collectors/          # Data collectors
+
+- Other weekday hours│   ├── scheduler/           # Adaptive scheduler
+
 │   └── models/              # Data models
-├── scripts/                 # Utility scripts
+
+## Key Features├── scripts/                 # Utility scripts
+
 │   ├── control_panel.sh     # Local dashboard
-│   ├── deploy_wizard.sh     # GCP deployment
-│   ├── collect_once.py      # Single collection
-│   └── run_adaptive_collection.py  # Continuous collection
-├── configs/                 # Configuration
+
+**Adaptive Scheduling:**│   ├── deploy_wizard.sh     # GCP deployment
+
+- Automatic adjustment based on time of day│   ├── collect_once.py      # Single collection
+
+- More frequent collection during peak hours│   └── run_adaptive_collection.py  # Continuous collection
+
+- Reduced API costs during off-peak hours├── configs/                 # Configuration
+
 │   └── project_config.yaml
-├── data/                    # Data storage
-│   └── runs/                # Collection outputs
-├── cache/                   # Cached data
+
+**Weather Integration:**├── data/                    # Data storage
+
+- Grid-based caching (95% API call reduction)│   └── runs/                # Collection outputs
+
+- Current conditions + forecasts (5, 15, 30, 60 minutes)├── cache/                   # Cached data
+
 │   ├── overpass_topology.json
-│   └── weather_grid.json
-└── docs/                    # Documentation
-```
+
+**Quality Control:**│   └── weather_grid.json
+
+- Node selection based on importance scores└── docs/                    # Documentation
+
+- Minimum spacing between nodes```
+
+- Road type filtering (motorway, trunk, primary only)
 
 ## 📚 Documentation
 
-- **[QUICK_START.md](QUICK_START.md)** - 5-minute getting started guide
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Full GCP deployment guide
-- **[OPERATIONS.md](OPERATIONS.md)** - Daily operations & monitoring
-- **[scripts/README.md](scripts/README.md)** - Scripts reference
+**Deployment Automation:**
+
+- Git-based workflow- **[QUICK_START.md](QUICK_START.md)** - 5-minute getting started guide
+
+- Automatic topology regeneration- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Full GCP deployment guide
+
+- Service auto-restart- **[OPERATIONS.md](OPERATIONS.md)** - Daily operations & monitoring
+
+- Health monitoring- **[scripts/README.md](scripts/README.md)** - Scripts reference
+
 - **[CHANGELOG.md](CHANGELOG.md)** - Version history
+
+## Development Commands
 
 ## 🔧 Configuration
 
-Edit `configs/project_config.yaml`:
+```bash
+
+# Deploy changesEdit `configs/project_config.yaml`:
+
+./scripts/deployment/deploy_git.sh
 
 ```yaml
-scheduler:
-  mode: adaptive # or 'fixed'
+
+# Check statusscheduler:
+
+./scripts/deployment/status.sh  mode: adaptive # or 'fixed'
+
   adaptive:
-    peak_hours:
-      time_ranges:
+
+# Monitor logs    peak_hours:
+
+./scripts/deployment/monitor_logs.sh      time_ranges:
+
         - start: "06:00"
-          end: "09:00"
-        - start: "16:00"
+
+# View statistics          end: "09:00"
+
+./scripts/monitoring/view_stats.sh        - start: "16:00"
+
           end: "19:00"
-      interval_minutes: 15
-    offpeak:
-      interval_minutes: 60
+
+# Download data      interval_minutes: 15
+
+./scripts/data/download_latest.sh    offpeak:
+
+```      interval_minutes: 60
+
     night:
-      interval_minutes: 120
-```
+
+## Repository      interval_minutes: 120
+
+````
+
+**GitHub:** https://github.com/thatlq1812/dsp391m_project
 
 ## 💰 Cost Estimation
 
-**3-Day Production Run:**
+**GCP Details:**
 
-- VM (e2-micro): ~$0.50
+- Project: sonorous-nomad-476606-g3**3-Day Production Run:**
+
+- VM: traffic-forecast-collector
+
+- Zone: asia-southeast1-a- VM (e2-micro): ~$0.50
+
 - Google Directions API: ~$45
-- Total: **~$45**
 
-**7-Day Production Run:**
+---- Total: **~$45**
 
-- VM (e2-micro): ~$1.50
-- Google Directions API: ~$150
+For detailed documentation:**7-Day Production Run:**
+
+- Team members: See **docs/TEAM_GUIDE.md**
+
+- Developers: See **docs/DEVELOPER_GUIDE.md**- VM (e2-micro): ~$1.50
+
+- Scripts: See **scripts/deployment/README.md**- Google Directions API: ~$150
+
 - Total: **~$151**
 
 **Cost Savings:**
