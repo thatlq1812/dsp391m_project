@@ -6,19 +6,19 @@ Production-ready machine learning pipeline for traffic speed prediction with **8
 
 ```python
 from traffic_forecast.ml import (
-    DataLoader,
-    build_features,
-    split_data,
-    prepare_features_target,
-    DataPreprocessor,
-    ModelTrainer,
-    DLModelTrainer,  # Deep Learning
-    HAS_DL
+ DataLoader,
+ build_features,
+ split_data,
+ prepare_features_target,
+ DataPreprocessor,
+ ModelTrainer,
+ DLModelTrainer, # Deep Learning
+ HAS_DL
 )
 
 # 1. Load data
 loader = DataLoader()
-df = loader.load_merged_data(0)  # Latest run
+df = loader.load_merged_data(0) # Latest run
 
 # 2. Engineer features
 df_features = build_features(df, include_temporal=True, include_weather=True)
@@ -44,45 +44,45 @@ print(f"XGBoost Test R²: {metrics['r2']:.4f}")
 
 # 6b. Train deep learning model (if TensorFlow available)
 if HAS_DL:
-    dl_trainer = DLModelTrainer(model_type='lstm')
-    dl_trainer.train(X_train_scaled, y_train, epochs=30, batch_size=32)
-    dl_metrics = dl_trainer.evaluate(X_test_scaled, y_test)
-    print(f"LSTM Test R²: {dl_metrics['r2']:.4f}")
+ dl_trainer = DLModelTrainer(model_type='lstm')
+ dl_trainer.train(X_train_scaled, y_train, epochs=30, batch_size=32)
+ dl_metrics = dl_trainer.evaluate(X_test_scaled, y_test)
+ print(f"LSTM Test R²: {dl_metrics['r2']:.4f}")
 ```
 
 ## Features
 
-### 🔄 Data Loading
+### Data Loading
 
 - Load from collection runs automatically
 - Merge traffic, weather, and node data
 - Handle multiple runs
 - Data quality checks
 
-### 🎯 Feature Engineering
+### Feature Engineering
 
-- **Temporal:** Hour, day, weekend, rush hour, cyclical encoding
-- **Spatial:** Coordinate differences, distances
-- **Weather:** Rain indicator, categories, severity score
-- **Traffic:** Speed categories, congestion indicator
-- **Time Series:** Lags, rolling windows (optional)
+- **Temporal:**Hour, day, weekend, rush hour, cyclical encoding
+- **Spatial:**Coordinate differences, distances
+- **Weather:**Rain indicator, categories, severity score
+- **Traffic:**Speed categories, congestion indicator
+- **Time Series:**Lags, rolling windows (optional)
 
-### 🧹 Preprocessing
+### Preprocessing
 
 - Missing value imputation
 - Outlier detection and removal
 - Feature scaling (Standard, Robust)
 - Train/val/test splitting (random or time-based)
 
-### 🤖 Model Training
+### Model Training
 
-- **6 Algorithms:** Random Forest, Gradient Boosting, XGBoost, LightGBM, Ridge, Lasso
+- **6 Algorithms:**Random Forest, Gradient Boosting, XGBoost, LightGBM, Ridge, Lasso
 - Cross-validation support
 - Hyperparameter tuning (Grid Search)
 - Feature importance analysis
 - Model persistence (save/load)
 
-### 📊 Evaluation
+### Evaluation
 
 - RMSE, MAE, R², MAPE metrics
 - Prediction vs actual plots
@@ -91,16 +91,16 @@ if HAS_DL:
 
 ## Available Models
 
-| Model             | Type            | Speed  | Accuracy   | Best For                   |
+| Model | Type | Speed | Accuracy | Best For |
 | ----------------- | --------------- | ------ | ---------- | -------------------------- |
-| Ridge             | Linear          | ⚡⚡⚡ | ⭐⭐       | Baseline                   |
-| Lasso             | Linear          | ⚡⚡⚡ | ⭐⭐       | Feature selection          |
-| Random Forest     | Ensemble        | ⚡⚡   | ⭐⭐⭐⭐   | General purpose            |
-| Gradient Boosting | Ensemble        | ⚡     | ⭐⭐⭐⭐   | High accuracy              |
-| **XGBoost**       | Gradient Boost  | ⚡⚡   | ⭐⭐⭐⭐⭐ | **Best overall (tabular)** |
-| **LightGBM**      | Gradient Boost  | ⚡⚡⚡ | ⭐⭐⭐⭐⭐ | **Fastest**                |
-| **LSTM**          | Deep Learning   | ⚡     | ⭐⭐⭐⭐   | **Time series**            |
-| ASTGCN\*          | Graph Neural NN | ⚡     | ⭐⭐⭐⭐⭐ | **Graph + temporal**       |
+| Ridge | Linear | | | Baseline |
+| Lasso | Linear | | | Feature selection |
+| Random Forest | Ensemble | | | General purpose |
+| Gradient Boosting | Ensemble | | | High accuracy |
+| **XGBoost** | Gradient Boost | | | **Best overall (tabular)** |
+| **LightGBM** | Gradient Boost | | | **Fastest** |
+| **LSTM** | Deep Learning | | | **Time series** |
+| ASTGCN\* | Graph Neural NN | | | **Graph + temporal** |
 
 \*ASTGCN requires graph-structured data (adjacency matrix). Use LSTM for tabular data.
 
@@ -118,11 +118,11 @@ Use `notebooks/ML_TRAINING.ipynb` for interactive workflow:
 
 ```
 traffic_forecast/ml/
-├── __init__.py           # Public API exports
-├── data_loader.py        # DataLoader class
-├── preprocess.py         # DataPreprocessor, utilities
-├── features.py           # Feature engineering functions
-└── trainer.py            # ModelTrainer, compare_models
+ __init__.py # Public API exports
+ data_loader.py # DataLoader class
+ preprocess.py # DataPreprocessor, utilities
+ features.py # Feature engineering functions
+ trainer.py # ModelTrainer, compare_models
 ```
 
 ## API Reference
@@ -130,16 +130,16 @@ traffic_forecast/ml/
 ### DataLoader
 
 ```python
-loader = DataLoader(data_dir=None)  # Auto-detect or specify path
+loader = DataLoader(data_dir=None) # Auto-detect or specify path
 
 # Methods
-loader.list_runs()                    # List available runs
-loader.load_traffic_data(run_idx=0)  # Load traffic edges
-loader.load_weather_data(run_idx=0)  # Load weather
-loader.load_nodes_data(run_idx=0)    # Load nodes
-loader.load_merged_data(run_idx=0)   # Load merged (recommended)
-loader.load_multiple_runs([0,1,2])   # Load multiple runs
-loader.get_data_summary()             # Get statistics
+loader.list_runs() # List available runs
+loader.load_traffic_data(run_idx=0) # Load traffic edges
+loader.load_weather_data(run_idx=0) # Load weather
+loader.load_nodes_data(run_idx=0) # Load nodes
+loader.load_merged_data(run_idx=0) # Load merged (recommended)
+loader.load_multiple_runs([0,1,2]) # Load multiple runs
+loader.get_data_summary() # Get statistics
 ```
 
 ### Feature Engineering
@@ -147,13 +147,13 @@ loader.get_data_summary()             # Get statistics
 ```python
 # Build all features
 df_features = build_features(
-    df,
-    include_temporal=True,
-    include_spatial=True,
-    include_weather=True,
-    include_traffic=True,
-    include_lags=False,
-    include_rolling=False
+ df,
+ include_temporal=True,
+ include_spatial=True,
+ include_weather=True,
+ include_traffic=True,
+ include_lags=False,
+ include_rolling=False
 )
 
 # Individual functions
@@ -169,10 +169,10 @@ add_rolling_features(df, windows=[3,5,10])
 
 ```python
 preprocessor = DataPreprocessor(
-    target_column='speed_kmh',
-    scaler_type='standard',  # 'standard', 'robust', 'none'
-    handle_outliers=True,
-    outlier_std=3.0
+ target_column='speed_kmh',
+ scaler_type='standard', # 'standard', 'robust', 'none'
+ handle_outliers=True,
+ outlier_std=3.0
 )
 
 preprocessor.fit(train_df, feature_columns=feature_list)
@@ -191,18 +191,18 @@ DataPreprocessor.clip_values(df, 'speed_kmh', lower=0, upper=120)
 
 ```python
 train_df, val_df, test_df = split_data(
-    df,
-    target_column='speed_kmh',
-    test_size=0.2,
-    val_size=0.1,
-    random_state=42,
-    time_based=False  # True for time-series
+ df,
+ target_column='speed_kmh',
+ test_size=0.2,
+ val_size=0.1,
+ random_state=42,
+ time_based=False # True for time-series
 )
 
 X, y = prepare_features_target(
-    df,
-    target_column='speed_kmh',
-    drop_columns=['custom_column']  # Optional
+ df,
+ target_column='speed_kmh',
+ drop_columns=['custom_column'] # Optional
 )
 ```
 
@@ -210,9 +210,9 @@ X, y = prepare_features_target(
 
 ```python
 trainer = ModelTrainer(
-    model_type='xgboost',  # See available models
-    params={...},          # Model hyperparameters
-    model_dir=None         # Auto: PROJECT_ROOT/models
+ model_type='xgboost', # See available models
+ params={...}, # Model hyperparameters
+ model_dir=None # Auto: PROJECT_ROOT/models
 )
 
 # Training
@@ -225,13 +225,13 @@ cv_results = trainer.cross_validate(X, y, cv=5, scoring='r2')
 
 # Hyperparameter tuning
 param_grid = {
-    'n_estimators': [50, 100, 200],
-    'max_depth': [5, 10, 15]
+ 'n_estimators': [50, 100, 200],
+ 'max_depth': [5, 10, 15]
 }
 tuning_results = trainer.tune_hyperparameters(
-    X_train, y_train,
-    param_grid=param_grid,
-    cv=3
+ X_train, y_train,
+ param_grid=param_grid,
+ cv=3
 )
 
 # Feature importance
@@ -243,9 +243,9 @@ loaded_trainer = ModelTrainer.load_model(model_path)
 
 # Compare multiple models
 comparison_df = compare_models(
-    X_train, y_train,
-    X_test, y_test,
-    models=['random_forest', 'xgboost', 'lightgbm']
+ X_train, y_train,
+ X_test, y_test,
+ models=['random_forest', 'xgboost', 'lightgbm']
 )
 ```
 
@@ -301,7 +301,7 @@ comparison_df = compare_models(
 
 - **Full Guide:** `doc/getting-started/ML_PIPELINE.md`
 - **Notebook:** `notebooks/ML_TRAINING.ipynb`
-- **API Docs:** Inline docstrings
+- **API Docs:**Inline docstrings
 
 ## Examples
 
@@ -327,9 +327,9 @@ print(trainer.evaluate(X_test, y_test))
 from traffic_forecast.ml import compare_models
 
 comparison = compare_models(
-    X_train, y_train,
-    X_test, y_test,
-    models=['random_forest', 'xgboost', 'lightgbm']
+ X_train, y_train,
+ X_test, y_test,
+ models=['random_forest', 'xgboost', 'lightgbm']
 )
 print(comparison.sort_values('r2', ascending=False))
 ```
@@ -364,8 +364,8 @@ from sklearn.ensemble import ExtraTreesRegressor
 # Register in ModelTrainer.MODELS
 ModelTrainer.MODELS['extra_trees'] = ExtraTreesRegressor
 ModelTrainer.DEFAULT_PARAMS['extra_trees'] = {
-    'n_estimators': 100,
-    'random_state': 42
+ 'n_estimators': 100,
+ 'random_state': 42
 }
 
 # Use it
@@ -378,6 +378,6 @@ MIT License - See project root for details.
 
 ---
 
-**Author:** THAT Le Quang  
-**Version:** 4.4.0  
-**Updated:** October 27, 2025
+**Author:**THAT Le Quang 
+**Version:** 4.4.0 
+**Updated:**October 27, 2025

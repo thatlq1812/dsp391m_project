@@ -1,11 +1,10 @@
 """
-Google Directions collector for traffic speeds.
-Mock implementation since API key not provided.
+Google Directions collector v5.0 - Real API only with retry mechanism
+No mock API fallback - production ready
 """
 
 import json
 import os
-import random
 import time
 import concurrent.futures
 import threading
@@ -13,25 +12,28 @@ from dotenv import load_dotenv
 from datetime import datetime
 from math import radians, sin, cos, sqrt, atan2
 import yaml
+from pathlib import Path
 from traffic_forecast import PROJECT_ROOT
 from traffic_forecast.collectors.area_utils import load_area_config
 import argparse
 
 load_dotenv()
 
-# Rate limiter for Google Maps API
+
 class RateLimiter:
-    def __init__(self, requests_per_minute=2500):
+    """Thread-safe rate limiter for Google Maps API"""
+    
+    def __init__(self, requests_per_minute=2800):
         self.requests_per_minute = requests_per_minute
-        self.requests_per_second = requests_per_minute / 60  # ~41.67 requests/second
-        self.min_interval = 1.0 / self.requests_per_second  # ~0.024 seconds between requests
+        self.requests_per_second = requests_per_minute / 60
+        self.min_interval = 1.0 / self.requests_per_second
         self.last_request_time = 0
         self.lock = threading.Lock()
         self.request_count = 0
         self.window_start = time.time()
 
     def wait_if_needed(self):
-        """Wait if necessary to maintain rate limit."""
+        """Wait if necessary to maintain rate limit"""
         with self.lock:
             current_time = time.time()
 
@@ -40,7 +42,7 @@ class RateLimiter:
                 self.request_count = 0
                 self.window_start = current_time
 
-            # Check if we've exceeded per-minute limit
+            # Check if exceeded per-minute limit
             if self.request_count >= self.requests_per_minute:
                 sleep_time = 60 - (current_time - self.window_start)
                 if sleep_time > 0:
@@ -58,55 +60,149 @@ class RateLimiter:
             self.last_request_time = time.time()
             self.request_count += 1
 
-# Global rate limiter instance - will be initialized with config
-rate_limiter = None
-
-def get_rate_limiter(config):
-    """Get or create rate limiter based on config."""
-    global rate_limiter
-    if rate_limiter is None:
-        collector_config = config['collectors'].get('google_directions') or config['collectors']['google']
-        requests_per_minute = collector_config.get('rate_limit_requests_per_minute', 2500)
-        rate_limiter = RateLimiter(requests_per_minute=requests_per_minute)
-    return rate_limiter
 
 def haversine(lat1, lon1, lat2, lon2):
-    """Calculate distance between two points in km."""
-    R = 6371  # Earth radius in km
+    """Calculate distance between two points in km"""
+    R = 6371
     dlat = radians(lat2 - lat1)
     dlon = radians(lon2 - lon1)
-    a = sin(dlat/2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon/2)**2
-    c = 2 * atan2(sqrt(a), sqrt(1-a))
+    a = sin(dlat / 2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
     return R * c
 
+
 def load_nodes():
-    # Try RUN_DIR first (when run from collect_and_render.py)
+    """Load nodes from RUN_DIR or fallback to global nodes.json"""
     run_dir = os.getenv('RUN_DIR')
     if run_dir:
-        nodes_path = os.path.join(run_dir, 'collectors', 'overpass', 'nodes.json')
-        if os.path.exists(nodes_path):
-            with open(nodes_path, 'r') as f:
+        # New structure: nodes.json directly in run directory
+        nodes_path = Path(run_dir) / 'nodes.json'
+        if nodes_path.exists():
+            with nodes_path.open('r', encoding='utf-8') as f:
                 return json.load(f)
-    
-    # Fallback to global nodes.json
+        
+        # Legacy structure: collectors/overpass/nodes.json
+        nodes_path = Path(run_dir) / 'collectors' / 'overpass' / 'nodes.json'
+        if nodes_path.exists():
+            with nodes_path.open('r', encoding='utf-8') as f:
+                return json.load(f)
+
     nodes_path = PROJECT_ROOT / 'data' / 'nodes.json'
     if nodes_path.exists():
         with nodes_path.open(encoding='utf-8') as f:
             return json.load(f)
-    
+
     raise FileNotFoundError("Could not find nodes.json in RUN_DIR or data/")
 
-def process_edge_batch(edge_batch, use_real_api, api_key, rate_limiter, config):
-    """Process a batch of edges, returning results."""
+
+def real_directions_api(origin, dest, api_key, rate_limiter, config):
+    """
+    Real Google Directions API call with rate limiting and retry
+    Returns None on failure after all retries
+    """
+    import requests
+    
+    collector_config = config['collectors']['google_directions']
+    max_retries = collector_config.get('retry_on_failure', 3)
+    timeout = collector_config.get('timeout_seconds', 10)
+    
+    for attempt in range(max_retries):
+        try:
+            # Apply rate limiting before request
+            rate_limiter.wait_if_needed()
+
+            base_url = "https://maps.googleapis.com/maps/api/directions/json"
+            params = {
+                'origin': f"{origin['lat']},{origin['lon']}",
+                'destination': f"{dest['lat']},{dest['lon']}",
+                'key': api_key,
+                'mode': 'driving',
+                'departure_time': 'now',
+                'traffic_model': 'best_guess'
+            }
+
+            start_time = time.time()
+            response = requests.get(base_url, params=params, timeout=timeout)
+            response_time = time.time() - start_time
+            response.raise_for_status()
+            data = response.json()
+
+            if data['status'] == 'OK' and data['routes']:
+                route = data['routes'][0]
+                leg = route['legs'][0]
+
+                distance_km = leg['distance']['value'] / 1000
+                
+                # Use traffic-aware duration if available, otherwise use regular duration
+                if 'duration_in_traffic' in leg:
+                    duration_sec = leg['duration_in_traffic']['value']
+                else:
+                    duration_sec = leg['duration']['value']
+                    
+                speed_kmh = (distance_km / (duration_sec / 3600)) if duration_sec > 0 else 30
+
+                # Log every 50th successful call
+                if not hasattr(real_directions_api, '_call_count'):
+                    real_directions_api._call_count = 0
+                real_directions_api._call_count += 1
+
+                if real_directions_api._call_count % 50 == 0:
+                    print(f"API call #{real_directions_api._call_count} successful in {response_time:.2f}s: {speed_kmh:.1f} km/h")
+
+                return {
+                    'distance_km': distance_km,
+                    'duration_sec': duration_sec,
+                    'speed_kmh': speed_kmh,
+                    'status': 'OK',
+                    'has_traffic_data': 'duration_in_traffic' in leg
+                }
+            else:
+                error_msg = data.get('status', 'Unknown')
+                if attempt < max_retries - 1:
+                    print(f"Google API error: {error_msg}, retry {attempt + 1}/{max_retries}")
+                    time.sleep(1 * (attempt + 1))  # Exponential backoff
+                    continue
+                else:
+                    print(f"Google API error after {max_retries} attempts: {error_msg}")
+                    return None
+
+        except requests.exceptions.Timeout:
+            if attempt < max_retries - 1:
+                print(f"Google API timeout, retry {attempt + 1}/{max_retries}")
+                time.sleep(1 * (attempt + 1))
+                continue
+            else:
+                print(f"Google API timeout after {max_retries} attempts")
+                return None
+                
+        except requests.exceptions.RequestException as e:
+            if attempt < max_retries - 1:
+                print(f"Google API request failed: {e}, retry {attempt + 1}/{max_retries}")
+                time.sleep(1 * (attempt + 1))
+                continue
+            else:
+                print(f"Google API request failed after {max_retries} attempts: {e}")
+                return None
+                
+        except Exception as e:
+            print(f"Unexpected error in Google API: {e}")
+            return None
+    
+    return None
+
+
+def process_edge_batch(edge_batch, api_key, rate_limiter, config):
+    """Process a batch of edges, returning results"""
     results = []
+    failed_count = 0
+    
     for node_a, node_b, dist in edge_batch:
-        if use_real_api:
-            directions = real_directions_api(node_a, node_b, api_key, rate_limiter)
-            if directions is None:
-                # Fallback to mock if real API fails - only log errors, not every fallback
-                directions = mock_directions_api(node_a, node_b, config)
-        else:
-            directions = mock_directions_api(node_a, node_b, config)
+        directions = real_directions_api(node_a, node_b, api_key, rate_limiter, config)
+        
+        if directions is None:
+            failed_count += 1
+            print(f"FAILED: Could not get traffic data for edge {node_a['node_id']} -> {node_b['node_id']}")
+            continue
 
         result = {
             'node_a_id': node_a['node_id'],
@@ -114,178 +210,169 @@ def process_edge_batch(edge_batch, use_real_api, api_key, rate_limiter, config):
             'distance_km': directions['distance_km'],
             'duration_sec': directions['duration_sec'],
             'speed_kmh': directions['speed_kmh'],
+            'has_traffic_data': directions.get('has_traffic_data', False),
             'timestamp': datetime.now().isoformat(),
-            'api_type': 'real' if use_real_api and 'status' in directions else 'mock'
+            'api_type': 'real'
         }
         results.append(result)
+    
+    if failed_count > 0:
+        print(f"Batch completed with {failed_count} failed requests")
+    
     return results
 
+
 def find_road_segments(nodes, config):
-    """Find road segments by connecting consecutive nodes on the same way."""
-    # Load way sequences from overpass collector
+    """Find road segments by connecting consecutive nodes on the same way"""
     run_dir = os.getenv('RUN_DIR')
     if run_dir:
-        ways_path = os.path.join(run_dir, 'collectors', 'overpass', 'way_sequences.json')
+        # New structure: edges.json directly in run directory
+        edges_path = Path(run_dir) / 'edges.json'
+        ways_path = Path(run_dir) / 'collectors' / 'overpass' / 'way_sequences.json'
+        
+        # Try edges.json first (new format)
+        if edges_path.exists():
+            print(f"Using new edges format from {edges_path}")
+            return find_road_segments_from_edges(nodes, edges_path, config)
+        # Fallback to way_sequences.json (legacy format)
+        elif ways_path.exists():
+            print(f"Using legacy way_sequences format from {ways_path}")
+            return find_road_segments_from_ways(nodes, ways_path, config)
+        else:
+            print(f"Warning: No edges or way_sequences found, falling back to nearest neighbors")
+            return find_nearest_neighbors(nodes, config)
     else:
-        ways_path = os.path.join('data', 'way_sequences.json')
+        # Standalone mode (no RUN_DIR)
+        edges_path = Path('data') / 'edges.json'
+        ways_path = Path('data') / 'way_sequences.json'
+        
+        if edges_path.exists():
+            return find_road_segments_from_edges(nodes, edges_path, config)
+        elif ways_path.exists():
+            return find_road_segments_from_ways(nodes, ways_path, config)
+        else:
+            print(f"Warning: No edges or way_sequences found, falling back to nearest neighbors")
+            return find_nearest_neighbors(nodes, config)
+
+
+def find_road_segments_from_edges(nodes, edges_path, config):
+    """Create route segments from edges.json (new format)"""
+    with edges_path.open('r', encoding='utf-8') as f:
+        data = json.load(f)
     
+    # Handle both {"edges": [...]} and direct array formats
+    edges_data = data.get('edges', data) if isinstance(data, dict) else data
+    
+    node_dict = {node['node_id']: node for node in nodes}
+    segments = []
+    
+    for edge in edges_data:
+        # Support multiple edge formats:
+        # 1. {source, target} - simple format
+        # 2. {start_node_id, end_node_id} - detailed format from overpass
+        source_id = edge.get('source') or edge.get('start_node_id')
+        target_id = edge.get('target') or edge.get('end_node_id')
+        
+        if not source_id or not target_id:
+            continue
+            
+        # Both nodes must be in our nodes list
+        if source_id in node_dict and target_id in node_dict:
+            node_a = node_dict[source_id]
+            node_b = node_dict[target_id]
+            dist = haversine(node_a['lat'], node_a['lon'], node_b['lat'], node_b['lon'])
+            segments.append((node_a, node_b, dist))
+    
+    print(f"Created {len(segments)} route segments from {len(edges_data)} edges")
+    return segments
+
+
+def find_road_segments_from_ways(nodes, ways_path, config):
+    """Create route segments from way_sequences.json (legacy format)"""
     try:
-        with open(ways_path, 'r', encoding='utf-8') as f:
+        with ways_path.open('r', encoding='utf-8') as f:
             way_sequences = json.load(f)
     except FileNotFoundError:
-        print(f"Warning: {ways_path} not found, falling back to nearest neighbors")
-        return find_nearest_neighbors(nodes, config)
-    
-    # Create node lookup dict
+        print(f"Warning: {ways_path} not found")
+        return []
+
     node_dict = {node['node_id']: node for node in nodes}
-    
-    # Calculate node degrees (how many ways connect to each node)
+
+    # Calculate node degrees
     node_degrees = {}
     for way in way_sequences:
         nodes_seq = way['nodes']
         for node_id in nodes_seq:
-            if node_id in node_dict:  # Only count nodes we have
+            if node_id in node_dict:
                 node_degrees[node_id] = node_degrees.get(node_id, 0) + 1
-    
+
     # Find intersection nodes (degree > 2)
     intersection_nodes = {node_id: node_dict[node_id] for node_id, degree in node_degrees.items() if degree > 2}
-    
+
     print(f"Found {len(intersection_nodes)} intersection nodes (degree > 2) out of {len(node_dict)} total nodes")
-    
+
     edges = []
     processed_pairs = set()
-    
+
     for way in way_sequences:
         nodes_seq = way['nodes']
-        # Find segments between intersection nodes on this way
         intersection_indices = []
         for i, node_id in enumerate(nodes_seq):
             if node_id in intersection_nodes:
                 intersection_indices.append(i)
-        
-        # Create edges between consecutive intersections on this way
-        for i in range(len(intersection_indices)-1):
+
+        # Create edges between consecutive intersections
+        for i in range(len(intersection_indices) - 1):
             start_idx = intersection_indices[i]
-            end_idx = intersection_indices[i+1]
-            
-            # Use the actual start and end intersection nodes
+            end_idx = intersection_indices[i + 1]
+
             start_node_id = nodes_seq[start_idx]
             end_node_id = nodes_seq[end_idx]
-            
-            # Skip if we already processed this pair
+
             pair_key = tuple(sorted([start_node_id, end_node_id]))
             if pair_key in processed_pairs:
                 continue
             processed_pairs.add(pair_key)
-            
+
             if start_node_id in node_dict and end_node_id in node_dict:
                 node_a = node_dict[start_node_id]
                 node_b = node_dict[end_node_id]
                 dist = haversine(node_a['lat'], node_a['lon'], node_b['lat'], node_b['lon'])
                 edges.append((node_a, node_b, dist))
-    
+
     print(f"Created {len(edges)} intersection-to-intersection edges from {len(way_sequences)} ways")
     return edges
 
+
 def find_nearest_neighbors(nodes, config):
-    """Find k nearest neighbors within radius for each node."""
-    collector_config = config['collectors'].get('google_directions') or config['collectors']['google']
+    """Find k nearest neighbors within radius for each node"""
+    collector_config = config['collectors']['google_directions']
     edges = []
     limit_nodes = collector_config.get('limit_nodes', len(nodes))
+    
     for i, node_a in enumerate(nodes[:limit_nodes]):
         neighbors = []
         for j, node_b in enumerate(nodes):
-            if i == j: continue
+            if i == j:
+                continue
             dist = haversine(node_a['lat'], node_a['lon'], node_b['lat'], node_b['lon'])
             if dist <= collector_config['radius_km']:
                 neighbors.append((dist, node_b))
         neighbors.sort(key=lambda x: x[0])
         for dist, node_b in neighbors[:collector_config['k_neighbors']]:
             edges.append((node_a, node_b, dist))
+    
     return edges
 
-def mock_directions_api(origin, dest, config):
-    """Mock Google Directions API response."""
-    collector_config = config['collectors'].get('google_directions') or config['collectors']['google']
-    dist_km = haversine(origin['lat'], origin['lon'], dest['lat'], dest['lon'])
-    # Mock traffic: slower during peak hours
-    base_speed = collector_config['base_speed_kmh']
-    traffic_factor = random.uniform(collector_config['traffic_factor_min'], collector_config['traffic_factor_max'])
-    speed = base_speed * traffic_factor
-    duration_sec = (dist_km / speed) * 3600
-    return {
-        'distance_km': dist_km,
-        'duration_sec': duration_sec,
-        'speed_kmh': speed
-    }
-
-def real_directions_api(origin, dest, api_key, rate_limiter):
-    """Real Google Directions API call with rate limiting."""
-    import requests
-
-    # Apply rate limiting before making request
-    rate_limiter.wait_if_needed()
-
-    base_url = "https://maps.googleapis.com/maps/api/directions/json"
-    params = {
-        'origin': f"{origin['lat']},{origin['lon']}",
-        'destination': f"{dest['lat']},{dest['lon']}",
-        'key': api_key,
-        'mode': 'driving',
-        'departure_time': 'now',  # For real-time traffic
-        'traffic_model': 'best_guess'
-    }
-
-    try:
-        start_time = time.time()
-        response = requests.get(base_url, params=params, timeout=10)
-        response_time = time.time() - start_time
-        response.raise_for_status()
-        data = response.json()
-
-        if data['status'] == 'OK' and data['routes']:
-            route = data['routes'][0]
-            leg = route['legs'][0]
-
-            distance_km = leg['distance']['value'] / 1000  # Convert meters to km
-            duration_sec = leg['duration_in_traffic']['value']  # Use traffic-aware duration
-            speed_kmh = (distance_km / (duration_sec / 3600)) if duration_sec > 0 else 30
-
-            # Only print every 50th successful call to reduce output
-            if hasattr(real_directions_api, '_call_count'):
-                real_directions_api._call_count += 1
-            else:
-                real_directions_api._call_count = 1
-            
-            if real_directions_api._call_count % 50 == 0:
-                print(f"API call #{real_directions_api._call_count} successful in {response_time:.2f}s: avg {speed_kmh:.1f} km/h")
-            
-            return {
-                'distance_km': distance_km,
-                'duration_sec': duration_sec,
-                'speed_kmh': speed_kmh,
-                'status': 'OK'
-            }
-        else:
-            print(f"Google API error: {data.get('status', 'Unknown')}, falling back to mock")
-            return None
-
-    except requests.exceptions.Timeout:
-        print(f"Google API timeout ({time.time() - start_time:.2f}s) for {origin['lat']},{origin['lon']} -> {dest['lat']},{dest['lon']}, falling back to mock")
-        return None
-    except requests.exceptions.RequestException as e:
-        print(f"Google API request failed: {e}, falling back to mock")
-        return None
-    except Exception as e:
-        print(f"Unexpected error in Google API: {e}, falling back to mock")
-        return None
 
 def run_google_collector():
-    parser = argparse.ArgumentParser(description='Google Directions collector')
+    """Main entry point for Google Directions collector"""
+    parser = argparse.ArgumentParser(description='Google Directions collector v5.0 - Real API only')
     parser.add_argument('--mode', choices=['bbox', 'point_radius', 'circle'], help='Area selection mode')
     parser.add_argument('--bbox', help='bbox as min_lat,min_lon,max_lat,max_lon')
     parser.add_argument('--center', help='center as lon,lat')
     parser.add_argument('--radius', type=float, help='radius in meters')
+    parser.add_argument('--config', default='project_config.yaml', help='Config file name')
     args = parser.parse_args()
 
     cli_area = {}
@@ -298,75 +385,98 @@ def run_google_collector():
     if args.radius:
         cli_area['radius_m'] = args.radius
 
-    config_path = PROJECT_ROOT / "configs" / "project_config.yaml"
+    # Load configuration
+    config_path = PROJECT_ROOT / "configs" / args.config
     with config_path.open(encoding="utf-8") as fh:
         config = yaml.safe_load(fh) or {}
-    print("Config collectors keys:", list(config.get('collectors', {}).keys()))  # Debug
-    # config key for this collector may be 'google_directions' in project_config
-    collector_config = config['collectors'].get('google_directions') or config['collectors'].get('google')
+    
+    collector_config = config['collectors']['google_directions']
 
-    # resolve area and filter nodes (apply CLI overrides)
+    # Resolve area and filter nodes
     area_cfg = load_area_config('google', cli_area=cli_area)
 
     nodes = load_nodes()
-    nodes = [n for n in nodes if (area_cfg['bbox'][0] <= n['lat'] <= area_cfg['bbox'][2] and area_cfg['bbox'][1] <= n['lon'] <= area_cfg['bbox'][3])]
-    edges = find_road_segments(nodes, config)
+    nodes = [n for n in nodes if (area_cfg['bbox'][0] <= n['lat'] <= area_cfg['bbox'][2]
+                                  and area_cfg['bbox'][1] <= n['lon'] <= area_cfg['bbox'][3])]
     
-    traffic_data = []
+    print(f"Loaded {len(nodes)} nodes within area")
+    
+    edges = find_road_segments(nodes, config)
+
+    # Get API key
     api_key = os.getenv(collector_config.get('api_key_env', 'GOOGLE_MAPS_API_KEY'))
-    use_real_api = bool(api_key and len(api_key) > 10)  # Basic validation
+    if not api_key or len(api_key) < 10:
+        raise ValueError(
+            "GOOGLE_MAPS_API_KEY environment variable not set or invalid. "
+            "Real API is required in v5.0 (no mock fallback)."
+        )
 
-    # Initialize rate limiter with config
-    rate_limiter = get_rate_limiter(config)
+    # Initialize rate limiter
+    rate_limiter = RateLimiter(requests_per_minute=collector_config['rate_limit_requests_per_minute'])
 
-    print(f"Using {'REAL' if use_real_api else 'MOCK'} Google Directions API")
-    if use_real_api:
-        print(f"Rate limiting: {rate_limiter.requests_per_minute} requests/minute (~{rate_limiter.requests_per_second:.1f} req/sec)")
+    print(f"Using REAL Google Directions API (no mock fallback)")
+    print(f"Rate limiting: {rate_limiter.requests_per_minute} requests/minute")
 
-    # Only process first N edges for testing (remove this limit for production)
-    test_limit = int(os.getenv('GOOGLE_TEST_LIMIT', '0'))  # Set GOOGLE_TEST_LIMIT=100 for testing
+    # Test limit for development
+    test_limit = int(os.getenv('GOOGLE_TEST_LIMIT', '0'))
     if test_limit > 0:
         edges = edges[:test_limit]
-        print(f"LIMITED TEST MODE: Processing only {test_limit} edges")
+        print(f"TEST MODE: Processing only {test_limit} edges")
 
     total_edges = len(edges)
     print(f"Processing {total_edges} traffic edges with parallel processing...")
 
     # Process edges in parallel batches
-    batch_size = 10  # Process 10 edges concurrently
+    batch_size = 10
     traffic_data = []
-    
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=batch_size) as executor:
-        # Submit batches of edges
         futures = []
         for i in range(0, total_edges, batch_size):
             batch = edges[i:i + batch_size]
-            future = executor.submit(process_edge_batch, batch, use_real_api, api_key, rate_limiter, config)
+            future = executor.submit(process_edge_batch, batch, api_key, rate_limiter, config)
             futures.append(future)
-        
-        # Collect results as they complete
+
+        # Collect results
         completed = 0
         for future in concurrent.futures.as_completed(futures):
             try:
                 batch_results = future.result()
                 traffic_data.extend(batch_results)
                 completed += len(batch_results)
-                if completed % 200 == 0:  # Reduced frequency
+                if completed % 100 == 0:
                     print(f"Processed {completed}/{total_edges} edges...")
             except Exception as e:
                 print(f"Batch processing failed: {e}")
-    
+
+    # Save results - use RUN_DIR if set, otherwise create timestamped directory
     run_dir = os.getenv('RUN_DIR')
     if run_dir:
-        out_dir = os.path.join(run_dir, 'collectors', 'google')
+        # Use provided run directory (from orchestrator)
+        out_dir = run_dir
     else:
-        out_dir = os.path.join('data')
+        # Create timestamped run directory
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        out_dir = os.path.join('data', 'runs', f'run_{timestamp}')
+    
     os.makedirs(out_dir, exist_ok=True)
+    
     output_file = os.path.join(out_dir, 'traffic_edges.json')
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(traffic_data, f, indent=2)
 
-    print(f"Collected traffic for {len(traffic_data)} edges. Saved to {output_file}")
+    # Summary
+    total_collected = len(traffic_data)
+    failed_count = total_edges - total_collected
+    success_rate = (total_collected / total_edges * 100) if total_edges > 0 else 0
+    
+    print(f"\n=== Collection Summary ===")
+    print(f"Total edges: {total_edges}")
+    print(f"Successful: {total_collected}")
+    print(f"Failed: {failed_count}")
+    print(f"Success rate: {success_rate:.1f}%")
+    print(f"Saved to {output_file}")
+
 
 if __name__ == "__main__":
     run_google_collector()

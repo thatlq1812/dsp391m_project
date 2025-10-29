@@ -1,9 +1,9 @@
 # Internal Data & Modeling Readiness Report (IR-05)
 **Date:** 2025-10-25 
-**Author:** Xiel (THAT Le Quang) 
+**Author:**Xiel (THAT Le Quang) 
 **Contact:** fxlqthat@gmail.com / +84 33 863 6369 
 **GitHub:** [thatlq1812](https://github.com/thatlq1812) 
-**Scope:** Complete data structure, collection pipeline, preprocessing, model inventory, and deployment guide for Academic v4.0 traffic forecasting system.
+**Scope:**Complete data structure, collection pipeline, preprocessing, model inventory, and deployment guide for Academic v4.0 traffic forecasting system.
 ---
 ## 1. Data Structure & Schema
 ### 1.1 Database Schema (Postgres/Timescale)
@@ -69,7 +69,7 @@ PRIMARY KEY (timestamp, node_id)
 CREATE INDEX idx_timestamp ON traffic_snapshots(timestamp DESC);
 CREATE INDEX idx_node_time ON traffic_snapshots(node_id, timestamp DESC);
 ```
-**Purpose:** Enables lag feature computation (5/15/30/60 min lookbacks) without re-collecting data. 
+**Purpose:**Enables lag feature computation (5/15/30/60 min lookbacks) without re-collecting data. 
 **Retention:** 7 days (configurable), cleaned via `TrafficHistoryStore.cleanup_old_data()`.
 ### 1.3 Validation Schemas (Pydantic)
 **TrafficNode** — Intersection metadata:
@@ -147,7 +147,7 @@ CREATE INDEX idx_node_time ON traffic_snapshots(node_id, timestamp DESC);
 ## 2. Data Collection Pipeline
 ### 2.1 Network Topology Acquisition (Overpass API)
 **Endpoint:** `https://overpass-api.de/api/interpreter` 
-**Query Strategy:** Download road network for Ho Chi Minh City area using OpenStreetMap data.
+**Query Strategy:**Download road network for Ho Chi Minh City area using OpenStreetMap data.
 **Road Type Filters:**
 ```
 highway~"^(motorway|trunk|primary|secondary)$"
@@ -165,7 +165,7 @@ if 'primary' in road_types: importance += 6.0 # Primary road boost
 ```
 **Output:** 64 high-priority nodes covering central HCMC (District 1, District 3, Binh Thanh, etc.)
 ### 2.2 Real-time Traffic Collection (Google Directions API)
-**Strategy:** Mock mode enabled by default (`USE_GOOGLE=false` in environment). Production requires valid API key.
+**Strategy:**Mock mode enabled by default (`USE_GOOGLE=false` in environment). Production requires valid API key.
 **Sampling Protocol (per node):**
 1. Select k=3 nearest neighbor nodes within 1024m radius
 2. For each neighbor pair (origin → destination):
@@ -213,11 +213,11 @@ else: congestion_level = 0 (free)
 - Night: 9 hours × 0.67 collections/hour ≈ 6
 - Weekend: 17 hours × 1 collection/hour = 17
 - **Weighted Average:** ~25 collections/day
-**Deployment:** Systemd service `traffic-scheduler.service` triggers `collect_and_render.py --once` via cron-like loop.
+**Deployment:**Systemd service `traffic-scheduler.service` triggers `collect_and_render.py --once` via cron-like loop.
 ---
 ## 3. Preprocessing & Feature Engineering
 ### 3.1 Lag Feature Computation
-**Purpose:** Capture temporal autocorrelation (traffic 5 minutes ago predicts traffic now).
+**Purpose:**Capture temporal autocorrelation (traffic 5 minutes ago predicts traffic now).
 **Implementation:** `traffic_forecast/features/lag_features.py`
 **Features Generated:**
 ```python
@@ -238,9 +238,9 @@ speed_rolling_std_30min = std(speeds[t-30min : t])
 speed_change_5min = speed[t] - speed[t-5min]
 speed_pct_change_5min = (speed[t] - speed[t-5min]) / speed[t-5min] * 100
 ```
-**Data Source:** SQLite `traffic_history.db` query via `TrafficHistoryStore.get_historical_snapshot()`.
+**Data Source:**SQLite `traffic_history.db` query via `TrafficHistoryStore.get_historical_snapshot()`.
 ### 3.2 Temporal Feature Encoding
-**Purpose:** Encode cyclical time patterns (hour-of-day, day-of-week) as continuous features.
+**Purpose:**Encode cyclical time patterns (hour-of-day, day-of-week) as continuous features.
 **Implementation:** `traffic_forecast/features/temporal_features.py`
 **Cyclical Encoding (sin/cos transformations):**
 ```python
@@ -260,9 +260,9 @@ is_weekend = day_of_week ≥ 5
 is_holiday = lookup(vietnam_holidays, date) # Optional
 ```
 ### 3.3 Spatial Feature Aggregation
-**Purpose:** Incorporate neighbor node states (upstream congestion propagates downstream).
+**Purpose:**Incorporate neighbor node states (upstream congestion propagates downstream).
 **Implementation:** `traffic_forecast/features/spatial_features.py`
-**Neighbor Selection:** Precomputed adjacency graph from Overpass OSM ways (nodes connected by shared road segments).
+**Neighbor Selection:**Precomputed adjacency graph from Overpass OSM ways (nodes connected by shared road segments).
 **Aggregation Functions:**
 ```python
 neighbors = get_connected_nodes(node_id) # From OSM topology
@@ -274,8 +274,8 @@ neighbor_congested_count = count([n for n in neighbors if n.congestion_level ≥
 neighbor_congested_frac = neighbor_congested_count / len(neighbors)
 ```
 ### 3.4 Normalization & Scaling
-**Method:** StandardScaler (zero mean, unit variance) 
-**Scope:** All continuous numerical features (~60 columns)
+**Method:**StandardScaler (zero mean, unit variance) 
+**Scope:**All continuous numerical features (~60 columns)
 **Pipeline:**
 ```python
 from sklearn.preprocessing import StandardScaler
@@ -327,9 +327,9 @@ features_normalized = scaler.transform(features_raw)
 - Mock API keeps costs at zero
 **GCP / Cloud:**
 - **Production setup** uses provided shell scripts to configure a Google Cloud VM
-- **Database:** Cloud SQL or TimescaleDB hosts relational layer
-- **Storage:** Raw Parquet and model artifacts stored on GCS buckets
-- **Scheduling:** Systemd timer, cron, or Cloud Scheduler invoking `collect_and_render.py`
+- **Database:**Cloud SQL or TimescaleDB hosts relational layer
+- **Storage:**Raw Parquet and model artifacts stored on GCS buckets
+- **Scheduling:**Systemd timer, cron, or Cloud Scheduler invoking `collect_and_render.py`
 - **Bootstrap:** `scripts/start_collection.sh` provides one-command production startup
 - **Health Checks:** `scripts/health_check.sh` monitors system status
 **Maintenance:**
@@ -353,7 +353,7 @@ features_normalized = scaler.transform(features_raw)
 **Weather Features:**
 - Current: temperature_c, rain_mm, wind_speed_kmh
 - Forecasts: 4 horizons (t+5, t+15, t+30, t+60) for temp/rain/wind
-**Configuration:** All feature groups can be enabled/disabled via `pipelines.preprocess` in `project_config.yaml`.
+**Configuration:**All feature groups can be enabled/disabled via `pipelines.preprocess` in `project_config.yaml`.
 ### 6.2 Production Models
 | Model Family | Purpose | Implementation | Latest Metrics |
 | --------------------------------- | --------------------------------- | ----------------------------------------------------------- | ------------------------------------ |
@@ -364,7 +364,7 @@ features_normalized = scaler.transform(features_raw)
 | Stacking Ensemble | Production best | Combines XGBoost, RF, GB | RMSE 8.2 km/h, MAPE 12.5% |
 | LSTM (attention) | Deep temporal model | `traffic_forecast/models/lstm_model.py`, 12-timestep window | RMSE ~8.2-8.5 km/h on validation |
 ### 6.3 LSTM Architecture Details
-**Purpose:** Capture long-term temporal dependencies in traffic patterns.
+**Purpose:**Capture long-term temporal dependencies in traffic patterns.
 **Implementation:** `traffic_forecast/models/lstm_model.py`
 **Architecture:**
 ```python
@@ -394,8 +394,8 @@ Output Layer: 1 unit (speed prediction)
 - `traffic_forecast/models/lstm_v2.h5` (legacy format)
 - `traffic_forecast/models/scaler.npy` (feature scaler for preprocessing)
 ### 6.4 ASTGCN (Research Model)
-**Full Name:** Attention-based Spatial-Temporal Graph Convolutional Network
-**Purpose:** Experimental model for capturing both spatial dependencies (via graph structure) and temporal patterns (via multi-component architecture).
+**Full Name:**Attention-based Spatial-Temporal Graph Convolutional Network
+**Purpose:**Experimental model for capturing both spatial dependencies (via graph structure) and temporal patterns (via multi-component architecture).
 **Implementation:** `traffic_forecast/models/research/astgcn.py`
 **Architecture Components:**
 **1. Multi-Component Design:**
@@ -481,7 +481,7 @@ dropout=0.3
 - `{model_name}_config.pkl` — serialized configuration
 - `{model_name}_adjacency.npy` — precomputed adjacency matrix
 - `{model_name}.keras` — full model weights
-**Status:** Experimental. Not yet deployed to production. Requires adjacency matrix preprocessing and multi-component data preparation.
+**Status:**Experimental. Not yet deployed to production. Requires adjacency matrix preprocessing and multi-component data preparation.
 ### 6.5 Model Registry & Deployment
 **Registry:** `traffic_forecast/models/registry.py` exposes standardized builder interface:
 ```python
@@ -495,7 +495,7 @@ model = get_model('stacking') # Stacking ensemble
 GET /predict?node_id=node-10.7688-106.7033&horizon=15
 → {"speed_kmh_pred": 32.5, "congestion_pred": 1, "model": "stacking"}
 ```
-**Retraining Schedule:** Weekly cadence recommended. Model metadata recorded in `models/model_metadata.json` with scaler parity.
+**Retraining Schedule:**Weekly cadence recommended. Model metadata recorded in `models/model_metadata.json` with scaler parity.
 **MLflow Integration:** `traffic_forecast/models/advanced_training.py` supports experiment tracking for hyperparameter tuning and model versioning.
 ---
 ## 7. Pre-Cloud Deployment Checklist
@@ -650,4 +650,4 @@ echo "All smoke tests passed!"
 ---
 **End of Report** 
 **Last Updated:** 2025-10-25 
-**Version:** IR-05 (Standalone Edition)
+**Version:**IR-05 (Standalone Edition)

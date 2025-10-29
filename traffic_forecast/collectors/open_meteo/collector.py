@@ -5,6 +5,7 @@ Open-Meteo collector for weather data.
 import requests
 import json
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 from datetime import datetime
 from collections import defaultdict
@@ -20,20 +21,28 @@ OPENMETEO_BASE_URL = os.getenv('OPENMETEO_BASE_URL', 'https://api.open-meteo.com
 
 
 def load_nodes():
-    # Try RUN_DIR first (when run from collect_and_render.py)
+    """Load nodes from RUN_DIR or fallback locations."""
+    # Try RUN_DIR first (when run from collect_once.py)
     run_dir = os.getenv('RUN_DIR')
     if run_dir:
-        nodes_path = os.path.join(run_dir, 'collectors', 'overpass', 'nodes.json')
-        if os.path.exists(nodes_path):
-            with open(nodes_path, 'r') as f:
+        # New structure: nodes.json directly in run directory
+        nodes_path = Path(run_dir) / 'nodes.json'
+        if nodes_path.exists():
+            with nodes_path.open('r', encoding='utf-8') as f:
                 return json.load(f)
-    
+        
+        # Legacy structure: collectors/overpass/nodes.json
+        nodes_path = Path(run_dir) / 'collectors' / 'overpass' / 'nodes.json'
+        if nodes_path.exists():
+            with nodes_path.open('r', encoding='utf-8') as f:
+                return json.load(f)
+
     # Fallback to global nodes.json
     nodes_path = PROJECT_ROOT / 'data' / 'nodes.json'
     if nodes_path.exists():
         with nodes_path.open(encoding='utf-8') as f:
             return json.load(f)
-    
+
     raise FileNotFoundError("Could not find nodes.json in RUN_DIR or data/")
 
 
@@ -195,12 +204,18 @@ def run_open_meteo_collector():
         snapshots = project_weather_to_nodes({(lat, lon): grid[(lat, lon)]}, weather)
         all_snapshots.extend(snapshots)
 
+    # Save - use RUN_DIR if set, otherwise create timestamped directory
     run_dir = os.getenv('RUN_DIR')
     if run_dir:
-        out_dir = os.path.join(run_dir, 'collectors', 'open_meteo')
+        # Use provided run directory (from orchestrator)
+        out_dir = run_dir
     else:
-        out_dir = os.path.join('data')
+        # Create timestamped run directory
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        out_dir = os.path.join('data', 'runs', f'run_{timestamp}')
+    
     os.makedirs(out_dir, exist_ok=True)
+    
     out_path = os.path.join(out_dir, 'weather_snapshot.json')
     with open(out_path, 'w', encoding='utf-8') as f:
         json.dump(all_snapshots, f, indent=2)
@@ -209,4 +224,4 @@ def run_open_meteo_collector():
 
 
 if __name__ == "__main__":
- run_open_meteo_collector()
+    run_open_meteo_collector()

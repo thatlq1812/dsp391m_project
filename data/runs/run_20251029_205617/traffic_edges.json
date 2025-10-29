@@ -1,0 +1,12 @@
+[
+  {
+    "node_a_id": "node-10.760533-106.677134",
+    "node_b_id": "node-10.762243-106.676490",
+    "distance_km": 0.722,
+    "duration_sec": 148,
+    "speed_kmh": 17.56216216216216,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-29T13:56:23.042113",
+    "api_type": "real"
+  }
+]

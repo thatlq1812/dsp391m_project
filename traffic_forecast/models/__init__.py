@@ -5,20 +5,27 @@ from importlib import import_module
 __all__ = []
 
 
-def _maybe_register_astgcn() -> None:
-	try:
-		module = import_module("traffic_forecast.models.research.astgcn")
-	except ImportError:
-		return
-
-	for symbol in (
-		"ASTGCNComponentConfig",
-		"ASTGCNConfig",
-		"ASTGCNTrafficModel",
-	):
-		if hasattr(module, symbol):
-			globals()[symbol] = getattr(module, symbol)
-			__all__.append(symbol)
+def _register_graph_models() -> None:
+    """Register graph neural network models."""
+    try:
+        module = import_module("traffic_forecast.models.graph")
+        for symbol in ["ASTGCNConfig", "ASTGCNComponentConfig", "ASTGCNTrafficModel"]:
+            if hasattr(module, symbol):
+                globals()[symbol] = getattr(module, symbol)
+                __all__.append(symbol)
+    except (ImportError, IndentationError, SyntaxError):
+        pass
 
 
-_maybe_register_astgcn()
+def _register_lstm_models() -> None:
+    """Register LSTM models."""
+    try:
+        from traffic_forecast.models.lstm_traffic import LSTMTrafficPredictor
+        globals()["LSTMTrafficPredictor"] = LSTMTrafficPredictor
+        __all__.append("LSTMTrafficPredictor")
+    except (ImportError, IndentationError, SyntaxError):
+        pass
+
+
+_register_graph_models()
+_register_lstm_models()

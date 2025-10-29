@@ -99,7 +99,7 @@ class TrainingResult:
 
 class ModelTrainer:
     """Train and compare multiple models."""
-    
+
     def __init__(
         self,
         output_dir: Path = PROJECT_ROOT / "models" / "experiments",
@@ -108,22 +108,22 @@ class ModelTrainer:
     ):
         self.output_dir = output_dir
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         self.experiment_name = experiment_name
         self.use_mlflow = use_mlflow and HAS_MLFLOW
-        
+
         if self.use_mlflow:
             mlflow.set_experiment(experiment_name)
             logger.info(f"MLflow experiment: {experiment_name}")
-        
+
         self.results: List[TrainingResult] = []
         self.best_model: Optional[Any] = None
         self.best_model_name: Optional[str] = None
-    
+
     def get_model_configs(self) -> List[ModelConfig]:
         """Get all model configurations."""
         configs = []
-        
+
         # Linear models
         configs.append(ModelConfig(
             name="ridge",
@@ -133,7 +133,7 @@ class ModelTrainer:
                 'solver': ['auto', 'svd', 'lsqr']
             }
         ))
-        
+
         configs.append(ModelConfig(
             name="lasso",
             model_class=Lasso,
@@ -142,7 +142,7 @@ class ModelTrainer:
                 'max_iter': [1000, 5000]
             }
         ))
-        
+
         configs.append(ModelConfig(
             name="elastic_net",
             model_class=ElasticNet,
@@ -152,7 +152,7 @@ class ModelTrainer:
                 'max_iter': [1000, 5000]
             }
         ))
-        
+
         # Tree-based models
         configs.append(ModelConfig(
             name="random_forest",
@@ -166,7 +166,7 @@ class ModelTrainer:
             search_type="random",
             n_iter=20
         ))
-        
+
         configs.append(ModelConfig(
             name="extra_trees",
             model_class=ExtraTreesRegressor,
@@ -178,7 +178,7 @@ class ModelTrainer:
             search_type="random",
             n_iter=15
         ))
-        
+
         configs.append(ModelConfig(
             name="gradient_boosting",
             model_class=GradientBoostingRegressor,
@@ -191,7 +191,7 @@ class ModelTrainer:
             search_type="random",
             n_iter=20
         ))
-        
+
         # XGBoost
         if HAS_XGBOOST:
             configs.append(ModelConfig(
@@ -207,7 +207,7 @@ class ModelTrainer:
                 search_type="random",
                 n_iter=20
             ))
-        
+
         # LightGBM
         if HAS_LIGHTGBM:
             configs.append(ModelConfig(
@@ -223,9 +223,9 @@ class ModelTrainer:
                 search_type="random",
                 n_iter=20
             ))
-        
+
         return configs
-    
+
     def train_single_model(
         self,
         config: ModelConfig,
@@ -240,18 +240,18 @@ class ModelTrainer:
         logger.info(f"\n{'='*60}")
         logger.info(f"Training: {config.name}")
         logger.info(f"{'='*60}")
-        
+
         start_time = datetime.now()
-        
+
         # Start MLflow run
         if self.use_mlflow:
             mlflow.start_run(run_name=config.name)
             mlflow.log_param("model_type", config.name)
-        
+
         try:
             # Hyperparameter search
             base_model = config.model_class(random_state=42)
-            
+
             if config.search_type == "grid":
                 search = GridSearchCV(
                     base_model,
@@ -272,21 +272,21 @@ class ModelTrainer:
                     random_state=42,
                     verbose=1
                 )
-            
+
             # Fit
             logger.info("Running hyperparameter search...")
             search.fit(X_train, y_train)
-            
+
             best_model = search.best_estimator_
             best_params = search.best_params_
-            
+
             logger.info(f"Best params: {best_params}")
-            
+
             # Evaluate on all sets
             train_metrics = self._evaluate(best_model, X_train, y_train, "Train")
             val_metrics = self._evaluate(best_model, X_val, y_val, "Val")
             test_metrics = self._evaluate(best_model, X_test, y_test, "Test")
-            
+
             # Feature importance
             feature_importance = None
             if hasattr(best_model, 'feature_importances_'):
@@ -294,9 +294,9 @@ class ModelTrainer:
                     'feature': X_train.columns,
                     'importance': best_model.feature_importances_
                 }).sort_values('importance', ascending=False)
-            
+
             training_time = (datetime.now() - start_time).total_seconds()
-            
+
             # Log to MLflow
             if self.use_mlflow:
                 mlflow.log_params(best_params)
@@ -313,7 +313,7 @@ class ModelTrainer:
                     'training_time': training_time
                 })
                 mlflow.sklearn.log_model(best_model, config.name)
-            
+
             result = TrainingResult(
                 model_name=config.name,
                 best_model=best_model,
@@ -324,13 +324,13 @@ class ModelTrainer:
                 training_time=training_time,
                 feature_importance=feature_importance
             )
-            
+
             return result
-        
+
         finally:
             if self.use_mlflow:
                 mlflow.end_run()
-    
+
     def train_all_models(
         self,
         X_train: pd.DataFrame,
@@ -342,18 +342,18 @@ class ModelTrainer:
         model_names: Optional[List[str]] = None
     ) -> List[TrainingResult]:
         """Train all configured models."""
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         logger.info("STARTING MODEL TRAINING")
-        logger.info("="*80)
-        
+        logger.info("=" * 80)
+
         configs = self.get_model_configs()
-        
+
         # Filter by model names if specified
         if model_names:
             configs = [c for c in configs if c.name in model_names]
-        
+
         logger.info(f"Training {len(configs)} models: {[c.name for c in configs]}")
-        
+
         results = []
         for config in configs:
             try:
@@ -364,26 +364,26 @@ class ModelTrainer:
             except Exception as e:
                 logger.error(f"Error training {config.name}: {e}")
                 continue
-        
+
         self.results = results
-        
+
         # Find best model
         if results:
             best_result = min(results, key=lambda r: r.val_metrics['mae'])
             self.best_model = best_result.best_model
             self.best_model_name = best_result.model_name
-            
+
             logger.info(f"\nBest model: {self.best_model_name}")
             logger.info(f"Val MAE: {best_result.val_metrics['mae']:.2f}")
-        
+
         return results
-    
+
     def compare_models(self) -> pd.DataFrame:
         """Create comparison table of all models."""
         if not self.results:
             logger.warning("No results to compare")
             return pd.DataFrame()
-        
+
         comparison = []
         for result in self.results:
             comparison.append({
@@ -399,37 +399,37 @@ class ModelTrainer:
                 'test_r2': result.test_metrics['r2'],
                 'training_time': result.training_time
             })
-        
+
         df = pd.DataFrame(comparison)
         df = df.sort_values('val_mae')
-        
-        logger.info("\n" + "="*80)
+
+        logger.info("\n" + "=" * 80)
         logger.info("MODEL COMPARISON (sorted by validation MAE)")
-        logger.info("="*80)
+        logger.info("=" * 80)
         print(df.to_string(index=False))
-        
+
         return df
-    
+
     def save_results(self, timestamp: Optional[str] = None):
         """Save all training results."""
         if not self.results:
             logger.warning("No results to save")
             return
-        
+
         timestamp = timestamp or datetime.now().strftime("%Y%m%d_%H%M%S")
-        
+
         # Save comparison table
         df_comparison = self.compare_models()
         comparison_path = self.output_dir / f"comparison_{timestamp}.csv"
         df_comparison.to_csv(comparison_path, index=False)
         logger.info(f"Saved comparison: {comparison_path}")
-        
+
         # Save best model
         if self.best_model:
             model_path = self.output_dir / f"best_model_{timestamp}.pkl"
             joblib.dump(self.best_model, model_path)
             logger.info(f"Saved best model ({self.best_model_name}): {model_path}")
-            
+
             # Save model metadata
             best_result = next(r for r in self.results if r.model_name == self.best_model_name)
             metadata = {
@@ -443,17 +443,17 @@ class ModelTrainer:
                 },
                 'training_time': best_result.training_time
             }
-            
+
             metadata_path = self.output_dir / f"best_model_metadata_{timestamp}.json"
             with metadata_path.open('w', encoding='utf-8') as f:
                 json.dump(metadata, f, indent=2)
-            
+
             # Save feature importance if available
             if best_result.feature_importance is not None:
                 fi_path = self.output_dir / f"feature_importance_{timestamp}.csv"
                 best_result.feature_importance.to_csv(fi_path, index=False)
                 logger.info(f"Saved feature importance: {fi_path}")
-    
+
     def _evaluate(
         self,
         model: Any,
@@ -463,19 +463,19 @@ class ModelTrainer:
     ) -> Dict[str, float]:
         """Evaluate model and return metrics."""
         y_pred = model.predict(X)
-        
+
         metrics = {
             'mae': mean_absolute_error(y, y_pred),
             'rmse': np.sqrt(mean_squared_error(y, y_pred)),
             'r2': r2_score(y, y_pred),
             'mape': mean_absolute_percentage_error(y, y_pred) * 100
         }
-        
+
         logger.info(f"{dataset_name} - MAE: {metrics['mae']:.2f}, "
-                   f"RMSE: {metrics['rmse']:.2f}, "
-                   f"R2: {metrics['r2']:.4f}, "
-                   f"MAPE: {metrics['mape']:.2f}%")
-        
+                    f"RMSE: {metrics['rmse']:.2f}, "
+                    f"R2: {metrics['r2']:.4f}, "
+                    f"MAPE: {metrics['mape']:.2f}%")
+
         return metrics
 
 
@@ -483,54 +483,54 @@ def load_latest_data(data_dir: Path = PROJECT_ROOT / "data" / "ml_ready") -> Tup
     """Load the most recent train/val/test datasets."""
     if not data_dir.exists():
         raise FileNotFoundError(f"Data directory not found: {data_dir}")
-    
+
     # Find latest datasets
     train_files = sorted(data_dir.glob("train_*.parquet"))
     val_files = sorted(data_dir.glob("val_*.parquet"))
     test_files = sorted(data_dir.glob("test_*.parquet"))
-    
+
     if not train_files:
         raise FileNotFoundError("No training data found. Run ML pipeline first.")
-    
+
     train_path = train_files[-1]
     val_path = val_files[-1]
     test_path = test_files[-1]
-    
+
     logger.info(f"Loading train data: {train_path.name}")
     logger.info(f"Loading val data: {val_path.name}")
     logger.info(f"Loading test data: {test_path.name}")
-    
+
     df_train = pd.read_parquet(train_path)
     df_val = pd.read_parquet(val_path)
     df_test = pd.read_parquet(test_path)
-    
+
     # Separate features and target
     target_col = 'duration_in_traffic_s'
-    
+
     X_train = df_train.drop(columns=[target_col])
     y_train = df_train[target_col]
-    
+
     X_val = df_val.drop(columns=[target_col])
     y_val = df_val[target_col]
-    
+
     X_test = df_test.drop(columns=[target_col])
     y_test = df_test[target_col]
-    
+
     return X_train, y_train, X_val, y_val, X_test, y_test
 
 
 def train_models_cli():
     """CLI entry point for model training."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description='Train traffic forecast models')
     parser.add_argument('--models', nargs='+', help='Specific models to train')
     parser.add_argument('--use-mlflow', action='store_true', help='Enable MLflow tracking')
     args = parser.parse_args()
-    
+
     # Load data
     X_train, y_train, X_val, y_val, X_test, y_test = load_latest_data()
-    
+
     # Train models
     trainer = ModelTrainer(use_mlflow=args.use_mlflow)
     results = trainer.train_all_models(
@@ -539,13 +539,13 @@ def train_models_cli():
         X_test, y_test,
         model_names=args.models
     )
-    
+
     # Save results
     trainer.save_results()
-    
-    logger.info("\n" + "="*80)
+
+    logger.info("\n" + "=" * 80)
     logger.info("TRAINING COMPLETE!")
-    logger.info("="*80)
+    logger.info("=" * 80)
 
 
 if __name__ == "__main__":

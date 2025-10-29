@@ -1,12 +1,12 @@
 # Maintainer Profile# Documentation Structure
 
-**Full name:** THAT Le Quang This file describes the organization of project documentation.
+**Full name:**THAT Le Quang This file describes the organization of project documentation.
 
-**Nickname:** Xiel
+**Nickname:**Xiel
 
 **Last Updated**: October 26, 2025
 
-- **Role:** AI & DS Major Student**Version**: Academic v4.0
+- **Role:**AI & DS Major Student**Version**: Academic v4.0
 
 - **GitHub:** [thatlq1812](https://github.com/thatlq1812)
 
@@ -64,53 +64,53 @@ conda env update -f environment.yml## Documentation Directory Structure
 
 #### Data Collectiondoc/
 
-├── getting-started/          # Beginner guides
+ getting-started/ # Beginner guides
 
-```bash│   ├── quickstart.md        # Quick start guide
+```bash quickstart.md # Quick start guide
 
-# Single collection (local)│   └── configuration.md     # Configuration reference
+# Single collection (local) configuration.md # Configuration reference
 
-conda run -n dsp python scripts/collection/collect_and_render.py --once│
+conda run -n dsp python scripts/collection/collect_and_render.py --once
 
-├── history/                  # Development history
+ history/ # Development history
 
-# Start collection loop (15 minutes)│   └── progress.md          # Development timeline
+# Start collection loop (15 minutes) progress.md # Development timeline
 
-conda run -n dsp python scripts/collection/collect_and_render.py --interval 900│
+conda run -n dsp python scripts/collection/collect_and_render.py --interval 900
 
-├── reference/               # Technical references
+ reference/ # Technical references
 
-# View schedule│   ├── ACADEMIC_V4_SUMMARY.md              # v4.0 optimization overview
+# View schedule ACADEMIC_V4_SUMMARY.md # v4.0 optimization overview
 
-conda run -n dsp python scripts/collection/collect_and_render.py --print-schedule│   ├── GOOGLE_API_COST_ANALYSIS.md         # Cost analysis and optimization
+conda run -n dsp python scripts/collection/collect_and_render.py --print-schedule GOOGLE_API_COST_ANALYSIS.md # Cost analysis and optimization
 
-```│   ├── FEATURE_ENGINEERING_GUIDE.md        # Feature engineering documentation
+``` FEATURE_ENGINEERING_GUIDE.md # Feature engineering documentation
 
-│   ├── TEMPORAL_FEATURES_ANALYSIS.md       # Temporal features analysis
+ TEMPORAL_FEATURES_ANALYSIS.md # Temporal features analysis
 
-#### Data Management│   ├── TRAFFIC_HISTORY_STORAGE_GUIDE.md    # SQLite storage guide
+#### Data Management TRAFFIC_HISTORY_STORAGE_GUIDE.md # SQLite storage guide
 
-│   ├── NODE_EXPORT_GUIDE.md                # Node export and selection
+ NODE_EXPORT_GUIDE.md # Node export and selection
 
-```bash│   ├── SCRIPTS_REFERENCE.md                # Complete scripts documentation
+```bash SCRIPTS_REFERENCE.md # Complete scripts documentation
 
-# Download latest data from GCP (recommended)│   ├── data_model.md                       # Database schema
+# Download latest data from GCP (recommended) data_model.md # Database schema
 
-bash scripts/data_management/download_data_compressed.sh│   └── schema_design.md                    # Validation schemas
+bash scripts/data_management/download_data_compressed.sh schema_design.md # Validation schemas
 
-│
 
-# Cleanup old runs (keep last 14 days)├── reports/                 # Generated reports
 
-conda run -n dsp python scripts/data_management/cleanup_runs.py --days 14│   └── internal_report_05.md               # Internal progress report
+# Cleanup old runs (keep last 14 days) reports/ # Generated reports
 
-│
+conda run -n dsp python scripts/data_management/cleanup_runs.py --days 14 internal_report_05.md # Internal progress report
 
-# Backup data└── archive/                 # Historical documentation
 
-bash scripts/data_management/backup.sh    ├── DEPLOYMENT_SUCCESS_SUMMARY.md       # Oct 25 deployment details
 
-```    └── TEAM_ACCESS_GUIDE.md                # Team access (deprecated)
+# Backup data archive/ # Historical documentation
+
+bash scripts/data_management/backup.sh DEPLOYMENT_SUCCESS_SUMMARY.md # Oct 25 deployment details
+
+``` TEAM_ACCESS_GUIDE.md # Team access (deprecated)
 
 ````
 
@@ -154,7 +154,7 @@ Key settings:### 2. Deployment (For Production)
 
 3. [PRODUCTION_SUMMARY.md](PRODUCTION_SUMMARY.md) - What changed in v4.0
 
-### 📖 Getting Started4. [TROUBLESHOOTING_NODES_MISSING.md](TROUBLESHOOTING_NODES_MISSING.md) - Common issues
+### Getting Started4. [TROUBLESHOOTING_NODES_MISSING.md](TROUBLESHOOTING_NODES_MISSING.md) - Common issues
 
 5. [reference/SCRIPTS_REFERENCE.md](reference/SCRIPTS_REFERENCE.md) - All scripts explained
 
@@ -170,7 +170,7 @@ New to the project? Start here:
 
 1. [getting-started/configuration.md](getting-started/configuration.md) - Config reference
 
-### 📚 Reference Documentation2. [reference/ACADEMIC_V4_SUMMARY.md](reference/ACADEMIC_V4_SUMMARY.md) - v4.0 settings
+### Reference Documentation2. [reference/ACADEMIC_V4_SUMMARY.md](reference/ACADEMIC_V4_SUMMARY.md) - v4.0 settings
 
 3. [.env.template](../.env.template) - Environment variables
 
@@ -196,7 +196,7 @@ Technical specifications and guides:
 
 - **[reference/schema_design.md](reference/schema_design.md)** - Schema designDeep dive into technical details:
 
-### 📊 Reports1. [reference/FEATURE_ENGINEERING_GUIDE.md](reference/FEATURE_ENGINEERING_GUIDE.md) - Features
+### Reports1. [reference/FEATURE_ENGINEERING_GUIDE.md](reference/FEATURE_ENGINEERING_GUIDE.md) - Features
 
 2. [reference/TEMPORAL_FEATURES_ANALYSIS.md](reference/TEMPORAL_FEATURES_ANALYSIS.md) - Time features
 
@@ -208,7 +208,7 @@ Analysis reports and findings:3. [reference/TRAFFIC_HISTORY_STORAGE_GUIDE.md](re
 
 6. [reference/schema_design.md](reference/schema_design.md) - Validation schemas
 
-### 📜 History
+### History
 
 ### 6. Daily Operations (For Maintenance)
 
@@ -222,7 +222,7 @@ Day-to-day tasks:
 
 2. [scripts/health_check.sh](../scripts/health_check.sh) - Health check
 
-### 🗄️ Archive3. [scripts/cleanup.sh](../scripts/cleanup.sh) - Cleanup
+### Archive3. [scripts/cleanup.sh](../scripts/cleanup.sh) - Cleanup
 
 4. [scripts/backup.sh](../scripts/backup.sh) - Backup
 
@@ -306,7 +306,7 @@ Edit `configs/project_config.yaml`:
 
 google_directions:3. **Clear headings** with proper hierarchy
 
-  use_mock_api: true  # true = FREE, false = PAID4. **Code blocks** with language specification
+ use_mock_api: true # true = FREE, false = PAID4. **Code blocks** with language specification
 
 ```5. **Links** to related documentation
 
@@ -408,6 +408,6 @@ For issues or questions:
 
 ---
 
-**Project**: Traffic Forecast System  
-**Version**: Academic v4.0  
+**Project**: Traffic Forecast System 
+**Version**: Academic v4.0 
 **Last Updated**: October 27, 2025

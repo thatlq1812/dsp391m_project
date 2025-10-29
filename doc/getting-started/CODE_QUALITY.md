@@ -258,23 +258,23 @@ Use Google-style docstrings:
 
 ```python
 def calculate_speed(distance_km: float, duration_sec: float) -> float:
-    """
-    Calculate speed in km/h from distance and duration.
+ """
+ Calculate speed in km/h from distance and duration.
 
-    Args:
-        distance_km: Distance in kilometers
-        duration_sec: Duration in seconds
+ Args:
+ distance_km: Distance in kilometers
+ duration_sec: Duration in seconds
 
-    Returns:
-        Speed in kilometers per hour
+ Returns:
+ Speed in kilometers per hour
 
-    Raises:
-        ValueError: If duration is zero or negative
-    """
-    if duration_sec <= 0:
-        raise ValueError("Duration must be positive")
+ Raises:
+ ValueError: If duration is zero or negative
+ """
+ if duration_sec <= 0:
+ raise ValueError("Duration must be positive")
 
-    return (distance_km / duration_sec) * 3600
+ return (distance_km / duration_sec) * 3600
 ```
 
 ### Type Hints
@@ -285,11 +285,11 @@ Use type hints for function signatures:
 from typing import List, Dict, Optional, Tuple
 
 def process_nodes(
-    nodes: List[Dict[str, float]],
-    config: Optional[Dict] = None
+ nodes: List[Dict[str, float]],
+ config: Optional[Dict] = None
 ) -> Tuple[int, List[str]]:
-    """Process nodes and return results."""
-    pass
+ """Process nodes and return results."""
+ pass
 ```
 
 ## Continuous Integration
@@ -320,14 +320,14 @@ Settings (`.vscode/settings.json`):
 
 ```json
 {
-  "python.formatting.provider": "black",
-  "python.linting.enabled": true,
-  "python.linting.flake8Enabled": true,
-  "python.linting.pylintEnabled": true,
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.organizeImports": true
-  }
+ "python.formatting.provider": "black",
+ "python.linting.enabled": true,
+ "python.linting.flake8Enabled": true,
+ "python.linting.pylintEnabled": true,
+ "editor.formatOnSave": true,
+ "editor.codeActionsOnSave": {
+ "source.organizeImports": true
+ }
 }
 ```
 
@@ -360,7 +360,7 @@ isort --profile black traffic_forecast/
 For third-party libraries without type stubs:
 
 ```python
-import library  # type: ignore
+import library # type: ignore
 ```
 
 Or in `pyproject.toml`:
@@ -375,17 +375,17 @@ ignore_missing_imports = true
 
 1. **Run formatters before committing**
 
-   ```bash
-   black traffic_forecast/ tests/
-   isort traffic_forecast/ tests/
-   ```
+ ```bash
+ black traffic_forecast/ tests/
+ isort traffic_forecast/ tests/
+ ```
 
 2. **Fix linting issues promptly**
 
-   ```bash
-   flake8 traffic_forecast/
-   pylint traffic_forecast/
-   ```
+ ```bash
+ flake8 traffic_forecast/
+ pylint traffic_forecast/
+ ```
 
 3. **Keep code simple** - Avoid complex nested structures
 

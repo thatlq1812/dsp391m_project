@@ -1,7 +1,7 @@
 # Maintainer Profile
-**Full name:** THAT Le Quang 
-**Nickname:** Xiel
-- **Role:** AI & DS Major Student
+**Full name:**THAT Le Quang 
+**Nickname:**Xiel
+- **Role:**AI & DS Major Student
 - **GitHub:** [thatlq1812](https://github.com/thatlq1812)
 - **Primary email:** fxlqthat@gmail.com
 - **Academic email:** thatlqse183256@fpt.edu.com
@@ -10,8 +10,8 @@
 ---
 # Scripts Reference Guide
 This document describes all scripts in the `scripts/` directory, organized by category.
-**Last Updated:** October 27, 2025 
-**Version:** Academic v4.0.2
+**Last Updated:**October 27, 2025 
+**Version:**Academic v4.0.2
 ---
 ## Table of Contents
 1. [Quick Reference Table](#quick-reference-table)
@@ -49,7 +49,7 @@ This document describes all scripts in the `scripts/` directory, organized by ca
 ---
 ## Deployment Scripts
 ### `deploy_week_collection.sh`
-**Purpose:** Fully automated 7-day data collection deployment to GCP VM
+**Purpose:**Fully automated 7-day data collection deployment to GCP VM
 **Usage:**
 ```bash
 bash scripts/deploy_week_collection.sh
@@ -72,7 +72,7 @@ bash scripts/deploy_week_collection.sh
 5. Starts collection with adaptive scheduling
 ---
 ### `vm_setup.sh`
-**Purpose:** Setup script that runs ON the VM to install dependencies
+**Purpose:**Setup script that runs ON the VM to install dependencies
 **Usage:**
 ```bash
 # Called automatically by deploy_week_collection.sh
@@ -88,7 +88,7 @@ bash scripts/vm_setup.sh
 **Time:** ~5-7 minutes
 ---
 ### `deploy_preflight.sh`
-**Purpose:** Pre-deployment validation checklist
+**Purpose:**Pre-deployment validation checklist
 **Usage:**
 ```bash
 bash scripts/deploy_preflight.sh
@@ -105,7 +105,7 @@ bash scripts/deploy_preflight.sh
 - 1: One or more checks failed
 ---
 ### `cleanup_failed_deployment.sh`
-**Purpose:** Cleanup resources after failed deployment
+**Purpose:**Cleanup resources after failed deployment
 **Usage:**
 ```bash
 bash scripts/cleanup_failed_deployment.sh [instance_name]
@@ -117,7 +117,7 @@ bash scripts/cleanup_failed_deployment.sh [instance_name]
 - Lists remaining resources
 ---
 ### `vm_users_setup.sh`
-**Purpose:** Add team members SSH access to GCP VM
+**Purpose:**Add team members SSH access to GCP VM
 **Usage:**
 ```bash
 bash scripts/vm_users_setup.sh
@@ -129,7 +129,7 @@ bash scripts/vm_users_setup.sh
 ---
 ## Data Collection Scripts
 ### `collect_and_render.py`
-**Purpose:** Main data collection script with scheduling
+**Purpose:**Main data collection script with scheduling
 **Usage:**
 ```bash
 # Single collection
@@ -153,15 +153,15 @@ python scripts/collect_and_render.py --interval 1800 --no-visualize
 3. Open-Meteo - Weather data
 ---
 ### `collect_with_history.py`
-**Purpose:** Collection with SQLite database storage (alternative to file-based)
+**Purpose:**Collection with SQLite database storage (alternative to file-based)
 **Usage:**
 ```bash
 python scripts/collect_with_history.py
 ```
-**Note:** Currently using file-based storage. This is for future SQLite implementation.
+**Note:**Currently using file-based storage. This is for future SQLite implementation.
 ---
 ### `collection_start.sh`
-**Purpose:** Helper script to start collection service
+**Purpose:**Helper script to start collection service
 **Usage:**
 ```bash
 bash scripts/collection_start.sh
@@ -172,7 +172,7 @@ bash scripts/collection_start.sh
 - Runs in background with logging
 ---
 ### `collection_monitor.sh`
-**Purpose:** Monitor active collection status
+**Purpose:**Monitor active collection status
 **Usage:**
 ```bash
 bash scripts/collection_monitor.sh
@@ -185,7 +185,7 @@ bash scripts/collection_monitor.sh
 ---
 ## Data Management Scripts
 ### `download_data_compressed.sh`
-**Purpose:** Download data from VM as compressed archive (RECOMMENDED)
+**Purpose:**Download data from VM as compressed archive (RECOMMENDED)
 **Usage:**
 ```bash
 # Default (tar.gz)
@@ -214,15 +214,15 @@ zip
 5. Generates README.md
 ---
 ### `download_data_legacy.sh`
-**Purpose:** Old download method using recursive scp (DEPRECATED)
+**Purpose:**Old download method using recursive scp (DEPRECATED)
 **Usage:**
 ```bash
 bash scripts/download_data_legacy.sh
 ```
-**Note:** Shows deprecation warning and prompts to use compressed method.
+**Note:**Shows deprecation warning and prompts to use compressed method.
 ---
 ### `backfill_overpass_data.py`
-**Purpose:** Backfill missing Overpass data to existing collections
+**Purpose:**Backfill missing Overpass data to existing collections
 **Usage:**
 ```bash
 # Dry run first
@@ -235,10 +235,10 @@ python scripts/backfill_overpass_data.py --data-dir data
 2. Validates data structure (40 nodes, edges)
 3. Copies to all collections missing Overpass data
 4. Reports statistics
-**Use case:** Fix collections that failed Overpass collection due to cache bug
+**Use case:**Fix collections that failed Overpass collection due to cache bug
 ---
 ### `cleanup_runs.py`
-**Purpose:** Remove old collection runs to free disk space
+**Purpose:**Remove old collection runs to free disk space
 **Usage:**
 ```bash
 # Remove runs older than 14 days
@@ -251,7 +251,7 @@ python scripts/cleanup_runs.py --days 7 --dry-run
 - `--dry-run`: Show what would be deleted without deleting
 ---
 ### `backup.sh`
-**Purpose:** Backup data and configuration files
+**Purpose:**Backup data and configuration files
 **Usage:**
 ```bash
 bash scripts/backup.sh
@@ -261,11 +261,11 @@ bash scripts/backup.sh
 - Configuration files
 - Database (if exists)
 - Logs
-**Output:** Creates timestamped archive in backups/
+**Output:**Creates timestamped archive in backups/
 ---
 ## Maintenance Scripts
 ### `fix_overpass_cache.sh`
-**Purpose:** Deploy cache bug fix to production VM
+**Purpose:**Deploy cache bug fix to production VM
 **Usage:**
 ```bash
 bash scripts/fix_overpass_cache.sh
@@ -276,10 +276,10 @@ bash scripts/fix_overpass_cache.sh
 3. Clears corrupted cache
 4. Restarts collection service
 5. Runs backfill (with confirmation)
-**Use case:** Fix KeyError 'nodes' cache bug on production
+**Use case:**Fix KeyError 'nodes' cache bug on production
 ---
 ### `health_check.sh`
-**Purpose:** Comprehensive system health check
+**Purpose:**Comprehensive system health check
 **Usage:**
 ```bash
 bash scripts/health_check.sh
@@ -296,7 +296,7 @@ bash scripts/health_check.sh
 - 1: Issues detected
 ---
 ### `install_dependencies.sh`
-**Purpose:** Install system-level dependencies on VM
+**Purpose:**Install system-level dependencies on VM
 **Usage:**
 ```bash
 bash scripts/install_dependencies.sh
@@ -306,11 +306,11 @@ bash scripts/install_dependencies.sh
 - System libraries
 - Git
 - Other required packages
-**Note:** Called automatically by `vm_setup.sh`
+**Note:**Called automatically by `vm_setup.sh`
 ---
 ## Monitoring Scripts
 ### `live_dashboard.py`
-**Purpose:** FastAPI-based live dashboard for collection monitoring
+**Purpose:**FastAPI-based live dashboard for collection monitoring
 **Usage:**
 ```bash
 python scripts/live_dashboard.py
@@ -321,11 +321,11 @@ python scripts/live_dashboard.py
 - Recent runs
 - Error tracking
 - Web interface on http://localhost:8000
-**Note:** Experimental - not used in production yet
+**Note:**Experimental - not used in production yet
 ---
 ## Utility Scripts
 ### `quick_start.sh`
-**Purpose:** Interactive quick start guide
+**Purpose:**Interactive quick start guide
 **Usage:**
 ```bash
 bash scripts/quick_start.sh
@@ -337,8 +337,8 @@ bash scripts/quick_start.sh
 - Shows common commands
 ---
 ### `CLOUD_SCRIPTS_README.md`
-**Purpose:** Legacy documentation for cloud scripts
-**Note:** Information now consolidated into this reference guide.
+**Purpose:**Legacy documentation for cloud scripts
+**Note:**Information now consolidated into this reference guide.
 ---
 ## Deprecated Scripts
 Located in `scripts/deprecated/` - kept for reference but not actively maintained.

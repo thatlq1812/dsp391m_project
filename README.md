@@ -1,53 +1,153 @@
-# Traffic Forecast - Academic v4.0
+# Traffic Forecast v5.1 - Real-Time Traffic Prediction
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Production--Ready-success.svg)]()
-[![MLflow](https://img.shields.io/badge/MLflow-Tracking-blue)](https://mlflow.org/)
-[![XGBoost](https://img.shields.io/badge/XGBoost-Ensemble-green)](https://xgboost.ai/)
+[![Coverage](https://img.shields.io/badge/Coverage-4096m_radius-blue)]()
+[![Nodes](https://img.shields.io/badge/Nodes-78_filtered-green)]()
+[![Cost](https://img.shields.io/badge/Cost-$21%2Fday-success)]()
 
-> Cost-optimized traffic forecasting system for Ho Chi Minh City with adaptive scheduling, intelligent node selection, and 87% cost reduction for academic research.
+> **Academic Data Science Project (DSP391m)** - Real-time traffic forecasting for HCMC with Google Directions API, intelligent node selection, automated GCP deployment, and cost-optimized adaptive scheduling. 25% cost reduction through smart caching and adaptive collection.
+
+**Version 5.1 Highlights:**
+
+- Real API only (no mock data)
+- 16x coverage expansion (4096m radius)
+- 78 nodes with 200m minimum distance
+- 100% API success rate
+- Automated GCP VM deployment
+- **Adaptive scheduling** (peak/off-peak/night modes)
+- **Weather grid caching** (32% API reduction)
+- **Permanent topology cache** (one-time fetch)
+- **$147 for 7-day collection** (25% savings)
 
 ## Author
 
-- Le Quang That (THAT Le Quang) – SE183256
- - Nickname: Xiel
- - GitHub: [thatlq1812](https://github.com/thatlq1812)
- - Email: fxlqthat@gmail.com / thatlqse183256@fpt.edu.com / thatlq1812@gmail.com
- - Phone: +84 33 863 6369 / +84 39 730 6450
+**Le Quang That (THAT Le Quang)** – SE183256
 
-## Quick Links
-
-- **[DEPLOYMENT_QUICKSTART.md](DEPLOYMENT_QUICKSTART.md)** - NEW: Your deployment is RUNNING! Essential commands and monitoring
-- **[Cloud Deployment Guide](CLOUD_DEPLOY.md)** - NEW: Automated 1-week data collection on GCP
-- **[Deployment Success Report](doc/DEPLOYMENT_SUCCESS_SUMMARY.md)** - NEW: Complete deployment summary and lessons learned
-- [Deployment Guide](DEPLOY.md) - Complete deployment instructions for GVM
-- [Quick Start Script](scripts/quick_start.sh) - Interactive setup
-- [Runbook](notebooks/RUNBOOK.ipynb) - Interactive Jupyter notebook guide
-- [Quick Reference](doc/QUICKREF.md) - Common commands and tasks
-- [Academic v4.0 Summary](doc/reference/ACADEMIC_V4_SUMMARY.md) - Latest optimization overview
-- [Cost Analysis](doc/reference/GOOGLE_API_COST_ANALYSIS.md) - Detailed cost breakdown
-- [Documentation Index](doc/README.md) - All guides and references
+- Nickname: Xiel
+- GitHub: [thatlq1812](https://github.com/thatlq1812)
+- Email: fxlqthat@gmail.com / thatlqse183256@fpt.edu.vn
+- Project: DSP391m - Data Science Project (3 credits)
+- Term: Fall 2025
 
 ---
 
-## Documentation Index
+## Quick Start
 
-### Essential Guides
+### For v5.0 Users (Recommended)
 
-- **[DEPLOYMENT_QUICKSTART.md](DEPLOYMENT_QUICKSTART.md)** - YOUR DEPLOYMENT IS RUNNING! Essential commands
-- **[CLOUD_DEPLOY.md](CLOUD_DEPLOY.md)** - NEW: Automated 1-week cloud deployment (35KB guide)
-- **[CLOUD_DEPLOY_VI.md](CLOUD_DEPLOY_VI.md)** - NEW: Vietnamese quick start guide
-- **[DEPLOY_NOW.md](DEPLOY_NOW.md)** - NEW: Step-by-step deployment guide
-- **[doc/DEPLOYMENT_SUCCESS_SUMMARY.md](doc/DEPLOYMENT_SUCCESS_SUMMARY.md)** - Complete deployment report
-- **[CLOUD_IMPLEMENTATION_SUMMARY.md](CLOUD_IMPLEMENTATION_SUMMARY.md)** - Technical implementation details
-- **[DEPLOY.md](DEPLOY.md)** - Complete deployment guide for production
-- **[CHANGELOG.md](CHANGELOG.md)** - Version history and changes
-- **[doc/QUICKREF.md](doc/QUICKREF.md)** - Quick reference for daily tasks
-- **[doc/PRODUCTION_SUMMARY.md](doc/PRODUCTION_SUMMARY.md)** - v4.0 deployment summary
-- **[doc/DEPLOYMENT_CHECKLIST.md](doc/DEPLOYMENT_CHECKLIST.md)** - Deployment validation
+**Interactive Notebooks (Best for beginners):**
 
-### Interactive Resources
+```bash
+cd /d/UNI/DSP391m/project
+conda activate dsp
+jupyter notebook
+
+# Open one of:
+notebooks/CONTROL_PANEL.ipynb # Local pipeline control
+notebooks/GCP_DEPLOYMENT.ipynb # GCP VM deployment
+```
+
+**Documentation:**
+
+- **[doc/v5/README.md](doc/v5/README.md)** - v5.0 documentation index
+- **[doc/v5/HOAN_TAT_V5.md](doc/v5/HOAN_TAT_V5.md)** - Complete v5.0 summary
+- **[doc/v5/DEPLOYMENT_GUIDE.md](doc/v5/DEPLOYMENT_GUIDE.md)** - GCP deployment guide
+- **[notebooks/README.md](notebooks/README.md)** - Notebook usage guide
+
+**Command Line:**
+
+```bash
+# Test collection (5 edges)
+export GOOGLE_TEST_LIMIT=5
+conda run -n dsp python traffic_forecast/collectors/google/collector.py
+
+# Full collection (234 edges)
+conda run -n dsp python traffic_forecast/collectors/google/collector.py
+```
+
+---
+
+## Version Comparison
+
+| Feature | v4.0 | v5.0 | v5.1 |
+| -------------- | ----------- | -------------------- | ---------------------------- |
+| API | Mock + Real | **Real only** | **Real only** |
+| Radius | 1024m | **4096m** (16x area) | **4096m** |
+| Nodes | 64 | **78** (filtered) | **78** (filtered) |
+| Min Distance | None | **200m** | **200m** |
+| Scheduling | Fixed 60min | Fixed 60min | **Adaptive** (peak/off-peak) |
+| Weather Cache | No | Basic | **Grid-based** (32% savings) |
+| Topology Cache | No | **Yes** (Overpass) | **Permanent** (one-time) |
+| Deployment | Manual | **Automated** | **Automated** |
+| Success Rate | ~85% | **100%** | **100%** |
+| Daily Cost | $33.70 | $28.08 | **$21.06** (25% savings) |
+| 7-Day Cost | $235.90 | $196.56 | **$147.42** |
+
+**Use v5.1 for:** **RECOMMENDED**
+
+- New deployments (cost-optimized)
+- Production use with budget constraints
+- Academic projects (7-day collection ~$140-150)
+- Smart collection (dense during peaks, sparse off-peak)
+
+**Use v5.0 for:**
+
+- Constant interval collection (testing)
+- Comparison baseline
+
+**Use v4.0 for:**
+
+- Reference implementation
+- Historical comparison
+
+---
+
+## Project Overview (v5.1)
+
+### System Architecture
+
+```
+Overpass API (OSM) → Node Topology (78 nodes, permanent cache)
+↓
+Google Directions API → Real-time Traffic (234 edges)
+↓
+Open-Meteo API → Weather Data (temperature, precipitation)
+↓
+Feature Engineering → Temporal + Lag Features
+↓
+ML Models → XGBoost, Random Forest, LightGBM
+```
+
+### Coverage Area
+
+- **Location:**HCMC Downtown (District 1, 3, Bình Thạnh)
+- **Center:** 10.7756°N, 106.7019°E (Landmark 81)
+- **Radius:** 4096m
+- **Area:** ~52.8 km²
+- **Nodes:** 78 (58 primary, 20 trunk roads)
+- **Edges:** 234 (78 × 3 nearest neighbors)
+
+### Data Collection
+
+- **Frequency:**Hourly (recommended for budget)
+- **API Success:** 100% (verified)
+- **Cost:** $28/day, $197/week
+- **Target:** 7 days = 39,312 measurements
+
+---
+
+## Quick Links (v5.0)
+
+### Essential Resources
+
+- **[notebooks/CONTROL_PANEL.ipynb](notebooks/CONTROL_PANEL.ipynb)**Main control center
+- **[notebooks/GCP_DEPLOYMENT.ipynb](notebooks/GCP_DEPLOYMENT.ipynb)**VM deployment
+- **[doc/v5/DEPLOYMENT_GUIDE.md](doc/v5/DEPLOYMENT_GUIDE.md)** - Complete deployment guide
+- **[doc/v5/HOAN_TAT_V5.md](doc/v5/HOAN_TAT_V5.md)** - Project completion summary
+
+### Legacy Documentation (v4.0)
 
 - **[notebooks/RUNBOOK.ipynb](notebooks/RUNBOOK.ipynb)** - Complete interactive guide
 - **[scripts/quick_start.sh](scripts/quick_start.sh)** - One-command setup
@@ -117,14 +217,28 @@
 
 This project implements a cost-optimized traffic forecasting system for Ho Chi Minh City with focus on academic research efficiency:
 
-- **Adaptive Scheduling**: Intelligent collection intervals based on peak/off-peak hours
-- **Smart Node Selection**: 64 major intersections (motorway, trunk, primary roads only)
-- **Cost-Optimized**: 87% cost reduction ($5,530 to $720/month)
-- **Production-Ready**: SQLite-based lag features, MLflow tracking, Docker deployment
+### Cost Optimization (v5.1)
 
-### Mission Statement
+**Adaptive Scheduling:**
 
-> "Build an academically rigorous, cost-effective traffic forecasting system that provides accurate insights for Ho Chi Minh City while maintaining research budget constraints through intelligent scheduling and selective data collection."
+- Peak hours (7-9 AM, 12-1 PM, 5-8 PM): 30-minute intervals
+- Off-peak (9 AM-12 PM, 1-5 PM, 8-11 PM): 90-minute intervals
+- Night (11 PM-7 AM): Skip completely
+- Weekend: 120-minute intervals
+
+**Smart Caching:**
+
+- Weather grid cache: 1km² cells (32% API reduction)
+- Permanent topology cache: One-time fetch
+- Static data cached forever, dynamic data adaptive
+
+**Cost Results:**
+
+- **$21.06/day** for adaptive collection (vs $28.08 fixed)
+- **$147 for 7 days** (25% savings, under budget)
+- **~30,000 measurements** in 7 days (optimized quality)
+
+See: **[doc/v5/COLLECTION_OPTIMIZATION_V5.1.md](doc/v5/COLLECTION_OPTIMIZATION_V5.1.md)** for details
 
 ---
 
@@ -136,29 +250,30 @@ This project implements a cost-optimized traffic forecasting system for Ho Chi M
 
 1. **Adaptive Scheduler** - NEW
 
- - Peak hours (6:30-7:30, 10:30-11:30, 13:00-13:30, 16:30-19:30): 30 min intervals
- - Off-peak hours: 60 min intervals
- - Weekend: 90 min intervals
- - Result: 96 collections/day to 25 collections/day (74% reduction)
+- Peak hours (6:30-7:30, 10:30-11:30, 13:00-13:30, 16:30-19:30): 30 min intervals
+- Off-peak hours: 60 min intervals
+- Weekend: 90 min intervals
+- Result: 96 collections/day to 25 collections/day (74% reduction)
 
 2. **Focused Coverage**
 
- - Radius: 4096m to 1024m (core area focus)
- - Nodes: 128 to 64 (major intersections only)
- - Road types: Only motorway, trunk, primary
- - Quality: min_degree 6, min_importance 40
+- Radius: 4096m to 1024m (core area focus)
+- Nodes: 128 to 64 (major intersections only)
+- Road types: Only motorway, trunk, primary
+- Quality: min_degree 6, min_importance 40
 
 3. **Cost Reduction**
 
- - Monthly cost: $5,530 to $720 (87% savings)
- - Collections per day: 96 to 25 (74% reduction)
- - API requests: 36,864/day to 4,800/day
+- Monthly cost: $5,530 to $720 (87% savings)
+- Collections per day: 96 to 25 (74% reduction)
+- API requests: 36,864/day to 4,800/day
 
 4. **New Features**
- - Traffic history storage with SQLite
- - Lag features (5, 15, 30, 60 min)
- - Mock API mode for FREE development
- - Enhanced documentation with cost analysis
+
+- Traffic history storage with SQLite
+- Lag features (5, 15, 30, 60 min)
+- Mock API mode for FREE development
+- Enhanced documentation with cost analysis
 
 **See**: [Academic v4.0 Summary](doc/reference/ACADEMIC_V4_SUMMARY.md) for complete details.
 
@@ -215,20 +330,20 @@ This project implements a cost-optimized traffic forecasting system for Ho Chi M
 
 ```
 
- Data Sources Intelligent ML Pipeline
- Caching System
- • Google Maps • Feature Eng.
- • Open-Meteo • Overpass: 7d • LSTM Model
- • OpenStreetMap • Weather: 1h • Batch Infer.
+Data Sources Intelligent ML Pipeline
+Caching System
+• Google Maps • Feature Eng.
+• Open-Meteo • Overpass: 7d • LSTM Model
+• OpenStreetMap • Weather: 1h • Batch Infer.
 
 
 
 
- FastAPI Visualization Google Cloud
- REST API Dashboard VM Deployment
+FastAPI Visualization Google Cloud
+REST API Dashboard VM Deployment
 
- • Auto Docs • Traffic Maps • Cron Jobs
- • Health Checks • Heatmaps • Monitoring
+• Auto Docs • Traffic Maps • Cron Jobs
+• Health Checks • Heatmaps • Monitoring
 
 ```
 
@@ -236,18 +351,18 @@ This project implements a cost-optimized traffic forecasting system for Ho Chi M
 
 ```
 traffic-forecast-node-radius/
- traffic_forecast/ # Application source package
- api/ # FastAPI application
- collectors/ # Overpass, Open-Meteo, Google collectors
- pipelines/ # Normalize, enrich, feature, model pipelines
- models/ # Baseline utilities, stored artifacts, research models
- scheduler/ # APScheduler entrypoint
- configs/ # Project configuration and schemas
- data/ # Raw and processed datasets
- doc/ # Reports and internal documentation
- scripts/ # Operational helper scripts (wrappers around package modules)
- tests/ # Unit tests & validation helpers
- run_collectors.py # Convenience CLI bundling the collectors
+traffic_forecast/ # Application source package
+api/ # FastAPI application
+collectors/ # Overpass, Open-Meteo, Google collectors
+pipelines/ # Normalize, enrich, feature, model pipelines
+models/ # Baseline utilities, stored artifacts, research models
+scheduler/ # APScheduler entrypoint
+configs/ # Project configuration and schemas
+data/ # Raw and processed datasets
+doc/ # Reports and internal documentation
+scripts/ # Operational helper scripts (wrappers around package modules)
+tests/ # Unit tests & validation helpers
+run_collectors.py # Convenience CLI bundling the collectors
 ```
 
 ---
@@ -303,7 +418,7 @@ conda activate dsp
 bash scripts/health_check.sh # Check system status
 ```
 
-**Need help?** Open [RUNBOOK.ipynb](notebooks/RUNBOOK.ipynb) or read [DEPLOY.md](DEPLOY.md)
+**Need help?**Open [RUNBOOK.ipynb](notebooks/RUNBOOK.ipynb) or read [DEPLOY.md](DEPLOY.md)
 
 ---
 
@@ -311,38 +426,38 @@ bash scripts/health_check.sh # Check system status
 
 1. **Clone repository**
 
- ```bash
- git clone https://github.com/thatlq1812/dsp391m_project.git
- cd dsp391m_project
- ```
+```bash
+git clone https://github.com/thatlq1812/dsp391m_project.git
+cd dsp391m_project
+```
 
 2. **Quick setup**
 
- ```bash
- bash scripts/quick_start.sh
- # Select option 1 for development (FREE mock API)
- ```
+```bash
+bash scripts/quick_start.sh
+# Select option 1 for development (FREE mock API)
+```
 
 3. **Or manual setup**
 
- ```bash
- # Create environment
- conda env create -f environment.yml
- conda activate dsp
+```bash
+# Create environment
+conda env create -f environment.yml
+conda activate dsp
 
- # Run single collection
- python scripts/collect_and_render.py --once
- ```
+# Run single collection
+python scripts/collect_and_render.py --once
+```
 
 4. **View results**
 
- ```bash
- # Check collected data
- ls data/node/
+```bash
+# Check collected data
+ls data/node/
 
- # View schedule
- python scripts/collect_and_render.py --print-schedule
- ```
+# View schedule
+python scripts/collect_and_render.py --print-schedule
+```
 
 ---
 
@@ -409,27 +524,27 @@ python -m traffic_forecast.cli.visualize
 ```yaml
 # Adaptive scheduler
 scheduler:
- mode: adaptive # or 'fixed' for legacy mode
- adaptive:
- peak_hours:
- time_ranges:
- - start: "06:30"
- end: "07:30" # Morning rush
- # ... more ranges
- interval_minutes: 30
+mode: adaptive # or 'fixed' for legacy mode
+adaptive:
+peak_hours:
+time_ranges:
+- start: "06:30"
+end: "07:30" # Morning rush
+# ... more ranges
+interval_minutes: 30
 
 # Node selection
 node_selection:
- max_nodes: 64
- min_degree: 6
- min_importance_score: 40.0
- road_type_filter: [motorway, trunk, primary]
+max_nodes: 64
+min_degree: 6
+min_importance_score: 40.0
+road_type_filter: [motorway, trunk, primary]
 
 # Google Directions
 google_directions:
- use_mock_api: true # FREE for development
- limit_nodes: 64
- k_neighbors: 3
+use_mock_api: true # FREE for development
+limit_nodes: 64
+k_neighbors: 3
 ```
 
 ---
@@ -471,12 +586,12 @@ google_directions:
 ```python
 # Smart cache with automatic expiry
 def get_or_create_cache(collector_name, params, cache_dir, expiry_hours, fetch_func):
- cache_key = generate_key(collector_name, params)
- if cache_valid(cache_key, expiry_hours):
- return load_cache(cache_key)
- data = fetch_func()
- save_cache(cache_key, data)
- return data
+cache_key = generate_key(collector_name, params)
+if cache_valid(cache_key, expiry_hours):
+return load_cache(cache_key)
+data = fetch_func()
+save_cache(cache_key, data)
+return data
 ```
 
 #### Performance Impact
@@ -804,19 +919,19 @@ Light, practical README for running the project locally and on a Google Cloud VM
 
 ```
 
- GCP VM Cloud Storage BigQuery
- (Compute) (Data Lake) Data Warehouse
+GCP VM Cloud Storage BigQuery
+(Compute) (Data Lake) Data Warehouse
 
- • Collectors • Raw data • Analytics
- • Training • Models • Reports
- • API Service • Configs
-
-
+• Collectors • Raw data • Analytics
+• Training • Models • Reports
+• API Service • Configs
 
 
 
- Cloud Run
- (API)
+
+
+Cloud Run
+(API)
 
 ```
 
@@ -824,96 +939,97 @@ Light, practical README for running the project locally and on a Google Cloud VM
 
 1. **Create VM instance**:
 
- ```bash
- gcloud compute instances create traffic-forecast-vm \
- --zone=asia-southeast1-a \
- --machine-type=n1-standard-4 \
- --image-family=ubuntu-2204-lts \
- --image-project=ubuntu-os-cloud \
- --boot-disk-size=50GB \
- --scopes=https://www.googleapis.com/auth/cloud-platform
- ```
+```bash
+gcloud compute instances create traffic-forecast-vm \
+--zone=asia-southeast1-a \
+--machine-type=n1-standard-4 \
+--image-family=ubuntu-2204-lts \
+--image-project=ubuntu-os-cloud \
+--boot-disk-size=50GB \
+--scopes=https://www.googleapis.com/auth/cloud-platform
+```
 
 2. **Setup environment**:
 
- ```bash
- sudo apt update
- sudo apt install python3 python3-pip git
- git clone <repo>
- cd traffic-forecast-node-radius
- pip install -r requirements.txt
- ```
+```bash
+sudo apt update
+sudo apt install python3 python3-pip git
+git clone <repo>
+cd traffic-forecast-node-radius
+pip install -r requirements.txt
+```
 
 3. **Define IAM Roles**:
 
- ```bash
- # Tạo service account
- gcloud iam service-accounts create traffic-forecast-sa \
- --description="Service account for traffic forecast" \
- --display-name="Traffic Forecast SA"
+```bash
+# Tạo service account
+gcloud iam service-accounts create traffic-forecast-sa \
+--description="Service account for traffic forecast" \
+--display-name="Traffic Forecast SA"
 
- # Cấp quyền
- gcloud projects add-iam-policy-binding PROJECT_ID \
- --member="serviceAccount:traffic-forecast-sa@PROJECT_ID.iam.gserviceaccount.com" \
- --role="roles/storage.admin"
+# Cấp quyền
+gcloud projects add-iam-policy-binding PROJECT_ID \
+--member="serviceAccount:traffic-forecast-sa@PROJECT_ID.iam.gserviceaccount.com" \
+--role="roles/storage.admin"
 
- gcloud projects add-iam-policy-binding PROJECT_ID \
- --member="serviceAccount:traffic-forecast-sa@PROJECT_ID.iam.gserviceaccount.com" \
- --role="roles/bigquery.admin"
- ```
+gcloud projects add-iam-policy-binding PROJECT_ID \
+--member="serviceAccount:traffic-forecast-sa@PROJECT_ID.iam.gserviceaccount.com" \
+--role="roles/bigquery.admin"
+```
 
 4. **Setup Cloud Storage**:
 
- ```bash
- # Tạo bucket
- gsutil mb -p PROJECT_ID -c regional -l asia-southeast1 gs://traffic-forecast-data
+```bash
+# Tạo bucket
+gsutil mb -p PROJECT_ID -c regional -l asia-southeast1 gs://traffic-forecast-data
 
- # Upload config
- gsutil cp configs/project_config.yaml gs://traffic-forecast-data/config/
- ```
+# Upload config
+gsutil cp configs/project_config.yaml gs://traffic-forecast-data/config/
+```
 
 5. **Run Training Job**:
 
- ```bash
- # Download dữ liệu mới nhất
- gsutil -m cp -r gs://traffic-forecast-data/data ./data
+```bash
+# Download dữ liệu mới nhất
+gsutil -m cp -r gs://traffic-forecast-data/data ./data
 
- # Train model
- python pipelines/model/train.py
+# Train model
+python pipelines/model/train.py
 
- # Upload model
- gsutil cp models/*.pkl gs://traffic-forecast-data/models/
- ```
+# Upload model
+gsutil cp models/*.pkl gs://traffic-forecast-data/models/
+```
 
 #### Jobs theo lịch với Cloud Scheduler
 
 1. **Create Cloud Function**:
 
- ```python
- # functions/main.py
- def collect_data(request):
- import subprocess
- result = subprocess.run(['python', 'run_collectors.py'])
- return f'Collection completed with code {result.returncode}'
- ```
+```python
+# functions/main.py
+def collect_data(request):
+import subprocess
+result = subprocess.run(['python', 'run_collectors.py'])
+return f'Collection completed with code {result.returncode}'
+```
 
 2. **Deploy Function**:
 
- ```bash
- gcloud functions deploy collect-data \
- --runtime python39 \
- --trigger-http \
- --allow-unauthenticated \
- --source functions/
- ```
+```bash
+gcloud functions deploy collect-data \
+--runtime python39 \
+--trigger-http \
+--allow-unauthenticated \
+--source functions/
+```
 
 3. **Lên lịch với Cloud Scheduler**:
- ```bash
- gcloud scheduler jobs create http collect-daily \
- --schedule="0 2 * * *" \
- --uri="https://REGION-PROJECT_ID.cloudfunctions.net/collect-data" \
- --http-method=POST
- ```
+
+```bash
+gcloud scheduler jobs create http collect-daily \
+--schedule="0 2 * * *" \
+--uri="https://REGION-PROJECT_ID.cloudfunctions.net/collect-data" \
+--http-method=POST
+```
 
 ---
 
@@ -947,11 +1063,11 @@ All data now validated with strict schemas:
 
 ```python
 class TrafficNode(BaseModel):
- node_id: str
- lat: float = Field(..., ge=-90, le=90)
- degree: int = Field(..., ge=0)
- importance_score: float
- # Automatic validation + quality reports
+node_id: str
+lat: float = Field(..., ge=-90, le=90)
+degree: int = Field(..., ge=0)
+importance_score: float
+# Automatic validation + quality reports
 ```
 
 **Features**:
@@ -975,12 +1091,12 @@ Every collection run generates detailed quality reports:
 #### 1. Multiple Model Types
 
 ```
- Linear Regression (baseline)
- Ridge & Lasso (regularized)
- Random Forest
- Gradient Boosting
- XGBoost
- LSTM (deep learning)
+Linear Regression (baseline)
+Ridge & Lasso (regularized)
+Random Forest
+Gradient Boosting
+XGBoost
+LSTM (deep learning)
 ```
 
 #### 2. MLflow Integration
@@ -1117,14 +1233,14 @@ pip install pytest pytest-cov pytest-asyncio
 
 # 2. Create test structure
 tests/
- unit/
- test_collectors.py
- test_validation.py
- test_models.py
- integration/
- test_pipeline.py
- test_api.py
- conftest.py
+unit/
+test_collectors.py
+test_validation.py
+test_models.py
+integration/
+test_pipeline.py
+test_api.py
+conftest.py
 
 # 3. Run tests
 pytest tests/ --cov=traffic_forecast --cov-report=html
@@ -1176,18 +1292,18 @@ pytest tests/ --cov=traffic_forecast --cov-report=html
 ```yaml
 # Planned enhancements
 Monitoring:
- - [ ] Prometheus metrics collection
- - [ ] Grafana dashboards
- - [ ] Alerting rules (PagerDuty/Slack)
- - [ ] Log aggregation (ELK stack)
- - [ ] Application Performance Monitoring (APM)
+- [ ] Prometheus metrics collection
+- [ ] Grafana dashboards
+- [ ] Alerting rules (PagerDuty/Slack)
+- [ ] Log aggregation (ELK stack)
+- [ ] Application Performance Monitoring (APM)
 
 Deployment:
- - [ ] Kubernetes orchestration
- - [ ] Helm charts
- - [ ] Auto-scaling policies
- - [ ] Blue-green deployments
- - [ ] Canary releases
+- [ ] Kubernetes orchestration
+- [ ] Helm charts
+- [ ] Auto-scaling policies
+- [ ] Blue-green deployments
+- [ ] Canary releases
 ```
 
 #### Phase 3: Advanced Features
@@ -1297,27 +1413,47 @@ Current setup is development-focused. Production needs:
 
 ```yaml
 Security:
- - Close exposed DB ports (5432, 6379)
- - Enable Redis authentication
- - HTTPS with Let's Encrypt
- - Network policies
- - Secrets rotation
+- Close exposed DB ports (5432, 6379)
+- Enable Redis authentication
+- HTTPS with Let's Encrypt
+- Network policies
+- Secrets rotation
 
 Monitoring:
- - Implement Prometheus metrics
- - Create Grafana dashboards
- - Setup alerts (uptime, errors, performance)
- - Log aggregation
- - Distributed tracing
+- Implement Prometheus metrics
+- Create Grafana dashboards
+- Setup alerts (uptime, errors, performance)
+- Log aggregation
+- Distributed tracing
 
 High Availability:
- - Database replication
- - Redis clustering
- - Load balancer (nginx/HAProxy)
- - Backup strategy
- - Disaster recovery plan
+- Database replication
+- Redis clustering
+- Load balancer (nginx/HAProxy)
+- Backup strategy
+- Disaster recovery plan
 ```
 
 ### License
 
-MIT License - xem file [LICENSE](LICENSE) để biết chi tiết.
+MIT License
+
+Copyright (c) 2025 THAT Le Quang
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
