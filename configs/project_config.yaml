@@ -18,33 +18,39 @@ scheduler:
   # Fixed interval mode (legacy - for testing only)
   fixed_interval_minutes: 60
 
-  # Adaptive mode v5.1 - optimized for data quality + cost
+  # Adaptive mode v5.1 - optimized for Vietnam traffic patterns
   adaptive:
-    # Peak hours - Critical traffic patterns (15 min intervals)
-    # Morning + evening rush hours need good sampling
+    # Peak hours - Critical traffic patterns (30 min intervals)
+    # Vietnam rush hours: morning school/work, lunch, evening rush
     peak_hours:
       enabled: true
       time_ranges:
-        # Morning rush (6-9 AM)
-        - start: "06:00"
-          end: "09:00"
-        # Evening rush (4-7 PM)
+        # Morning rush (6:30-8 AM) - School & work commute
+        - start: "06:30"
+          end: "08:00"
+        # Lunch rush (10:30-11:30 AM) - Lunch time traffic
+        - start: "10:30"
+          end: "11:30"
+        # Evening rush (4-7 PM) - Return home traffic
         - start: "16:00"
           end: "19:00"
-      interval_minutes: 15 # Every 15 minutes for peak patterns
+      interval_minutes: 30 # Every 30 minutes for peak patterns
 
-    # Off-peak hours - Normal traffic (60 min intervals)
-    # Adequate coverage without excessive costs
+    # Off-peak hours - Stable traffic (120 min intervals)
+    # Lower frequency to reduce API costs
     offpeak:
       enabled: true
       time_ranges:
-        # Mid-morning (9 AM-4 PM)
-        - start: "09:00"
+        # Mid-morning (8 AM-10:30 AM)
+        - start: "08:00"
+          end: "10:30"
+        # Afternoon (11:30 AM-4 PM)
+        - start: "11:30"
           end: "16:00"
         # Evening (7-10 PM)
         - start: "19:00"
           end: "22:00"
-      interval_minutes: 60 # Every 60 minutes (1 hour)
+      interval_minutes: 120 # Every 120 minutes (2 hours)
 
     # Night hours - Stable traffic (120 min intervals)
     # Minimal sampling for night baseline
@@ -52,7 +58,7 @@ scheduler:
       enabled: true
       time_ranges:
         - start: "22:00"
-          end: "06:00"
+          end: "06:30"
       interval_minutes: 120 # Every 120 minutes (2 hours)
       skip: false # Keep minimal night data
 
@@ -66,7 +72,7 @@ globals:
   area:
     mode: point_radius
     center: [106.697794, 10.772465]
-    radius_m: 4096 # Expanded coverage area
+    radius_m: 2048 # Optimized coverage area (cost reduction)
     node_spacing_m: 500
   output_base: data_runs
 
