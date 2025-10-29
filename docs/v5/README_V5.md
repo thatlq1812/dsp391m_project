@@ -14,7 +14,7 @@
 1. **Real API Only** - Removed all mock API fallback
 2. **Intelligent Caching** - Overpass topology cached permanently
 3. **Distance Filtering** - Minimum 200m between nodes to avoid clustering
-4. **Expanded Coverage** - Radius increased to 2048m
+4. **Expanded Coverage** - Radius increased to 4096m
 5. **128 Nodes** - Doubled from 64 nodes for better coverage
 6. **Retry Mechanism** - Auto-retry failed API calls (3 attempts)
 
@@ -26,7 +26,7 @@ File: `configs/project_config.yaml`
 # Key Settings
 globals:
   area:
-  radius_m: 2048 # 4km radius coverage
+  radius_m: 4096 # 4km radius coverage
 
 node_selection:
   max_nodes: 128 # Up from 64
@@ -479,7 +479,7 @@ python traffic_forecast/collectors/overpass/collector.py
 | Metric          | v4.0     | v5.0     | Change    |
 | --------------- | -------- | -------- | --------- |
 | Nodes           | 64       | 128      | +100%     |
-| Coverage radius | 1024m    | 2048m    | +300%     |
+| Coverage radius | 1024m    | 4096m    | +300%     |
 | Node spacing    | Variable | 200m min | Optimized |
 | Overpass calls  | 100x     | 1x       | -99%      |
 | Cache hits      | 0%       | ~100%    | +100%     |
@@ -563,7 +563,7 @@ NEW FEATURES:
 - Distance-based node filtering (200m min)
 - Permanent Overpass caching
 - Retry mechanism for API failures
-- Expanded coverage (2048m radius)
+- Expanded coverage (4096m radius)
 - 128 nodes (up from 64)
 
 IMPROVEMENTS:

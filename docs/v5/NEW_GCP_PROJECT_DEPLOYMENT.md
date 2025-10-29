@@ -36,7 +36,7 @@ Tài liệu này hướng dẫn chi tiết cách deploy hệ thống Traffic For
 - Verify: `gcloud --version`
 - [ ] Project code đã update version v5.0
 - Cache topology: `cache/overpass_topology.json` (78 nodes)
-- Config: `configs/project_config.yaml` (radius=2048m)
+- Config: `configs/project_config.yaml` (radius=4096m)
 
 ---
 

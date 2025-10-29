@@ -3,7 +3,7 @@
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Production--Ready-success.svg)]()
-[![Coverage](https://img.shields.io/badge/Coverage-2048m_radius-blue)]()
+[![Coverage](https://img.shields.io/badge/Coverage-4096m_radius-blue)]()
 [![Nodes](https://img.shields.io/badge/Nodes-78_filtered-green)]()
 [![Cost](https://img.shields.io/badge/Cost-$21%2Fday-success)]()
 
@@ -12,7 +12,7 @@
 **Version 5.1 Highlights:**
 
 - Real API only (no mock data)
-- 16x coverage expansion (2048m radius)
+- 16x coverage expansion (4096m radius)
 - 78 nodes with 200m minimum distance
 - 100% API success rate
 - Automated GCP VM deployment
@@ -74,7 +74,7 @@ conda run -n dsp python traffic_forecast/collectors/google/collector.py
 | Feature        | v4.0        | v5.0                 | v5.1                         |
 | -------------- | ----------- | -------------------- | ---------------------------- |
 | API            | Mock + Real | **Real only**        | **Real only**                |
-| Radius         | 1024m       | **2048m** (16x area) | **2048m**                    |
+| Radius         | 1024m       | **4096m** (16x area) | **4096m**                    |
 | Nodes          | 64          | **78** (filtered)    | **78** (filtered)            |
 | Min Distance   | None        | **200m**             | **200m**                     |
 | Scheduling     | Fixed 60min | Fixed 60min          | **Adaptive** (peak/off-peak) |
@@ -124,7 +124,7 @@ ML Models → XGBoost, Random Forest, LightGBM
 
 - **Location:**HCMC Downtown (District 1, 3, Bình Thạnh)
 - **Center:** 10.7756°N, 106.7019°E (Landmark 81)
-- **Radius:** 2048m
+- **Radius:** 4096m
 - **Area:** ~52.8 km²
 - **Nodes:** 78 (58 primary, 20 trunk roads)
 - **Edges:** 234 (78 × 3 nearest neighbors)
@@ -257,7 +257,7 @@ See: **[doc/v5/COLLECTION_OPTIMIZATION_V5.1.md](doc/v5/COLLECTION_OPTIMIZATION_V
 
 2. **Focused Coverage**
 
-- Radius: 2048m to 1024m (core area focus)
+- Radius: 4096m to 1024m (core area focus)
 - Nodes: 128 to 64 (major intersections only)
 - Road types: Only motorway, trunk, primary
 - Quality: min_degree 6, min_importance 40
@@ -900,7 +900,7 @@ Light, practical README for running the project locally and on a Google Cloud VM
 - Project: traffic forecasting for Ho Chi Minh City using node-radius graphs, weather, and ML.
 - Collectors support area selection modes: `bbox` and `point_radius` (also called `circle`).
 - Priority for area selection: CLI args > environment variables > `configs/project_config.yaml`.
-- Default area: center at (10.762622, 106.660172) with radius 2048m.
+- Default area: center at (10.762622, 106.660172) with radius 4096m.
 
 - **Base URL**: `http://localhost:8000`
 - **Swagger UI**: `http://localhost:8000/docs`

@@ -351,7 +351,7 @@ data/
 
 - [x] Topology cached (78 nodes)
 - [x] API key tested locally
-- [x] Config finalized (radius 2048m, min_distance 200m)
+- [x] Config finalized (radius 4096m, min_distance 200m)
 - [x] Cost estimated ($28/day for 7 days)
 
 ### During Deployment

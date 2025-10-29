@@ -80,7 +80,7 @@
 
 **Thay doi:**
 
-- Radius: 1024m → 2048m (+300%)
+- Radius: 1024m → 4096m (+300%)
 - Max nodes: 64 → 128 (+100%)
 - Min distance: 0m → 200m (moi)
 
@@ -256,7 +256,7 @@ python traffic_forecast/collectors/google/collector_v5.py
 | Metric          | v4.0     | v5.0       | Cai Thien        |
 | --------------- | -------- | ---------- | ---------------- |
 | Nodes           | 64       | 128        | +100%            |
-| Coverage radius | 1024m    | 2048m      | +300%            |
+| Coverage radius | 1024m    | 4096m      | +300%            |
 | Coverage area   | 3.3 km²  | 52.8 km²   | +1,500%          |
 | Node spacing    | Variable | 200m min   | Well-distributed |
 | Overpass calls  | 100/day  | 1/lifetime | -99.99%          |

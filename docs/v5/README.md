@@ -72,7 +72,7 @@
 ### v5.0 Core Improvements
 
 - **Real API Only** - Removed all mock API fallbacks
-- **Coverage Expansion** - Radius 1024m → 2048m (16x area)
+- **Coverage Expansion** - Radius 1024m → 4096m (16x area)
 - **Distance Filtering** - 200m minimum between nodes
 - **Topology Caching** - One-time Overpass collection
 - **Deployment Automation** - Full GCP VM deployment scripts

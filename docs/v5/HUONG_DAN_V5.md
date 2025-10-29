@@ -22,7 +22,7 @@
 
 ### 3. Tang Coverage
 
-- Radius: 1024m → 2048m (tang 4 lan)
+- Radius: 1024m → 4096m (tang 4 lan)
 - Nodes: 64 → 128 (tang gap doi)
 - Khoang cach toi thieu giua cac nodes: 200m
 
@@ -220,7 +220,7 @@ python traffic_forecast/collectors/overpass/collector_v5.py
 | Metric          | v4.0   | v5.0   | Thay Doi |
 | --------------- | ------ | ------ | -------- |
 | Nodes           | 64     | 128    | +100%    |
-| Radius          | 20484m | 2048m  | +300%    |
+| Radius          | 40964m | 4096m  | +300%    |
 | Mock API        | Co     | Khong  | Loai bo  |
 | Cache Overpass  | Khong  | Co     | Them moi |
 | Distance filter | Khong  | 200m   | Them moi |

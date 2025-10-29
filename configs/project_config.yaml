@@ -72,22 +72,22 @@ globals:
   area:
     mode: point_radius
     center: [106.697794, 10.772465]
-    radius_m: 2048 # Optimized coverage area (cost reduction)
+    radius_m: 4096 # Wider coverage area for better data quality
     node_spacing_m: 200
   output_base: data_runs
 
 # Node Selection Configuration v5.0
 node_selection:
-  min_degree: 4 # Changed from 6 - more realistic
-  min_importance_score: 20.0 # Changed from 40 - better coverage
+  min_degree: 4 # Higher threshold for quality nodes
+  min_importance_score: 20.0 # Filter for important intersections
   max_nodes: 128 # Increased from 64
-  min_distance_meters: 200 # NEW: Minimum distance between nodes
+  min_distance_meters: 200 # Maintain spacing between nodes
   road_type_filter:
     - motorway
     - trunk
     - primary
   require_street_names: true
-  min_street_name_count: 10
+  min_street_name_count: 10 # Require well-labeled intersections
 
 data:
   parquet_dir: ./data/parquet
@@ -117,7 +117,7 @@ collectors:
     area:
       mode: point_radius
       center: [106.697794, 10.772465]
-      radius_m: 2048
+      radius_m: 4096
 
   # Open-Meteo Weather API v5.1
   # Optimized: Grid-based caching (1 call per 1km² instead of 78 calls)
@@ -138,13 +138,13 @@ collectors:
     grid_cache:
       enabled: true
       cell_size_meters: 1000 # 1km x 1km cells
-      # Coverage area 2048m radius ≈ 16 cells (4x4 grid)
+      # Coverage area 4096m radius ≈ 16 cells (4x4 grid)
       # Reduces weather API calls by 95%!
 
     area:
       mode: point_radius
       center: [106.697794, 10.772465]
-      radius_m: 2048
+      radius_m: 4096
 
   # Google Directions API - REAL API ONLY (NO MOCK)
   google_directions:
@@ -152,7 +152,7 @@ collectors:
     api_key_env: GOOGLE_MAPS_API_KEY
     use_real_api_only: true # NEW: Force real API, no mock fallback
     rate_limit_requests_per_minute: 2800
-    radius_km: 2.048 # Match radius_m = 2048m
+    radius_km: 4.096 # Match radius_m = 4096m
     k_neighbors: 3
     limit_nodes: 128
     retry_on_failure: 3 # NEW: Retry failed requests
@@ -160,7 +160,7 @@ collectors:
     area:
       mode: point_radius
       center: [106.697794, 10.772465]
-      radius_m: 2048
+      radius_m: 4096
 
 api:
   title: Traffic Forecast API

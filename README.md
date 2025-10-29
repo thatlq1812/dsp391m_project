@@ -12,7 +12,7 @@ Real-time traffic forecasting for Ho Chi Minh City with adaptive scheduling and 
 
 - **Adaptive Scheduling**: Peak/off-peak/night intervals (40% cost savings)
 - **Smart Caching**: Weather grid caching (95% API reduction), permanent topology cache
-- **Wide Coverage**: 2048m radius, 78 filtered nodes, 234 road segments
+- **Wide Coverage**: 4096m radius, 78 filtered nodes, 234 road segments
 - **Production Ready**: Automated GCP deployment, systemd service, monitoring
 - **Cost Optimized**: ~$45 for 3-day collection, ~$150 for 7 days
 

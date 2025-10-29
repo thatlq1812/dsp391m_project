@@ -106,7 +106,7 @@ interval_minutes: 120
 
 **Grid-based caching:**
 
-- Divide coverage area (2048m radius) into 1km² cells
+- Divide coverage area (4096m radius) into 1km² cells
 - ~53 cells for entire coverage area
 - Fetch weather once per cell, share with all nodes in that cell
 
@@ -128,7 +128,7 @@ interval_minutes: 120
 cache = WeatherGridCache(
 center_lat=10.772465,
 center_lon=106.697794,
-radius_m=2048,
+radius_m=4096,
 cell_size_m=1000, # 1km x 1km cells
 cache_expiry_minutes=30
 )
