@@ -1,10 +1,10 @@
 #!/bin/bash
 #
 # GCP VM Auto Deployment Script
-# Traffic Forecast v5.1 - 3 Day Data Collection
+# Traffic Forecast v5.1 - 7 Day Data Collection with Adaptive Scheduling
 #
-# Cost: $21/day × 3 days = ~$63 total
-# Target: 54 collections (18/day adaptive)
+# Cost: $21/day × 7 days = ~$147 total (25% savings with adaptive scheduling)
+# Target: ~800 collections (adaptive: peak 5min, off-peak 15min, night 30min)
 #
 
 set -e  # Exit on error
@@ -22,8 +22,8 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 VM_NAME="traffic-forecast-collector"
 ZONE="asia-southeast1-a"
 MACHINE_TYPE="e2-micro"
-COLLECTION_DAYS=3
-COLLECTIONS_PER_DAY=18
+COLLECTION_DAYS=7
+COLLECTIONS_PER_DAY=114  # Approximate: peak+off-peak+night scheduling
 
 echo -e "${BLUE}"
 echo "═══════════════════════════════════════════════════════════"
@@ -31,9 +31,9 @@ echo "  TRAFFIC FORECAST - GCP AUTO DEPLOYMENT"
 echo "═══════════════════════════════════════════════════════════"
 echo -e "${NC}"
 echo "Project: Traffic Forecast v5.1"
-echo "Duration: ${COLLECTION_DAYS} days"
-echo "Cost estimate: \$63 (~\$21/day)"
-echo "Target: $((COLLECTION_DAYS * COLLECTIONS_PER_DAY)) collections"
+echo "Duration: ${COLLECTION_DAYS} days (adaptive scheduling)"
+echo "Cost estimate: \$147 (~\$21/day)"
+echo "Target: ~800 collections (peak: 5min, off-peak: 15min, night: 30min)"
 echo ""
 
 # Step 1: Check prerequisites

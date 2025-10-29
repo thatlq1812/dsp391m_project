@@ -1,85 +1,167 @@
-# Maintainer Profile
+# Scripts Reference - Traffic Forecast v5.1# Maintainer Profile
 
-**Full name:**THAT Le Quang
+
+
+Collection of utility scripts for development, deployment, and operations.**Full name:**THAT Le Quang
+
 **Nickname:**Xiel
 
-- **Role:**AI & DS Major Student
-- **GitHub:** [thatlq1812](https://github.com/thatlq1812)
-- **Primary email:** fxlqthat@gmail.com
-- **Academic email:** thatlqse183256@fpt.edu.com
-- **Alternate email:** thatlq1812@gmail.com
-- **Phone (VN):** +84 33 863 6369 / +84 39 730 6450
+## 🎮 Interactive Scripts
 
----
+- **Role:**AI & DS Major Student
+
+### `control_panel.sh` - Local Development Dashboard- **GitHub:** [thatlq1812](https://github.com/thatlq1812)
+
+- **Primary email:** fxlqthat@gmail.com
+
+Interactive menu for local development and testing.- **Academic email:** thatlqse183256@fpt.edu.com
+
+- **Alternate email:** thatlq1812@gmail.com
+
+**Usage:**- **Phone (VN):** +84 33 863 6369 / +84 39 730 6450
+
+```bash
+
+bash scripts/control_panel.sh---
+
+```
 
 # Scripts Directory
 
-This directory contains utility scripts for the Traffic Forecast v5.0 project, organized by functional groups.
+**Features:**
 
-## Directory Structure
+- **Data Collection** (1-4): Single, test, adaptive scheduler, stop schedulerThis directory contains utility scripts for the Traffic Forecast v5.0 project, organized by functional groups.
 
-```
+- **Data Management** (5-8): View, merge, cleanup, export
+
+- **Visualization** (9-12): Latest run, live dashboard, node info, topology## Directory Structure
+
+- **Testing** (13-16): Google API, weather API, rate limits, cache verification
+
+- **System** (17-19): Environment check, view logs, system status```
+
 scripts/
-├── analysis/ # ML and data analysis scripts
+
+### `deploy_wizard.sh` - GCP Deployment Wizard├── analysis/ # ML and data analysis scripts
+
 ├── data/ # Data management and cleanup
-├── deployment/ # GCP deployment automation
+
+Step-by-step interactive deployment to Google Cloud Platform.├── deployment/ # GCP deployment automation
+
 ├── monitoring/ # Health checks and dashboards
-└── README.md # This file
+
+**Usage:**└── README.md # This file
+
+```bash```
+
+bash scripts/deploy_wizard.sh
+
+```---
+
+
+
+**Options:**## Analysis Scripts (`analysis/`)
+
+- **Option A**: Auto deployment (steps 1-7 automated)
+
+- **Options 1-10**: Manual step-by-step deploymentMachine learning analysis and model evaluation tools.
+
+
+
+## 🔧 Collection Scripts### `feature_importance_analysis.py`
+
+
+
+### `collect_once.py` - Single CollectionAnalyze feature importance from trained models.
+
+
+
+Run a single data collection cycle.**Usage:**
+
+
+
+**Usage:**```bash
+
+```bashconda run -n dsp python scripts/analysis/feature_importance_analysis.py \
+
+python scripts/collect_once.py--model models/xgboost_model.pkl \
+
+```--output reports/feature_importance.png
+
 ```
 
----
-
-## Analysis Scripts (`analysis/`)
-
-Machine learning analysis and model evaluation tools.
-
-### `feature_importance_analysis.py`
-
-Analyze feature importance from trained models.
-
-**Usage:**
-
-```bash
-conda run -n dsp python scripts/analysis/feature_importance_analysis.py \
---model models/xgboost_model.pkl \
---output reports/feature_importance.png
-```
+### `run_adaptive_collection.py` - Continuous Collection
 
 ### `cross_validation.py`
+
+Runs continuous data collection with adaptive scheduling.
 
 Perform k-fold cross-validation on ML models.
 
 **Usage:**
 
-```bash
+```bash**Usage:**
+
+# Direct (for testing)
+
+python scripts/run_adaptive_collection.py```bash
+
 conda run -n dsp python scripts/analysis/cross_validation.py \
---data data/training/features.csv \
---model xgboost \
---folds 5
+
+# Via systemd (production)--data data/training/features.csv \
+
+sudo systemctl start traffic-collection.service--model xgboost \
+
+```--folds 5
+
 ```
+
+## 📊 Data Management Scripts
 
 ### `quick_summary.py`
 
+### `view_collections.py` - View Collection Summary
+
 Generate quick summary statistics from collected data.
 
-**Usage:**
-
 ```bash
-conda run -n dsp python scripts/analysis/quick_summary.py \
---input data/downloads/download_20250128_140502/
+
+python scripts/view_collections.py**Usage:**
+
 ```
 
----
+```bash
 
-## Data Management (`data/`)
+### `merge_collections.py` - Merge Multiple Runsconda run -n dsp python scripts/analysis/quick_summary.py \
 
-Scripts for cleaning, backing up, and managing collected data.
+--input data/downloads/download_20250128_140502/
 
-### `cleanup_runs.py`
+```bash```
 
-Remove data runs older than specified days to free disk space.
+python scripts/merge_collections.py --output data/merged_all.json
 
-**Usage:**
+```---
+
+
+
+## 📚 See Also## Data Management (`data/`)
+
+
+
+- [QUICK_START.md](../QUICK_START.md) - Getting started guideScripts for cleaning, backing up, and managing collected data.
+
+- [DEPLOYMENT.md](../DEPLOYMENT.md) - Deployment guide
+
+- [OPERATIONS.md](../OPERATIONS.md) - Operations guide### `cleanup_runs.py`
+
+
+
+---Remove data runs older than specified days to free disk space.
+
+
+
+**Traffic Forecast v5.1** - Scripts Reference**Usage:**
+
 
 ```bash
 # Remove runs older than 14 days

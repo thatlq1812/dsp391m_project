@@ -1,1459 +1,256 @@
-# Traffic Forecast v5.1 - Real-Time Traffic Prediction
+# Traffic Forecast v5.1
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+Real-time traffic forecasting for Ho Chi Minh City with adaptive scheduling and cost optimization.
+
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![Status](https://img.shields.io/badge/Status-Production--Ready-success.svg)]()
-[![Coverage](https://img.shields.io/badge/Coverage-4096m_radius-blue)]()
-[![Nodes](https://img.shields.io/badge/Nodes-78_filtered-green)]()
-[![Cost](https://img.shields.io/badge/Cost-$21%2Fday-success)]()
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> **Academic Data Science Project (DSP391m)** - Real-time traffic forecasting for HCMC with Google Directions API, intelligent node selection, automated GCP deployment, and cost-optimized adaptive scheduling. 25% cost reduction through smart caching and adaptive collection.
+> **DSP391m Data Science Project** - Academic project for real-time traffic prediction using Google Directions API, Open-Meteo weather data, and OpenStreetMap topology.
 
-**Version 5.1 Highlights:**
+## ✨ Features
 
-- Real API only (no mock data)
-- 16x coverage expansion (4096m radius)
-- 78 nodes with 200m minimum distance
-- 100% API success rate
-- Automated GCP VM deployment
-- **Adaptive scheduling** (peak/off-peak/night modes)
-- **Weather grid caching** (32% API reduction)
-- **Permanent topology cache** (one-time fetch)
-- **$147 for 7-day collection** (25% savings)
+- **Adaptive Scheduling**: Peak/off-peak/night intervals (40% cost savings)
+- **Smart Caching**: Weather grid caching (95% API reduction), permanent topology cache
+- **Wide Coverage**: 4096m radius, 78 filtered nodes, 234 road segments
+- **Production Ready**: Automated GCP deployment, systemd service, monitoring
+- **Cost Optimized**: ~$45 for 3-day collection, ~$150 for 7 days
 
-## Author
+## 🚀 Quick Start
 
-**Le Quang That (THAT Le Quang)** – SE183256
-
-- Nickname: Xiel
-- GitHub: [thatlq1812](https://github.com/thatlq1812)
-- Email: fxlqthat@gmail.com / thatlqse183256@fpt.edu.vn
-- Project: DSP391m - Data Science Project (3 credits)
-- Term: Fall 2025
-
----
-
-## Quick Start
-
-### For v5.0 Users (Recommended)
-
-**Interactive Notebooks (Best for beginners):**
+### 1. Setup (5 minutes)
 
 ```bash
-cd /d/UNI/DSP391m/project
-conda activate dsp
-jupyter notebook
+# Clone repository
+git clone <repo-url>
+cd project
 
-# Open one of:
-notebooks/CONTROL_PANEL.ipynb # Local pipeline control
-notebooks/GCP_DEPLOYMENT.ipynb # GCP VM deployment
-```
-
-**Documentation:**
-
-- **[doc/v5/README.md](doc/v5/README.md)** - v5.0 documentation index
-- **[doc/v5/HOAN_TAT_V5.md](doc/v5/HOAN_TAT_V5.md)** - Complete v5.0 summary
-- **[doc/v5/DEPLOYMENT_GUIDE.md](doc/v5/DEPLOYMENT_GUIDE.md)** - GCP deployment guide
-- **[notebooks/README.md](notebooks/README.md)** - Notebook usage guide
-
-**Command Line:**
-
-```bash
-# Test collection (5 edges)
-export GOOGLE_TEST_LIMIT=5
-conda run -n dsp python traffic_forecast/collectors/google/collector.py
-
-# Full collection (234 edges)
-conda run -n dsp python traffic_forecast/collectors/google/collector.py
-```
-
----
-
-## Version Comparison
-
-| Feature | v4.0 | v5.0 | v5.1 |
-| -------------- | ----------- | -------------------- | ---------------------------- |
-| API | Mock + Real | **Real only** | **Real only** |
-| Radius | 1024m | **4096m** (16x area) | **4096m** |
-| Nodes | 64 | **78** (filtered) | **78** (filtered) |
-| Min Distance | None | **200m** | **200m** |
-| Scheduling | Fixed 60min | Fixed 60min | **Adaptive** (peak/off-peak) |
-| Weather Cache | No | Basic | **Grid-based** (32% savings) |
-| Topology Cache | No | **Yes** (Overpass) | **Permanent** (one-time) |
-| Deployment | Manual | **Automated** | **Automated** |
-| Success Rate | ~85% | **100%** | **100%** |
-| Daily Cost | $33.70 | $28.08 | **$21.06** (25% savings) |
-| 7-Day Cost | $235.90 | $196.56 | **$147.42** |
-
-**Use v5.1 for:** **RECOMMENDED**
-
-- New deployments (cost-optimized)
-- Production use with budget constraints
-- Academic projects (7-day collection ~$140-150)
-- Smart collection (dense during peaks, sparse off-peak)
-
-**Use v5.0 for:**
-
-- Constant interval collection (testing)
-- Comparison baseline
-
-**Use v4.0 for:**
-
-- Reference implementation
-- Historical comparison
-
----
-
-## Project Overview (v5.1)
-
-### System Architecture
-
-```
-Overpass API (OSM) → Node Topology (78 nodes, permanent cache)
-↓
-Google Directions API → Real-time Traffic (234 edges)
-↓
-Open-Meteo API → Weather Data (temperature, precipitation)
-↓
-Feature Engineering → Temporal + Lag Features
-↓
-ML Models → XGBoost, Random Forest, LightGBM
-```
-
-### Coverage Area
-
-- **Location:**HCMC Downtown (District 1, 3, Bình Thạnh)
-- **Center:** 10.7756°N, 106.7019°E (Landmark 81)
-- **Radius:** 4096m
-- **Area:** ~52.8 km²
-- **Nodes:** 78 (58 primary, 20 trunk roads)
-- **Edges:** 234 (78 × 3 nearest neighbors)
-
-### Data Collection
-
-- **Frequency:**Hourly (recommended for budget)
-- **API Success:** 100% (verified)
-- **Cost:** $28/day, $197/week
-- **Target:** 7 days = 39,312 measurements
-
----
-
-## Quick Links (v5.0)
-
-### Essential Resources
-
-- **[notebooks/CONTROL_PANEL.ipynb](notebooks/CONTROL_PANEL.ipynb)**Main control center
-- **[notebooks/GCP_DEPLOYMENT.ipynb](notebooks/GCP_DEPLOYMENT.ipynb)**VM deployment
-- **[doc/v5/DEPLOYMENT_GUIDE.md](doc/v5/DEPLOYMENT_GUIDE.md)** - Complete deployment guide
-- **[doc/v5/HOAN_TAT_V5.md](doc/v5/HOAN_TAT_V5.md)** - Project completion summary
-
-### Legacy Documentation (v4.0)
-
-- **[notebooks/RUNBOOK.ipynb](notebooks/RUNBOOK.ipynb)** - Complete interactive guide
-- **[scripts/quick_start.sh](scripts/quick_start.sh)** - One-command setup
-
-### Deployment & Operations
-
-- **[Cloud Deployment](CLOUD_DEPLOY.md)** - NEW: Automated GCP deployment for 7-day collection
-- **[Cloud Scripts](scripts/CLOUD_SCRIPTS_README.md)** - NEW: Complete scripts documentation (16KB)
-- **[Deployment Quickstart](DEPLOYMENT_QUICKSTART.md)** - Essential commands for running deployment
-- [Deployment Guide](DEPLOY.md) - Complete deployment for GVM
-- [Team Access Setup](scripts/setup_users.sh) - Multi-user configuration
-- [Health Monitoring](scripts/health_check.sh) - System health checks
-
-### Getting Started
-
-- [Quick Start Guide](doc/getting-started/quickstart.md) - Installation and first run
-- [Configuration Guide](doc/getting-started/configuration.md) - Config file reference
-
-### Core Features (v4.0)
-
-- [Academic v4.0 Summary](doc/reference/ACADEMIC_V4_SUMMARY.md) - Cost-optimized configuration (87% savings)
-- [Traffic History Storage](doc/reference/TRAFFIC_HISTORY_STORAGE_GUIDE.md) - SQLite-based lag features
-- [Google API Cost Analysis](doc/reference/GOOGLE_API_COST_ANALYSIS.md) - Complete cost breakdown
-- [Feature Engineering Guide](doc/reference/FEATURE_ENGINEERING_GUIDE.md) - Temporal and spatial features
-- [Temporal Features Analysis](doc/reference/TEMPORAL_FEATURES_ANALYSIS.md) - Time-based features
-- [Node Export Guide](doc/reference/NODE_EXPORT_GUIDE.md) - Exporting predictions
-- [Temporal Features Analysis](doc/reference/TEMPORAL_FEATURES_ANALYSIS.md) - Time-based feature engineering
-
-### Deployment & Operations
-
-- [Deployment Guide](doc/reference/DEPLOY.md) - Production deployment on GCP
-- [GCP Runbook](doc/operations/gcp_runbook.md) - Cloud operations procedures
-- [VM Provisioning](doc/operations/vm_provisioning.md) - Server setup automation
-
-### Technical Reference
-
-- [Data Model](doc/reference/data_model.md) - Database schema and data structures
-- [Schema Design](doc/reference/schema_design.md) - Validation schemas with Pydantic
-
-### Development History
-
-- [Progress Log](doc/history/progress.md) - Development timeline and milestones
-- [CHANGELOG.md](CHANGELOG.md) - Version history and changes
-- [Cleanup Report](doc/CLEANUP_REPORT.md) - Documentation cleanup summary
-
-**Complete documentation index**: [doc/README.md](doc/README.md)
-
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [What's New in v4.0](#whats-new-in-v40)
-- [Key Features](#key-features)
-- [System Architecture](#system-architecture)
-- [Technical Stack](#technical-stack)
-- [Quick Start](#quick-start)
-- [Performance Metrics](#performance-metrics)
-- [Development Roadmap](#development-roadmap)
-- [Future Work](#future-work)
-- [Contributing](#contributing)
-- [License](#license)
-
----
-
-## Overview
-
-This project implements a cost-optimized traffic forecasting system for Ho Chi Minh City with focus on academic research efficiency:
-
-### Cost Optimization (v5.1)
-
-**Adaptive Scheduling:**
-
-- Peak hours (7-9 AM, 12-1 PM, 5-8 PM): 30-minute intervals
-- Off-peak (9 AM-12 PM, 1-5 PM, 8-11 PM): 90-minute intervals
-- Night (11 PM-7 AM): Skip completely
-- Weekend: 120-minute intervals
-
-**Smart Caching:**
-
-- Weather grid cache: 1km² cells (32% API reduction)
-- Permanent topology cache: One-time fetch
-- Static data cached forever, dynamic data adaptive
-
-**Cost Results:**
-
-- **$21.06/day** for adaptive collection (vs $28.08 fixed)
-- **$147 for 7 days** (25% savings, under budget)
-- **~30,000 measurements** in 7 days (optimized quality)
-
-See: **[doc/v5/COLLECTION_OPTIMIZATION_V5.1.md](doc/v5/COLLECTION_OPTIMIZATION_V5.1.md)** for details
-
----
-
-## What's New in v4.0
-
-### Academic Cost Optimization (October 2025)
-
-**Major Changes**:
-
-1. **Adaptive Scheduler** - NEW
-
-- Peak hours (6:30-7:30, 10:30-11:30, 13:00-13:30, 16:30-19:30): 30 min intervals
-- Off-peak hours: 60 min intervals
-- Weekend: 90 min intervals
-- Result: 96 collections/day to 25 collections/day (74% reduction)
-
-2. **Focused Coverage**
-
-- Radius: 4096m to 1024m (core area focus)
-- Nodes: 128 to 64 (major intersections only)
-- Road types: Only motorway, trunk, primary
-- Quality: min_degree 6, min_importance 40
-
-3. **Cost Reduction**
-
-- Monthly cost: $5,530 to $720 (87% savings)
-- Collections per day: 96 to 25 (74% reduction)
-- API requests: 36,864/day to 4,800/day
-
-4. **New Features**
-
-- Traffic history storage with SQLite
-- Lag features (5, 15, 30, 60 min)
-- Mock API mode for FREE development
-- Enhanced documentation with cost analysis
-
-**See**: [Academic v4.0 Summary](doc/reference/ACADEMIC_V4_SUMMARY.md) for complete details.
-
----
-
-## Key Features
-
-### Core Innovations
-
-#### 1. Adaptive Scheduling System
-
-- **Time-Aware Collection**: Different intervals for peak/off-peak hours
-- **Vietnam Traffic Patterns**: Customized for HCMC rush hours
-- **Cost Tracking**: Built-in cost estimation and monitoring
-- **Flexible Configuration**: YAML-based schedule customization
-
-#### 2. Intelligent Node Selection
-
-- **Quality over Quantity**: 64 highest-importance intersections
-- **Road Type Filtering**: Major roads only (motorway/trunk/primary)
-- **Importance Scoring**: Weighted by road hierarchy and connectivity
-- **Adaptive Limits**: max_nodes configuration with importance-based sorting
-
-#### 3. Traffic History Storage
-
-- **SQLite Backend**: Persistent storage for lag features
-- **Lag Features**: 5, 15, 30, 60 minute historical data
-- **7-Day Retention**: Automatic cleanup of old data
-- **Fast Queries**: Indexed by timestamp and node_id
-
-#### 4. Multi-Source Data Integration
-
-- **Google Directions**: Real-time traffic with mock API support
-- **Open-Meteo**: Weather forecasts with 5-60 minute horizons
-- **OpenStreetMap**: High-resolution road network via Overpass API
-
-#### 4. Production-Ready Pipeline
-
-- **Automated Collection**: 15-minute intervals with error handling
-- **Data Validation**: Schema validation and quality checks
-- **Monitoring**: Comprehensive logging and health checks
-
-### Advanced Features
-
-- Real-time Visualization: Interactive traffic heatmaps with Google Maps basemap
-- RESTful API: FastAPI with automatic OpenAPI documentation
-- Container Support: Docker deployment with production configs
-- Environment Management: Conda environments for reproducible deployments
-- Research Models: ASTGCN attention-based spatial-temporal network under `traffic_forecast/models/research`
-
----
-
-## System Architecture
-
-```
-
-Data Sources Intelligent ML Pipeline
-Caching System
-• Google Maps • Feature Eng.
-• Open-Meteo • Overpass: 7d • LSTM Model
-• OpenStreetMap • Weather: 1h • Batch Infer.
-
-
-
-
-FastAPI Visualization Google Cloud
-REST API Dashboard VM Deployment
-
-• Auto Docs • Traffic Maps • Cron Jobs
-• Health Checks • Heatmaps • Monitoring
-
-```
-
-### Project Structure
-
-```
-traffic-forecast-node-radius/
-traffic_forecast/ # Application source package
-api/ # FastAPI application
-collectors/ # Overpass, Open-Meteo, Google collectors
-pipelines/ # Normalize, enrich, feature, model pipelines
-models/ # Baseline utilities, stored artifacts, research models
-scheduler/ # APScheduler entrypoint
-configs/ # Project configuration and schemas
-data/ # Raw and processed datasets
-doc/ # Reports and internal documentation
-scripts/ # Operational helper scripts (wrappers around package modules)
-tests/ # Unit tests & validation helpers
-run_collectors.py # Convenience CLI bundling the collectors
-```
-
----
-
-## Technical Stack
-
-### Core Technologies
-
-- **Language**: Python 3.8+
-- **Web Framework**: FastAPI + Uvicorn
-- **Data Processing**: NumPy, Pandas
-- **Machine Learning**: TensorFlow/Keras, Scikit-learn
-- **Visualization**: Matplotlib, Google Maps Static API
-- **APIs**: Google Directions, Open-Meteo, Overpass
-
-### Infrastructure
-
-- **Environment**: Conda (reproducible deployments)
-- **Container**: Docker + Docker Compose
-- **Cloud**: Google Cloud VM (Ubuntu 22.04)
-- **Scheduling**: Cron jobs for automation
-- **Caching**: File-based with smart expiry
-
-### Development Tools
-
-- **IDE**: VS Code with Python extensions
-- **Version Control**: Git with GitHub
-- **Testing**: pytest framework
-- **Documentation**: OpenAPI (auto-generated)
-
----
-
-## Quick Start
-
-### For New Team Members
-
-**Option 1: Quick Setup Script (Recommended)**
-
-```bash
-# Clone and setup
-git clone https://github.com/thatlq1812/dsp391m_project.git
-cd dsp391m_project
-bash scripts/quick_start.sh
-# Follow interactive prompts
-```
-
-**Option 2: Connect to GVM**
-
-```bash
-ssh YOUR_USERNAME@SERVER_IP
-cd /opt/traffic-forecast
-conda activate dsp
-bash scripts/health_check.sh # Check system status
-```
-
-**Need help?**Open [RUNBOOK.ipynb](notebooks/RUNBOOK.ipynb) or read [DEPLOY.md](DEPLOY.md)
-
----
-
-### For Local Development
-
-1. **Clone repository**
-
-```bash
-git clone https://github.com/thatlq1812/dsp391m_project.git
-cd dsp391m_project
-```
-
-2. **Quick setup**
-
-```bash
-bash scripts/quick_start.sh
-# Select option 1 for development (FREE mock API)
-```
-
-3. **Or manual setup**
-
-```bash
 # Create environment
 conda env create -f environment.yml
 conda activate dsp
 
+# Install package
+pip install -e .
+
+# Configure API key
+echo "GOOGLE_MAPS_API_KEY=your_api_key_here" > .env
+```
+
+### 2. Test Collection
+
+```bash
 # Run single collection
-python scripts/collect_and_render.py --once
+python scripts/collect_once.py
+
+# Use interactive dashboard
+bash scripts/control_panel.sh
 ```
 
-4. **View results**
+### 3. Deploy to GCP
 
 ```bash
-# Check collected data
-ls data/node/
+# Interactive deployment wizard
+bash scripts/deploy_wizard.sh
 
-# View schedule
-python scripts/collect_and_render.py --print-schedule
+# Select option A for auto deployment
 ```
 
----
+## 📊 Adaptive Scheduling
 
-### Prerequisites
+Cost-optimized collection strategy:
 
-```bash
-# System requirements
-- Python 3.8+
-- Conda/Miniconda
-- Git
+| Time Period | Interval | Rationale |
+|------------|----------|-----------|
+| **Peak** (6-9 AM, 4-7 PM) | 15 min | High traffic variability |
+| **Off-peak** (9 AM-4 PM, 7-10 PM) | 60 min | Moderate traffic |
+| **Night** (10 PM-6 AM) | 120 min | Stable traffic |
 
-# API Keys (optional - Mock API available for free development)
-- Google Maps API Key (for production only)
+**3-Day Collection:**
+- ~150 total collections
+- ~35,100 data points
+- ~$45 total cost (40% savings)
+
+## 📁 Project Structure
+
+```
+project/
+├── traffic_forecast/        # Main Python package
+│   ├── collectors/          # Data collectors
+│   ├── scheduler/           # Adaptive scheduler
+│   └── models/              # Data models
+├── scripts/                 # Utility scripts
+│   ├── control_panel.sh     # Local dashboard
+│   ├── deploy_wizard.sh     # GCP deployment
+│   ├── collect_once.py      # Single collection
+│   └── run_adaptive_collection.py  # Continuous collection
+├── configs/                 # Configuration
+│   └── project_config.yaml
+├── data/                    # Data storage
+│   └── runs/                # Collection outputs
+├── cache/                   # Cached data
+│   ├── overpass_topology.json
+│   └── weather_grid.json
+└── docs/                    # Documentation
 ```
 
-### Installation
+## 📚 Documentation
 
-```bash
-# 1. Clone repository
-git clone https://github.com/thatlq1812/dsp391m_project.git
-cd dsp391m_project
+- **[QUICK_START.md](QUICK_START.md)** - 5-minute getting started guide
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Full GCP deployment guide
+- **[OPERATIONS.md](OPERATIONS.md)** - Daily operations & monitoring
+- **[scripts/README.md](scripts/README.md)** - Scripts reference
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history
 
-# 2. Setup environment
-conda env create -f environment.yml
-conda activate dsp
+## 🔧 Configuration
 
-# 3. Configure environment (optional for production)
-cp .env_template .env
-# Edit .env with your API keys (or use mock API for free)
-
-# 4. Verify setup
-python scripts/collect_and_render.py --print-schedule
-```
-
-### Basic Usage
-
-```bash
-# One-time data collection
-python scripts/collect_and_render.py --once
-
-# Adaptive scheduling (RECOMMENDED - v4.0)
-python scripts/collect_and_render.py --adaptive
-
-# Check schedule and cost estimate
-python scripts/collect_and_render.py --print-schedule
-
-# Legacy fixed interval mode
-python scripts/collect_and_render.py --interval 900
-
-# Collection with history storage (lag features)
-python scripts/collect_with_history.py --once
-
-# Start live dashboard
-python scripts/live_dashboard.py
-
-# Generate visualizations
-python -m traffic_forecast.cli.visualize
-```
-
-### Configuration
-
-**Academic v4.0 Setup** (configs/project_config.yaml):
+Edit `configs/project_config.yaml`:
 
 ```yaml
-# Adaptive scheduler
 scheduler:
-mode: adaptive # or 'fixed' for legacy mode
-adaptive:
-peak_hours:
-time_ranges:
-- start: "06:30"
-end: "07:30" # Morning rush
-# ... more ranges
-interval_minutes: 30
-
-# Node selection
-node_selection:
-max_nodes: 64
-min_degree: 6
-min_importance_score: 40.0
-road_type_filter: [motorway, trunk, primary]
-
-# Google Directions
-google_directions:
-use_mock_api: true # FREE for development
-limit_nodes: 64
-k_neighbors: 3
+  mode: adaptive  # or 'fixed'
+  adaptive:
+    peak_hours:
+      time_ranges:
+        - start: "06:00"
+          end: "09:00"
+        - start: "16:00"
+          end: "19:00"
+      interval_minutes: 15
+    offpeak:
+      interval_minutes: 60
+    night:
+      interval_minutes: 120
 ```
 
----
+## 💰 Cost Estimation
 
-## Data Sources & Caching Strategy
+**3-Day Production Run:**
+- VM (e2-micro): ~$0.50
+- Google Directions API: ~$45
+- Total: **~$45**
 
-### Data Pipeline Overview
+**7-Day Production Run:**
+- VM (e2-micro): ~$1.50
+- Google Directions API: ~$150
+- Total: **~$151**
 
-| Data Source | Update Frequency | Cache Strategy | Purpose |
-| --------------------- | ---------------- | -------------- | --------------------- |
-| **Overpass API** | Static | 7 days | Road network topology |
-| **Open-Meteo** | Hourly | 1 hour | Weather forecasts |
-| **Google Directions** | Adaptive (v4.0) | No cache | Traffic conditions |
+**Cost Savings:**
+- 40% vs constant 15-min intervals
+- 95% reduction in weather API calls (grid caching)
+- One-time topology fetch (permanent cache)
 
-### Adaptive Collection (v4.0)
+## 🛠️ Development
 
-#### Peak Hours (Vietnam Traffic Patterns)
-
-- Morning: 6:30-7:30 AM
-- Late morning: 10:30-11:30 AM
-- Lunch return: 1:00-1:30 PM
-- Evening: 4:30-7:30 PM
-- Interval: 30 minutes
-
-#### Off-Peak Hours
-
-- All other weekday hours
-- Interval: 60 minutes
-
-#### Weekend
-
-- All weekend hours
-- Interval: 90 minutes
-
-### Intelligent Caching System
-
-#### Cache Architecture
-
-```python
-# Smart cache with automatic expiry
-def get_or_create_cache(collector_name, params, cache_dir, expiry_hours, fetch_func):
-cache_key = generate_key(collector_name, params)
-if cache_valid(cache_key, expiry_hours):
-return load_cache(cache_key)
-data = fetch_func()
-save_cache(cache_key, data)
-return data
-```
-
-#### Performance Impact
-
-- **API Calls**: Reduced by 90%+ for cached data sources
-- **Execution Time**: 5-10 seconds vs 30-60 seconds
-- **Reliability**: Reduced dependency on external APIs
-- **Cost**: Significant savings on API quotas
-
-#### Cache Management
+### Local Testing
 
 ```bash
-# View cache status
-ls -la cache/
-# Clear expired cache
-python -c "from collectors.cache_utils import clear_expired_cache; clear_expired_cache('./cache')"
+# Interactive control panel
+bash scripts/control_panel.sh
+
+# Single collection
+python scripts/collect_once.py
+
+# View collections
+python scripts/view_collections.py
+
+# Merge collections
+python scripts/merge_collections.py --output data/merged.json
 ```
 
----
-
-## Visualization & Analytics
-
-### Traffic Heatmaps
-
-- Real-time traffic speed visualization
-- Google Maps satellite basemap integration
-- Color-coded speed indicators (Red-Yellow-Green)
-
-### Interactive Dashboard
-
-- FastAPI-powered REST API
-- Automatic OpenAPI documentation
-- Health check endpoints
-- Real-time data serving
-
-### **Sample Visualizations**
-
-#### Traffic Heatmap
-
-![Traffic Heatmap](images/traffic_heatmap.png)
-
-#### API Documentation
-
-- Auto-generated at `http://localhost:8000/docs`
-- Interactive Swagger UI
-- Real-time testing capabilities
-
----
-
-## Deployment on Google Cloud
-
-### VM Specifications
-
-- **OS**: Ubuntu 22.04 LTS
-- **CPU**: 2 vCPUs
-- **RAM**: 4GB
-- **Storage**: 50GB SSD
-- **Network**: External IP with firewall rules
-
-### Automated Deployment
+### Production Deployment
 
 ```bash
-# 1. Server preparation
-sudo apt update && sudo apt install -y python3 python3-pip git
+# Deploy wizard
+bash scripts/deploy_wizard.sh
 
-# 2. Clone and setup
-git clone https://github.com/thatlq1812/dsp391m_project.git
-cd dsp391m_project
+# Monitor
+gcloud compute ssh traffic-forecast-collector --zone=asia-southeast1-a \
+  --command="tail -f ~/traffic-forecast/logs/service.log"
 
-# 3. Environment setup
-conda env create -f environment.yml
-conda activate dsp
-
-# 4. Configuration
-cp .env_template .env
-# Add API keys to .env
-
-# 5. Test deployment
-conda run -n dsp python scripts/collect_and_render.py --once --no-visualize
+# Download data
+gcloud compute scp --recurse \
+  traffic-forecast-collector:~/traffic-forecast/data/runs \
+  ./data-backup --zone=asia-southeast1-a
 ```
 
-### Production Cron Setup
+## 📊 Data Output
+
+Each collection run creates:
+
+```
+data/runs/run_YYYYMMDD_HHMMSS/
+├── nodes.json               # 78 network nodes
+├── edges.json               # Network connectivity
+├── weather_snapshot.json    # Weather data
+├── traffic_edges.json       # 234 traffic segments
+└── statistics.json          # Collection stats
+```
+
+## 🔍 Monitoring
+
+### Check Service Status
 
 ```bash
-# Edit crontab
-crontab -e
-
-# Add production job (runs every 15 minutes)
-*/15 * * * * cd /home/user/dsp391m_project && conda run -n dsp python scripts/collect_and_render.py --interval 900 --no-visualize >> collect.log 2>&1
+gcloud compute ssh traffic-forecast-collector --zone=asia-southeast1-a \
+  --command="sudo systemctl status traffic-collection.service"
 ```
 
-### **Monitoring & Maintenance**
+### View Logs
 
+```bash
+gcloud compute ssh traffic-forecast-collector --zone=asia-southeast1-a \
+  --command="tail -50 ~/traffic-forecast/logs/service.log"
+```
+
+### Count Collections
+
+```bash
+gcloud compute ssh traffic-forecast-collector --zone=asia-southeast1-a \
+  --command="ls ~/traffic-forecast/data/runs/ | wc -l"
+```
+
+## 🆘 Troubleshooting
+
+### Collection fails
+```bash
+# Check API key
+grep GOOGLE_MAPS_API_KEY .env
+
+# Test Google API
+python tools/test_google_limited.py
+```
+
+### Service won't start
 ```bash
 # Check logs
-tail -f collect.log
-
-# Monitor data collection
-ls -la data/node/
-du -sh data/ # Check storage usage
-
-# Health checks
-curl http://localhost:8000/health
+gcloud compute ssh traffic-forecast-collector --zone=asia-southeast1-a \
+  --command="tail -100 ~/traffic-forecast/logs/service_error.log"
 ```
+
+### See [OPERATIONS.md](OPERATIONS.md) for complete troubleshooting guide.
+
+## 👥 Author
+
+**Le Quang That (THAT Le Quang)** - SE183256
+- Nickname: Xiel
+- GitHub: [@thatlq1812](https://github.com/thatlq1812)
+- Email: fxlqthat@gmail.com
+
+**Course:** DSP391m - Data Science Project (Fall 2025)
+
+## 📝 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## 🙏 Acknowledgments
+
+- **Google Directions API** for traffic data
+- **Open-Meteo** for weather data
+- **OpenStreetMap** via Overpass API for road topology
+- **FPT University** for academic support
 
 ---
 
-## Performance & Results
+**Traffic Forecast v5.1** - Adaptive Scheduling • Cost Optimized • Production Ready
 
-### System Metrics
-
-| Metric | Value | Notes |
-| ------------------- | -------------------------------- | ---------------------------------------------------------- |
-| **Collection Time** | 5-10s (cached) / 5-15s (fresh) | 10x performance improvement with parallel processing |
-| **Data Points** | 88 intersection nodes + 87 edges | Optimized for cost-efficiency (90% coverage) |
-| **API Calls** | 87 calls per collection | 86% reduction from 639 calls |
-| **API Reliability** | 99.9% | Intelligent caching + parallel processing + error handling |
-| **Memory Usage** | < 500MB | Optimized for cloud deployment |
-| **Monthly Cost** | ~$120 | 80% savings from $600 with intersection modeling |
-| **Storage Growth** | ~50MB/day | Compressed data with cleanup |
-
-### Accuracy Benchmarks
-
-- **Baseline Model**: Linear Regression (R² = 0.75)
-- **LSTM Model**: Time-series prediction (R² = 0.82)
-- **Weather Integration**: +5% accuracy improvement
-- **Real-time Updates**: 15-minute prediction horizons
-
-### Production Readiness
-
-**Fully Tested Components:**
-
-- Data collection pipeline
-- Intelligent caching system
-- Visualization engine
-- API server
-- Deployment automation
-- Error handling & recovery
-
----
-
-## Recent Optimizations (v3.0)
-
-### Major Performance Improvements
-
-**Intersection-Based Traffic Modeling:**
-
-- **API Calls Reduced**: 639 → 87 calls (**86% reduction**)
-- **Data Points Optimized**: 935 → 88 nodes (**90% reduction**)
-- **Cost Savings**: ~$480/month (from $600 to $120 estimated)
-- **Processing Speed**: 10x faster with parallel processing
-
-**Configuration Streamlining:**
-
-- **Config Size**: Reduced from 200+ lines to 57 lines (**70% reduction**)
-- **Coverage Area**: Increased radius from 512m to 1024m (**2x coverage**)
-- **Query Timeouts**: Optimized from 120s to 60s (**50% faster**)
-- **Cache Strategy**: Improved expiry times for better performance
-
-### Technical Achievements
-
-#### 1. Smart Intersection Detection
-
-- **Algorithm**: Degree-based node filtering (degree > 2)
-- **Coverage**: Captures 90% of traffic value with 10% of data
-- **Accuracy**: Maintained prediction quality with reduced complexity
-
-#### 2. Parallel Processing Implementation
-
-- **Threading**: 10 concurrent API calls for Google Directions
-- **Rate Limiting**: Optimized 2800 req/min utilization
-- **Error Handling**: Robust batch processing with retries
-
-#### 3. Production-Ready Configuration
-
-- **Version Control**: Semantic versioning (v3.0)
-- **Environment**: Optimized for HCMC timezone (UTC+7)
-- **Scalability**: Ready for multi-city expansion
-
-### Validation Results
-
-**System Testing (October 2025):**
-
-- **Overpass Collector**: 1055 nodes, 1138 edges, 296 ways
-- **Open-Meteo**: Weather data for 935 nodes collected
-- **Google Directions**: 87 intersection edges processed
-- **Visualization**: Traffic heatmap and basemap generated
-- **API Performance**: 99.9% reliability maintained
-
-**Performance Metrics:**
-| Metric | Before (v2.0) | After (v3.0) | Improvement |
-|--------|---------------|--------------|-------------|
-| API Calls | 639 | 87 | **86% reduction** |
-| Data Points | 935 nodes | 88 nodes | **90% reduction** |
-| Collection Time | 60-120s | 5-10s | **10x faster** |
-| Config Complexity | 200+ lines | 57 lines | **70% reduction** |
-| Monthly Cost | ~$600 | ~$120 | **80% savings** |
-
----
-
-## Future Roadmap
-
-### Phase 1: Enhanced Intelligence (Q4 2025)
-
-- [ ] **Real Google Directions**: Replace mock with actual API
-- [ ] **Advanced ML Models**: Transformer-based predictions
-- [ ] **Traffic Pattern Analysis**: Historical trend analysis
-
-### Phase 2: Scalability (Q1 2026)
-
-- [ ] **Distributed Caching**: Redis cluster for multi-VM
-- [ ] **Microservices**: Separate services for collection/ML/API
-- [ ] **Load Balancing**: Multiple prediction instances
-
-### Phase 3: Advanced Features (Q2 2026)
-
-- [ ] **Real-time Streaming**: WebSocket live updates
-- [ ] **Mobile App**: React Native companion
-- [ ] **IoT Integration**: Sensor data from traffic cameras
-- [ ] **Predictive Routing**: Optimal path recommendations
-
-### Phase 4: Enterprise (Q3 2026)
-
-- [ ] **Multi-City Support**: Expandable to other cities
-- [ ] **API Monetization**: Commercial traffic data service
-- [ ] **Advanced Analytics**: City planning insights
-
----
-
-## Contributing
-
-### Development Philosophy
-
-This project represents a **collaborative journey** in building production-ready ML systems, with special emphasis on:
-
-- **Intelligent Caching**: Innovative approach to API optimization
-- **Production Readiness**: Comprehensive error handling and monitoring
-- **Scalable Architecture**: Modular design for future enhancements
-- **Data-Centric Development**: Quality data pipelines as foundation
-
-### Key Contributors
-
-- **@thatlq1812**: Project lead, caching system architect, production deployment specialist
-- **Community**: Open for contributions in ML modeling, API integrations, and visualization
-
-### Development Setup
-
-```bash
-# Fork and clone
-git clone https://github.com/yourusername/dsp391m_project.git
-cd dsp391m_project
-
-# Create feature branch
-git checkout -b feature/your-feature
-
-# Setup development environment
-conda env create -f environment.yml
-conda activate dsp
-
-# Run tests
-python -m pytest tests/
-```
-
-### **Contribution Guidelines**
-
-1. **Fork** the repository
-2. **Create** a feature branch
-3. **Implement** your changes with tests
-4. **Test** thoroughly (especially caching logic)
-5. **Submit** a pull request with detailed description
-
----
-
-## License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-## Acknowledgments
-
-- **OpenStreetMap Community**: For comprehensive geographic data
-- **Open-Meteo**: For reliable weather forecasting APIs
-- **Google Maps Platform**: For mapping and directions services
-- **FastAPI Community**: For excellent web framework
-- **Conda Ecosystem**: For reproducible environments
-
----
-
-## Contact & Support
-
-- **Project Lead**: [@thatlq1812](https://github.com/thatlq1812)
-- **Issues**: [GitHub Issues](https://github.com/thatlq1812/dsp391m_project/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/thatlq1812/dsp391m_project/discussions)
-
----
-
-**Built for smarter cities and better commutes**
-
-# Traffic Forecast Node-Radius v2.0
-
-Light, practical README for running the project locally and on a Google Cloud VM.
-
-## Quick summary
-
-- Project: traffic forecasting for Ho Chi Minh City using node-radius graphs, weather, and ML.
-- Collectors support area selection modes: `bbox` and `point_radius` (also called `circle`).
-- Priority for area selection: CLI args > environment variables > `configs/project_config.yaml`.
-- Default area: center at (10.762622, 106.660172) with radius 2048m.
-
-- **Base URL**: `http://localhost:8000`
-- **Swagger UI**: `http://localhost:8000/docs`
-- **ReDoc**: `http://localhost:8000/redoc`
-
-#### Endpoints
-
-| Method | Endpoint | Description |
-| ------ | ------------------------------ | ------------------ |
-| GET | `/` | Health check |
-| GET | `/v1/nodes/{node_id}/forecast` | Get speed forecast |
-
-### Deploy on Google Cloud
-
-#### Architecture Overview
-
-```
-
-GCP VM Cloud Storage BigQuery
-(Compute) (Data Lake) Data Warehouse
-
-• Collectors • Raw data • Analytics
-• Training • Models • Reports
-• API Service • Configs
-
-
-
-
-
-Cloud Run
-(API)
-
-```
-
-#### Deploy on GCP VM
-
-1. **Create VM instance**:
-
-```bash
-gcloud compute instances create traffic-forecast-vm \
---zone=asia-southeast1-a \
---machine-type=n1-standard-4 \
---image-family=ubuntu-2204-lts \
---image-project=ubuntu-os-cloud \
---boot-disk-size=50GB \
---scopes=https://www.googleapis.com/auth/cloud-platform
-```
-
-2. **Setup environment**:
-
-```bash
-sudo apt update
-sudo apt install python3 python3-pip git
-git clone <repo>
-cd traffic-forecast-node-radius
-pip install -r requirements.txt
-```
-
-3. **Define IAM Roles**:
-
-```bash
-# Tạo service account
-gcloud iam service-accounts create traffic-forecast-sa \
---description="Service account for traffic forecast" \
---display-name="Traffic Forecast SA"
-
-# Cấp quyền
-gcloud projects add-iam-policy-binding PROJECT_ID \
---member="serviceAccount:traffic-forecast-sa@PROJECT_ID.iam.gserviceaccount.com" \
---role="roles/storage.admin"
-
-gcloud projects add-iam-policy-binding PROJECT_ID \
---member="serviceAccount:traffic-forecast-sa@PROJECT_ID.iam.gserviceaccount.com" \
---role="roles/bigquery.admin"
-```
-
-4. **Setup Cloud Storage**:
-
-```bash
-# Tạo bucket
-gsutil mb -p PROJECT_ID -c regional -l asia-southeast1 gs://traffic-forecast-data
-
-# Upload config
-gsutil cp configs/project_config.yaml gs://traffic-forecast-data/config/
-```
-
-5. **Run Training Job**:
-
-```bash
-# Download dữ liệu mới nhất
-gsutil -m cp -r gs://traffic-forecast-data/data ./data
-
-# Train model
-python pipelines/model/train.py
-
-# Upload model
-gsutil cp models/*.pkl gs://traffic-forecast-data/models/
-```
-
-#### Jobs theo lịch với Cloud Scheduler
-
-1. **Create Cloud Function**:
-
-```python
-# functions/main.py
-def collect_data(request):
-import subprocess
-result = subprocess.run(['python', 'run_collectors.py'])
-return f'Collection completed with code {result.returncode}'
-```
-
-2. **Deploy Function**:
-
-```bash
-gcloud functions deploy collect-data \
---runtime python39 \
---trigger-http \
---allow-unauthenticated \
---source functions/
-```
-
-3. **Lên lịch với Cloud Scheduler**:
-
-```bash
-gcloud scheduler jobs create http collect-daily \
---schedule="0 2 * * *" \
---uri="https://REGION-PROJECT_ID.cloudfunctions.net/collect-data" \
---http-method=POST
-```
-
----
-
-## Recent Improvements (v3.0)
-
-### Major Data Pipeline Overhaul
-
-#### 1. Smart Intersection Selection
-
-**Before**: Dense sampling creating 301,000+ nodes every 50m
-**After**: Strategic major intersections only (87 nodes)
-
-```python
-# New NodeSelector algorithm
-- Filters by minimum degree (≥ 3 connecting roads)
-- Scores by road importance (motorway=10, trunk=9, primary=8...)
-- Minimum importance threshold (≥ 15.0)
-- Result: 99.97% reduction in nodes while maintaining coverage
-```
-
-**Benefits**:
-
-- 86% reduction in API calls
-- 10x faster processing
-- Focus on strategic points
-- Lower infrastructure costs
-
-#### 2. Data Validation with Pydantic
-
-All data now validated with strict schemas:
-
-```python
-class TrafficNode(BaseModel):
-node_id: str
-lat: float = Field(..., ge=-90, le=90)
-degree: int = Field(..., ge=0)
-importance_score: float
-# Automatic validation + quality reports
-```
-
-**Features**:
-
-- Type safety
-- Automated validation
-- Quality reports (>95% validation rate)
-- Early error detection
-
-#### 3. Quality Monitoring
-
-Every collection run generates detailed quality reports:
-
-- Validation success rate
-- Missing value detection
-- Outlier identification
-- Data completeness metrics
-
-### Advanced Machine Learning Pipeline
-
-#### 1. Multiple Model Types
-
-```
-Linear Regression (baseline)
-Ridge & Lasso (regularized)
-Random Forest
-Gradient Boosting
-XGBoost
-LSTM (deep learning)
-```
-
-#### 2. MLflow Integration
-
-- Experiment tracking
-- Parameter logging
-- Metric comparison
-- Model versioning
-- Artifact storage
-
-#### 3. Ensemble Methods
-
-```python
-# Best performance: Stacking Ensemble
-- XGBoost (weight: 0.45)
-- Random Forest (weight: 0.32)
-- Gradient Boosting (weight: 0.23)
-→ Final RMSE: 8.2 km/h (R² = 0.89)
-```
-
-#### 4. Hyperparameter Tuning
-
-- GridSearchCV for systematic search
-- Optuna for Bayesian optimization
-- Cross-validation (5-fold)
-- Best params auto-selected
-
-### Performance Improvements
-
-| Metric | v2.0 | v3.0 | Improvement |
-| --------------- | ------- | ------ | ---------------- |
-| Nodes Collected | 301,000 | 87 | 99.97% reduction |
-| API Calls/Run | 1,200+ | 150 | 87.5% reduction |
-| Processing Time | 8 min | 45 sec | 10.7x faster |
-| Model RMSE | 11.2 | 8.2 | 26.8% better |
-| Model R² | 0.76 | 0.89 | 17.1% better |
-| Validation Rate | N/A | 97.7% | New feature |
-
----
-
-## Performance Metrics
-
-### Academic v4.0 Performance
-
-**Cost Optimization**:
-
-| Metric | v3.1 | v4.0 | Improvement |
-| -------------------- | ------ | ---- | ------------- |
-| Monthly Cost | $5,530 | $720 | 87% reduction |
-| Collections/day | 96 | 25 | 74% reduction |
-| Nodes | 128 | 64 | 50% reduction |
-| API calls/collection | 384 | 192 | 50% reduction |
-
-**Data Collection**:
-
-- Frequency: Adaptive (30/60/90 min based on peak hours)
-- Average duration: 3-5 seconds
-- Success rate: >98%
-- Cache hit rate: >80%
-- Node quality: 100% (major roads only)
-
-**Storage Efficiency**:
-
-- Traffic history: ~0.2 MB per collection
-- Daily storage: ~5 MB
-- 7-day retention: ~35 MB
-- Lag features: 5, 15, 30, 60 minutes
-
-**Infrastructure**:
-
-- Mock API: FREE for development
-- Production cost: $24/day ($720/month)
-- Processing: 2 CPU cores, 4GB RAM
-- Database: SQLite (traffic_history.db)
-
-### Model Performance
-
-**Best Model: Ensemble (Stacking)**:
-
-- Test RMSE: 8.2 km/h
-- Test MAE: 6.1 km/h
-- R² Score: 0.89
-- MAPE: 12.5%
-
-### Quality Metrics
-
-**Data Quality**:
-
-- Node validation: 100% (major intersections only)
-- Edge validation: 98.2% success
-- Missing values: <1%
-- Outliers detected: ~2%
-
-**Model Quality**:
-
-- Cross-validation RMSE: 8.5 ± 0.3
-- Production RMSE: 8.2
-- Prediction latency: <50ms
-- Model update frequency: Weekly
-
----
-
-## Development Roadmap
-
-### [DONE] Completed (v3.0)
-
-- [x] Smart intersection selection algorithm
-- [x] Pydantic data validation
-- [x] Quality monitoring system
-- [x] MLflow experiment tracking
-- [x] Multiple ML models (6 types)
-- [x] Hyperparameter tuning
-- [x] Ensemble methods
-- [x] Comprehensive documentation
-
-### In Progress
-
-#### Testing Suite (Priority: HIGH)
-
-```python
-# Target: 70%+ coverage
-- [ ] Unit tests for collectors
-- [ ] Integration tests for pipeline
-- [ ] API endpoint tests
-- [ ] Model validation tests
-- [ ] Performance benchmarks
-```
-
-**Implementation Plan**:
-
-```bash
-# 1. Setup pytest
-pip install pytest pytest-cov pytest-asyncio
-
-# 2. Create test structure
-tests/
-unit/
-test_collectors.py
-test_validation.py
-test_models.py
-integration/
-test_pipeline.py
-test_api.py
-conftest.py
-
-# 3. Run tests
-pytest tests/ --cov=traffic_forecast --cov-report=html
-```
-
-### Future Work
-
-#### Phase 1: Foundation Hardening
-
-**Testing & Quality**:
-
-- [ ] Comprehensive test suite (70%+ coverage)
-- [ ] CI/CD pipeline with GitHub Actions
-- [ ] Automated code quality checks (flake8, mypy, black)
-- [ ] Pre-commit hooks
-
-**Error Handling**:
-
-- [ ] Retry logic with exponential backoff
-- [ ] Circuit breaker pattern for API calls
-- [ ] Structured logging with structlog
-- [ ] Error monitoring (Sentry integration)
-
-**Security**:
-
-- [ ] Fix exposed ports in docker-compose
-- [ ] Implement rate limiting
-- [ ] Add authentication/authorization
-- [ ] Secrets management (HashiCorp Vault)
-
-#### Phase 2: API & Infrastructure (2-3 months)
-
-**API Design**:
-
-```python
-# Planned improvements
-- [ ] API versioning (v1, v2)
-- [ ] GraphQL endpoint
-- [ ] WebSocket for real-time updates
-- [ ] API rate limiting per user
-- [ ] OAuth2 authentication
-- [ ] API key management
-- [ ] Request throttling
-- [ ] Response caching
-```
-
-**Infrastructure**:
-
-```yaml
-# Planned enhancements
-Monitoring:
-- [ ] Prometheus metrics collection
-- [ ] Grafana dashboards
-- [ ] Alerting rules (PagerDuty/Slack)
-- [ ] Log aggregation (ELK stack)
-- [ ] Application Performance Monitoring (APM)
-
-Deployment:
-- [ ] Kubernetes orchestration
-- [ ] Helm charts
-- [ ] Auto-scaling policies
-- [ ] Blue-green deployments
-- [ ] Canary releases
-```
-
-#### Phase 3: Advanced Features
-
-**Machine Learning**:
-
-- [ ] Online learning for real-time updates
-- [ ] AutoML (AutoSklearn, FLAML)
-- [ ] Model explainability (SHAP, LIME)
-- [ ] A/B testing framework
-- [ ] Model drift detection
-- [ ] Automated retraining pipeline
-
-**Data Engineering**:
-
-- [ ] Real-time streaming with Kafka
-- [ ] Data versioning with DVC
-- [ ] Feature store (Feast)
-- [ ] Data quality monitoring (Great Expectations)
-- [ ] Airflow for orchestration
-
-**Advanced Analytics**:
-
-- [ ] Anomaly detection
-- [ ] Incident impact analysis
-- [ ] Route optimization
-- [ ] Predictive maintenance
-- [ ] Traffic pattern recognition
-
-#### Phase 4: Scalability
-
-**Distributed Systems**:
-
-- [ ] Multi-region deployment
-- [ ] Distributed caching (Redis Cluster)
-- [ ] Load balancing
-- [ ] CDN integration
-- [ ] Edge computing
-
-**Big Data**:
-
-- [ ] Spark for large-scale processing
-- [ ] Delta Lake for data lakehouse
-- [ ] Real-time analytics with Flink
-- [ ] Time-series database (InfluxDB)
-
----
-
-## Implementation Priority
-
-### Critical
-
-1. [DONE] **Data Pipeline Optimization** - COMPLETED
-2. [DONE] **ML Model Enhancement** - COMPLETED
-3. **Testing Suite** - IN PROGRESS
-4. **Error Handling & Logging**
-5. **Security Fixes**
-
-### Important (Next 3 Months)
-
-6. **API Design Improvements**
-7. **CI/CD Pipeline**
-8. **Monitoring & Alerting**
-9. **Documentation Updates**
-10. **Performance Optimization**
-
-### Nice to Have (Future)
-
-11. **Advanced ML Features**
-12. **Real-time Streaming**
-13. **Distributed Systems**
-14. **Mobile App**
-15. **Public API**
-
----
-
-## Notes for Future Development
-
-### API Design (To Be Implemented)
-
-Currently, API is basic FastAPI with minimal endpoints. Future improvements:
-
-```python
-# Current API
-@app.get("/")
-@app.get("/health")
-@app.get("/forecast/{node_id}")
-
-# Planned API v2
-@app.get("/api/v2/nodes") # List all nodes
-@app.get("/api/v2/nodes/{node_id}") # Node details
-@app.get("/api/v2/forecast/{node_id}") # Forecast
-@app.post("/api/v2/predict") # Batch predictions
-@app.get("/api/v2/stats") # System statistics
-@app.ws("/api/v2/realtime") # WebSocket for real-time
-
-# Authentication
-- JWT tokens
-- API keys
-- Rate limiting by user
-- Role-based access control
-```
-
-### Infrastructure Hardening (To Be Implemented)
-
-Current setup is development-focused. Production needs:
-
-```yaml
-Security:
-- Close exposed DB ports (5432, 6379)
-- Enable Redis authentication
-- HTTPS with Let's Encrypt
-- Network policies
-- Secrets rotation
-
-Monitoring:
-- Implement Prometheus metrics
-- Create Grafana dashboards
-- Setup alerts (uptime, errors, performance)
-- Log aggregation
-- Distributed tracing
-
-High Availability:
-- Database replication
-- Redis clustering
-- Load balancer (nginx/HAProxy)
-- Backup strategy
-- Disaster recovery plan
-```
-
-### License
-
-MIT License
-
-Copyright (c) 2025 THAT Le Quang
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+For detailed guides, see [QUICK_START.md](QUICK_START.md) | [DEPLOYMENT.md](DEPLOYMENT.md) | [OPERATIONS.md](OPERATIONS.md)
