@@ -14,7 +14,7 @@ This system continuously collects traffic data from 64 major intersections acros
 
 - Road network topology
 
-- Time-series traffic patterns## ✨ Features
+- Time-series traffic patterns## Features
 
 **Collection Period:** October 30 - November 2, 2025 (3 days)- **Adaptive Scheduling**: Peak/off-peak/night intervals (40% cost savings)
 
@@ -26,7 +26,7 @@ This system continuously collects traffic data from 64 major intersections acros
 
 ## Quick Start- **Cost Optimized**: ~$45 for 3-day collection, ~$150 for 7 days
 
-### For Team Members (Data Download Only)## 🚀 Quick Start
+### For Team Members (Data Download Only)## Quick Start
 
 1. Install Google Cloud SDK: https://cloud.google.com/sdk/docs/install### 1. Setup (5 minutes)
 
@@ -97,7 +97,7 @@ See detailed guide: **docs/DEVELOPER_GUIDE.md**### 3. Deploy to GCP
 
 ## System Architecture
 
-## 📊 Adaptive Scheduling
+## Adaptive Scheduling
 
 **Collection Flow:**
 
@@ -129,7 +129,7 @@ See detailed guide: **docs/DEVELOPER_GUIDE.md**### 3. Deploy to GCP
 
 
 
-**Peak Hours** (30-minute intervals):## 📁 Project Structure
+**Peak Hours** (30-minute intervals):## Project Structure
 
 - Morning: 06:30 - 08:00
 
@@ -233,7 +233,7 @@ See detailed guide: **docs/DEVELOPER_GUIDE.md**### 3. Deploy to GCP
 
 **GitHub:** https://github.com/thatlq1812/dsp391m_project
 
-## 💰 Cost Estimation
+## Cost Estimation
 
 **GCP Details:**
 
@@ -297,7 +297,7 @@ gcloud compute scp --recurse \
   ./data-backup --zone=asia-southeast1-a
 ```
 
-## 📊 Data Output
+## Data Output
 
 Each collection run creates:
 
@@ -310,7 +310,7 @@ data/runs/run_YYYYMMDD_HHMMSS/
 └── statistics.json          # Collection stats
 ```
 
-## 🔍 Monitoring
+## Monitoring
 
 ### Check Service Status
 
@@ -333,7 +333,7 @@ gcloud compute ssh traffic-forecast-collector --zone=asia-southeast1-a \
   --command="ls ~/traffic-forecast/data/runs/ | wc -l"
 ```
 
-## 🆘 Troubleshooting
+## Troubleshooting
 
 ### Collection fails
 
@@ -355,7 +355,7 @@ gcloud compute ssh traffic-forecast-collector --zone=asia-southeast1-a \
 
 ### See [OPERATIONS.md](OPERATIONS.md) for complete troubleshooting guide.
 
-## 👥 Author
+## Author
 
 **Le Quang That (THAT Le Quang)** - SE183256
 
@@ -365,11 +365,11 @@ gcloud compute ssh traffic-forecast-collector --zone=asia-southeast1-a \
 
 **Course:** DSP391m - Data Science Project (Fall 2025)
 
-## 📝 License
+## License
 
 MIT License - see [LICENSE](LICENSE) for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Google Directions API** for traffic data
 - **Open-Meteo** for weather data
@@ -379,5 +379,3 @@ MIT License - see [LICENSE](LICENSE) for details.
 ---
 
 **Traffic Forecast v5.1** - Adaptive Scheduling • Cost Optimized • Production Ready
-
-For detailed guides, see [QUICK_START.md](QUICK_START.md) | [DEPLOYMENT.md](DEPLOYMENT.md) | [OPERATIONS.md](OPERATIONS.md)

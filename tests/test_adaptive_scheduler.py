@@ -124,13 +124,13 @@ old_collections = 24 * 60 / old_interval
 old_requests = old_collections * edges_per_collection
 old_cost = (old_requests / 1000) * cost_per_1000_requests
 
-print(f"\n📊 COMPARISON:")
+print(f"\nCOMPARISON:")
 print(f"  Old (60 min constant): {old_collections:.0f} collections/day = ${old_cost:.2f}/day")
 print(f"  New (adaptive):        {collections['total']:.0f} collections/day = ${daily_cost:.2f}/day")
 
 if daily_cost < old_cost:
     savings = ((old_cost - daily_cost) / old_cost) * 100
-    print(f"  💰 SAVINGS: {savings:.1f}% = ${old_cost - daily_cost:.2f}/day")
+    print(f"  SAVINGS: {savings:.1f}% = ${old_cost - daily_cost:.2f}/day")
 else:
     increase = ((daily_cost - old_cost) / old_cost) * 100
     print(f"  📈 INCREASE: {increase:.1f}% = ${daily_cost - old_cost:.2f}/day")

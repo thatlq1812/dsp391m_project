@@ -131,12 +131,12 @@ def print_cv_results(results):
     print(f"CROSS-VALIDATION RESULTS: {results['model']}")
     print(f"{'='*60}")
     
-    print(f"\n📊 Training Set Performance:")
+    print(f"\nTraining Set Performance:")
     print(f"   R² Score:  {results['train_r2']:.4f} ± {results['train_r2_std']:.4f}")
     print(f"   RMSE:      {results['train_rmse']:.4f} ± {results['train_rmse_std']:.4f} km/h")
     print(f"   MAE:       {results['train_mae']:.4f} ± {results['train_mae_std']:.4f} km/h")
     
-    print(f"\n📊 Test Set Performance ({results['n_folds']}-Fold CV):")
+    print(f"\nTest Set Performance ({results['n_folds']}-Fold CV):")
     print(f"   R² Score:  {results['test_r2']:.4f} ± {results['test_r2_std']:.4f}")
     print(f"   RMSE:      {results['test_rmse']:.4f} ± {results['test_rmse_std']:.4f} km/h")
     print(f"   MAE:       {results['test_mae']:.4f} ± {results['test_mae_std']:.4f} km/h")
@@ -147,7 +147,7 @@ def print_cv_results(results):
     
     # Check for overfitting
     overfitting = results['train_r2'] - results['test_r2']
-    print(f"\n🔍 Overfitting Analysis:")
+    print(f"\nOverfitting Analysis:")
     print(f"   Train-Test Gap (R²): {overfitting:.4f}")
     
     if overfitting < 0.05:

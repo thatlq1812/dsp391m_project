@@ -132,8 +132,8 @@ echo "======================================================================"
 echo "  ✅ DOWNLOAD COMPLETED!"
 echo "======================================================================"
 echo ""
-echo "📁 Downloaded to: $DOWNLOAD_DIR/runs"
-echo "📊 Total runs: $RUN_COUNT"
+echo "Downloaded to: $DOWNLOAD_DIR/runs"
+echo "Total runs: $RUN_COUNT"
 echo "💾 Total size: $(du -sh $DOWNLOAD_DIR/runs | cut -f1)"
 echo ""
 
@@ -153,7 +153,7 @@ if [ -d "$DOWNLOAD_DIR/runs" ]; then
         # Show statistics
         if [ -f "$DOWNLOAD_DIR/runs/$LATEST_RUN/statistics.json" ]; then
             echo ""
-            echo "📊 Network Statistics:"
+            echo "Network Statistics:"
             python -m json.tool "$DOWNLOAD_DIR/runs/$LATEST_RUN/statistics.json" 2>/dev/null | grep -E "total_nodes|total_edges|avg_degree" || cat "$DOWNLOAD_DIR/runs/$LATEST_RUN/statistics.json"
         fi
         

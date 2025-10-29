@@ -1,0 +1,1442 @@
+[
+  {
+    "node_a_id": "node-10.761259-106.683235",
+    "node_b_id": "node-10.766384-106.678785",
+    "distance_km": 0.981,
+    "duration_sec": 143,
+    "speed_kmh": 24.696503496503496,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.023872",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.761259-106.683235",
+    "node_b_id": "node-10.768073-106.684310",
+    "distance_km": 0.996,
+    "duration_sec": 142,
+    "speed_kmh": 25.250704225352113,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.348741",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.761259-106.683235",
+    "node_b_id": "node-10.755578-106.688708",
+    "distance_km": 1.226,
+    "duration_sec": 202,
+    "speed_kmh": 21.84950495049505,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.684586",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.756048-106.683663",
+    "node_b_id": "node-10.759503-106.684051",
+    "distance_km": 0.572,
+    "duration_sec": 118,
+    "speed_kmh": 17.450847457627116,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.099991",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.756048-106.683663",
+    "node_b_id": "node-10.751877-106.683760",
+    "distance_km": 0.486,
+    "duration_sec": 86,
+    "speed_kmh": 20.344186046511627,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.453876",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.756048-106.683663",
+    "node_b_id": "node-10.755578-106.688708",
+    "distance_km": 1.256,
+    "duration_sec": 202,
+    "speed_kmh": 22.384158415841583,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.850558",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.756048-106.683663",
+    "node_b_id": "node-10.760533-106.677134",
+    "distance_km": 1.225,
+    "duration_sec": 217,
+    "speed_kmh": 20.322580645161292,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.331265",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.802705-106.698490",
+    "node_b_id": "node-10.794608-106.701793",
+    "distance_km": 2.236,
+    "duration_sec": 316,
+    "speed_kmh": 25.47341772151899,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.853615",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.751877-106.683760",
+    "node_b_id": "node-10.755578-106.688708",
+    "distance_km": 0.766,
+    "duration_sec": 99,
+    "speed_kmh": 27.854545454545455,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.268600",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.751877-106.683760",
+    "node_b_id": "node-10.759503-106.684051",
+    "distance_km": 1.208,
+    "duration_sec": 210,
+    "speed_kmh": 20.708571428571428,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.660306",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.784533-106.707943",
+    "node_b_id": "node-10.789376-106.713954",
+    "distance_km": 1.634,
+    "duration_sec": 178,
+    "speed_kmh": 33.04719101123595,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.120931",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.784533-106.707943",
+    "node_b_id": "node-10.790494-106.701513",
+    "distance_km": 1.897,
+    "duration_sec": 295,
+    "speed_kmh": 23.149830508474576,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.458616",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.784533-106.707943",
+    "node_b_id": "node-10.781476-106.699636",
+    "distance_km": 1.317,
+    "duration_sec": 183,
+    "speed_kmh": 25.908196721311473,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.786549",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.800396-106.716518",
+    "node_b_id": "node-10.801409-106.713513",
+    "distance_km": 0.349,
+    "duration_sec": 28,
+    "speed_kmh": 44.87142857142857,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.202971",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.800396-106.716518",
+    "node_b_id": "node-10.797980-106.722072",
+    "distance_km": 5.202,
+    "duration_sec": 441,
+    "speed_kmh": 42.46530612244898,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.635264",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.800396-106.716518",
+    "node_b_id": "node-10.799010-106.723674",
+    "distance_km": 1.781,
+    "duration_sec": 261,
+    "speed_kmh": 24.56551724137931,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.105032",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.800396-106.716518",
+    "node_b_id": "node-10.801105-106.709186",
+    "distance_km": 0.825,
+    "duration_sec": 60,
+    "speed_kmh": 49.5,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.521351",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.801409-106.713513",
+    "node_b_id": "node-10.801105-106.709186",
+    "distance_km": 0.476,
+    "duration_sec": 34,
+    "speed_kmh": 50.4,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.962366",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.794608-106.701793",
+    "node_b_id": "node-10.790494-106.701513",
+    "distance_km": 1.563,
+    "duration_sec": 243,
+    "speed_kmh": 23.15555555555555,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.368517",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.794608-106.701793",
+    "node_b_id": "node-10.788468-106.699588",
+    "distance_km": 1.885,
+    "duration_sec": 267,
+    "speed_kmh": 25.41573033707865,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.791995",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.753823-106.686917",
+    "node_b_id": "node-10.751877-106.683760",
+    "distance_km": 0.511,
+    "duration_sec": 83,
+    "speed_kmh": 22.163855421686748,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:50.794323",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.753823-106.686917",
+    "node_b_id": "node-10.756048-106.683663",
+    "distance_km": 0.549,
+    "duration_sec": 105,
+    "speed_kmh": 18.822857142857146,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.287613",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.753823-106.686917",
+    "node_b_id": "node-10.759503-106.684051",
+    "distance_km": 0.719,
+    "duration_sec": 128,
+    "speed_kmh": 20.221875,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.817986",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.753823-106.686917",
+    "node_b_id": "node-10.759103-106.693216",
+    "distance_km": 0.908,
+    "duration_sec": 90,
+    "speed_kmh": 36.32,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.222184",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.753823-106.686917",
+    "node_b_id": "node-10.761259-106.683235",
+    "distance_km": 1.164,
+    "duration_sec": 200,
+    "speed_kmh": 20.951999999999998,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.677644",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.773433-106.722620",
+    "node_b_id": "node-10.771366-106.716828",
+    "distance_km": 0.673,
+    "duration_sec": 128,
+    "speed_kmh": 18.928125,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.139433",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.761259-106.683235",
+    "node_b_id": "node-10.759503-106.684051",
+    "distance_km": 0.231,
+    "duration_sec": 53,
+    "speed_kmh": 15.69056603773585,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.526630",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.761259-106.683235",
+    "node_b_id": "node-10.756048-106.683663",
+    "distance_km": 0.739,
+    "duration_sec": 109,
+    "speed_kmh": 24.407339449541283,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.992488",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.761259-106.683235",
+    "node_b_id": "node-10.760533-106.677134",
+    "distance_km": 0.876,
+    "duration_sec": 154,
+    "speed_kmh": 20.477922077922077,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.402986",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.761259-106.683235",
+    "node_b_id": "node-10.762243-106.676490",
+    "distance_km": 1.125,
+    "duration_sec": 182,
+    "speed_kmh": 22.252747252747252,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.825845",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.737984-106.721606",
+    "node_b_id": "node-10.737481-106.730410",
+    "distance_km": 0.964,
+    "duration_sec": 109,
+    "speed_kmh": 31.83853211009174,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:50.741370",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.764404-106.698972",
+    "node_b_id": "node-10.766495-106.701049",
+    "distance_km": 1.881,
+    "duration_sec": 204,
+    "speed_kmh": 33.194117647058825,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.283180",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.764404-106.698972",
+    "node_b_id": "node-10.761459-106.700184",
+    "distance_km": 1.126,
+    "duration_sec": 159,
+    "speed_kmh": 25.494339622641508,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.763759",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.764404-106.698972",
+    "node_b_id": "node-10.761650-106.696389",
+    "distance_km": 2.675,
+    "duration_sec": 315,
+    "speed_kmh": 30.571428571428573,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.209187",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.764404-106.698972",
+    "node_b_id": "node-10.768215-106.702670",
+    "distance_km": 3.797,
+    "duration_sec": 372,
+    "speed_kmh": 36.745161290322585,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.633089",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.764404-106.698972",
+    "node_b_id": "node-10.771050-106.701121",
+    "distance_km": 1.925,
+    "duration_sec": 249,
+    "speed_kmh": 27.83132530120482,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.009688",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.764404-106.698972",
+    "node_b_id": "node-10.771120-106.696525",
+    "distance_km": 2.111,
+    "duration_sec": 290,
+    "speed_kmh": 26.20551724137931,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.428585",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.764404-106.698972",
+    "node_b_id": "node-10.767345-106.706097",
+    "distance_km": 1.696,
+    "duration_sec": 234,
+    "speed_kmh": 26.092307692307692,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.939791",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.764404-106.698972",
+    "node_b_id": "node-10.759103-106.693216",
+    "distance_km": 3.392,
+    "duration_sec": 358,
+    "speed_kmh": 34.10949720670391,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.425346",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.753823-106.686917",
+    "node_b_id": "node-10.755578-106.688708",
+    "distance_km": 0.277,
+    "duration_sec": 22,
+    "speed_kmh": 45.32727272727273,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.874979",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.766495-106.701049",
+    "node_b_id": "node-10.768215-106.702670",
+    "distance_km": 3.822,
+    "duration_sec": 388,
+    "speed_kmh": 35.46185567010309,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.139203",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.766495-106.701049",
+    "node_b_id": "node-10.771050-106.701121",
+    "distance_km": 0.96,
+    "duration_sec": 206,
+    "speed_kmh": 16.776699029126213,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.624379",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.766495-106.701049",
+    "node_b_id": "node-10.767345-106.706097",
+    "distance_km": 1.508,
+    "duration_sec": 256,
+    "speed_kmh": 21.20625,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.976868",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.766495-106.701049",
+    "node_b_id": "node-10.761459-106.700184",
+    "distance_km": 1.528,
+    "duration_sec": 246,
+    "speed_kmh": 22.3609756097561,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.375311",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.766495-106.701049",
+    "node_b_id": "node-10.771120-106.696525",
+    "distance_km": 1.031,
+    "duration_sec": 193,
+    "speed_kmh": 19.231088082901554,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.750616",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.766495-106.701049",
+    "node_b_id": "node-10.761650-106.696389",
+    "distance_km": 0.794,
+    "duration_sec": 117,
+    "speed_kmh": 24.430769230769233,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.208844",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.752793-106.728535",
+    "node_b_id": "node-10.751524-106.724035",
+    "distance_km": 0.526,
+    "duration_sec": 98,
+    "speed_kmh": 19.32244897959184,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.670473",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.752793-106.728535",
+    "node_b_id": "node-10.755484-106.723277",
+    "distance_km": 1.254,
+    "duration_sec": 235,
+    "speed_kmh": 19.210212765957447,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.061988",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.751524-106.724035",
+    "node_b_id": "node-10.755484-106.723277",
+    "distance_km": 3.417,
+    "duration_sec": 570,
+    "speed_kmh": 21.58105263157895,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.493425",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.751524-106.724035",
+    "node_b_id": "node-10.756666-106.718849",
+    "distance_km": 3.436,
+    "duration_sec": 527,
+    "speed_kmh": 23.471726755218214,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.918927",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.768215-106.702670",
+    "node_b_id": "node-10.771050-106.701121",
+    "distance_km": 0.944,
+    "duration_sec": 173,
+    "speed_kmh": 19.64393063583815,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.138987",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.768215-106.702670",
+    "node_b_id": "node-10.767345-106.706097",
+    "distance_km": 1.492,
+    "duration_sec": 218,
+    "speed_kmh": 24.63853211009174,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.513607",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.768215-106.702670",
+    "node_b_id": "node-10.771120-106.696525",
+    "distance_km": 1.298,
+    "duration_sec": 216,
+    "speed_kmh": 21.633333333333336,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.884485",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.768215-106.702670",
+    "node_b_id": "node-10.761459-106.700184",
+    "distance_km": 1.817,
+    "duration_sec": 285,
+    "speed_kmh": 22.95157894736842,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.267479",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.797980-106.722072",
+    "node_b_id": "node-10.799010-106.723674",
+    "distance_km": 0.392,
+    "duration_sec": 43,
+    "speed_kmh": 32.818604651162794,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.722034",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.749586-106.671759",
+    "node_b_id": "node-10.746264-106.669053",
+    "distance_km": 2.946,
+    "duration_sec": 385,
+    "speed_kmh": 27.54701298701299,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.187331",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.749586-106.671759",
+    "node_b_id": "node-10.753465-106.669497",
+    "distance_km": 1.011,
+    "duration_sec": 156,
+    "speed_kmh": 23.330769230769228,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.695007",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.749586-106.671759",
+    "node_b_id": "node-10.750591-106.666344",
+    "distance_km": 1.695,
+    "duration_sec": 221,
+    "speed_kmh": 27.61085972850679,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.101983",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.749586-106.671759",
+    "node_b_id": "node-10.757421-106.673939",
+    "distance_km": 1.335,
+    "duration_sec": 252,
+    "speed_kmh": 19.07142857142857,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.530096",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.750591-106.666344",
+    "node_b_id": "node-10.753465-106.669497",
+    "distance_km": 0.697,
+    "duration_sec": 117,
+    "speed_kmh": 21.446153846153845,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.952485",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.767440-106.674410",
+    "node_b_id": "node-10.761091-106.674789",
+    "distance_km": 0.834,
+    "duration_sec": 132,
+    "speed_kmh": 22.745454545454546,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.252551",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.767440-106.674410",
+    "node_b_id": "node-10.772736-106.679015",
+    "distance_km": 0.794,
+    "duration_sec": 86,
+    "speed_kmh": 33.23720930232558,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.590694",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.767440-106.674410",
+    "node_b_id": "node-10.767804-106.667123",
+    "distance_km": 1.142,
+    "duration_sec": 179,
+    "speed_kmh": 22.967597765363127,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.969510",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.767440-106.674410",
+    "node_b_id": "node-10.760533-106.677134",
+    "distance_km": 1.22,
+    "duration_sec": 244,
+    "speed_kmh": 17.999999999999996,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.353296",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.771233-106.693127",
+    "node_b_id": "node-10.771120-106.696525",
+    "distance_km": 0.377,
+    "duration_sec": 52,
+    "speed_kmh": 26.1,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.761676",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.771233-106.693127",
+    "node_b_id": "node-10.774790-106.690611",
+    "distance_km": 0.698,
+    "duration_sec": 89,
+    "speed_kmh": 28.233707865168537,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.265261",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.771233-106.693127",
+    "node_b_id": "node-10.771050-106.701121",
+    "distance_km": 0.983,
+    "duration_sec": 173,
+    "speed_kmh": 20.45549132947977,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.731981",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.771233-106.693127",
+    "node_b_id": "node-10.779575-106.694991",
+    "distance_km": 1.413,
+    "duration_sec": 181,
+    "speed_kmh": 28.10386740331492,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.125903",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.771233-106.693127",
+    "node_b_id": "node-10.764404-106.698972",
+    "distance_km": 1.15,
+    "duration_sec": 221,
+    "speed_kmh": 18.733031674208142,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.508796",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.785873-106.690029",
+    "node_b_id": "node-10.783453-106.690783",
+    "distance_km": 0.402,
+    "duration_sec": 62,
+    "speed_kmh": 23.34193548387097,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.958990",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.753465-106.669497",
+    "node_b_id": "node-10.746264-106.669053",
+    "distance_km": 1.949,
+    "duration_sec": 237,
+    "speed_kmh": 29.605063291139246,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.242007",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.801559-106.665425",
+    "node_b_id": "node-10.800009-106.660622",
+    "distance_km": 0.691,
+    "duration_sec": 81,
+    "speed_kmh": 30.71111111111111,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.722834",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.768073-106.684310",
+    "node_b_id": "node-10.766384-106.678785",
+    "distance_km": 0.749,
+    "duration_sec": 90,
+    "speed_kmh": 29.959999999999997,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.150992",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.768073-106.684310",
+    "node_b_id": "node-10.772736-106.679015",
+    "distance_km": 0.777,
+    "duration_sec": 106,
+    "speed_kmh": 26.388679245283022,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.510239",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.768073-106.684310",
+    "node_b_id": "node-10.774326-106.688263",
+    "distance_km": 0.995,
+    "duration_sec": 141,
+    "speed_kmh": 25.404255319148934,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.901224",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.768073-106.684310",
+    "node_b_id": "node-10.759503-106.684051",
+    "distance_km": 1.439,
+    "duration_sec": 211,
+    "speed_kmh": 24.551658767772512,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.354524",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.790494-106.701513",
+    "node_b_id": "node-10.788468-106.699588",
+    "distance_km": 0.895,
+    "duration_sec": 141,
+    "speed_kmh": 22.851063829787233,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.901496",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.790494-106.701513",
+    "node_b_id": "node-10.783793-106.698783",
+    "distance_km": 1.052,
+    "duration_sec": 163,
+    "speed_kmh": 23.23435582822086,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.275131",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.790494-106.701513",
+    "node_b_id": "node-10.784663-106.695983",
+    "distance_km": 1.485,
+    "duration_sec": 230,
+    "speed_kmh": 23.24347826086957,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.641859",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.782732-106.686834",
+    "node_b_id": "node-10.783453-106.690783",
+    "distance_km": 0.602,
+    "duration_sec": 93,
+    "speed_kmh": 23.30322580645161,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.035315",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.750591-106.666344",
+    "node_b_id": "node-10.746264-106.669053",
+    "distance_km": 1.691,
+    "duration_sec": 207,
+    "speed_kmh": 29.40869565217391,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.187850",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.750591-106.666344",
+    "node_b_id": "node-10.746522-106.660427",
+    "distance_km": 1.755,
+    "duration_sec": 227,
+    "speed_kmh": 27.832599118942728,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.692117",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.755578-106.688708",
+    "node_b_id": "node-10.759103-106.693216",
+    "distance_km": 0.632,
+    "duration_sec": 66,
+    "speed_kmh": 34.472727272727276,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.051497",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.755578-106.688708",
+    "node_b_id": "node-10.759503-106.684051",
+    "distance_km": 2.027,
+    "duration_sec": 277,
+    "speed_kmh": 26.34368231046932,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.460567",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.761650-106.696389",
+    "node_b_id": "node-10.761459-106.700184",
+    "distance_km": 1.549,
+    "duration_sec": 226,
+    "speed_kmh": 24.674336283185838,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.855974",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.761650-106.696389",
+    "node_b_id": "node-10.759103-106.693216",
+    "distance_km": 0.455,
+    "duration_sec": 54,
+    "speed_kmh": 30.333333333333336,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.280701",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.759103-106.693216",
+    "node_b_id": "node-10.761459-106.700184",
+    "distance_km": 2.0,
+    "duration_sec": 268,
+    "speed_kmh": 26.865671641791046,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.875413",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.799711-106.732677",
+    "node_b_id": "node-10.799010-106.723674",
+    "distance_km": 2.65,
+    "duration_sec": 261,
+    "speed_kmh": 36.55172413793104,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.282513",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.753465-106.669497",
+    "node_b_id": "node-10.757421-106.673939",
+    "distance_km": 0.721,
+    "duration_sec": 133,
+    "speed_kmh": 19.515789473684208,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.724152",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.753465-106.669497",
+    "node_b_id": "node-10.759875-106.668686",
+    "distance_km": 0.781,
+    "duration_sec": 140,
+    "speed_kmh": 20.082857142857144,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.100365",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.782732-106.686834",
+    "node_b_id": "node-10.785873-106.690029",
+    "distance_km": 0.986,
+    "duration_sec": 181,
+    "speed_kmh": 19.611049723756906,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.234127",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.782732-106.686834",
+    "node_b_id": "node-10.774326-106.688263",
+    "distance_km": 1.318,
+    "duration_sec": 215,
+    "speed_kmh": 22.068837209302327,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:51.801281",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.782732-106.686834",
+    "node_b_id": "node-10.779575-106.694991",
+    "distance_km": 1.233,
+    "duration_sec": 204,
+    "speed_kmh": 21.758823529411767,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.227806",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.782732-106.686834",
+    "node_b_id": "node-10.774790-106.690611",
+    "distance_km": 1.311,
+    "duration_sec": 218,
+    "speed_kmh": 21.649541284403668,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:52.720219",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.774326-106.688263",
+    "node_b_id": "node-10.774790-106.690611",
+    "distance_km": 0.351,
+    "duration_sec": 58,
+    "speed_kmh": 21.78620689655172,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.080863",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.774326-106.688263",
+    "node_b_id": "node-10.771233-106.693127",
+    "distance_km": 0.671,
+    "duration_sec": 100,
+    "speed_kmh": 24.156000000000002,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.512053",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.774326-106.688263",
+    "node_b_id": "node-10.779575-106.694991",
+    "distance_km": 1.065,
+    "duration_sec": 142,
+    "speed_kmh": 27.0,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:53.954745",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.774326-106.688263",
+    "node_b_id": "node-10.771120-106.696525",
+    "distance_km": 1.039,
+    "duration_sec": 167,
+    "speed_kmh": 22.39760479041916,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.348579",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.767440-106.674410",
+    "node_b_id": "node-10.766384-106.678785",
+    "distance_km": 1.28,
+    "duration_sec": 152,
+    "speed_kmh": 30.31578947368421,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:54.743111",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.767440-106.674410",
+    "node_b_id": "node-10.762243-106.676490",
+    "distance_km": 1.453,
+    "duration_sec": 163,
+    "speed_kmh": 32.09079754601227,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.115622",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.760533-106.677134",
+    "node_b_id": "node-10.762243-106.676490",
+    "distance_km": 0.722,
+    "duration_sec": 117,
+    "speed_kmh": 22.215384615384615,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.181965",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.760533-106.677134",
+    "node_b_id": "node-10.761091-106.674789",
+    "distance_km": 0.425,
+    "duration_sec": 95,
+    "speed_kmh": 16.105263157894736,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.465132",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.762243-106.676490",
+    "node_b_id": "node-10.761091-106.674789",
+    "distance_km": 0.226,
+    "duration_sec": 36,
+    "speed_kmh": 22.6,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.686070",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.761091-106.674789",
+    "node_b_id": "node-10.761259-106.683235",
+    "distance_km": 1.739,
+    "duration_sec": 227,
+    "speed_kmh": 27.57885462555066,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.885600",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.785873-106.690029",
+    "node_b_id": "node-10.784663-106.695983",
+    "distance_km": 1.179,
+    "duration_sec": 209,
+    "speed_kmh": 20.308133971291866,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.050252",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.785873-106.690029",
+    "node_b_id": "node-10.779575-106.694991",
+    "distance_km": 1.033,
+    "duration_sec": 177,
+    "speed_kmh": 21.010169491525424,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.211536",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.785873-106.690029",
+    "node_b_id": "node-10.783793-106.698783",
+    "distance_km": 1.666,
+    "duration_sec": 276,
+    "speed_kmh": 21.730434782608697,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.458657",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.766384-106.678785",
+    "node_b_id": "node-10.762243-106.676490",
+    "distance_km": 2.054,
+    "duration_sec": 227,
+    "speed_kmh": 32.57444933920704,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.610900",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.766384-106.678785",
+    "node_b_id": "node-10.760533-106.677134",
+    "distance_km": 1.825,
+    "duration_sec": 310,
+    "speed_kmh": 21.193548387096772,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.829585",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.766384-106.678785",
+    "node_b_id": "node-10.772736-106.679015",
+    "distance_km": 1.239,
+    "duration_sec": 140,
+    "speed_kmh": 31.860000000000003,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.993922",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.766384-106.678785",
+    "node_b_id": "node-10.761091-106.674789",
+    "distance_km": 1.439,
+    "duration_sec": 198,
+    "speed_kmh": 26.163636363636364,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.180246",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.766384-106.678785",
+    "node_b_id": "node-10.759503-106.684051",
+    "distance_km": 2.157,
+    "duration_sec": 270,
+    "speed_kmh": 28.76,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.382376",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.784663-106.695983",
+    "node_b_id": "node-10.783793-106.698783",
+    "distance_km": 0.436,
+    "duration_sec": 85,
+    "speed_kmh": 18.465882352941176,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.515679",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.784663-106.695983",
+    "node_b_id": "node-10.781476-106.699636",
+    "distance_km": 0.534,
+    "duration_sec": 96,
+    "speed_kmh": 20.025,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.654339",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.767345-106.706097",
+    "node_b_id": "node-10.771050-106.701121",
+    "distance_km": 1.936,
+    "duration_sec": 256,
+    "speed_kmh": 27.224999999999998,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.151323",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.783453-106.690783",
+    "node_b_id": "node-10.779575-106.694991",
+    "distance_km": 0.631,
+    "duration_sec": 112,
+    "speed_kmh": 20.28214285714286,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.349437",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.783453-106.690783",
+    "node_b_id": "node-10.783793-106.698783",
+    "distance_km": 1.264,
+    "duration_sec": 216,
+    "speed_kmh": 21.066666666666666,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.517427",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.783453-106.690783",
+    "node_b_id": "node-10.774790-106.690611",
+    "distance_km": 1.34,
+    "duration_sec": 215,
+    "speed_kmh": 22.43720930232558,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.724704",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.783453-106.690783",
+    "node_b_id": "node-10.781476-106.699636",
+    "distance_km": 1.377,
+    "duration_sec": 221,
+    "speed_kmh": 22.43076923076923,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.946988",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.783793-106.698783",
+    "node_b_id": "node-10.781476-106.699636",
+    "distance_km": 0.651,
+    "duration_sec": 123,
+    "speed_kmh": 19.053658536585367,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.126873",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.783793-106.698783",
+    "node_b_id": "node-10.788468-106.699588",
+    "distance_km": 1.041,
+    "duration_sec": 169,
+    "speed_kmh": 22.175147928994082,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.239369",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.783793-106.698783",
+    "node_b_id": "node-10.779575-106.694991",
+    "distance_km": 0.98,
+    "duration_sec": 168,
+    "speed_kmh": 21.0,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.410429",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.746522-106.660427",
+    "node_b_id": "node-10.746264-106.669053",
+    "distance_km": 1.717,
+    "duration_sec": 275,
+    "speed_kmh": 22.477090909090908,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.604550",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.759503-106.684051",
+    "node_b_id": "node-10.760533-106.677134",
+    "distance_km": 1.069,
+    "duration_sec": 185,
+    "speed_kmh": 20.802162162162162,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.735752",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.759503-106.684051",
+    "node_b_id": "node-10.762243-106.676490",
+    "distance_km": 1.454,
+    "duration_sec": 172,
+    "speed_kmh": 30.43255813953488,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.148060",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.757421-106.673939",
+    "node_b_id": "node-10.761091-106.674789",
+    "distance_km": 0.553,
+    "duration_sec": 89,
+    "speed_kmh": 22.3685393258427,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.272631",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.757421-106.673939",
+    "node_b_id": "node-10.760533-106.677134",
+    "distance_km": 0.635,
+    "duration_sec": 131,
+    "speed_kmh": 17.450381679389313,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.477125",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.757421-106.673939",
+    "node_b_id": "node-10.762243-106.676490",
+    "distance_km": 1.215,
+    "duration_sec": 201,
+    "speed_kmh": 21.76119402985075,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.737154",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.774790-106.690611",
+    "node_b_id": "node-10.779575-106.694991",
+    "distance_km": 0.715,
+    "duration_sec": 80,
+    "speed_kmh": 32.175,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.937234",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.774790-106.690611",
+    "node_b_id": "node-10.771120-106.696525",
+    "distance_km": 1.074,
+    "duration_sec": 179,
+    "speed_kmh": 21.6,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.077660",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.788468-106.699588",
+    "node_b_id": "node-10.781476-106.699636",
+    "distance_km": 1.119,
+    "duration_sec": 197,
+    "speed_kmh": 20.448730964467007,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.265218",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.771120-106.696525",
+    "node_b_id": "node-10.771050-106.701121",
+    "distance_km": 0.606,
+    "duration_sec": 119,
+    "speed_kmh": 18.3327731092437,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.420275",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.771120-106.696525",
+    "node_b_id": "node-10.779575-106.694991",
+    "distance_km": 1.334,
+    "duration_sec": 195,
+    "speed_kmh": 24.627692307692307,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.609758",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.779575-106.694991",
+    "node_b_id": "node-10.781476-106.699636",
+    "distance_km": 0.745,
+    "duration_sec": 110,
+    "speed_kmh": 24.381818181818183,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.739897",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.784663-106.695983",
+    "node_b_id": "node-10.779575-106.694991",
+    "distance_km": 0.802,
+    "duration_sec": 158,
+    "speed_kmh": 18.27341772151899,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.156471",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.784663-106.695983",
+    "node_b_id": "node-10.788468-106.699588",
+    "distance_km": 1.183,
+    "duration_sec": 195,
+    "speed_kmh": 21.84,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.433715",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.784663-106.695983",
+    "node_b_id": "node-10.783453-106.690783",
+    "distance_km": 1.278,
+    "duration_sec": 208,
+    "speed_kmh": 22.11923076923077,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.599347",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.759875-106.668686",
+    "node_b_id": "node-10.757421-106.673939",
+    "distance_km": 0.874,
+    "duration_sec": 141,
+    "speed_kmh": 22.314893617021276,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.812387",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.759875-106.668686",
+    "node_b_id": "node-10.761091-106.674789",
+    "distance_km": 0.707,
+    "duration_sec": 115,
+    "speed_kmh": 22.132173913043477,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:55.985325",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.759875-106.668686",
+    "node_b_id": "node-10.762243-106.676490",
+    "distance_km": 2.562,
+    "duration_sec": 326,
+    "speed_kmh": 28.2920245398773,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.170063",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.759875-106.668686",
+    "node_b_id": "node-10.767804-106.667123",
+    "distance_km": 0.979,
+    "duration_sec": 162,
+    "speed_kmh": 21.755555555555556,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.312381",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.759875-106.668686",
+    "node_b_id": "node-10.760533-106.677134",
+    "distance_km": 1.515,
+    "duration_sec": 264,
+    "speed_kmh": 20.659090909090907,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.468419",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.761459-106.700184",
+    "node_b_id": "node-10.767345-106.706097",
+    "distance_km": 1.323,
+    "duration_sec": 200,
+    "speed_kmh": 23.814,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.628074",
+    "api_type": "real"
+  },
+  {
+    "node_a_id": "node-10.756666-106.718849",
+    "node_b_id": "node-10.755484-106.723277",
+    "distance_km": 3.474,
+    "duration_sec": 526,
+    "speed_kmh": 23.77642585551331,
+    "has_traffic_data": true,
+    "timestamp": "2025-10-30T03:24:56.770498",
+    "api_type": "real"
+  }
+]
