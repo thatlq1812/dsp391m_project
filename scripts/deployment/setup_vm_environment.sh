@@ -36,8 +36,9 @@ pip install \
     geopy
 
 # Install project in editable mode
-echo "Installing project..."
-pip install -e .
+echo "Installing project with Linux-specific requirements..."
+pip install -r requirements-linux-vm.txt
+pip install -e . --no-deps  # Install project without dependencies (already installed above)
 
 echo ""
 echo "==========================================="
