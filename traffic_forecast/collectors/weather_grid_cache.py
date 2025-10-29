@@ -3,9 +3,9 @@ Weather Grid Cache v5.1
 Grid-based weather data caching to reduce API calls by 95%
 
 Instead of fetching weather for each node (78 calls), 
-fetch once per 1km² grid cell (16 calls for 4096m radius)
+fetch once per 1km² grid cell (4 calls for 2048m radius)
 
-Savings: 78 calls → 16 calls = 95% reduction in weather API usage
+Savings: 78 calls → 4 calls = 95% reduction in weather API usage
 """
 
 import math
@@ -274,7 +274,7 @@ class WeatherGridCache:
 def estimate_weather_api_savings(
     num_nodes: int = 78,
     cell_size_m: float = 1000,
-    radius_m: float = 4096
+    radius_m: float = 2048
 ) -> Dict:
     """
     Estimate API call reduction from grid caching
@@ -326,7 +326,7 @@ if __name__ == '__main__':
     cache = WeatherGridCache(
         center_lat=10.772465,
         center_lon=106.697794,
-        radius_m=4096,
+        radius_m=2048,
         cell_size_m=1000,
         cache_expiry_minutes=30
     )

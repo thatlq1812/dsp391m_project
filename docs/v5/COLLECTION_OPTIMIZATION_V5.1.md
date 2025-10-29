@@ -18,12 +18,12 @@
 
 ### Cost Reduction
 
-| Metric | Before | After v5.1 | Savings |
+| Metric                   | Before  | After v5.1 | Savings    |
 | ------------------------ | ------- | ---------- | ---------- |
-| **Daily collections** | 24 | 18 | 25% fewer |
-| **Daily API requests** | 5,616 | 4,212 | 25% fewer |
-| **Daily cost** | $28.08 | $21.06 | **$7.02** |
-| **Weekly cost (7 days)** | $196.56 | $147.42 | **$49.14** |
+| **Daily collections**    | 24      | 18         | 25% fewer  |
+| **Daily API requests**   | 5,616   | 4,212      | 25% fewer  |
+| **Daily cost**           | $28.08  | $21.06     | **$7.02**  |
+| **Weekly cost (7 days)** | $196.56 | $147.42    | **$49.14** |
 
 **Total savings: 25% cost reduction with BETTER data quality during peaks!**
 
@@ -106,16 +106,16 @@ interval_minutes: 120
 
 **Grid-based caching:**
 
-- Divide coverage area (4096m radius) into 1km² cells
+- Divide coverage area (2048m radius) into 1km² cells
 - ~53 cells for entire coverage area
 - Fetch weather once per cell, share with all nodes in that cell
 
 ### Savings
 
-| Metric | Without Grid | With Grid | Reduction |
+| Metric            | Without Grid | With Grid | Reduction |
 | ----------------- | ------------ | --------- | --------- |
-| Weather API calls | 78 | 53 | **32%** |
-| Cache duration | N/A | 30 min | Reuse! |
+| Weather API calls | 78           | 53        | **32%**   |
+| Cache duration    | N/A          | 30 min    | Reuse!    |
 
 **Result:** 32% fewer weather API calls + smart caching!
 
@@ -128,7 +128,7 @@ interval_minutes: 120
 cache = WeatherGridCache(
 center_lat=10.772465,
 center_lon=106.697794,
-radius_m=4096,
+radius_m=2048,
 cell_size_m=1000, # 1km x 1km cells
 cache_expiry_minutes=30
 )
@@ -274,6 +274,7 @@ Total: $133.38/week
 - 30-minute cache expiry
 
 3. **`traffic_forecast/scheduler/adaptive_scheduler.py`** (EXISTS)
+
 - Time-based interval selection
 - Peak/off-peak/night logic
 
@@ -361,24 +362,24 @@ estimate_current_costs()
 
 ### Collection Strategy
 
-| Aspect | Before v5.0 | After v5.1 |
+| Aspect               | Before v5.0      | After v5.1            |
 | -------------------- | ---------------- | --------------------- |
-| **Schedule** | Fixed 60 min | Adaptive (30/90/skip) |
-| **Night collection** | Yes | No (skip) |
-| **Peak sampling** | Same as off-peak | 2x more frequent |
-| **Weather calls** | 78/collection | 53/collection (-32%) |
-| **Topology calls** | Every time | Once (cached) |
+| **Schedule**         | Fixed 60 min     | Adaptive (30/90/skip) |
+| **Night collection** | Yes              | No (skip)             |
+| **Peak sampling**    | Same as off-peak | 2x more frequent      |
+| **Weather calls**    | 78/collection    | 53/collection (-32%)  |
+| **Topology calls**   | Every time       | Once (cached)         |
 
 ### Cost & Quality
 
-| Metric | Before | After | Change |
-| --------------------- | ------- | ------- | -------------- |
-| **Collections/day** | 24 | 18 | -25% |
-| **Daily cost** | $28.08 | $21.06 | -$7.02 |
-| **Weekly cost** | $196.56 | $147.42 | -$49.14 |
-| **Peak coverage** | Medium | High | Better |
-| **Off-peak coverage** | High | Medium | Adequate |
-| **Night coverage** | High | None | Unnecessary |
+| Metric                | Before  | After   | Change      |
+| --------------------- | ------- | ------- | ----------- |
+| **Collections/day**   | 24      | 18      | -25%        |
+| **Daily cost**        | $28.08  | $21.06  | -$7.02      |
+| **Weekly cost**       | $196.56 | $147.42 | -$49.14     |
+| **Peak coverage**     | Medium  | High    | Better      |
+| **Off-peak coverage** | High    | Medium  | Adequate    |
+| **Night coverage**    | High    | None    | Unnecessary |
 
 **Result: Lower cost + better quality where it matters!**
 

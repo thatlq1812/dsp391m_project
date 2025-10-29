@@ -124,7 +124,7 @@ def get_collection_interval(current_time):
 
 **Weather Grid System:**
 
-- 4x4 grid covering 4096m radius
+- 4x4 grid covering 2048m radius
 - 16 representative points
 - Bilinear interpolation for 78 nodes
 - Validation: max temp variance < 2°C

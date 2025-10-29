@@ -277,6 +277,7 @@ Monitor in collection logs:
 2. Verify Directions API is enabled in GCP Console
 3. Confirm billing account is active
 4. Test with single request:
+
 ```bash
 export GOOGLE_TEST_LIMIT=1
 python traffic_forecast/collectors/google/collector.py
@@ -304,6 +305,7 @@ conda run -n dsp python traffic_forecast/collectors/google/collector.py
 
 1. Upgrade VM to e2-small (2GB RAM)
 2. Or reduce batch size:
+
 ```python
 update_config('collection', 'batch_size', 5)
 ```
@@ -349,7 +351,7 @@ data/
 
 - [x] Topology cached (78 nodes)
 - [x] API key tested locally
-- [x] Config finalized (radius 4096m, min_distance 200m)
+- [x] Config finalized (radius 2048m, min_distance 200m)
 - [x] Cost estimated ($28/day for 7 days)
 
 ### During Deployment

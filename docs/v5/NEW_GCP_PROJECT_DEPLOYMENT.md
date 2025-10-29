@@ -36,7 +36,7 @@ Tài liệu này hướng dẫn chi tiết cách deploy hệ thống Traffic For
 - Verify: `gcloud --version`
 - [ ] Project code đã update version v5.0
 - Cache topology: `cache/overpass_topology.json` (78 nodes)
-- Config: `configs/project_config.yaml` (radius=4096m)
+- Config: `configs/project_config.yaml` (radius=2048m)
 
 ---
 
@@ -47,9 +47,11 @@ Tài liệu này hướng dẫn chi tiết cách deploy hệ thống Traffic For
 1. Truy cập: https://console.cloud.google.com
 2. Click **Select a project** → **NEW PROJECT**
 3. Điền thông tin:
+
 - **Project name:** `traffic-forecast-dsp391m`
 - **Project ID:**Tự động tạo (ví dụ: `traffic-forecast-dsp391m-12345`)
 - **Location:**No organization (hoặc chọn organization nếu có)
+
 4. Click **CREATE**
 5. **Lưu lại Project ID** - cần dùng cho các bước sau
 
@@ -84,6 +86,7 @@ traffic-forecast-dsp391m-12345
 1. Vào: https://console.cloud.google.com/billing
 2. Link billing account với project `traffic-forecast-dsp391m`
 3. Nếu dùng Free Trial:
+
 - $300 credit sẽ cover ~10 ngày full collection
 - Không bị charge sau khi hết credit (cần enable manually)
 
@@ -110,11 +113,15 @@ gcloud services list --enabled
 1. Vào: https://console.cloud.google.com/apis/credentials
 2. Click API key của bạn (`AIzaSyA1PM9WoXzuFqobz6UbSLwIJcP9PAz3Zhk`)
 3. **Application restrictions:**
+
 - Chọn: **IP addresses**
 - Add: IP của VM (sẽ add sau khi tạo VM)
+
 4. **API restrictions:**
+
 - Chọn: **Restrict key**
 - Select: **Directions API** only
+
 5. Click **SAVE**
 
 ---
@@ -305,7 +312,9 @@ ACTION REQUIRED:
 2. Vào: https://console.cloud.google.com/apis/credentials
 3. Click API key → Edit
 4. **Application restrictions:**
+
 - Add IP: `34.124.XX.XXX`
+
 5. **Save**
 
 ### 4.5. Update .env File
@@ -936,6 +945,7 @@ ERROR: (gcloud.compute.instances.create) Quota 'CPUS' exceeded. Limit: 8.0 in re
 1. Verify Directions API enabled: `gcloud services list --enabled | grep directions`
 2. Check API key restrictions: https://console.cloud.google.com/apis/credentials
 3. Test với curl:
+
 ```bash
 curl "https://maps.googleapis.com/maps/api/directions/json?origin=10.762622,106.660172&destination=10.771553,106.700806&key=YOUR_API_KEY"
 ```
@@ -954,10 +964,13 @@ Collection quality: POOR
 
 1. Check logs: `ssh_to_vm('tail -n 100 ~/traffic-forecast/logs/collection_*.log')`
 2. Common issues:
+
 - Rate limiting: Reduce cron frequency (120 minutes)
 - API quota: Check quota usage in GCP console
 - Network issues: Verify VM can reach Google APIs
+
 3. Manual test:
+
 ```python
 ssh_to_vm('cd ~/traffic-forecast && source venv/bin/activate && python -m traffic_forecast.cli test-api')
 ```
@@ -975,10 +988,13 @@ ERROR: (gcloud.compute.ssh) Could not SSH into the instance.
 1. Check VM status: `gcloud compute instances list`
 2. If TERMINATED: `start_vm()`
 3. Check firewall:
+
 ```bash
 gcloud compute firewall-rules list
 ```
+
 4. Add SSH rule if missing:
+
 ```bash
 gcloud compute firewall-rules create allow-ssh --allow tcp:22 --source-ranges 0.0.0.0/0
 ```
@@ -995,10 +1011,12 @@ Downloading download_20250128_140502...
 **Giải pháp:**
 
 1. Use compression:
+
 ```python
 ssh_to_vm('cd ~/traffic-forecast/data && tar -czf downloads.tar.gz downloads/')
 download_to_vm('~/traffic-forecast/data/downloads.tar.gz', 'data/')
 ```
+
 2. Use gsutil (faster for large files):
 
 ```bash
@@ -1041,6 +1059,7 @@ Sau khi hoàn thành tất cả các bước, verify:
 - Validate data quality: `validate_vm_collection()`
 
 2. **Setup alerts:**
+
 - Create Cloud Monitoring dashboard
 - Alert on API quota usage > 80%
 - Alert on collection success rate < 95%
@@ -1054,6 +1073,7 @@ Sau khi hoàn thành tất cả các bước, verify:
 - Verify data patterns: Check traffic variations by hour/day
 
 2. **Optimization:**
+
 - Adjust collection frequency based on cost vs data quality
 - Fine-tune node selection if needed
 - Consider reducing to 15-minute intervals during peak hours only
@@ -1067,6 +1087,7 @@ Sau khi hoàn thành tất cả các bước, verify:
 - Evaluate forecasting accuracy
 
 2. **Production hardening:**
+
 - Setup automated backups to Cloud Storage
 - Implement error recovery mechanisms
 - Add data quality monitoring

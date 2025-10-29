@@ -3,7 +3,7 @@
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Production--Ready-success.svg)]()
-[![Coverage](https://img.shields.io/badge/Coverage-4096m_radius-blue)]()
+[![Coverage](https://img.shields.io/badge/Coverage-2048m_radius-blue)]()
 [![Nodes](https://img.shields.io/badge/Nodes-78_filtered-green)]()
 [![Cost](https://img.shields.io/badge/Cost-$21%2Fday-success)]()
 
@@ -12,7 +12,7 @@
 **Version 5.1 Highlights:**
 
 - Real API only (no mock data)
-- 16x coverage expansion (4096m radius)
+- 16x coverage expansion (2048m radius)
 - 78 nodes with 200m minimum distance
 - 100% API success rate
 - Automated GCP VM deployment
@@ -71,19 +71,19 @@ conda run -n dsp python traffic_forecast/collectors/google/collector.py
 
 ## Version Comparison
 
-| Feature | v4.0 | v5.0 | v5.1 |
+| Feature        | v4.0        | v5.0                 | v5.1                         |
 | -------------- | ----------- | -------------------- | ---------------------------- |
-| API | Mock + Real | **Real only** | **Real only** |
-| Radius | 1024m | **4096m** (16x area) | **4096m** |
-| Nodes | 64 | **78** (filtered) | **78** (filtered) |
-| Min Distance | None | **200m** | **200m** |
-| Scheduling | Fixed 60min | Fixed 60min | **Adaptive** (peak/off-peak) |
-| Weather Cache | No | Basic | **Grid-based** (32% savings) |
-| Topology Cache | No | **Yes** (Overpass) | **Permanent** (one-time) |
-| Deployment | Manual | **Automated** | **Automated** |
-| Success Rate | ~85% | **100%** | **100%** |
-| Daily Cost | $33.70 | $28.08 | **$21.06** (25% savings) |
-| 7-Day Cost | $235.90 | $196.56 | **$147.42** |
+| API            | Mock + Real | **Real only**        | **Real only**                |
+| Radius         | 1024m       | **2048m** (16x area) | **2048m**                    |
+| Nodes          | 64          | **78** (filtered)    | **78** (filtered)            |
+| Min Distance   | None        | **200m**             | **200m**                     |
+| Scheduling     | Fixed 60min | Fixed 60min          | **Adaptive** (peak/off-peak) |
+| Weather Cache  | No          | Basic                | **Grid-based** (32% savings) |
+| Topology Cache | No          | **Yes** (Overpass)   | **Permanent** (one-time)     |
+| Deployment     | Manual      | **Automated**        | **Automated**                |
+| Success Rate   | ~85%        | **100%**             | **100%**                     |
+| Daily Cost     | $33.70      | $28.08               | **$21.06** (25% savings)     |
+| 7-Day Cost     | $235.90     | $196.56              | **$147.42**                  |
 
 **Use v5.1 for:** **RECOMMENDED**
 
@@ -124,7 +124,7 @@ ML Models → XGBoost, Random Forest, LightGBM
 
 - **Location:**HCMC Downtown (District 1, 3, Bình Thạnh)
 - **Center:** 10.7756°N, 106.7019°E (Landmark 81)
-- **Radius:** 4096m
+- **Radius:** 2048m
 - **Area:** ~52.8 km²
 - **Nodes:** 78 (58 primary, 20 trunk roads)
 - **Edges:** 234 (78 × 3 nearest neighbors)
@@ -257,7 +257,7 @@ See: **[doc/v5/COLLECTION_OPTIMIZATION_V5.1.md](doc/v5/COLLECTION_OPTIMIZATION_V
 
 2. **Focused Coverage**
 
-- Radius: 4096m to 1024m (core area focus)
+- Radius: 2048m to 1024m (core area focus)
 - Nodes: 128 to 64 (major intersections only)
 - Road types: Only motorway, trunk, primary
 - Quality: min_degree 6, min_importance 40
@@ -528,7 +528,7 @@ mode: adaptive # or 'fixed' for legacy mode
 adaptive:
 peak_hours:
 time_ranges:
-- start: "06:30"
+  - start: "06:30"
 end: "07:30" # Morning rush
 # ... more ranges
 interval_minutes: 30
@@ -553,11 +553,11 @@ k_neighbors: 3
 
 ### Data Pipeline Overview
 
-| Data Source | Update Frequency | Cache Strategy | Purpose |
+| Data Source           | Update Frequency | Cache Strategy | Purpose               |
 | --------------------- | ---------------- | -------------- | --------------------- |
-| **Overpass API** | Static | 7 days | Road network topology |
-| **Open-Meteo** | Hourly | 1 hour | Weather forecasts |
-| **Google Directions** | Adaptive (v4.0) | No cache | Traffic conditions |
+| **Overpass API**      | Static           | 7 days         | Road network topology |
+| **Open-Meteo**        | Hourly           | 1 hour         | Weather forecasts     |
+| **Google Directions** | Adaptive (v4.0)  | No cache       | Traffic conditions    |
 
 ### Adaptive Collection (v4.0)
 
@@ -703,15 +703,15 @@ curl http://localhost:8000/health
 
 ### System Metrics
 
-| Metric | Value | Notes |
+| Metric              | Value                            | Notes                                                      |
 | ------------------- | -------------------------------- | ---------------------------------------------------------- |
-| **Collection Time** | 5-10s (cached) / 5-15s (fresh) | 10x performance improvement with parallel processing |
-| **Data Points** | 88 intersection nodes + 87 edges | Optimized for cost-efficiency (90% coverage) |
-| **API Calls** | 87 calls per collection | 86% reduction from 639 calls |
-| **API Reliability** | 99.9% | Intelligent caching + parallel processing + error handling |
-| **Memory Usage** | < 500MB | Optimized for cloud deployment |
-| **Monthly Cost** | ~$120 | 80% savings from $600 with intersection modeling |
-| **Storage Growth** | ~50MB/day | Compressed data with cleanup |
+| **Collection Time** | 5-10s (cached) / 5-15s (fresh)   | 10x performance improvement with parallel processing       |
+| **Data Points**     | 88 intersection nodes + 87 edges | Optimized for cost-efficiency (90% coverage)               |
+| **API Calls**       | 87 calls per collection          | 86% reduction from 639 calls                               |
+| **API Reliability** | 99.9%                            | Intelligent caching + parallel processing + error handling |
+| **Memory Usage**    | < 500MB                          | Optimized for cloud deployment                             |
+| **Monthly Cost**    | ~$120                            | 80% savings from $600 with intersection modeling           |
+| **Storage Growth**  | ~50MB/day                        | Compressed data with cleanup                               |
 
 ### Accuracy Benchmarks
 
@@ -908,10 +908,10 @@ Light, practical README for running the project locally and on a Google Cloud VM
 
 #### Endpoints
 
-| Method | Endpoint | Description |
+| Method | Endpoint                       | Description        |
 | ------ | ------------------------------ | ------------------ |
-| GET | `/` | Health check |
-| GET | `/v1/nodes/{node_id}/forecast` | Get speed forecast |
+| GET    | `/`                            | Health check       |
+| GET    | `/v1/nodes/{node_id}/forecast` | Get speed forecast |
 
 ### Deploy on Google Cloud
 
@@ -1126,14 +1126,14 @@ LSTM (deep learning)
 
 ### Performance Improvements
 
-| Metric | v2.0 | v3.0 | Improvement |
+| Metric          | v2.0    | v3.0   | Improvement      |
 | --------------- | ------- | ------ | ---------------- |
-| Nodes Collected | 301,000 | 87 | 99.97% reduction |
-| API Calls/Run | 1,200+ | 150 | 87.5% reduction |
-| Processing Time | 8 min | 45 sec | 10.7x faster |
-| Model RMSE | 11.2 | 8.2 | 26.8% better |
-| Model R² | 0.76 | 0.89 | 17.1% better |
-| Validation Rate | N/A | 97.7% | New feature |
+| Nodes Collected | 301,000 | 87     | 99.97% reduction |
+| API Calls/Run   | 1,200+  | 150    | 87.5% reduction  |
+| Processing Time | 8 min   | 45 sec | 10.7x faster     |
+| Model RMSE      | 11.2    | 8.2    | 26.8% better     |
+| Model R²        | 0.76    | 0.89   | 17.1% better     |
+| Validation Rate | N/A     | 97.7%  | New feature      |
 
 ---
 
@@ -1143,12 +1143,12 @@ LSTM (deep learning)
 
 **Cost Optimization**:
 
-| Metric | v3.1 | v4.0 | Improvement |
+| Metric               | v3.1   | v4.0 | Improvement   |
 | -------------------- | ------ | ---- | ------------- |
-| Monthly Cost | $5,530 | $720 | 87% reduction |
-| Collections/day | 96 | 25 | 74% reduction |
-| Nodes | 128 | 64 | 50% reduction |
-| API calls/collection | 384 | 192 | 50% reduction |
+| Monthly Cost         | $5,530 | $720 | 87% reduction |
+| Collections/day      | 96     | 25   | 74% reduction |
+| Nodes                | 128    | 64   | 50% reduction |
+| API calls/collection | 384    | 192  | 50% reduction |
 
 **Data Collection**:
 
@@ -1413,25 +1413,25 @@ Current setup is development-focused. Production needs:
 
 ```yaml
 Security:
-- Close exposed DB ports (5432, 6379)
-- Enable Redis authentication
-- HTTPS with Let's Encrypt
-- Network policies
-- Secrets rotation
+  - Close exposed DB ports (5432, 6379)
+  - Enable Redis authentication
+  - HTTPS with Let's Encrypt
+  - Network policies
+  - Secrets rotation
 
 Monitoring:
-- Implement Prometheus metrics
-- Create Grafana dashboards
-- Setup alerts (uptime, errors, performance)
-- Log aggregation
-- Distributed tracing
+  - Implement Prometheus metrics
+  - Create Grafana dashboards
+  - Setup alerts (uptime, errors, performance)
+  - Log aggregation
+  - Distributed tracing
 
 High Availability:
-- Database replication
-- Redis clustering
-- Load balancer (nginx/HAProxy)
-- Backup strategy
-- Disaster recovery plan
+  - Database replication
+  - Redis clustering
+  - Load balancer (nginx/HAProxy)
+  - Backup strategy
+  - Disaster recovery plan
 ```
 
 ### License

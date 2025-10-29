@@ -12,7 +12,7 @@ Real-time traffic forecasting for Ho Chi Minh City with adaptive scheduling and 
 
 - **Adaptive Scheduling**: Peak/off-peak/night intervals (40% cost savings)
 - **Smart Caching**: Weather grid caching (95% API reduction), permanent topology cache
-- **Wide Coverage**: 4096m radius, 78 filtered nodes, 234 road segments
+- **Wide Coverage**: 2048m radius, 78 filtered nodes, 234 road segments
 - **Production Ready**: Automated GCP deployment, systemd service, monitoring
 - **Cost Optimized**: ~$45 for 3-day collection, ~$150 for 7 days
 
@@ -59,13 +59,14 @@ bash scripts/deploy_wizard.sh
 
 Cost-optimized collection strategy:
 
-| Time Period | Interval | Rationale |
-|------------|----------|-----------|
-| **Peak** (6-9 AM, 4-7 PM) | 15 min | High traffic variability |
-| **Off-peak** (9 AM-4 PM, 7-10 PM) | 60 min | Moderate traffic |
-| **Night** (10 PM-6 AM) | 120 min | Stable traffic |
+| Time Period                       | Interval | Rationale                |
+| --------------------------------- | -------- | ------------------------ |
+| **Peak** (6-9 AM, 4-7 PM)         | 15 min   | High traffic variability |
+| **Off-peak** (9 AM-4 PM, 7-10 PM) | 60 min   | Moderate traffic         |
+| **Night** (10 PM-6 AM)            | 120 min  | Stable traffic           |
 
 **3-Day Collection:**
+
 - ~150 total collections
 - ~35,100 data points
 - ~$45 total cost (40% savings)
@@ -107,7 +108,7 @@ Edit `configs/project_config.yaml`:
 
 ```yaml
 scheduler:
-  mode: adaptive  # or 'fixed'
+  mode: adaptive # or 'fixed'
   adaptive:
     peak_hours:
       time_ranges:
@@ -125,16 +126,19 @@ scheduler:
 ## 💰 Cost Estimation
 
 **3-Day Production Run:**
+
 - VM (e2-micro): ~$0.50
 - Google Directions API: ~$45
 - Total: **~$45**
 
 **7-Day Production Run:**
+
 - VM (e2-micro): ~$1.50
 - Google Directions API: ~$150
 - Total: **~$151**
 
 **Cost Savings:**
+
 - 40% vs constant 15-min intervals
 - 95% reduction in weather API calls (grid caching)
 - One-time topology fetch (permanent cache)
@@ -212,6 +216,7 @@ gcloud compute ssh traffic-forecast-collector --zone=asia-southeast1-a \
 ## 🆘 Troubleshooting
 
 ### Collection fails
+
 ```bash
 # Check API key
 grep GOOGLE_MAPS_API_KEY .env
@@ -221,6 +226,7 @@ python tools/test_google_limited.py
 ```
 
 ### Service won't start
+
 ```bash
 # Check logs
 gcloud compute ssh traffic-forecast-collector --zone=asia-southeast1-a \
@@ -232,6 +238,7 @@ gcloud compute ssh traffic-forecast-collector --zone=asia-southeast1-a \
 ## 👥 Author
 
 **Le Quang That (THAT Le Quang)** - SE183256
+
 - Nickname: Xiel
 - GitHub: [@thatlq1812](https://github.com/thatlq1812)
 - Email: fxlqthat@gmail.com

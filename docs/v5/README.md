@@ -18,6 +18,7 @@
 - Ví dụ thực tế
 
 3. **[COLLECTION_OPTIMIZATION_V5.1.md](COLLECTION_OPTIMIZATION_V5.1.md)** - v5.1 Optimization guide (500 lines) NEW
+
 - Adaptive scheduling strategy
 - Weather grid caching (32% reduction)
 - Permanent topology cache
@@ -27,6 +28,7 @@
 ### Implementation
 
 3. **[BAO_CAO_CAI_TIEN_V5.md](BAO_CAO_CAI_TIEN_V5.md)** - Implementation report (400 lines)
+
 - Changes from v4.0 to v5.0
 - Technical improvements
 - Performance comparisons
@@ -41,6 +43,7 @@
 - Troubleshooting
 
 5. **[DEPLOYMENT_READY_SUMMARY.md](DEPLOYMENT_READY_SUMMARY.md)** - Complete system overview (600 lines)
+
 - System specifications
 - Configuration details
 - File structure
@@ -49,6 +52,7 @@
 ### Final Summary
 
 6. **[HOAN_TAT_V5.md](HOAN_TAT_V5.md)** - Project completion summary (400 lines)
+
 - Completion checklist
 - Final specifications
 - Next steps
@@ -57,6 +61,7 @@
 ### Notebook Documentation
 
 7. **[DATA_DASHBOARD.md](DATA_DASHBOARD.md)** - Data dashboard documentation
+
 - EDA procedures
 - Visualization guide
 
@@ -67,7 +72,7 @@
 ### v5.0 Core Improvements
 
 - **Real API Only** - Removed all mock API fallbacks
-- **Coverage Expansion** - Radius 1024m → 4096m (16x area)
+- **Coverage Expansion** - Radius 1024m → 2048m (16x area)
 - **Distance Filtering** - 200m minimum between nodes
 - **Topology Caching** - One-time Overpass collection
 - **Deployment Automation** - Full GCP VM deployment scripts

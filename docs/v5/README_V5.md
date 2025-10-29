@@ -1,8 +1,8 @@
 # Traffic Forecast v5.0 - Production Ready
 
-**Maintainer:**Le Quang That (Xiel) - SE183256 
-**Version:** 5.0.0 
-**Date:**October 29, 2025 
+**Maintainer:**Le Quang That (Xiel) - SE183256
+**Version:** 5.0.0
+**Date:**October 29, 2025
 **Status:**Production Ready - Real API Only
 
 ---
@@ -14,7 +14,7 @@
 1. **Real API Only** - Removed all mock API fallback
 2. **Intelligent Caching** - Overpass topology cached permanently
 3. **Distance Filtering** - Minimum 200m between nodes to avoid clustering
-4. **Expanded Coverage** - Radius increased to 4096m
+4. **Expanded Coverage** - Radius increased to 2048m
 5. **128 Nodes** - Doubled from 64 nodes for better coverage
 6. **Retry Mechanism** - Auto-retry failed API calls (3 attempts)
 
@@ -25,23 +25,23 @@ File: `configs/project_config.yaml`
 ```yaml
 # Key Settings
 globals:
- area:
- radius_m: 4096 # 4km radius coverage
+  area:
+  radius_m: 2048 # 4km radius coverage
 
 node_selection:
- max_nodes: 128 # Up from 64
- min_distance_meters: 200 # NEW: Avoid clustered nodes
- min_degree: 6
- min_importance_score: 40.0
+  max_nodes: 128 # Up from 64
+  min_distance_meters: 200 # NEW: Avoid clustered nodes
+  min_degree: 6
+  min_importance_score: 40.0
 
 collectors:
- overpass:
- use_cache: true # Cache topology permanently
- cache_file: cache/overpass_topology.json
+  overpass:
+  use_cache: true # Cache topology permanently
+  cache_file: cache/overpass_topology.json
 
- google_directions:
- use_real_api_only: true # NO mock fallback
- retry_on_failure: 3 # Retry failed requests
+  google_directions:
+  use_real_api_only: true # NO mock fallback
+  retry_on_failure: 3 # Retry failed requests
 ```
 
 ---
@@ -116,11 +116,11 @@ Overpass API
 
 ### Caching Strategy
 
-| Data Source | Cache | Frequency | Rationale |
+| Data Source | Cache     | Frequency        | Rationale       |
 | ----------- | --------- | ---------------- | --------------- |
-| Overpass | Permanent | Once | Static topology |
-| Weather | 1 hour | Every collection | Slow-changing |
-| Traffic | No cache | Every collection | Real-time data |
+| Overpass    | Permanent | Once             | Static topology |
+| Weather     | 1 hour    | Every collection | Slow-changing   |
+| Traffic     | No cache  | Every collection | Real-time data  |
 
 ---
 
@@ -431,26 +431,27 @@ python traffic_forecast/collectors/overpass/collector_v5.py
 
 1. **Remove mock API usage**
 
- - Set `GOOGLE_MAPS_API_KEY`
- - No mock fallback in v5.0
+- Set `GOOGLE_MAPS_API_KEY`
+- No mock fallback in v5.0
 
 2. **Update config**
 
- ```bash
- # Backup already created
- # configs/project_config.yaml already updated
- ```
+```bash
+# Backup already created
+# configs/project_config.yaml already updated
+```
 
 3. **Clear old cache**
 
- ```bash
- rm -rf cache/*.json
- ```
+```bash
+rm -rf cache/*.json
+```
 
 4. **Re-collect topology**
- ```bash
- python traffic_forecast/collectors/overpass/collector_v5.py
- ```
+
+```bash
+python traffic_forecast/collectors/overpass/collector_v5.py
+```
 
 ### Backward Compatibility
 
@@ -475,14 +476,14 @@ python traffic_forecast/collectors/overpass/collector.py
 
 ### Improvements over v4.0
 
-| Metric | v4.0 | v5.0 | Change |
+| Metric          | v4.0     | v5.0     | Change    |
 | --------------- | -------- | -------- | --------- |
-| Nodes | 64 | 128 | +100% |
-| Coverage radius | 1024m | 4096m | +300% |
-| Node spacing | Variable | 200m min | Optimized |
-| Overpass calls | 100x | 1x | -99% |
-| Cache hits | 0% | ~100% | +100% |
-| Retry logic | No | Yes (3x) | Added |
+| Nodes           | 64       | 128      | +100%     |
+| Coverage radius | 1024m    | 2048m    | +300%     |
+| Node spacing    | Variable | 200m min | Optimized |
+| Overpass calls  | 100x     | 1x       | -99%      |
+| Cache hits      | 0%       | ~100%    | +100%     |
+| Retry logic     | No       | Yes (3x) | Added     |
 
 ### Expected Metrics
 
@@ -562,7 +563,7 @@ NEW FEATURES:
 - Distance-based node filtering (200m min)
 - Permanent Overpass caching
 - Retry mechanism for API failures
-- Expanded coverage (4096m radius)
+- Expanded coverage (2048m radius)
 - 128 nodes (up from 64)
 
 IMPROVEMENTS:

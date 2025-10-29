@@ -1,7 +1,7 @@
 # BAO CAO TONG KET CAI TIEN HE THONG v5.0
 
-**Nguoi thuc hien:**GitHub Copilot 
-**Ngay:** 29 thang 10, 2025 
+**Nguoi thuc hien:**GitHub Copilot
+**Ngay:** 29 thang 10, 2025
 **Thoi gian:** 2 gio
 
 ---
@@ -80,7 +80,7 @@
 
 **Thay doi:**
 
-- Radius: 1024m → 4096m (+300%)
+- Radius: 1024m → 2048m (+300%)
 - Max nodes: 64 → 128 (+100%)
 - Min distance: 0m → 200m (moi)
 
@@ -253,16 +253,16 @@ python traffic_forecast/collectors/google/collector_v5.py
 
 ## CAI THIEN SO VOI v4.0
 
-| Metric | v4.0 | v5.0 | Cai Thien |
+| Metric          | v4.0     | v5.0       | Cai Thien        |
 | --------------- | -------- | ---------- | ---------------- |
-| Nodes | 64 | 128 | +100% |
-| Coverage radius | 1024m | 4096m | +300% |
-| Coverage area | 3.3 km² | 52.8 km² | +1,500% |
-| Node spacing | Variable | 200m min | Well-distributed |
-| Overpass calls | 100/day | 1/lifetime | -99.99% |
-| Mock API | Yes | No | Production-ready |
-| Retry logic | No | Yes (3x) | Reliability |
-| Cache hit rate | 0% | ~100% | Performance |
+| Nodes           | 64       | 128        | +100%            |
+| Coverage radius | 1024m    | 2048m      | +300%            |
+| Coverage area   | 3.3 km²  | 52.8 km²   | +1,500%          |
+| Node spacing    | Variable | 200m min   | Well-distributed |
+| Overpass calls  | 100/day  | 1/lifetime | -99.99%          |
+| Mock API        | Yes      | No         | Production-ready |
+| Retry logic     | No       | Yes (3x)   | Reliability      |
+| Cache hit rate  | 0%       | ~100%      | Performance      |
 
 ---
 
@@ -377,58 +377,61 @@ Bao gom: Overpass (cached) + Google + Weather
 
 1. **Test voi Real API** (30 phut)
 
- ```bash
- export GOOGLE_MAPS_API_KEY="key"
- export GOOGLE_TEST_LIMIT=10
- python traffic_forecast/collectors/google/collector_v5.py
- ```
+```bash
+export GOOGLE_MAPS_API_KEY="key"
+export GOOGLE_TEST_LIMIT=10
+python traffic_forecast/collectors/google/collector_v5.py
+```
 
 2. **Verify Cache** (10 phut)
 
- ```bash
- ls -lh cache/
- cat cache/overpass_topology.json | jq '.metadata'
- ```
+```bash
+ls -lh cache/
+cat cache/overpass_topology.json | jq '.metadata'
+```
 
 3. **Monitor Success Rate** (5 phut)
- ```bash
- tail logs/collection.log
- ```
+
+```bash
+tail logs/collection.log
+```
 
 ### Tuan Nay (Priority 2)
 
 1. **Tao Visualizations** (1-2 gio)
 
- - Feature distributions
- - Correlation heatmap
- - Time series patterns
+- Feature distributions
+- Correlation heatmap
+- Time series patterns
 
 2. **Feature Importance** (30 phut)
 
- - XGBoost feature*importances*
- - Bar chart visualization
+- XGBoost feature*importances*
+- Bar chart visualization
 
 3. **Update Notebooks** (1 gio)
- - Add v5.0 collection cells
- - Add visualization cells
+
+- Add v5.0 collection cells
+- Add visualization cells
 
 ### Tuan Sau (Priority 3)
 
 1. **Cross-Validation** (30 phut)
 
- - 5-fold CV cho tat ca models
- - Document results
+- 5-fold CV cho tat ca models
+- Document results
 
 2. **Test Suite** (2 gio)
 
- - Write unit tests
- - Integration tests
- - Measure coverage
+- Write unit tests
+- Integration tests
+- Measure coverage
 
 3. **Documentation Cleanup** (1 gio)
- - Review old docs
- - Remove redundant files
- - Update README
+
+- Review old docs
+- Remove redundant files
+- Update README
 
 ---
 
@@ -484,8 +487,8 @@ Tuy nhien, **can test kỹ** voi real API truoc khi deploy production.
 
 ---
 
-**Nguoi viet bao cao:**GitHub Copilot 
-**Ngay:** 29/10/2025 
+**Nguoi viet bao cao:**GitHub Copilot
+**Ngay:** 29/10/2025
 **Thoi gian:** 2 gio
 
 **KET THUC BAO CAO**
