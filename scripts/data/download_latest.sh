@@ -1,6 +1,6 @@
 #!/bin/bash
-# Download Latest Traffic Data from VM
-# No authentication required - perfect for team members
+# Download Latest Traffic Data from VM (with compression)
+# Uses tar.gz compression for faster download
 
 set -e
 
@@ -9,10 +9,10 @@ ZONE="asia-southeast1-a"
 VM_NAME="traffic-forecast-collector"
 
 # Default download directory
-DOWNLOAD_DIR="${1:-./downloaded_data}"
+DOWNLOAD_DIR="${1:-./data}"
 
 echo "======================================================================"
-echo "  DOWNLOAD LATEST TRAFFIC DATA"
+echo "  DOWNLOAD LATEST TRAFFIC DATA (COMPRESSED)"
 echo "======================================================================"
 echo ""
 echo "Download directory: $DOWNLOAD_DIR"
@@ -35,23 +35,22 @@ echo ""
 case $OPTION in
     1)
         echo "Downloading latest run..."
-        FILTER="| head -2"
+        NUM_RUNS=1
         ;;
     2)
         echo "Downloading last 10 runs..."
-        FILTER="| head -11"
+        NUM_RUNS=10
         ;;
     3)
         echo "Downloading last 24 hours..."
-        FILTER="| head -$(expr 24 \* 4 + 1)"  # ~4 runs/hour
+        NUM_RUNS=96  # ~4 runs/hour * 24h
         ;;
     4)
         echo "Downloading all data..."
-        FILTER=""
+        NUM_RUNS=9999
         ;;
     5)
         read -p "Number of runs to download: " NUM_RUNS
-        FILTER="| head -$(expr $NUM_RUNS + 1)"
         ;;
     *)
         echo "Invalid option. Exiting."
@@ -59,65 +58,84 @@ case $OPTION in
         ;;
 esac
 
-# Get list of runs from VM
+# Create archive on VM
 echo ""
-echo "Fetching run list from VM..."
+echo "Creating compressed archive on VM..."
 
-RUN_LIST=$(gcloud compute ssh $VM_NAME \
+ARCHIVE_NAME="traffic_data_$(date +%Y%m%d_%H%M%S).tar.gz"
+
+gcloud compute ssh $VM_NAME \
     --zone=$ZONE \
     --project=$PROJECT_ID \
-    --command="ls -t ~/traffic-forecast/data/runs/ $FILTER")
+    --command="
+cd ~/traffic-forecast/data
+echo 'Compressing runs...'
+ls -t runs/ | head -$NUM_RUNS | tar -czf /tmp/$ARCHIVE_NAME -C runs -T -
+echo 'Archive created: /tmp/$ARCHIVE_NAME'
+du -h /tmp/$ARCHIVE_NAME
+"
 
-# Count runs
-RUN_COUNT=$(echo "$RUN_LIST" | wc -l)
-echo "Found $RUN_COUNT run(s) to download"
+# Download archive
 echo ""
+echo "Downloading compressed archive..."
 
-# Download each run
-COUNTER=0
-for RUN in $RUN_LIST; do
-    COUNTER=$((COUNTER + 1))
-    echo "[$COUNTER/$RUN_COUNT] Downloading $RUN..."
-    
-    # Create run directory
-    mkdir -p "$DOWNLOAD_DIR/$RUN"
-    
-    # Download run files
-    gcloud compute scp \
-        --zone=$ZONE \
-        --project=$PROJECT_ID \
-        --recurse \
-        $VM_NAME:~/traffic-forecast/data/runs/$RUN/* \
-        "$DOWNLOAD_DIR/$RUN/" \
-        --quiet 2>/dev/null || echo "  Warning: Some files may be missing"
-done
+gcloud compute scp \
+    --zone=$ZONE \
+    --project=$PROJECT_ID \
+    $VM_NAME:/tmp/$ARCHIVE_NAME \
+    /tmp/$ARCHIVE_NAME
+
+# Extract archive
+echo ""
+echo "Extracting archive..."
+
+mkdir -p "$DOWNLOAD_DIR/runs"
+tar -xzf /tmp/$ARCHIVE_NAME -C "$DOWNLOAD_DIR/runs"
+
+# Count extracted runs
+RUN_COUNT=$(ls -1 "$DOWNLOAD_DIR/runs" | wc -l)
+
+# Cleanup
+echo ""
+echo "Cleaning up..."
+rm -f /tmp/$ARCHIVE_NAME
+
+gcloud compute ssh $VM_NAME \
+    --zone=$ZONE \
+    --project=$PROJECT_ID \
+    --command="rm -f /tmp/$ARCHIVE_NAME" \
+    --quiet
 
 echo ""
 echo "======================================================================"
 echo "  DOWNLOAD COMPLETED!"
 echo "======================================================================"
 echo ""
-echo "Downloaded to: $DOWNLOAD_DIR"
+echo "Downloaded to: $DOWNLOAD_DIR/runs"
 echo "Total runs: $RUN_COUNT"
 echo ""
 
 # Show summary
-if [ -f "$DOWNLOAD_DIR/$(echo $RUN_LIST | head -1)/traffic_edges.json" ]; then
-    LATEST_RUN=$(echo $RUN_LIST | head -1)
-    echo "Latest run: $LATEST_RUN"
+if [ -d "$DOWNLOAD_DIR/runs" ]; then
+    LATEST_RUN=$(ls -t "$DOWNLOAD_DIR/runs" | head -1)
     
-    # Count edges in latest run
-    EDGE_COUNT=$(grep -o '"node_a_id"' "$DOWNLOAD_DIR/$LATEST_RUN/traffic_edges.json" 2>/dev/null | wc -l || echo "0")
-    echo "Edges collected: $EDGE_COUNT"
-    
-    # File sizes
-    echo ""
-    echo "File sizes:"
-    du -h "$DOWNLOAD_DIR/$LATEST_RUN"/* 2>/dev/null | tail -5
+    if [ -n "$LATEST_RUN" ]; then
+        echo "Latest run: $LATEST_RUN"
+        
+        # Count edges in latest run
+        if [ -f "$DOWNLOAD_DIR/runs/$LATEST_RUN/traffic_edges.json" ]; then
+            EDGE_COUNT=$(grep -o '"node_a_id"' "$DOWNLOAD_DIR/runs/$LATEST_RUN/traffic_edges.json" 2>/dev/null | wc -l || echo "0")
+            echo "Edges collected: $EDGE_COUNT"
+        fi
+        
+        # File sizes
+        echo ""
+        echo "Latest run files:"
+        ls -lh "$DOWNLOAD_DIR/runs/$LATEST_RUN/" 2>/dev/null | tail -n +2
+    fi
 fi
 
 echo ""
 echo "To analyze the data:"
-echo "  cd $DOWNLOAD_DIR"
-echo "  python -m traffic_forecast.cli.visualize"
+echo "  python scripts/view_collections.py"
 echo ""

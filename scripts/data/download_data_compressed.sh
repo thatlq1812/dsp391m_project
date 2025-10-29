@@ -1,221 +1,174 @@
 #!/bin/bash
-# Download and compress data from GCP VM
+# Download Traffic Data with Compression (Fast)
+# Uses tar.gz compression to reduce download time significantly
 #
-# This script creates a compressed archive on the VM first,
-# then downloads the single archive file instead of many small files.
-# Much faster and more reliable than recursive scp.
-#
-# Usage: bash scripts/download_data_compressed.sh [output_dir] [format]
+# Usage: bash scripts/data/download_data_compressed.sh [num_runs] [output_dir]
 #
 # Arguments:
-# output_dir - Local directory to save download (default: data/downloads/)
-# format - Archive format: tar.gz or zip (default: tar.gz)
-set +H  # Disable history expansion to avoid "event ! not found" errors
+#   num_runs - Number of recent runs to download (default: interactive)
+#   output_dir - Local directory to save download (default: ./data)
 
 set -e
 
-INSTANCE_NAME="${1:-traffic-collector-v4}"
-ZONE="${2:-asia-southeast1-b}"
-REMOTE_USER="thatlqse183256_fpt_edu_vn"
-REMOTE_DIR="/home/${REMOTE_USER}/dsp391m_project"
-OUTPUT_DIR="${3:-./data/downloads/download_$(date +%Y%m%d_%H%M%S)}"
-FORMAT="${4:-tar.gz}"
+PROJECT_ID="sonorous-nomad-476606-g3"
+ZONE="asia-southeast1-a"
+VM_NAME="traffic-forecast-collector"
+
+# Parse arguments
+NUM_RUNS="${1:-}"
+DOWNLOAD_DIR="${2:-./data}"
 
 echo "======================================================================"
-echo "DOWNLOAD COMPRESSED DATA FROM GCP VM"
+echo "  DOWNLOAD TRAFFIC DATA (COMPRESSED - FAST)"
 echo "======================================================================"
 echo ""
-echo "Instance: ${INSTANCE_NAME}"
-echo "Zone: ${ZONE}"
-echo "Format: ${FORMAT}"
-echo "Output: ${OUTPUT_DIR}"
+echo "Download directory: $DOWNLOAD_DIR"
 echo ""
 
-# Create output directory
-mkdir -p "${OUTPUT_DIR}"
+# Create download directory
+mkdir -p "$DOWNLOAD_DIR"
 
-# Step 1: Create compressed archive on VM
-echo "Step 1: Creating compressed archive on VM..."
-echo "This may take a few minutes for large datasets..."
-echo ""
-
-if [ "${FORMAT}" = "zip" ]; then
- ARCHIVE_NAME="data_export_$(date +%Y%m%d_%H%M%S).zip"
- gcloud compute ssh ${INSTANCE_NAME} --zone=${ZONE} --command="
- cd ${REMOTE_DIR}
- echo 'Creating ZIP archive...'
- zip -r -q ${ARCHIVE_NAME} data/ logs/ *.json 2>/dev/null || true
- echo 'Archive created: ${ARCHIVE_NAME}'
- ls -lh ${ARCHIVE_NAME}
- "
-else
- ARCHIVE_NAME="data_export_$(date +%Y%m%d_%H%M%S).tar.gz"
- gcloud compute ssh ${INSTANCE_NAME} --zone=${ZONE} --command="
- cd ${REMOTE_DIR}
- echo 'Creating TAR.GZ archive...'
- tar -czf ${ARCHIVE_NAME} data/ logs/ *.json 2>/dev/null || true
- echo 'Archive created: ${ARCHIVE_NAME}'
- ls -lh ${ARCHIVE_NAME}
- "
+# Interactive mode if NUM_RUNS not specified
+if [ -z "$NUM_RUNS" ]; then
+    echo "What do you want to download?"
+    echo "  1) Latest run only (~140KB compressed)"
+    echo "  2) Last 5 runs (~700KB compressed)"
+    echo "  3) Last 10 runs (~1.4MB compressed)"
+    echo "  4) Last 24 hours (~15MB compressed)"
+    echo "  5) All data (varies)"
+    echo "  6) Custom (specify number of runs)"
+    echo ""
+    read -p "Select option (1-6): " -n 1 -r OPTION
+    echo ""
+    
+    case $OPTION in
+        1)
+            echo "Downloading latest run..."
+            NUM_RUNS=1
+            ;;
+        2)
+            echo "Downloading last 5 runs..."
+            NUM_RUNS=5
+            ;;
+        3)
+            echo "Downloading last 10 runs..."
+            NUM_RUNS=10
+            ;;
+        4)
+            echo "Downloading last 24 hours..."
+            NUM_RUNS=96  # ~4 runs/hour * 24h
+            ;;
+        5)
+            echo "Downloading all data..."
+            NUM_RUNS=9999
+            ;;
+        6)
+            read -p "Number of runs to download: " NUM_RUNS
+            ;;
+        *)
+            echo "Invalid option. Exiting."
+            exit 1
+            ;;
+    esac
 fi
 
+# Create archive on VM
 echo ""
-echo "[OK] Archive created on VM"
-echo ""
+echo "Step 1/4: Creating compressed archive on VM..."
 
-# Step 2: Download the archive
-echo "Step 2: Downloading archive..."
-gcloud compute scp \
- ${INSTANCE_NAME}:${REMOTE_DIR}/${ARCHIVE_NAME} \
- "${OUTPUT_DIR}/${ARCHIVE_NAME}" \
- --zone=${ZONE} \
- --strict-host-key-checking=no
+ARCHIVE_NAME="traffic_data_$(date +%Y%m%d_%H%M%S).tar.gz"
 
-echo ""
-echo "[OK] Archive downloaded"
-echo ""
+gcloud compute ssh $VM_NAME \
+    --zone=$ZONE \
+    --project=$PROJECT_ID \
+    --command="
+cd ~/traffic-forecast/data
+echo 'Listing runs to compress...'
+RUNS=\$(ls -t runs/ | head -$NUM_RUNS)
+echo \"Found \$(echo \"\$RUNS\" | wc -l) runs\"
 
-# Step 3: Extract archive locally
-echo "Step 3: Extracting archive..."
-cd "${OUTPUT_DIR}"
+echo 'Compressing...'
+echo \"\$RUNS\" | tar -czf /tmp/$ARCHIVE_NAME -C runs -T -
 
-if [ "${FORMAT}" = "zip" ]; then
- unzip -q "${ARCHIVE_NAME}"
-else
- tar -xzf "${ARCHIVE_NAME}"
-fi
-
-echo "[OK] Archive extracted"
-echo ""
-
-# Step 4: Cleanup archive on VM
-echo "Step 4: Cleaning up archive on VM..."
-gcloud compute ssh ${INSTANCE_NAME} --zone=${ZONE} --command="
- cd ${REMOTE_DIR}
- rm -f ${ARCHIVE_NAME}
- echo 'Archive removed from VM'
+echo 'Archive created:'
+ls -lh /tmp/$ARCHIVE_NAME
 "
 
-echo "[OK] VM cleanup complete"
+# Download archive
+echo ""
+echo "Step 2/4: Downloading compressed archive..."
+echo "  (This will be much faster than downloading individual files)"
 echo ""
 
-# Step 5: Generate summary
-echo "Step 5: Generating summary..."
+gcloud compute scp \
+    --zone=$ZONE \
+    --project=$PROJECT_ID \
+    $VM_NAME:/tmp/$ARCHIVE_NAME \
+    /tmp/$ARCHIVE_NAME
 
-cat > README.md << 'EOF'
-# Downloaded Traffic Data
-
-**Downloaded at:** $(date)
-**Source instance:** traffic-collector-v4
-**Zone:** asia-southeast1-b
-**Archive format:** ${FORMAT}
-
-## Contents
-
-- `data/` - Collected traffic data (nodes, edges, weather)
-- `logs/` - Collection logs
-- Root JSON files - Global nodes.json, edges.json if present
-
-## Directory Structure
-
-```
-data/
- node/ # Collection runs by timestamp
- YYYYMMDDHHMMSS/
- collectors/
- overpass/ # Road network topology
- google/ # Traffic conditions 
- open_meteo/ # Weather data
- manifest.json
- ...
- archive/ # Archived data (if any)
- images/ # Generated visualizations (if any)
-
-logs/
- collector.log # Collection service logs
-```
-
-## Quick Analysis
-
-```bash
-# Count collections
-ls -1 data/node/ | wc -l
-
-# Find collections with complete Overpass data
-find data/node -name "nodes.json" | wc -l
-
-# Check for errors in logs
-grep -i error logs/collector.log | tail -20
-
-# View most recent collection
-ls -t data/node/ | head -1
-```
-
-## Data Statistics
-
-Run this to get data statistics:
-
-```python
-import json
-from pathlib import Path
-from datetime import datetime
-
-# Count collections and file types
-collections = list(Path('data/node').glob('*'))
-print(f"Total collections: {len(collections)}")
-
-# Check data completeness
-complete = 0
-for coll in collections:
- if (coll / 'collectors/overpass/nodes.json').exists():
- complete += 1
-
-print(f"Complete (with Overpass): {complete}/{len(collections)}")
-print(f"Completeness: {complete/len(collections)*100:.1f}%")
-
-# Timeline
-if collections:
- timestamps = sorted([c.name for c in collections])
- start = datetime.strptime(timestamps[0], '%Y%m%d%H%M%S')
- end = datetime.strptime(timestamps[-1], '%Y%m%d%H%M%S')
- duration = end - start
- print(f"\nCollection period:")
- print(f" Start: {start}")
- print(f" End: {end}")
- print(f" Duration: {duration}")
-```
-
-## Next Steps
-
-1. Review logs for collection errors
-2. Validate data completeness
-3. Run analysis notebooks
-4. Train models with collected data
-
-EOF
-
-echo "[OK] Summary created"
+# Extract archive
 echo ""
+echo "Step 3/4: Extracting archive..."
 
-# Step 6: Local cleanup (remove archive, keep extracted data)
-echo "Step 6: Cleaning up local archive..."
-rm -f "${ARCHIVE_NAME}"
-echo "[OK] Local archive removed"
+mkdir -p "$DOWNLOAD_DIR/runs"
+tar -xzf /tmp/$ARCHIVE_NAME -C "$DOWNLOAD_DIR/runs"
+
+# Count extracted runs
+RUN_COUNT=$(ls -1 "$DOWNLOAD_DIR/runs" | wc -l)
+
+# Cleanup
 echo ""
+echo "Step 4/4: Cleaning up temporary files..."
+rm -f /tmp/$ARCHIVE_NAME
 
+gcloud compute ssh $VM_NAME \
+    --zone=$ZONE \
+    --project=$PROJECT_ID \
+    --command="rm -f /tmp/$ARCHIVE_NAME" \
+    --quiet 2>/dev/null || true
+
+echo ""
 echo "======================================================================"
-echo "DOWNLOAD COMPLETE"
+echo "  ✅ DOWNLOAD COMPLETED!"
 echo "======================================================================"
 echo ""
-
-# Get absolute path for display
-ABS_OUTPUT_DIR="$(cd "${OUTPUT_DIR}" && pwd)"
-
-ls -lh "${ABS_OUTPUT_DIR}" | head -20
+echo "📁 Downloaded to: $DOWNLOAD_DIR/runs"
+echo "📊 Total runs: $RUN_COUNT"
+echo "💾 Total size: $(du -sh $DOWNLOAD_DIR/runs | cut -f1)"
 echo ""
-echo "Location: ${ABS_OUTPUT_DIR}"
-echo "Summary: ${ABS_OUTPUT_DIR}/README.md"
+
+# Show summary
+if [ -d "$DOWNLOAD_DIR/runs" ]; then
+    LATEST_RUN=$(ls -t "$DOWNLOAD_DIR/runs" | head -1)
+    
+    if [ -n "$LATEST_RUN" ]; then
+        echo "📈 Latest run: $LATEST_RUN"
+        
+        # Count edges in latest run
+        if [ -f "$DOWNLOAD_DIR/runs/$LATEST_RUN/traffic_edges.json" ]; then
+            EDGE_COUNT=$(grep -o '"node_a_id"' "$DOWNLOAD_DIR/runs/$LATEST_RUN/traffic_edges.json" 2>/dev/null | wc -l || echo "0")
+            echo "🚗 Traffic edges: $EDGE_COUNT"
+        fi
+        
+        # Show statistics
+        if [ -f "$DOWNLOAD_DIR/runs/$LATEST_RUN/statistics.json" ]; then
+            echo ""
+            echo "📊 Network Statistics:"
+            python -m json.tool "$DOWNLOAD_DIR/runs/$LATEST_RUN/statistics.json" 2>/dev/null | grep -E "total_nodes|total_edges|avg_degree" || cat "$DOWNLOAD_DIR/runs/$LATEST_RUN/statistics.json"
+        fi
+        
+        # File sizes
+        echo ""
+        echo "📄 Latest run files:"
+        ls -lh "$DOWNLOAD_DIR/runs/$LATEST_RUN/" 2>/dev/null | tail -n +2 | awk '{print "  "$9" - "$5}'
+    fi
+fi
+
 echo ""
-echo "Collection count: $(ls -1 ${ABS_OUTPUT_DIR}/data/node 2>/dev/null | wc -l)"
-echo "Total size: $(du -sh ${ABS_OUTPUT_DIR} 2>/dev/null | cut -f1)"
+echo "======================================================================"
+echo "Next Steps:"
+echo "  1. View collections:    python scripts/view_collections.py"
+echo "  2. Quick summary:       python scripts/analysis/quick_summary.py"
+echo "  3. Visualize:           python -m traffic_forecast.cli.visualize"
+echo "======================================================================"
 echo ""
