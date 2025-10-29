@@ -234,89 +234,95 @@ class NodeSelector:
         way_metadata: Dict,
         node_coords: Dict
     ) -> List[dict]:
-        """Build edges between major intersections"""
-        edges = []
-        node_ids_set = set(n['node_id'] for n in nodes)
-        node_by_key = {}
+        """
+        Build edges between major intersections using nearest neighbors approach
         
-        for node in nodes:
-            key = (round(node['lat'], 6), round(node['lon'], 6))
-            node_by_key[key] = node
-
+        This creates a well-connected graph by connecting each node to its k nearest
+        neighbors within a maximum distance. This is more robust than relying solely
+        on way sequences, especially when nodes are from different road segments.
+        """
+        edges = []
         seen_pairs = set()
-
-        for way_id, nodes_in_way in way_nodes.items():
-            intersection_indices = []
+        
+        # Configuration for edge creation
+        k_neighbors = 8  # Connect each node to 8 nearest neighbors
+        max_distance_m = 1000  # Maximum edge length (1km)
+        
+        print(f"Building edges: k_neighbors={k_neighbors}, max_distance={max_distance_m}m")
+        
+        # For each node, find and connect to nearest neighbors
+        for i, node_a in enumerate(nodes):
+            # Find all nodes within max distance
+            neighbors = []
+            for j, node_b in enumerate(nodes):
+                if i == j:
+                    continue
+                
+                dist_m = self._haversine_distance(
+                    node_a['lat'], node_a['lon'],
+                    node_b['lat'], node_b['lon']
+                )
+                
+                if dist_m <= max_distance_m:
+                    neighbors.append((dist_m, node_b))
             
-            for i, node_key in enumerate(nodes_in_way):
-                if node_key in node_by_key:
-                    intersection_indices.append(i)
-
-            for i in range(len(intersection_indices) - 1):
-                start_idx = intersection_indices[i]
-                end_idx = intersection_indices[i + 1]
-                
-                start_key = nodes_in_way[start_idx]
-                end_key = nodes_in_way[end_idx]
-                
-                start_node = node_by_key[start_key]
-                end_node = node_by_key[end_key]
-                
-                pair = tuple(sorted([start_node['node_id'], end_node['node_id']]))
+            # Sort by distance and take k nearest
+            neighbors.sort(key=lambda x: x[0])
+            neighbors = neighbors[:k_neighbors]
+            
+            # Create edges to nearest neighbors
+            for dist_m, node_b in neighbors:
+                # Avoid duplicate edges (undirected graph)
+                pair = tuple(sorted([node_a['node_id'], node_b['node_id']]))
                 if pair in seen_pairs:
                     continue
                 seen_pairs.add(pair)
-
-                distance_m = self._haversine_distance(
-                    start_node['lat'], start_node['lon'],
-                    end_node['lat'], end_node['lon']
-                )
-
-                tags = way_metadata.get(way_id, {})
-                road_type = tags.get('highway', 'unknown')
-                road_name = tags.get('name') or tags.get('ref') or f"Way {way_id}"
-
+                
+                # Try to determine road information
+                # First, check if nodes share common street names
+                street_names_a = set(node_a.get('street_names', []))
+                street_names_b = set(node_b.get('street_names', []))
+                common_names = street_names_a.intersection(street_names_b)
+                
+                if common_names:
+                    # Use common street name
+                    road_name = list(common_names)[0]
+                    # Try to find the way_id for this road
+                    way_id = None
+                    for wid in node_a.get('way_ids', []):
+                        if wid in way_metadata:
+                            tags = way_metadata[wid]
+                            if tags.get('name') == road_name or tags.get('ref') == road_name:
+                                way_id = wid
+                                road_type = tags.get('highway', 'unknown')
+                                break
+                    if not way_id:
+                        # Fallback to first way
+                        way_id = node_a.get('way_ids', [None])[0]
+                        road_type = node_a.get('road_type', 'unknown')
+                else:
+                    # No common street, use node_a's primary street
+                    if street_names_a:
+                        road_name = list(street_names_a)[0]
+                    elif street_names_b:
+                        road_name = list(street_names_b)[0]
+                    else:
+                        road_name = f"Connecting road"
+                    
+                    way_id = node_a.get('way_ids', [None])[0]
+                    road_type = node_a.get('road_type', 'unknown')
+                
                 edges.append({
-                    'edge_id': f"{start_node['node_id']}-{end_node['node_id']}",
-                    'start_node_id': start_node['node_id'],
-                    'end_node_id': end_node['node_id'],
-                    'distance_m': distance_m,
+                    'edge_id': f"{node_a['node_id']}-{node_b['node_id']}",
+                    'start_node_id': node_a['node_id'],
+                    'end_node_id': node_b['node_id'],
+                    'distance_m': dist_m,
                     'road_type': road_type,
                     'road_name': road_name,
                     'way_id': way_id
                 })
-
-        # NEW: If we got very few edges (< nodes/2), add k-nearest neighbors as fallback
-        if len(edges) < len(nodes) / 2:
-            print(f"Warning: Only {len(edges)} edges from way sequences, adding k-nearest neighbors...")
-            k_neighbors = 3
-            seen_pairs_set = set(tuple(sorted([e['start_node_id'], e['end_node_id']])) for e in edges)
-            
-            for node_a in nodes:
-                neighbors = []
-                for node_b in nodes:
-                    if node_a['node_id'] == node_b['node_id']:
-                        continue
-                    dist = self._haversine_distance(node_a['lat'], node_a['lon'], node_b['lat'], node_b['lon'])
-                    neighbors.append((dist, node_b))
-                
-                neighbors.sort()
-                for dist, node_b in neighbors[:k_neighbors]:
-                    pair = tuple(sorted([node_a['node_id'], node_b['node_id']]))
-                    if pair not in seen_pairs_set:
-                        seen_pairs_set.add(pair)
-                        edges.append({
-                            'edge_id': f"{node_a['node_id']}-{node_b['node_id']}",
-                            'start_node_id': node_a['node_id'],
-                            'end_node_id': node_b['node_id'],
-                            'distance_m': dist,
-                            'road_type': 'computed',
-                            'road_name': f"Connection {node_a['node_id'][:15]}...{node_b['node_id'][:15]}",
-                            'way_id': None
-                        })
-            
-            print(f"Added k-nearest neighbors: total edges now = {len(edges)}")
-
+        
+        print(f"Built {len(edges)} edges from {len(nodes)} nodes (avg {len(edges)*2/len(nodes):.1f} edges/node)")
         return edges
 
     def get_statistics(self, nodes: List[dict], edges: List[dict]) -> dict:

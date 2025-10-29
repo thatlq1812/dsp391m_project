@@ -19,6 +19,7 @@ bash scripts/control_panel.sh
 ```
 
 **Features:**
+
 - Data collection (single, test, adaptive)
 - Data management (view, merge, cleanup, export)
 - Visualization
@@ -32,6 +33,7 @@ bash scripts/deploy_wizard.sh
 ```
 
 **Features:**
+
 - Step-by-step GCP deployment
 - Interactive menu
 - Automatic environment setup

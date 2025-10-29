@@ -1,7 +1,5 @@
 # Scripts Reference - Traffic Forecast v5.1# Maintainer Profile
 
-
-
 Collection of utility scripts for development, deployment, and operations.**Full name:**THAT Le Quang
 
 **Nickname:**Xiel
@@ -52,11 +50,11 @@ Step-by-step interactive deployment to Google Cloud Platform.├── deploymen
 
 **Usage:**└── README.md # This file
 
-```bash```
+`bash`
 
 bash scripts/deploy_wizard.sh
 
-```---
+````---
 
 
 
@@ -88,7 +86,7 @@ python scripts/collect_once.py--model models/xgboost_model.pkl \
 
 ```--output reports/feature_importance.png
 
-```
+````
 
 ### `run_adaptive_collection.py` - Continuous Collection
 
@@ -100,7 +98,7 @@ Perform k-fold cross-validation on ML models.
 
 **Usage:**
 
-```bash**Usage:**
+````bash**Usage:**
 
 # Direct (for testing)
 
@@ -114,7 +112,7 @@ sudo systemctl start traffic-collection.service--model xgboost \
 
 ```--folds 5
 
-```
+````
 
 ## 📊 Data Management Scripts
 
@@ -130,7 +128,7 @@ python scripts/view_collections.py**Usage:**
 
 ```
 
-```bash
+````bash
 
 ### `merge_collections.py` - Merge Multiple Runsconda run -n dsp python scripts/analysis/quick_summary.py \
 
@@ -169,7 +167,7 @@ conda run -n dsp python scripts/data/cleanup_runs.py --days 14
 
 # Dry run (preview only)
 conda run -n dsp python scripts/data/cleanup_runs.py --days 14 --dry-run
-```
+````
 
 **Configuration:**
 
@@ -272,6 +270,7 @@ bash scripts/deployment/gcp_vm_deploy.sh --dry-run
 
 - `gcloud` CLI installed and authenticated
 - `.env` file configured:
+
 ```bash
 GCP_PROJECT_ID=your-project-id
 GCP_ZONE=asia-southeast1-a
@@ -494,6 +493,7 @@ VM_NAME=traffic-collector-v5
 ```
 
 3. **Project installed** in development mode:
+
 ```bash
 pip install -e .
 ```
@@ -562,14 +562,14 @@ sudo ufw allow 8000
 
 If you have old collection scripts, here's the migration guide:
 
-| Old Script | New Equivalent | Notes |
+| Old Script               | New Equivalent                                    | Notes               |
 | ------------------------ | ------------------------------------------------- | ------------------- |
-| `collect_and_render.py` | `python -m traffic_forecast.cli collect` | Use CLI instead |
-| `collect_optimized.py` | `python -m traffic_forecast.cli collect --no-viz` | Same functionality |
-| `validate_collection.py` | `scripts/analysis/quick_summary.py` | Enhanced validation |
-| `deploy_wizard.sh` | `scripts/deployment/gcp_vm_deploy.sh` | Fully automated |
-| `vm_setup.sh` | Part of `gcp_vm_deploy.sh` | Integrated |
-| Old cleanup scripts | `scripts/data/cleanup_runs.py` | Safer with dry-run |
+| `collect_and_render.py`  | `python -m traffic_forecast.cli collect`          | Use CLI instead     |
+| `collect_optimized.py`   | `python -m traffic_forecast.cli collect --no-viz` | Same functionality  |
+| `validate_collection.py` | `scripts/analysis/quick_summary.py`               | Enhanced validation |
+| `deploy_wizard.sh`       | `scripts/deployment/gcp_vm_deploy.sh`             | Fully automated     |
+| `vm_setup.sh`            | Part of `gcp_vm_deploy.sh`                        | Integrated          |
+| Old cleanup scripts      | `scripts/data/cleanup_runs.py`                    | Safer with dry-run  |
 
 **To migrate:**
 
