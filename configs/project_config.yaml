@@ -78,16 +78,16 @@ globals:
 
 # Node Selection Configuration v5.0
 node_selection:
-  min_degree: 4 # Moderate threshold (3+ roads meeting)
-  min_importance_score: 20.0 # Balance between quality and coverage
-  max_nodes: 128 # Increased from 64
+  min_degree: 3 # 3+ roads meeting at intersection
+  min_importance_score: 17.5 # Balanced threshold for ~64 nodes
+  max_nodes: 64 # Target number of nodes
   min_distance_meters: 200 # Maintain spacing between nodes
   road_type_filter:
     - motorway
     - trunk
     - primary
   require_street_names: true
-  min_street_name_count: 2 #
+  min_street_name_count: 2 # Minimum unique street names
 
 data:
   parquet_dir: ./data/parquet
