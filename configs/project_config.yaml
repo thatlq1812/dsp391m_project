@@ -78,8 +78,8 @@ globals:
 
 # Node Selection Configuration v5.0
 node_selection:
-  min_degree: 4 # Higher threshold for quality nodes
-  min_importance_score: 20.0 # Filter for important intersections
+  min_degree: 3 # Moderate threshold (3+ roads meeting)
+  min_importance_score: 15.0 # Balance between quality and coverage
   max_nodes: 128 # Increased from 64
   min_distance_meters: 200 # Maintain spacing between nodes
   road_type_filter:
@@ -87,7 +87,7 @@ node_selection:
     - trunk
     - primary
   require_street_names: true
-  min_street_name_count: 10 # Require well-labeled intersections
+  min_street_name_count: 3 # Relaxed for better coverage (was 10)
 
 data:
   parquet_dir: ./data/parquet
