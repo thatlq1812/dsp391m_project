@@ -286,6 +286,37 @@ class NodeSelector:
                     'way_id': way_id
                 })
 
+        # NEW: If we got very few edges (< nodes/2), add k-nearest neighbors as fallback
+        if len(edges) < len(nodes) / 2:
+            print(f"Warning: Only {len(edges)} edges from way sequences, adding k-nearest neighbors...")
+            k_neighbors = 3
+            seen_pairs_set = set(tuple(sorted([e['start_node_id'], e['end_node_id']])) for e in edges)
+            
+            for node_a in nodes:
+                neighbors = []
+                for node_b in nodes:
+                    if node_a['node_id'] == node_b['node_id']:
+                        continue
+                    dist = self._haversine_distance(node_a['lat'], node_a['lon'], node_b['lat'], node_b['lon'])
+                    neighbors.append((dist, node_b))
+                
+                neighbors.sort()
+                for dist, node_b in neighbors[:k_neighbors]:
+                    pair = tuple(sorted([node_a['node_id'], node_b['node_id']]))
+                    if pair not in seen_pairs_set:
+                        seen_pairs_set.add(pair)
+                        edges.append({
+                            'edge_id': f"{node_a['node_id']}-{node_b['node_id']}",
+                            'start_node_id': node_a['node_id'],
+                            'end_node_id': node_b['node_id'],
+                            'distance_m': dist,
+                            'road_type': 'computed',
+                            'road_name': f"Connection {node_a['node_id'][:15]}...{node_b['node_id'][:15]}",
+                            'way_id': None
+                        })
+            
+            print(f"Added k-nearest neighbors: total edges now = {len(edges)}")
+
         return edges
 
     def get_statistics(self, nodes: List[dict], edges: List[dict]) -> dict:
