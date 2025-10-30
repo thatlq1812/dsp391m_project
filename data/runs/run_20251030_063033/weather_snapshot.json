@@ -1,0 +1,578 @@
+[
+  {
+    "node_id": "node-10.737984-106.721606",
+    "lat": 10.7379839,
+    "lon": 106.7216056,
+    "timestamp": "2025-10-30T06:30:35.340890",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.764404-106.698972",
+    "lat": 10.764404,
+    "lon": 106.6989721,
+    "timestamp": "2025-10-30T06:30:35.340912",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.753823-106.686917",
+    "lat": 10.7538226,
+    "lon": 106.686917,
+    "timestamp": "2025-10-30T06:30:35.340916",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.773433-106.722620",
+    "lat": 10.7734327,
+    "lon": 106.7226199,
+    "timestamp": "2025-10-30T06:30:35.340919",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.761259-106.683235",
+    "lat": 10.7612593,
+    "lon": 106.6832351,
+    "timestamp": "2025-10-30T06:30:35.340922",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.756048-106.683663",
+    "lat": 10.7560481,
+    "lon": 106.6836626,
+    "timestamp": "2025-10-30T06:30:35.340924",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.751877-106.683760",
+    "lat": 10.7518772,
+    "lon": 106.6837598,
+    "timestamp": "2025-10-30T06:30:35.340927",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.766495-106.701049",
+    "lat": 10.7664951,
+    "lon": 106.7010492,
+    "timestamp": "2025-10-30T06:30:35.340930",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.751524-106.724035",
+    "lat": 10.7515239,
+    "lon": 106.7240352,
+    "timestamp": "2025-10-30T06:30:35.340957",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.768215-106.702670",
+    "lat": 10.7682146,
+    "lon": 106.7026701,
+    "timestamp": "2025-10-30T06:30:35.340960",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.755578-106.688708",
+    "lat": 10.7555782,
+    "lon": 106.6887081,
+    "timestamp": "2025-10-30T06:30:35.340962",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.761650-106.696389",
+    "lat": 10.7616497,
+    "lon": 106.6963892,
+    "timestamp": "2025-10-30T06:30:35.340965",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.759103-106.693216",
+    "lat": 10.7591029,
+    "lon": 106.6932162,
+    "timestamp": "2025-10-30T06:30:35.340968",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.771366-106.716828",
+    "lat": 10.7713659,
+    "lon": 106.7168279,
+    "timestamp": "2025-10-30T06:30:35.340971",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.768073-106.684310",
+    "lat": 10.7680725,
+    "lon": 106.6843097,
+    "timestamp": "2025-10-30T06:30:35.341031",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.774326-106.688263",
+    "lat": 10.7743262,
+    "lon": 106.6882626,
+    "timestamp": "2025-10-30T06:30:35.341035",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.771233-106.693127",
+    "lat": 10.7712328,
+    "lon": 106.6931266,
+    "timestamp": "2025-10-30T06:30:35.341037",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.766384-106.678785",
+    "lat": 10.7663838,
+    "lon": 106.6787847,
+    "timestamp": "2025-10-30T06:30:35.341040",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.761459-106.700184",
+    "lat": 10.7614587,
+    "lon": 106.700184,
+    "timestamp": "2025-10-30T06:30:35.341043",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.756666-106.718849",
+    "lat": 10.7566655,
+    "lon": 106.7188494,
+    "timestamp": "2025-10-30T06:30:35.341046",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.767345-106.706097",
+    "lat": 10.7673447,
+    "lon": 106.7060968,
+    "timestamp": "2025-10-30T06:30:35.341048",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.740429-106.700990",
+    "lat": 10.740429,
+    "lon": 106.7009903,
+    "timestamp": "2025-10-30T06:30:35.341052",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.759503-106.684051",
+    "lat": 10.7595027,
+    "lon": 106.6840512,
+    "timestamp": "2025-10-30T06:30:35.341054",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.755484-106.723277",
+    "lat": 10.7554836,
+    "lon": 106.7232775,
+    "timestamp": "2025-10-30T06:30:35.341057",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.774790-106.690611",
+    "lat": 10.7747898,
+    "lon": 106.6906105,
+    "timestamp": "2025-10-30T06:30:35.341059",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.772736-106.679015",
+    "lat": 10.7727361,
+    "lon": 106.679015,
+    "timestamp": "2025-10-30T06:30:35.341063",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.771120-106.696525",
+    "lat": 10.7711199,
+    "lon": 106.6965249,
+    "timestamp": "2025-10-30T06:30:35.341066",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.771050-106.701121",
+    "lat": 10.7710504,
+    "lon": 106.7011208,
+    "timestamp": "2025-10-30T06:30:35.341069",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.760533-106.677134",
+    "lat": 10.7605325,
+    "lon": 106.6771345,
+    "timestamp": "2025-10-30T06:30:35.341100",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.762243-106.676490",
+    "lat": 10.7622427,
+    "lon": 106.6764902,
+    "timestamp": "2025-10-30T06:30:35.341103",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.802705-106.698490",
+    "lat": 10.8027046,
+    "lon": 106.69849,
+    "timestamp": "2025-10-30T06:30:36.415390",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.784533-106.707943",
+    "lat": 10.7845334,
+    "lon": 106.7079426,
+    "timestamp": "2025-10-30T06:30:36.415409",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.800396-106.716518",
+    "lat": 10.8003961,
+    "lon": 106.7165178,
+    "timestamp": "2025-10-30T06:30:36.415412",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.801409-106.713513",
+    "lat": 10.8014085,
+    "lon": 106.7135134,
+    "timestamp": "2025-10-30T06:30:36.415414",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.794608-106.701793",
+    "lat": 10.7946084,
+    "lon": 106.7017934,
+    "timestamp": "2025-10-30T06:30:36.415417",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.801105-106.709186",
+    "lat": 10.8011048,
+    "lon": 106.7091863,
+    "timestamp": "2025-10-30T06:30:36.415420",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.797980-106.722072",
+    "lat": 10.7979801,
+    "lon": 106.7220718,
+    "timestamp": "2025-10-30T06:30:36.415422",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.790494-106.701513",
+    "lat": 10.7904945,
+    "lon": 106.7015127,
+    "timestamp": "2025-10-30T06:30:36.415425",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.782732-106.686834",
+    "lat": 10.7827317,
+    "lon": 106.6868337,
+    "timestamp": "2025-10-30T06:30:36.415428",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.785873-106.690029",
+    "lat": 10.7858733,
+    "lon": 106.6900293,
+    "timestamp": "2025-10-30T06:30:36.415430",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.799010-106.723674",
+    "lat": 10.7990096,
+    "lon": 106.7236739,
+    "timestamp": "2025-10-30T06:30:36.415432",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.784663-106.695983",
+    "lat": 10.7846634,
+    "lon": 106.6959835,
+    "timestamp": "2025-10-30T06:30:36.415435",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.789376-106.713954",
+    "lat": 10.7893765,
+    "lon": 106.7139545,
+    "timestamp": "2025-10-30T06:30:36.415438",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.783453-106.690783",
+    "lat": 10.7834531,
+    "lon": 106.690783,
+    "timestamp": "2025-10-30T06:30:36.415440",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.783793-106.698783",
+    "lat": 10.783793,
+    "lon": 106.6987827,
+    "timestamp": "2025-10-30T06:30:36.415442",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.788468-106.699588",
+    "lat": 10.7884681,
+    "lon": 106.6995877,
+    "timestamp": "2025-10-30T06:30:36.415445",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.779575-106.694991",
+    "lat": 10.7795752,
+    "lon": 106.6949909,
+    "timestamp": "2025-10-30T06:30:36.415447",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.781476-106.699636",
+    "lat": 10.7814762,
+    "lon": 106.6996356,
+    "timestamp": "2025-10-30T06:30:36.415449",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.752793-106.728535",
+    "lat": 10.7527932,
+    "lon": 106.7285354,
+    "timestamp": "2025-10-30T06:30:37.485128",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.737481-106.730410",
+    "lat": 10.7374815,
+    "lon": 106.7304096,
+    "timestamp": "2025-10-30T06:30:37.485145",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.749586-106.671759",
+    "lat": 10.7495856,
+    "lon": 106.6717588,
+    "timestamp": "2025-10-30T06:30:38.556454",
+    "temperature_c": 25.4,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.6
+  },
+  {
+    "node_id": "node-10.750591-106.666344",
+    "lat": 10.7505908,
+    "lon": 106.6663436,
+    "timestamp": "2025-10-30T06:30:38.556477",
+    "temperature_c": 25.4,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.6
+  },
+  {
+    "node_id": "node-10.753465-106.669497",
+    "lat": 10.7534646,
+    "lon": 106.6694971,
+    "timestamp": "2025-10-30T06:30:38.556481",
+    "temperature_c": 25.4,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.6
+  },
+  {
+    "node_id": "node-10.767440-106.674410",
+    "lat": 10.7674402,
+    "lon": 106.67441,
+    "timestamp": "2025-10-30T06:30:38.556484",
+    "temperature_c": 25.4,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.6
+  },
+  {
+    "node_id": "node-10.759875-106.668686",
+    "lat": 10.7598753,
+    "lon": 106.6686863,
+    "timestamp": "2025-10-30T06:30:38.556487",
+    "temperature_c": 25.4,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.6
+  },
+  {
+    "node_id": "node-10.746522-106.660427",
+    "lat": 10.7465215,
+    "lon": 106.6604271,
+    "timestamp": "2025-10-30T06:30:38.556490",
+    "temperature_c": 25.4,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.6
+  },
+  {
+    "node_id": "node-10.746264-106.669053",
+    "lat": 10.7462638,
+    "lon": 106.6690529,
+    "timestamp": "2025-10-30T06:30:38.556493",
+    "temperature_c": 25.4,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.6
+  },
+  {
+    "node_id": "node-10.757421-106.673939",
+    "lat": 10.7574208,
+    "lon": 106.6739387,
+    "timestamp": "2025-10-30T06:30:38.556496",
+    "temperature_c": 25.4,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.6
+  },
+  {
+    "node_id": "node-10.767804-106.667123",
+    "lat": 10.767804,
+    "lon": 106.6671227,
+    "timestamp": "2025-10-30T06:30:38.556499",
+    "temperature_c": 25.4,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.6
+  },
+  {
+    "node_id": "node-10.761091-106.674789",
+    "lat": 10.7610914,
+    "lon": 106.6747885,
+    "timestamp": "2025-10-30T06:30:38.556501",
+    "temperature_c": 25.4,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.6
+  },
+  {
+    "node_id": "node-10.799711-106.732677",
+    "lat": 10.799711,
+    "lon": 106.7326766,
+    "timestamp": "2025-10-30T06:30:39.627578",
+    "temperature_c": 25.7,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.4
+  },
+  {
+    "node_id": "node-10.808349-106.673638",
+    "lat": 10.8083494,
+    "lon": 106.6736382,
+    "timestamp": "2025-10-30T06:30:40.698043",
+    "temperature_c": 25.4,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.6
+  },
+  {
+    "node_id": "node-10.801559-106.665425",
+    "lat": 10.8015585,
+    "lon": 106.6654251,
+    "timestamp": "2025-10-30T06:30:40.698063",
+    "temperature_c": 25.4,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.6
+  },
+  {
+    "node_id": "node-10.800009-106.660622",
+    "lat": 10.8000091,
+    "lon": 106.6606224,
+    "timestamp": "2025-10-30T06:30:40.698066",
+    "temperature_c": 25.4,
+    "precipitation_mm": 0.0,
+    "wind_speed_kmh": 6.6
+  }
+]

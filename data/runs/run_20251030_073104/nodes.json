@@ -1,0 +1,1521 @@
+[
+  {
+    "node_id": "node-10.737984-106.721606",
+    "lat": 10.7379839,
+    "lon": 106.7216056,
+    "degree": 5,
+    "importance_score": 30.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Nguy\u1ec5n V\u0103n Linh",
+      "Nguy\u1ec5n Th\u1ecb Th\u1eadp"
+    ],
+    "intersection_name": "Nguy\u1ec5n V\u0103n Linh - Nguy\u1ec5n Th\u1ecb Th\u1eadp",
+    "way_ids": [
+      1227932616,
+      1319569643,
+      1319569644,
+      1328576847,
+      1328576850
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.764404-106.698972",
+    "lat": 10.764404,
+    "lon": 106.6989721,
+    "degree": 4,
+    "importance_score": 24.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "trunk_link",
+      "primary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_ids": [
+      165228008,
+      165228001,
+      629904752,
+      724454974
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.753823-106.686917",
+    "lat": 10.7538226,
+    "lon": 106.686917,
+    "degree": 6,
+    "importance_score": 24.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "trunk_link",
+      "primary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+      "\u0110\u01b0\u1eddng Nguy\u1ec5n V\u0103n C\u1eeb"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t - \u0110\u01b0\u1eddng Nguy\u1ec5n V\u0103n C\u1eeb",
+    "way_ids": [
+      724169447,
+      724171789,
+      724171790,
+      724450707,
+      724450708,
+      724450709
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.773433-106.722620",
+    "lat": 10.7734327,
+    "lon": 106.7226199,
+    "degree": 5,
+    "importance_score": 23.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "trunk_link",
+      "secondary"
+    ],
+    "street_names": [
+      "Mai Ch\u00ed Th\u1ecd",
+      "Nguy\u1ec5n C\u01a1 Th\u1ea1ch"
+    ],
+    "intersection_name": "Mai Ch\u00ed Th\u1ecd - Nguy\u1ec5n C\u01a1 Th\u1ea1ch",
+    "way_ids": [
+      1408728417,
+      732142882,
+      1408728418,
+      1408744100,
+      218265692
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.761259-106.683235",
+    "lat": 10.7612593,
+    "lon": 106.6832351,
+    "degree": 4,
+    "importance_score": 22.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary",
+      "secondary_link"
+    ],
+    "street_names": [
+      "An D\u01b0\u01a1ng V\u01b0\u01a1ng",
+      "\u0110\u01b0\u1eddng Nguy\u1ec5n V\u0103n C\u1eeb"
+    ],
+    "intersection_name": "An D\u01b0\u01a1ng V\u01b0\u01a1ng - \u0110\u01b0\u1eddng Nguy\u1ec5n V\u0103n C\u1eeb",
+    "way_ids": [
+      1380945809,
+      1419930862,
+      32585854,
+      1421573778
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.756048-106.683663",
+    "lat": 10.7560481,
+    "lon": 106.6836626,
+    "degree": 4,
+    "importance_score": 22.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary_link",
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Nguy\u1ec5n Bi\u1ec3u",
+      "Tr\u1ea7n H\u01b0ng \u0110\u1ea1o"
+    ],
+    "intersection_name": "Nguy\u1ec5n Bi\u1ec3u - Tr\u1ea7n H\u01b0ng \u0110\u1ea1o",
+    "way_ids": [
+      32586673,
+      327048057,
+      1280794110,
+      1019648631
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.802705-106.698490",
+    "lat": 10.8027046,
+    "lon": 106.69849,
+    "degree": 4,
+    "importance_score": 22.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary_link",
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "L\u00ea Quang \u0110\u1ecbnh",
+      "Phan \u0110\u0103ng L\u01b0u"
+    ],
+    "intersection_name": "L\u00ea Quang \u0110\u1ecbnh - Phan \u0110\u0103ng L\u01b0u",
+    "way_ids": [
+      1330537595,
+      1330538093,
+      1330538094,
+      32587375
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.751877-106.683760",
+    "lat": 10.7518772,
+    "lon": 106.6837598,
+    "degree": 4,
+    "importance_score": 22.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary",
+      "secondary_link"
+    ],
+    "street_names": [
+      "Nguy\u1ec5n Bi\u1ec3u",
+      "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t"
+    ],
+    "intersection_name": "Nguy\u1ec5n Bi\u1ec3u - \u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_ids": [
+      189027768,
+      1210953547,
+      723197006,
+      795077199
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.784533-106.707943",
+    "lat": 10.7845334,
+    "lon": 106.7079426,
+    "degree": 4,
+    "importance_score": 22.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary_link",
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Nguy\u1ec5n H\u1eefu C\u1ea3nh",
+      "Nguy\u1ec5n B\u1ec9nh Khi\u00eam"
+    ],
+    "intersection_name": "Nguy\u1ec5n H\u1eefu C\u1ea3nh - Nguy\u1ec5n B\u1ec9nh Khi\u00eam",
+    "way_ids": [
+      1278461431,
+      817117939,
+      1218661462,
+      1218661463
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.800396-106.716518",
+    "lat": 10.8003961,
+    "lon": 106.7165178,
+    "degree": 3,
+    "importance_score": 21.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary"
+    ],
+    "street_names": [
+      "C\u1ea7u V\u0103n Th\u00e1nh 1",
+      "\u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+      "\u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7"
+    ],
+    "intersection_name": "C\u1ea7u V\u0103n Th\u00e1nh 1 - \u0110i\u1ec7n Bi\u00ean Ph\u1ee7 - \u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+    "way_ids": [
+      33103624,
+      855212185,
+      330532285
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.801409-106.713513",
+    "lat": 10.8014085,
+    "lon": 106.7135134,
+    "degree": 3,
+    "importance_score": 21.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary"
+    ],
+    "street_names": [
+      "C\u1ea7u v\u01b0\u1ee3t H\u00e0ng Xanh",
+      "\u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7"
+    ],
+    "intersection_name": "C\u1ea7u v\u01b0\u1ee3t H\u00e0ng Xanh - \u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+    "way_ids": [
+      478798996,
+      404360199,
+      35085959
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.794608-106.701793",
+    "lat": 10.7946084,
+    "lon": 106.7017934,
+    "degree": 4,
+    "importance_score": 21.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+    "way_ids": [
+      211408042,
+      53553099,
+      1344043029,
+      1011942070
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.766495-106.701049",
+    "lat": 10.7664951,
+    "lon": 106.7010492,
+    "degree": 3,
+    "importance_score": 21.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+      "V\u00f5 V\u0103n Ki\u1ec7t"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t - V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_ids": [
+      724064875,
+      189193717,
+      621432415
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.801105-106.709186",
+    "lat": 10.8011048,
+    "lon": 106.7091863,
+    "degree": 3,
+    "importance_score": 21.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary"
+    ],
+    "street_names": [
+      "\u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+      "C\u1ea7u v\u01b0\u1ee3t H\u00e0ng Xanh"
+    ],
+    "intersection_name": "\u0110i\u1ec7n Bi\u00ean Ph\u1ee7 - C\u1ea7u v\u01b0\u1ee3t H\u00e0ng Xanh",
+    "way_ids": [
+      192512316,
+      828862774,
+      604140511
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.752793-106.728535",
+    "lat": 10.7527932,
+    "lon": 106.7285354,
+    "degree": 3,
+    "importance_score": 21.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng Hu\u1ef3nh T\u1ea5n Ph\u00e1t"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng Hu\u1ef3nh T\u1ea5n Ph\u00e1t",
+    "way_ids": [
+      220972648,
+      1265997669,
+      1271396797
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.751524-106.724035",
+    "lat": 10.7515239,
+    "lon": 106.7240352,
+    "degree": 3,
+    "importance_score": 21.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary"
+    ],
+    "street_names": [
+      "Nguy\u1ec5n V\u0103n Linh"
+    ],
+    "intersection_name": "Nguy\u1ec5n V\u0103n Linh",
+    "way_ids": [
+      226203284,
+      221152220,
+      1227926997
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.768215-106.702670",
+    "lat": 10.7682146,
+    "lon": 106.7026701,
+    "degree": 3,
+    "importance_score": 21.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng h\u1ea7m s\u00f4ng S\u00e0i G\u00f2n"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng h\u1ea7m s\u00f4ng S\u00e0i G\u00f2n",
+    "way_ids": [
+      229485690,
+      724479604,
+      724479605
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.797980-106.722072",
+    "lat": 10.7979801,
+    "lon": 106.7220718,
+    "degree": 3,
+    "importance_score": 21.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+    "way_ids": [
+      306073177,
+      978724173,
+      978724174
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.749586-106.671759",
+    "lat": 10.7495856,
+    "lon": 106.6717588,
+    "degree": 3,
+    "importance_score": 21.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary"
+    ],
+    "street_names": [
+      "V\u00f5 V\u0103n Ki\u1ec7t",
+      "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t"
+    ],
+    "intersection_name": "V\u00f5 V\u0103n Ki\u1ec7t - \u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_ids": [
+      717255362,
+      1306100053,
+      1306100054
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.750591-106.666344",
+    "lat": 10.7505908,
+    "lon": 106.6663436,
+    "degree": 3,
+    "importance_score": 21.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary"
+    ],
+    "street_names": [
+      "V\u00f5 V\u0103n Ki\u1ec7t",
+      "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t"
+    ],
+    "intersection_name": "V\u00f5 V\u0103n Ki\u1ec7t - \u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_ids": [
+      723208655,
+      1306100052,
+      723202519
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.755578-106.688708",
+    "lat": 10.7555782,
+    "lon": 106.6887081,
+    "degree": 3,
+    "importance_score": 21.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_ids": [
+      724454651,
+      724452612,
+      724475287
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.761650-106.696389",
+    "lat": 10.7616497,
+    "lon": 106.6963892,
+    "degree": 3,
+    "importance_score": 21.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_ids": [
+      724475281,
+      724454643,
+      1327182621
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.759103-106.693216",
+    "lat": 10.7591029,
+    "lon": 106.6932162,
+    "degree": 3,
+    "importance_score": 21.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "primary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_ids": [
+      1327182619,
+      724475284,
+      1327182620
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.771366-106.716828",
+    "lat": 10.7713659,
+    "lon": 106.7168279,
+    "degree": 5,
+    "importance_score": 20.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "secondary"
+    ],
+    "street_names": [
+      "Mai Ch\u00ed Th\u1ecd",
+      "T\u1ed1 H\u1eefu"
+    ],
+    "intersection_name": "Mai Ch\u00ed Th\u1ecd - T\u1ed1 H\u1eefu",
+    "way_ids": [
+      706587304,
+      218265707,
+      317200051,
+      1202732373,
+      1211043418
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.799711-106.732677",
+    "lat": 10.799711,
+    "lon": 106.7326766,
+    "degree": 3,
+    "importance_score": 20.0,
+    "road_type": "trunk",
+    "connected_road_types": [
+      "trunk",
+      "secondary"
+    ],
+    "street_names": [
+      "Tr\u1ea7n N\u00e3o",
+      "V\u00f5 Nguy\u00ean Gi\u00e1p"
+    ],
+    "intersection_name": "Tr\u1ea7n N\u00e3o - V\u00f5 Nguy\u00ean Gi\u00e1p",
+    "way_ids": [
+      604448139,
+      1346116868,
+      1267913061
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.808349-106.673638",
+    "lat": 10.8083494,
+    "lon": 106.6736382,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Ph\u1ed5 Quang",
+      "\u0110\u00e0o Duy Anh",
+      "Ho\u00e0ng Minh Gi\u00e1m"
+    ],
+    "intersection_name": "Ph\u1ed5 Quang - \u0110\u00e0o Duy Anh - Ho\u00e0ng Minh Gi\u00e1m",
+    "way_ids": [
+      32577561,
+      32587722,
+      816855548,
+      227737845
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.753465-106.669497",
+    "lat": 10.7534646,
+    "lon": 106.6694971,
+    "degree": 5,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Tr\u1ea7n Ph\u00fa",
+      "Nguy\u1ec5n Tri Ph\u01b0\u01a1ng"
+    ],
+    "intersection_name": "Tr\u1ea7n Ph\u00fa - Nguy\u1ec5n Tri Ph\u01b0\u01a1ng",
+    "way_ids": [
+      289862304,
+      1027284066,
+      32579758,
+      432383413,
+      468590911
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.801559-106.665425",
+    "lat": 10.8015585,
+    "lon": 106.6654251,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "H\u1ea7m chui Phan Th\u00fac Duy\u1ec7n",
+      "Phan Th\u00fac Duy\u1ec7n"
+    ],
+    "intersection_name": "H\u1ea7m chui Phan Th\u00fac Duy\u1ec7n - Phan Th\u00fac Duy\u1ec7n",
+    "way_ids": [
+      1191195630,
+      32585398,
+      1381981751
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.768073-106.684310",
+    "lat": 10.7680725,
+    "lon": 106.6843097,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Nguy\u1ec5n Th\u1ecb Minh Khai",
+      "Cao Th\u1eafng"
+    ],
+    "intersection_name": "Nguy\u1ec5n Th\u1ecb Minh Khai - Cao Th\u1eafng",
+    "way_ids": [
+      1359552376,
+      1359552379,
+      35113070
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.790494-106.701513",
+    "lat": 10.7904945,
+    "lon": 106.7015127,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Nguy\u1ec5n \u0110\u00ecnh Chi\u1ec3u",
+      "Nguy\u1ec5n B\u1ec9nh Khi\u00eam"
+    ],
+    "intersection_name": "Nguy\u1ec5n \u0110\u00ecnh Chi\u1ec3u - Nguy\u1ec5n B\u1ec9nh Khi\u00eam",
+    "way_ids": [
+      1173852473,
+      35113963,
+      326771004
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.782732-106.686834",
+    "lat": 10.7827317,
+    "lon": 106.6868337,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Tr\u1ea7n Qu\u1ed1c Th\u1ea3o",
+      "V\u00f5 Th\u1ecb S\u00e1u"
+    ],
+    "intersection_name": "Tr\u1ea7n Qu\u1ed1c Th\u1ea3o - V\u00f5 Th\u1ecb S\u00e1u",
+    "way_ids": [
+      1177457985,
+      35114553,
+      1267006216,
+      654858165
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.774326-106.688263",
+    "lat": 10.7743262,
+    "lon": 106.6882626,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "V\u00f5 V\u0103n T\u1ea7n",
+      "C\u00e1ch M\u1ea1ng Th\u00e1ng 8"
+    ],
+    "intersection_name": "V\u00f5 V\u0103n T\u1ea7n - C\u00e1ch M\u1ea1ng Th\u00e1ng 8",
+    "way_ids": [
+      1222962346,
+      230935041,
+      223637314,
+      35114583
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.767440-106.674410",
+    "lat": 10.7674402,
+    "lon": 106.67441,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Ng\u00e3 b\u1ea3y L\u00fd Th\u00e1i T\u1ed5",
+      "L\u00ea H\u1ed3ng Phong"
+    ],
+    "intersection_name": "Ng\u00e3 b\u1ea3y L\u00fd Th\u00e1i T\u1ed5 - L\u00ea H\u1ed3ng Phong",
+    "way_ids": [
+      35114928,
+      1018414104,
+      971692815
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.771233-106.693127",
+    "lat": 10.7712328,
+    "lon": 106.6931266,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Ng\u00e3 s\u00e1u Ph\u00f9 \u0110\u1ed5ng",
+      "Nguy\u1ec5n Tr\u00e3i"
+    ],
+    "intersection_name": "Ng\u00e3 s\u00e1u Ph\u00f9 \u0110\u1ed5ng - Nguy\u1ec5n Tr\u00e3i",
+    "way_ids": [
+      466200149,
+      35115101,
+      1267138239
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.785873-106.690029",
+    "lat": 10.7858733,
+    "lon": 106.6900293,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Pasteur",
+      "V\u00f5 Th\u1ecb S\u00e1u"
+    ],
+    "intersection_name": "Pasteur - V\u00f5 Th\u1ecb S\u00e1u",
+    "way_ids": [
+      306072864,
+      326849849,
+      326770986,
+      35115167
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.766384-106.678785",
+    "lat": 10.7663838,
+    "lon": 106.6787847,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "L\u00fd Th\u00e1i T\u1ed5",
+      "Nguy\u1ec5n \u00d0\u00ecnh Chi\u1ec3u",
+      "Nguy\u1ec5n \u0110\u00ecnh Chi\u1ec3u"
+    ],
+    "intersection_name": "L\u00fd Th\u00e1i T\u1ed5 - Nguy\u1ec5n \u00d0\u00ecnh Chi\u1ec3u - Nguy\u1ec5n \u0110\u00ecnh Chi\u1ec3u",
+    "way_ids": [
+      1271931207,
+      39513492,
+      721696782,
+      721696783
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.799010-106.723674",
+    "lat": 10.7990096,
+    "lon": 106.7236739,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+      "C\u1ea7u v\u01b0\u1ee3t Nguy\u1ec5n H\u1eefu C\u1ea3nh",
+      "Ung V\u0103n Khi\u00eam"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7 - C\u1ea7u v\u01b0\u1ee3t Nguy\u1ec5n H\u1eefu C\u1ea3nh - Ung V\u0103n Khi\u00eam",
+    "way_ids": [
+      58800536,
+      1428196421,
+      1416277764,
+      1054134525
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.784663-106.695983",
+    "lat": 10.7846634,
+    "lon": 106.6959835,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Hai B\u00e0 Tr\u01b0ng",
+      "Nguy\u1ec5n \u0110\u00ecnh Chi\u1ec3u"
+    ],
+    "intersection_name": "Hai B\u00e0 Tr\u01b0ng - Nguy\u1ec5n \u0110\u00ecnh Chi\u1ec3u",
+    "way_ids": [
+      673254417,
+      1267653586,
+      58871347,
+      306641038
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.759875-106.668686",
+    "lat": 10.7598753,
+    "lon": 106.6686863,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Ng\u00e3 s\u00e1u Nguy\u1ec5n Tri Ph\u01b0\u01a1ng",
+      "Nguy\u1ec5n Ch\u00ed Thanh"
+    ],
+    "intersection_name": "Ng\u00e3 s\u00e1u Nguy\u1ec5n Tri Ph\u01b0\u01a1ng - Nguy\u1ec5n Ch\u00ed Thanh",
+    "way_ids": [
+      1265471328,
+      164921836,
+      971692805
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.761459-106.700184",
+    "lat": 10.7614587,
+    "lon": 106.700184,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "H\u1ebbm 150 B\u1ebfn V\u00e2n \u0110\u1ed3n",
+      "C\u1ea7u \u00d4ng L\u00e3nh"
+    ],
+    "intersection_name": "H\u1ebbm 150 B\u1ebfn V\u00e2n \u0110\u1ed3n - C\u1ea7u \u00d4ng L\u00e3nh",
+    "way_ids": [
+      165216648,
+      165283698,
+      722016814
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.756666-106.718849",
+    "lat": 10.7566655,
+    "lon": 106.7188494,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Nguy\u1ec5n T\u1ea5t Th\u00e0nh",
+      "Tr\u01b0\u01a1ng \u0110\u00ecnh H\u1ee3i",
+      "C\u1ea7u T\u00e2n Thu\u1eadn 1"
+    ],
+    "intersection_name": "Nguy\u1ec5n T\u1ea5t Th\u00e0nh - Tr\u01b0\u01a1ng \u0110\u00ecnh H\u1ee3i - C\u1ea7u T\u00e2n Thu\u1eadn 1",
+    "way_ids": [
+      706943336,
+      188114258,
+      165222495
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.767345-106.706097",
+    "lat": 10.7673447,
+    "lon": 106.7060968,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Nguy\u1ec5n T\u1ea5t Th\u00e0nh"
+    ],
+    "intersection_name": "Nguy\u1ec5n T\u1ea5t Th\u00e0nh",
+    "way_ids": [
+      165367632,
+      211130577,
+      718458988
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.789376-106.713954",
+    "lat": 10.7893765,
+    "lon": 106.7139545,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Nguy\u1ec5n H\u1eefu C\u1ea3nh",
+      "C\u1ea7u Th\u1ee7 Thi\u00eam"
+    ],
+    "intersection_name": "Nguy\u1ec5n H\u1eefu C\u1ea3nh - C\u1ea7u Th\u1ee7 Thi\u00eam",
+    "way_ids": [
+      838511275,
+      1168454652,
+      179122357
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.783453-106.690783",
+    "lat": 10.7834531,
+    "lon": 106.690783,
+    "degree": 6,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "\u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+      "Nam K\u1ef3 Kh\u1edfi Ngh\u0129a"
+    ],
+    "intersection_name": "\u0110i\u1ec7n Bi\u00ean Ph\u1ee7 - Nam K\u1ef3 Kh\u1edfi Ngh\u0129a",
+    "way_ids": [
+      408246393,
+      193616433,
+      1275903827,
+      302854713,
+      193092894,
+      193092895
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.783793-106.698783",
+    "lat": 10.783793,
+    "lon": 106.6987827,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Ph\u00f9ng Kh\u1eafc Khoan",
+      "Nguy\u1ec5n Th\u1ecb Minh Khai"
+    ],
+    "intersection_name": "Ph\u00f9ng Kh\u1eafc Khoan - Nguy\u1ec5n Th\u1ecb Minh Khai",
+    "way_ids": [
+      193256699,
+      1390471276,
+      1162411175
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.746522-106.660427",
+    "lat": 10.7465215,
+    "lon": 106.6604271,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng T\u00f9ng Thi\u1ec7n V\u01b0\u01a1ng",
+      "C\u1ea7u Ch\u00e0 V\u00e0"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng T\u00f9ng Thi\u1ec7n V\u01b0\u01a1ng - C\u1ea7u Ch\u00e0 V\u00e0",
+    "way_ids": [
+      193514976,
+      794683515,
+      1009761299
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.746264-106.669053",
+    "lat": 10.7462638,
+    "lon": 106.6690529,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng H\u01b0ng Ph\u00fa",
+      "\u0110\u01b0\u1eddng Ph\u1ea1m H\u00f9ng"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng H\u01b0ng Ph\u00fa - \u0110\u01b0\u1eddng Ph\u1ea1m H\u00f9ng",
+    "way_ids": [
+      1265535657,
+      193729354,
+      722021198
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.737481-106.730410",
+    "lat": 10.7374815,
+    "lon": 106.7304096,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng Hu\u1ef3nh T\u1ea5n Ph\u00e1t",
+      "Nguy\u1ec5n Th\u1ecb Th\u1eadp"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng Hu\u1ef3nh T\u1ea5n Ph\u00e1t - Nguy\u1ec5n Th\u1ecb Th\u1eadp",
+    "way_ids": [
+      693660792,
+      205341809,
+      1413091153,
+      1413091151
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.800009-106.660622",
+    "lat": 10.8000091,
+    "lon": 106.6606224,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Ho\u00e0ng V\u0103n Th\u1ee5",
+      "L\u00ea V\u0103n S\u1ef9"
+    ],
+    "intersection_name": "Ho\u00e0ng V\u0103n Th\u1ee5 - L\u00ea V\u0103n S\u1ef9",
+    "way_ids": [
+      1267006218,
+      602887667,
+      211408582
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.740429-106.700990",
+    "lat": 10.740429,
+    "lon": 106.7009903,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Nguy\u1ec5n Th\u1ecb Th\u1eadp",
+      "Nguy\u1ec5n H\u1eefu Th\u1ecd"
+    ],
+    "intersection_name": "Nguy\u1ec5n Th\u1ecb Th\u1eadp - Nguy\u1ec5n H\u1eefu Th\u1ecd",
+    "way_ids": [
+      215947465,
+      720313777,
+      722088364,
+      1278204173
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.759503-106.684051",
+    "lat": 10.7595027,
+    "lon": 106.6840512,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Nguy\u1ec5n Tr\u00e3i",
+      "\u0110\u01b0\u1eddng Nguy\u1ec5n V\u0103n C\u1eeb"
+    ],
+    "intersection_name": "Nguy\u1ec5n Tr\u00e3i - \u0110\u01b0\u1eddng Nguy\u1ec5n V\u0103n C\u1eeb",
+    "way_ids": [
+      718499095,
+      724157949,
+      1268643582,
+      219860447
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.757421-106.673939",
+    "lat": 10.7574208,
+    "lon": 106.6739387,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "V\u00f2ng Xoay Tr\u1ea7n Ph\u00fa",
+      "Tr\u1ea7n Ph\u00fa"
+    ],
+    "intersection_name": "V\u00f2ng Xoay Tr\u1ea7n Ph\u00fa - Tr\u1ea7n Ph\u00fa",
+    "way_ids": [
+      220972416,
+      723846594,
+      1018412810
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.755484-106.723277",
+    "lat": 10.7554836,
+    "lon": 106.7232775,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "C\u1ea7u T\u00e2n Thu\u1eadn 1",
+      "\u0110\u01b0\u1eddng Hu\u1ef3nh T\u1ea5n Ph\u00e1t"
+    ],
+    "intersection_name": "C\u1ea7u T\u00e2n Thu\u1eadn 1 - \u0110\u01b0\u1eddng Hu\u1ef3nh T\u1ea5n Ph\u00e1t",
+    "way_ids": [
+      610343437,
+      220972652,
+      221308781,
+      221308782
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.774790-106.690611",
+    "lat": 10.7747898,
+    "lon": 106.6906105,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "B\u00e0 Huy\u1ec7n Thanh Quan",
+      "Nguy\u1ec5n Th\u1ecb Minh Khai"
+    ],
+    "intersection_name": "B\u00e0 Huy\u1ec7n Thanh Quan - Nguy\u1ec5n Th\u1ecb Minh Khai",
+    "way_ids": [
+      1265405856,
+      326849844,
+      227739703
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.772736-106.679015",
+    "lat": 10.7727361,
+    "lon": 106.679015,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Cao Th\u1eafng",
+      "\u0110i\u1ec7n Bi\u00ean Ph\u1ee7"
+    ],
+    "intersection_name": "Cao Th\u1eafng - \u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+    "way_ids": [
+      227742840,
+      1264407532,
+      1331550078,
+      1331550079
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.788468-106.699588",
+    "lat": 10.7884681,
+    "lon": 106.6995877,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "\u0110inh Ti\u00ean Ho\u00e0ng",
+      "Nguy\u1ec5n \u0110\u00ecnh Chi\u1ec3u"
+    ],
+    "intersection_name": "\u0110inh Ti\u00ean Ho\u00e0ng - Nguy\u1ec5n \u0110\u00ecnh Chi\u1ec3u",
+    "way_ids": [
+      231983460,
+      1173852133,
+      1185261854,
+      1185261855
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.771120-106.696525",
+    "lat": 10.7711199,
+    "lon": 106.6965249,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Ph\u1ea1m H\u1ed3ng Th\u00e1i",
+      "L\u00ea Lai"
+    ],
+    "intersection_name": "Ph\u1ea1m H\u1ed3ng Th\u00e1i - L\u00ea Lai",
+    "way_ids": [
+      1344042987,
+      1132278756,
+      245571623
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.767804-106.667123",
+    "lat": 10.767804,
+    "lon": 106.6671227,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng 3 Th\u00e1ng 2",
+      "Nguy\u1ec5n Tri Ph\u01b0\u01a1ng",
+      "Th\u00e0nh Th\u00e1i"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng 3 Th\u00e1ng 2 - Nguy\u1ec5n Tri Ph\u01b0\u01a1ng - Th\u00e0nh Th\u00e1i",
+    "way_ids": [
+      1267828462,
+      296122572,
+      607582830,
+      1303524687
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.779575-106.694991",
+    "lat": 10.7795752,
+    "lon": 106.6949909,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Nguy\u1ec5n Th\u1ecb Minh Khai",
+      "Nam K\u1ef3 Kh\u1edfi Ngh\u0129a"
+    ],
+    "intersection_name": "Nguy\u1ec5n Th\u1ecb Minh Khai - Nam K\u1ef3 Kh\u1edfi Ngh\u0129a",
+    "way_ids": [
+      747226800,
+      749986989,
+      326771006,
+      1267006215
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.771050-106.701121",
+    "lat": 10.7710504,
+    "lon": 106.7011208,
+    "degree": 3,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "H\u00e0m Nghi"
+    ],
+    "intersection_name": "H\u00e0m Nghi",
+    "way_ids": [
+      1265997677,
+      1267913093,
+      326771007
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.781476-106.699636",
+    "lat": 10.7814762,
+    "lon": 106.6996356,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "Hai B\u00e0 Tr\u01b0ng",
+      "\u0110\u01b0\u1eddng Hai B\u00e0 Tr\u01b0ng",
+      "\u0110\u01b0\u1eddng L\u00ea Du\u1ea9n",
+      "L\u00ea Du\u1ea9n"
+    ],
+    "intersection_name": "Hai B\u00e0 Tr\u01b0ng - \u0110\u01b0\u1eddng Hai B\u00e0 Tr\u01b0ng - \u0110\u01b0\u1eddng L\u00ea Du\u1ea9n",
+    "way_ids": [
+      329878177,
+      1265997659,
+      749983355,
+      747226799
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.760533-106.677134",
+    "lat": 10.7605325,
+    "lon": 106.6771345,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "L\u00ea H\u1ed3ng Phong",
+      "Tr\u1ea7n Ph\u00fa"
+    ],
+    "intersection_name": "L\u00ea H\u1ed3ng Phong - Tr\u1ea7n Ph\u00fa",
+    "way_ids": [
+      1253458368,
+      330374257,
+      1253458369,
+      330374295
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.762243-106.676490",
+    "lat": 10.7622427,
+    "lon": 106.6764902,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "\u0110\u01b0\u1eddng H\u00f9ng V\u01b0\u01a1ng",
+      "L\u00ea H\u1ed3ng Phong",
+      "H\u00f9ng V\u01b0\u01a1ng"
+    ],
+    "intersection_name": "\u0110\u01b0\u1eddng H\u00f9ng V\u01b0\u01a1ng - L\u00ea H\u1ed3ng Phong - H\u00f9ng V\u01b0\u01a1ng",
+    "way_ids": [
+      719464888,
+      330374257,
+      719474411,
+      1269264068
+    ],
+    "is_major_intersection": true
+  },
+  {
+    "node_id": "node-10.761091-106.674789",
+    "lat": 10.7610914,
+    "lon": 106.6747885,
+    "degree": 4,
+    "importance_score": 19.0,
+    "road_type": "primary",
+    "connected_road_types": [
+      "primary",
+      "secondary"
+    ],
+    "street_names": [
+      "H\u00f9ng V\u01b0\u01a1ng",
+      "\u0110\u01b0\u1eddng Nguy\u1ec5n Ch\u00ed Thanh"
+    ],
+    "intersection_name": "H\u00f9ng V\u01b0\u01a1ng - \u0110\u01b0\u1eddng Nguy\u1ec5n Ch\u00ed Thanh",
+    "way_ids": [
+      330378025,
+      409274386,
+      1344492604,
+      612124229
+    ],
+    "is_major_intersection": true
+  }
+]

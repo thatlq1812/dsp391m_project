@@ -1,0 +1,1298 @@
+[
+  {
+    "edge_id": "node-10.737984-106.721606-node-10.737481-106.730410",
+    "start_node_id": "node-10.737984-106.721606",
+    "end_node_id": "node-10.737481-106.730410",
+    "distance_m": 963.4398357263187,
+    "road_type": "secondary",
+    "road_name": "Nguy\u1ec5n Th\u1ecb Th\u1eadp",
+    "way_id": 1319569643
+  },
+  {
+    "edge_id": "node-10.764404-106.698972-node-10.766495-106.701049",
+    "start_node_id": "node-10.764404-106.698972",
+    "end_node_id": "node-10.766495-106.701049",
+    "distance_m": 324.88173341074076,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 165228001
+  },
+  {
+    "edge_id": "node-10.764404-106.698972-node-10.761459-106.700184",
+    "start_node_id": "node-10.764404-106.698972",
+    "end_node_id": "node-10.761459-106.700184",
+    "distance_m": 353.24782296853226,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 165228008
+  },
+  {
+    "edge_id": "node-10.764404-106.698972-node-10.761650-106.696389",
+    "start_node_id": "node-10.764404-106.698972",
+    "end_node_id": "node-10.761650-106.696389",
+    "distance_m": 416.4228402977133,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 165228001
+  },
+  {
+    "edge_id": "node-10.764404-106.698972-node-10.768215-106.702670",
+    "start_node_id": "node-10.764404-106.698972",
+    "end_node_id": "node-10.768215-106.702670",
+    "distance_m": 585.4248857971121,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 165228008
+  },
+  {
+    "edge_id": "node-10.764404-106.698972-node-10.771050-106.701121",
+    "start_node_id": "node-10.764404-106.698972",
+    "end_node_id": "node-10.771050-106.701121",
+    "distance_m": 775.4233258926288,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 165228008
+  },
+  {
+    "edge_id": "node-10.764404-106.698972-node-10.771120-106.696525",
+    "start_node_id": "node-10.764404-106.698972",
+    "end_node_id": "node-10.771120-106.696525",
+    "distance_m": 793.1797054789732,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 165228008
+  },
+  {
+    "edge_id": "node-10.764404-106.698972-node-10.767345-106.706097",
+    "start_node_id": "node-10.764404-106.698972",
+    "end_node_id": "node-10.767345-106.706097",
+    "distance_m": 844.1874554861438,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 165228008
+  },
+  {
+    "edge_id": "node-10.764404-106.698972-node-10.759103-106.693216",
+    "start_node_id": "node-10.764404-106.698972",
+    "end_node_id": "node-10.759103-106.693216",
+    "distance_m": 861.8640326985359,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 165228001
+  },
+  {
+    "edge_id": "node-10.753823-106.686917-node-10.755578-106.688708",
+    "start_node_id": "node-10.753823-106.686917",
+    "end_node_id": "node-10.755578-106.688708",
+    "distance_m": 276.3918167361071,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 724171789
+  },
+  {
+    "edge_id": "node-10.753823-106.686917-node-10.751877-106.683760",
+    "start_node_id": "node-10.753823-106.686917",
+    "end_node_id": "node-10.751877-106.683760",
+    "distance_m": 407.1240255190011,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 724171789
+  },
+  {
+    "edge_id": "node-10.753823-106.686917-node-10.756048-106.683663",
+    "start_node_id": "node-10.753823-106.686917",
+    "end_node_id": "node-10.756048-106.683663",
+    "distance_m": 433.16321932244495,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 724169447
+  },
+  {
+    "edge_id": "node-10.753823-106.686917-node-10.759503-106.684051",
+    "start_node_id": "node-10.753823-106.686917",
+    "end_node_id": "node-10.759503-106.684051",
+    "distance_m": 704.9290217658398,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng Nguy\u1ec5n V\u0103n C\u1eeb",
+    "way_id": 724450707
+  },
+  {
+    "edge_id": "node-10.753823-106.686917-node-10.759103-106.693216",
+    "start_node_id": "node-10.753823-106.686917",
+    "end_node_id": "node-10.759103-106.693216",
+    "distance_m": 904.578315529209,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 724171789
+  },
+  {
+    "edge_id": "node-10.753823-106.686917-node-10.761259-106.683235",
+    "start_node_id": "node-10.753823-106.686917",
+    "end_node_id": "node-10.761259-106.683235",
+    "distance_m": 919.5531156361083,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng Nguy\u1ec5n V\u0103n C\u1eeb",
+    "way_id": 724450707
+  },
+  {
+    "edge_id": "node-10.773433-106.722620-node-10.771366-106.716828",
+    "start_node_id": "node-10.773433-106.722620",
+    "end_node_id": "node-10.771366-106.716828",
+    "distance_m": 673.137797677368,
+    "road_type": "trunk",
+    "road_name": "Mai Ch\u00ed Th\u1ecd",
+    "way_id": 1408728417
+  },
+  {
+    "edge_id": "node-10.761259-106.683235-node-10.759503-106.684051",
+    "start_node_id": "node-10.761259-106.683235",
+    "end_node_id": "node-10.759503-106.684051",
+    "distance_m": 214.70835972698538,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng Nguy\u1ec5n V\u0103n C\u1eeb",
+    "way_id": 32585854
+  },
+  {
+    "edge_id": "node-10.761259-106.683235-node-10.756048-106.683663",
+    "start_node_id": "node-10.761259-106.683235",
+    "end_node_id": "node-10.756048-106.683663",
+    "distance_m": 581.3378094040156,
+    "road_type": "primary",
+    "road_name": "An D\u01b0\u01a1ng V\u01b0\u01a1ng",
+    "way_id": 1380945809
+  },
+  {
+    "edge_id": "node-10.761259-106.683235-node-10.760533-106.677134",
+    "start_node_id": "node-10.761259-106.683235",
+    "end_node_id": "node-10.760533-106.677134",
+    "distance_m": 671.3091765708915,
+    "road_type": "primary",
+    "road_name": "An D\u01b0\u01a1ng V\u01b0\u01a1ng",
+    "way_id": 1380945809
+  },
+  {
+    "edge_id": "node-10.761259-106.683235-node-10.762243-106.676490",
+    "start_node_id": "node-10.761259-106.683235",
+    "end_node_id": "node-10.762243-106.676490",
+    "distance_m": 744.8777901596219,
+    "road_type": "primary",
+    "road_name": "An D\u01b0\u01a1ng V\u01b0\u01a1ng",
+    "way_id": 1380945809
+  },
+  {
+    "edge_id": "node-10.761259-106.683235-node-10.766384-106.678785",
+    "start_node_id": "node-10.761259-106.683235",
+    "end_node_id": "node-10.766384-106.678785",
+    "distance_m": 749.0258247677205,
+    "road_type": "primary",
+    "road_name": "An D\u01b0\u01a1ng V\u01b0\u01a1ng",
+    "way_id": 1380945809
+  },
+  {
+    "edge_id": "node-10.761259-106.683235-node-10.768073-106.684310",
+    "start_node_id": "node-10.761259-106.683235",
+    "end_node_id": "node-10.768073-106.684310",
+    "distance_m": 766.633785135517,
+    "road_type": "primary",
+    "road_name": "An D\u01b0\u01a1ng V\u01b0\u01a1ng",
+    "way_id": 1380945809
+  },
+  {
+    "edge_id": "node-10.761259-106.683235-node-10.755578-106.688708",
+    "start_node_id": "node-10.761259-106.683235",
+    "end_node_id": "node-10.755578-106.688708",
+    "distance_m": 869.7752588081663,
+    "road_type": "primary",
+    "road_name": "An D\u01b0\u01a1ng V\u01b0\u01a1ng",
+    "way_id": 1380945809
+  },
+  {
+    "edge_id": "node-10.756048-106.683663-node-10.759503-106.684051",
+    "start_node_id": "node-10.756048-106.683663",
+    "end_node_id": "node-10.759503-106.684051",
+    "distance_m": 386.47251710611937,
+    "road_type": "primary",
+    "road_name": "Tr\u1ea7n H\u01b0ng \u0110\u1ea1o",
+    "way_id": 32586673
+  },
+  {
+    "edge_id": "node-10.756048-106.683663-node-10.751877-106.683760",
+    "start_node_id": "node-10.756048-106.683663",
+    "end_node_id": "node-10.751877-106.683760",
+    "distance_m": 463.90445715022315,
+    "road_type": "secondary",
+    "road_name": "Nguy\u1ec5n Bi\u1ec3u",
+    "way_id": 32586673
+  },
+  {
+    "edge_id": "node-10.756048-106.683663-node-10.755578-106.688708",
+    "start_node_id": "node-10.756048-106.683663",
+    "end_node_id": "node-10.755578-106.688708",
+    "distance_m": 553.6485394865408,
+    "road_type": "primary",
+    "road_name": "Tr\u1ea7n H\u01b0ng \u0110\u1ea1o",
+    "way_id": 32586673
+  },
+  {
+    "edge_id": "node-10.756048-106.683663-node-10.760533-106.677134",
+    "start_node_id": "node-10.756048-106.683663",
+    "end_node_id": "node-10.760533-106.677134",
+    "distance_m": 870.174060230014,
+    "road_type": "primary",
+    "road_name": "Tr\u1ea7n H\u01b0ng \u0110\u1ea1o",
+    "way_id": 32586673
+  },
+  {
+    "edge_id": "node-10.802705-106.698490-node-10.794608-106.701793",
+    "start_node_id": "node-10.802705-106.698490",
+    "end_node_id": "node-10.794608-106.701793",
+    "distance_m": 969.8712222385334,
+    "road_type": "primary",
+    "road_name": "L\u00ea Quang \u0110\u1ecbnh",
+    "way_id": 1330537595
+  },
+  {
+    "edge_id": "node-10.751877-106.683760-node-10.755578-106.688708",
+    "start_node_id": "node-10.751877-106.683760",
+    "end_node_id": "node-10.755578-106.688708",
+    "distance_m": 679.3873852261513,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 1210953547
+  },
+  {
+    "edge_id": "node-10.751877-106.683760-node-10.759503-106.684051",
+    "start_node_id": "node-10.751877-106.683760",
+    "end_node_id": "node-10.759503-106.684051",
+    "distance_m": 848.5142477437719,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 189027768
+  },
+  {
+    "edge_id": "node-10.784533-106.707943-node-10.789376-106.713954",
+    "start_node_id": "node-10.784533-106.707943",
+    "end_node_id": "node-10.789376-106.713954",
+    "distance_m": 849.2595385951973,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n H\u1eefu C\u1ea3nh",
+    "way_id": 1278461431
+  },
+  {
+    "edge_id": "node-10.784533-106.707943-node-10.790494-106.701513",
+    "start_node_id": "node-10.784533-106.707943",
+    "end_node_id": "node-10.790494-106.701513",
+    "distance_m": 965.7328678442923,
+    "road_type": "primary_link",
+    "road_name": "Nguy\u1ec5n B\u1ec9nh Khi\u00eam",
+    "way_id": 817117939
+  },
+  {
+    "edge_id": "node-10.784533-106.707943-node-10.781476-106.699636",
+    "start_node_id": "node-10.784533-106.707943",
+    "end_node_id": "node-10.781476-106.699636",
+    "distance_m": 968.9750718590233,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n B\u1ec9nh Khi\u00eam",
+    "way_id": 1278461431
+  },
+  {
+    "edge_id": "node-10.800396-106.716518-node-10.801409-106.713513",
+    "start_node_id": "node-10.800396-106.716518",
+    "end_node_id": "node-10.801409-106.713513",
+    "distance_m": 346.92794563079667,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+    "way_id": 330532285
+  },
+  {
+    "edge_id": "node-10.800396-106.716518-node-10.797980-106.722072",
+    "start_node_id": "node-10.800396-106.716518",
+    "end_node_id": "node-10.797980-106.722072",
+    "distance_m": 663.4624321170592,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+    "way_id": 330532285
+  },
+  {
+    "edge_id": "node-10.800396-106.716518-node-10.799010-106.723674",
+    "start_node_id": "node-10.800396-106.716518",
+    "end_node_id": "node-10.799010-106.723674",
+    "distance_m": 796.6880390882484,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+    "way_id": 330532285
+  },
+  {
+    "edge_id": "node-10.800396-106.716518-node-10.801105-106.709186",
+    "start_node_id": "node-10.800396-106.716518",
+    "end_node_id": "node-10.801105-106.709186",
+    "distance_m": 804.6518547992097,
+    "road_type": "primary",
+    "road_name": "\u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+    "way_id": 855212185
+  },
+  {
+    "edge_id": "node-10.801409-106.713513-node-10.801105-106.709186",
+    "start_node_id": "node-10.801409-106.713513",
+    "end_node_id": "node-10.801105-106.709186",
+    "distance_m": 473.83199103318276,
+    "road_type": "trunk",
+    "road_name": "C\u1ea7u v\u01b0\u1ee3t H\u00e0ng Xanh",
+    "way_id": 478798996
+  },
+  {
+    "edge_id": "node-10.794608-106.701793-node-10.790494-106.701513",
+    "start_node_id": "node-10.794608-106.701793",
+    "end_node_id": "node-10.790494-106.701513",
+    "distance_m": 458.4711639182347,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+    "way_id": 211408042
+  },
+  {
+    "edge_id": "node-10.794608-106.701793-node-10.788468-106.699588",
+    "start_node_id": "node-10.794608-106.701793",
+    "end_node_id": "node-10.788468-106.699588",
+    "distance_m": 724.030447553276,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+    "way_id": 211408042
+  },
+  {
+    "edge_id": "node-10.766495-106.701049-node-10.768215-106.702670",
+    "start_node_id": "node-10.766495-106.701049",
+    "end_node_id": "node-10.768215-106.702670",
+    "distance_m": 260.59255518731584,
+    "road_type": "trunk",
+    "road_name": "V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 724064875
+  },
+  {
+    "edge_id": "node-10.766495-106.701049-node-10.771050-106.701121",
+    "start_node_id": "node-10.766495-106.701049",
+    "end_node_id": "node-10.771050-106.701121",
+    "distance_m": 506.58663104434663,
+    "road_type": "trunk",
+    "road_name": "V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 724064875
+  },
+  {
+    "edge_id": "node-10.766495-106.701049-node-10.767345-106.706097",
+    "start_node_id": "node-10.766495-106.701049",
+    "end_node_id": "node-10.767345-106.706097",
+    "distance_m": 559.4210733705992,
+    "road_type": "trunk",
+    "road_name": "V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 724064875
+  },
+  {
+    "edge_id": "node-10.766495-106.701049-node-10.761459-106.700184",
+    "start_node_id": "node-10.766495-106.701049",
+    "end_node_id": "node-10.761459-106.700184",
+    "distance_m": 567.9414668296334,
+    "road_type": "trunk",
+    "road_name": "V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 724064875
+  },
+  {
+    "edge_id": "node-10.766495-106.701049-node-10.771120-106.696525",
+    "start_node_id": "node-10.766495-106.701049",
+    "end_node_id": "node-10.771120-106.696525",
+    "distance_m": 713.2393940778059,
+    "road_type": "trunk",
+    "road_name": "V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 724064875
+  },
+  {
+    "edge_id": "node-10.766495-106.701049-node-10.761650-106.696389",
+    "start_node_id": "node-10.766495-106.701049",
+    "end_node_id": "node-10.761650-106.696389",
+    "distance_m": 741.2293597280291,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 724064875
+  },
+  {
+    "edge_id": "node-10.752793-106.728535-node-10.751524-106.724035",
+    "start_node_id": "node-10.752793-106.728535",
+    "end_node_id": "node-10.751524-106.724035",
+    "distance_m": 511.47319174558646,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng Hu\u1ef3nh T\u1ea5n Ph\u00e1t",
+    "way_id": 220972648
+  },
+  {
+    "edge_id": "node-10.752793-106.728535-node-10.755484-106.723277",
+    "start_node_id": "node-10.752793-106.728535",
+    "end_node_id": "node-10.755484-106.723277",
+    "distance_m": 647.6205941229036,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng Hu\u1ef3nh T\u1ea5n Ph\u00e1t",
+    "way_id": 220972648
+  },
+  {
+    "edge_id": "node-10.751524-106.724035-node-10.755484-106.723277",
+    "start_node_id": "node-10.751524-106.724035",
+    "end_node_id": "node-10.755484-106.723277",
+    "distance_m": 448.0113356480386,
+    "road_type": "trunk",
+    "road_name": "Nguy\u1ec5n V\u0103n Linh",
+    "way_id": 226203284
+  },
+  {
+    "edge_id": "node-10.751524-106.724035-node-10.756666-106.718849",
+    "start_node_id": "node-10.751524-106.724035",
+    "end_node_id": "node-10.756666-106.718849",
+    "distance_m": 804.8565324701802,
+    "road_type": "trunk",
+    "road_name": "Nguy\u1ec5n V\u0103n Linh",
+    "way_id": 226203284
+  },
+  {
+    "edge_id": "node-10.768215-106.702670-node-10.771050-106.701121",
+    "start_node_id": "node-10.768215-106.702670",
+    "end_node_id": "node-10.771050-106.701121",
+    "distance_m": 357.8728864553353,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng h\u1ea7m s\u00f4ng S\u00e0i G\u00f2n",
+    "way_id": 229485690
+  },
+  {
+    "edge_id": "node-10.768215-106.702670-node-10.767345-106.706097",
+    "start_node_id": "node-10.768215-106.702670",
+    "end_node_id": "node-10.767345-106.706097",
+    "distance_m": 386.61845090523235,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng h\u1ea7m s\u00f4ng S\u00e0i G\u00f2n",
+    "way_id": 229485690
+  },
+  {
+    "edge_id": "node-10.768215-106.702670-node-10.771120-106.696525",
+    "start_node_id": "node-10.768215-106.702670",
+    "end_node_id": "node-10.771120-106.696525",
+    "distance_m": 744.9699826983874,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng h\u1ea7m s\u00f4ng S\u00e0i G\u00f2n",
+    "way_id": 229485690
+  },
+  {
+    "edge_id": "node-10.768215-106.702670-node-10.761459-106.700184",
+    "start_node_id": "node-10.768215-106.702670",
+    "end_node_id": "node-10.761459-106.700184",
+    "distance_m": 798.8042405967624,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng h\u1ea7m s\u00f4ng S\u00e0i G\u00f2n",
+    "way_id": 229485690
+  },
+  {
+    "edge_id": "node-10.797980-106.722072-node-10.799010-106.723674",
+    "start_node_id": "node-10.797980-106.722072",
+    "end_node_id": "node-10.799010-106.723674",
+    "distance_m": 209.1084758869527,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng \u0110i\u1ec7n Bi\u00ean Ph\u1ee7",
+    "way_id": 306073177
+  },
+  {
+    "edge_id": "node-10.749586-106.671759-node-10.746264-106.669053",
+    "start_node_id": "node-10.749586-106.671759",
+    "end_node_id": "node-10.746264-106.669053",
+    "distance_m": 473.08978400899537,
+    "road_type": "trunk",
+    "road_name": "V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 717255362
+  },
+  {
+    "edge_id": "node-10.749586-106.671759-node-10.753465-106.669497",
+    "start_node_id": "node-10.749586-106.671759",
+    "end_node_id": "node-10.753465-106.669497",
+    "distance_m": 497.07877038345845,
+    "road_type": "trunk",
+    "road_name": "V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 717255362
+  },
+  {
+    "edge_id": "node-10.749586-106.671759-node-10.750591-106.666344",
+    "start_node_id": "node-10.749586-106.671759",
+    "end_node_id": "node-10.750591-106.666344",
+    "distance_m": 602.0419296145225,
+    "road_type": "primary",
+    "road_name": "V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 717255362
+  },
+  {
+    "edge_id": "node-10.749586-106.671759-node-10.757421-106.673939",
+    "start_node_id": "node-10.749586-106.671759",
+    "end_node_id": "node-10.757421-106.673939",
+    "distance_m": 903.193685148986,
+    "road_type": "trunk",
+    "road_name": "V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 717255362
+  },
+  {
+    "edge_id": "node-10.750591-106.666344-node-10.753465-106.669497",
+    "start_node_id": "node-10.750591-106.666344",
+    "end_node_id": "node-10.753465-106.669497",
+    "distance_m": 469.8847664841113,
+    "road_type": "trunk",
+    "road_name": "V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 723208655
+  },
+  {
+    "edge_id": "node-10.750591-106.666344-node-10.746264-106.669053",
+    "start_node_id": "node-10.750591-106.666344",
+    "end_node_id": "node-10.746264-106.669053",
+    "distance_m": 564.8869844436305,
+    "road_type": "trunk",
+    "road_name": "V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 723208655
+  },
+  {
+    "edge_id": "node-10.750591-106.666344-node-10.746522-106.660427",
+    "start_node_id": "node-10.750591-106.666344",
+    "end_node_id": "node-10.746522-106.660427",
+    "distance_m": 788.9876153938721,
+    "road_type": "trunk",
+    "road_name": "V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 723208655
+  },
+  {
+    "edge_id": "node-10.755578-106.688708-node-10.759103-106.693216",
+    "start_node_id": "node-10.755578-106.688708",
+    "end_node_id": "node-10.759103-106.693216",
+    "distance_m": 629.391381842723,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 724454651
+  },
+  {
+    "edge_id": "node-10.755578-106.688708-node-10.759503-106.684051",
+    "start_node_id": "node-10.755578-106.688708",
+    "end_node_id": "node-10.759503-106.684051",
+    "distance_m": 670.2468636818913,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 724454651
+  },
+  {
+    "edge_id": "node-10.761650-106.696389-node-10.761459-106.700184",
+    "start_node_id": "node-10.761650-106.696389",
+    "end_node_id": "node-10.761459-106.700184",
+    "distance_m": 415.08504669341727,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 724475281
+  },
+  {
+    "edge_id": "node-10.761650-106.696389-node-10.759103-106.693216",
+    "start_node_id": "node-10.761650-106.696389",
+    "end_node_id": "node-10.759103-106.693216",
+    "distance_m": 447.5948042719373,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 724475281
+  },
+  {
+    "edge_id": "node-10.759103-106.693216-node-10.761459-106.700184",
+    "start_node_id": "node-10.759103-106.693216",
+    "end_node_id": "node-10.761459-106.700184",
+    "distance_m": 804.9753520894296,
+    "road_type": "trunk",
+    "road_name": "\u0110\u01b0\u1eddng V\u00f5 V\u0103n Ki\u1ec7t",
+    "way_id": 1327182619
+  },
+  {
+    "edge_id": "node-10.799711-106.732677-node-10.799010-106.723674",
+    "start_node_id": "node-10.799711-106.732677",
+    "end_node_id": "node-10.799010-106.723674",
+    "distance_m": 986.4133425886886,
+    "road_type": "trunk",
+    "road_name": "Tr\u1ea7n N\u00e3o",
+    "way_id": 604448139
+  },
+  {
+    "edge_id": "node-10.753465-106.669497-node-10.757421-106.673939",
+    "start_node_id": "node-10.753465-106.669497",
+    "end_node_id": "node-10.757421-106.673939",
+    "distance_m": 654.9398876328488,
+    "road_type": "secondary",
+    "road_name": "Tr\u1ea7n Ph\u00fa",
+    "way_id": 289862304
+  },
+  {
+    "edge_id": "node-10.753465-106.669497-node-10.759875-106.668686",
+    "start_node_id": "node-10.753465-106.669497",
+    "end_node_id": "node-10.759875-106.668686",
+    "distance_m": 718.3189803623964,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n Tri Ph\u01b0\u01a1ng",
+    "way_id": 289862304
+  },
+  {
+    "edge_id": "node-10.753465-106.669497-node-10.746264-106.669053",
+    "start_node_id": "node-10.753465-106.669497",
+    "end_node_id": "node-10.746264-106.669053",
+    "distance_m": 802.1615392646186,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n Tri Ph\u01b0\u01a1ng",
+    "way_id": 289862304
+  },
+  {
+    "edge_id": "node-10.801559-106.665425-node-10.800009-106.660622",
+    "start_node_id": "node-10.801559-106.665425",
+    "end_node_id": "node-10.800009-106.660622",
+    "distance_m": 552.1426182262769,
+    "road_type": "primary",
+    "road_name": "Phan Th\u00fac Duy\u1ec7n",
+    "way_id": 1191195630
+  },
+  {
+    "edge_id": "node-10.768073-106.684310-node-10.766384-106.678785",
+    "start_node_id": "node-10.768073-106.684310",
+    "end_node_id": "node-10.766384-106.678785",
+    "distance_m": 632.0719335220488,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n Th\u1ecb Minh Khai",
+    "way_id": 1359552376
+  },
+  {
+    "edge_id": "node-10.768073-106.684310-node-10.772736-106.679015",
+    "start_node_id": "node-10.768073-106.684310",
+    "end_node_id": "node-10.772736-106.679015",
+    "distance_m": 776.8063497291643,
+    "road_type": "secondary",
+    "road_name": "Cao Th\u1eafng",
+    "way_id": 1359552379
+  },
+  {
+    "edge_id": "node-10.768073-106.684310-node-10.774326-106.688263",
+    "start_node_id": "node-10.768073-106.684310",
+    "end_node_id": "node-10.774326-106.688263",
+    "distance_m": 818.5369191018793,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n Th\u1ecb Minh Khai",
+    "way_id": 1359552376
+  },
+  {
+    "edge_id": "node-10.768073-106.684310-node-10.759503-106.684051",
+    "start_node_id": "node-10.768073-106.684310",
+    "end_node_id": "node-10.759503-106.684051",
+    "distance_m": 953.3365859853324,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n Th\u1ecb Minh Khai",
+    "way_id": 1359552376
+  },
+  {
+    "edge_id": "node-10.790494-106.701513-node-10.788468-106.699588",
+    "start_node_id": "node-10.790494-106.701513",
+    "end_node_id": "node-10.788468-106.699588",
+    "distance_m": 308.19377050744384,
+    "road_type": "secondary",
+    "road_name": "Nguy\u1ec5n \u0110\u00ecnh Chi\u1ec3u",
+    "way_id": 1173852473
+  },
+  {
+    "edge_id": "node-10.790494-106.701513-node-10.783793-106.698783",
+    "start_node_id": "node-10.790494-106.701513",
+    "end_node_id": "node-10.783793-106.698783",
+    "distance_m": 802.6235366442239,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n \u0110\u00ecnh Chi\u1ec3u",
+    "way_id": 1173852473
+  },
+  {
+    "edge_id": "node-10.790494-106.701513-node-10.784663-106.695983",
+    "start_node_id": "node-10.790494-106.701513",
+    "end_node_id": "node-10.784663-106.695983",
+    "distance_m": 886.0971527156247,
+    "road_type": "secondary",
+    "road_name": "Nguy\u1ec5n \u0110\u00ecnh Chi\u1ec3u",
+    "way_id": 1173852473
+  },
+  {
+    "edge_id": "node-10.782732-106.686834-node-10.783453-106.690783",
+    "start_node_id": "node-10.782732-106.686834",
+    "end_node_id": "node-10.783453-106.690783",
+    "distance_m": 438.78262630739147,
+    "road_type": "primary",
+    "road_name": "Tr\u1ea7n Qu\u1ed1c Th\u1ea3o",
+    "way_id": 1177457985
+  },
+  {
+    "edge_id": "node-10.782732-106.686834-node-10.785873-106.690029",
+    "start_node_id": "node-10.782732-106.686834",
+    "end_node_id": "node-10.785873-106.690029",
+    "distance_m": 493.83547021517825,
+    "road_type": "primary",
+    "road_name": "V\u00f5 Th\u1ecb S\u00e1u",
+    "way_id": 1267006216
+  },
+  {
+    "edge_id": "node-10.782732-106.686834-node-10.774326-106.688263",
+    "start_node_id": "node-10.782732-106.686834",
+    "end_node_id": "node-10.774326-106.688263",
+    "distance_m": 947.5920299044005,
+    "road_type": "primary",
+    "road_name": "Tr\u1ea7n Qu\u1ed1c Th\u1ea3o",
+    "way_id": 1177457985
+  },
+  {
+    "edge_id": "node-10.782732-106.686834-node-10.779575-106.694991",
+    "start_node_id": "node-10.782732-106.686834",
+    "end_node_id": "node-10.779575-106.694991",
+    "distance_m": 957.6660807118208,
+    "road_type": "primary",
+    "road_name": "Tr\u1ea7n Qu\u1ed1c Th\u1ea3o",
+    "way_id": 1177457985
+  },
+  {
+    "edge_id": "node-10.782732-106.686834-node-10.774790-106.690611",
+    "start_node_id": "node-10.782732-106.686834",
+    "end_node_id": "node-10.774790-106.690611",
+    "distance_m": 974.711518328071,
+    "road_type": "primary",
+    "road_name": "Tr\u1ea7n Qu\u1ed1c Th\u1ea3o",
+    "way_id": 1177457985
+  },
+  {
+    "edge_id": "node-10.774326-106.688263-node-10.774790-106.690611",
+    "start_node_id": "node-10.774326-106.688263",
+    "end_node_id": "node-10.774790-106.690611",
+    "distance_m": 261.6013067944201,
+    "road_type": "primary",
+    "road_name": "V\u00f5 V\u0103n T\u1ea7n",
+    "way_id": 1222962346
+  },
+  {
+    "edge_id": "node-10.774326-106.688263-node-10.771233-106.693127",
+    "start_node_id": "node-10.774326-106.688263",
+    "end_node_id": "node-10.771233-106.693127",
+    "distance_m": 632.9429805445718,
+    "road_type": "primary",
+    "road_name": "V\u00f5 V\u0103n T\u1ea7n",
+    "way_id": 1222962346
+  },
+  {
+    "edge_id": "node-10.774326-106.688263-node-10.779575-106.694991",
+    "start_node_id": "node-10.774326-106.688263",
+    "end_node_id": "node-10.779575-106.694991",
+    "distance_m": 938.5221298577245,
+    "road_type": "primary",
+    "road_name": "V\u00f5 V\u0103n T\u1ea7n",
+    "way_id": 1222962346
+  },
+  {
+    "edge_id": "node-10.774326-106.688263-node-10.771120-106.696525",
+    "start_node_id": "node-10.774326-106.688263",
+    "end_node_id": "node-10.771120-106.696525",
+    "distance_m": 970.4010310407263,
+    "road_type": "primary",
+    "road_name": "V\u00f5 V\u0103n T\u1ea7n",
+    "way_id": 1222962346
+  },
+  {
+    "edge_id": "node-10.767440-106.674410-node-10.766384-106.678785",
+    "start_node_id": "node-10.767440-106.674410",
+    "end_node_id": "node-10.766384-106.678785",
+    "distance_m": 492.10601972660527,
+    "road_type": "primary",
+    "road_name": "L\u00ea H\u1ed3ng Phong",
+    "way_id": 35114928
+  },
+  {
+    "edge_id": "node-10.767440-106.674410-node-10.762243-106.676490",
+    "start_node_id": "node-10.767440-106.674410",
+    "end_node_id": "node-10.762243-106.676490",
+    "distance_m": 621.0042785021715,
+    "road_type": "secondary",
+    "road_name": "L\u00ea H\u1ed3ng Phong",
+    "way_id": 971692815
+  },
+  {
+    "edge_id": "node-10.767440-106.674410-node-10.761091-106.674789",
+    "start_node_id": "node-10.767440-106.674410",
+    "end_node_id": "node-10.761091-106.674789",
+    "distance_m": 707.1641216928288,
+    "road_type": "primary",
+    "road_name": "L\u00ea H\u1ed3ng Phong",
+    "way_id": 35114928
+  },
+  {
+    "edge_id": "node-10.767440-106.674410-node-10.772736-106.679015",
+    "start_node_id": "node-10.767440-106.674410",
+    "end_node_id": "node-10.772736-106.679015",
+    "distance_m": 774.4794176684661,
+    "road_type": "primary",
+    "road_name": "L\u00ea H\u1ed3ng Phong",
+    "way_id": 35114928
+  },
+  {
+    "edge_id": "node-10.767440-106.674410-node-10.767804-106.667123",
+    "start_node_id": "node-10.767440-106.674410",
+    "end_node_id": "node-10.767804-106.667123",
+    "distance_m": 797.070817541633,
+    "road_type": "primary",
+    "road_name": "L\u00ea H\u1ed3ng Phong",
+    "way_id": 35114928
+  },
+  {
+    "edge_id": "node-10.767440-106.674410-node-10.760533-106.677134",
+    "start_node_id": "node-10.767440-106.674410",
+    "end_node_id": "node-10.760533-106.677134",
+    "distance_m": 823.745820495321,
+    "road_type": "secondary",
+    "road_name": "L\u00ea H\u1ed3ng Phong",
+    "way_id": 971692815
+  },
+  {
+    "edge_id": "node-10.771233-106.693127-node-10.771120-106.696525",
+    "start_node_id": "node-10.771233-106.693127",
+    "end_node_id": "node-10.771120-106.696525",
+    "distance_m": 371.4283256427583,
+    "road_type": "primary",
+    "road_name": "Ng\u00e3 s\u00e1u Ph\u00f9 \u0110\u1ed5ng",
+    "way_id": 466200149
+  },
+  {
+    "edge_id": "node-10.771233-106.693127-node-10.774790-106.690611",
+    "start_node_id": "node-10.771233-106.693127",
+    "end_node_id": "node-10.774790-106.690611",
+    "distance_m": 481.63990494144343,
+    "road_type": "primary",
+    "road_name": "Ng\u00e3 s\u00e1u Ph\u00f9 \u0110\u1ed5ng",
+    "way_id": 466200149
+  },
+  {
+    "edge_id": "node-10.771233-106.693127-node-10.771050-106.701121",
+    "start_node_id": "node-10.771233-106.693127",
+    "end_node_id": "node-10.771050-106.701121",
+    "distance_m": 873.4886473995969,
+    "road_type": "primary",
+    "road_name": "Ng\u00e3 s\u00e1u Ph\u00f9 \u0110\u1ed5ng",
+    "way_id": 466200149
+  },
+  {
+    "edge_id": "node-10.771233-106.693127-node-10.779575-106.694991",
+    "start_node_id": "node-10.771233-106.693127",
+    "end_node_id": "node-10.779575-106.694991",
+    "distance_m": 949.7229309951007,
+    "road_type": "primary",
+    "road_name": "Ng\u00e3 s\u00e1u Ph\u00f9 \u0110\u1ed5ng",
+    "way_id": 466200149
+  },
+  {
+    "edge_id": "node-10.771233-106.693127-node-10.764404-106.698972",
+    "start_node_id": "node-10.771233-106.693127",
+    "end_node_id": "node-10.764404-106.698972",
+    "distance_m": 992.1284104155942,
+    "road_type": "primary",
+    "road_name": "Ng\u00e3 s\u00e1u Ph\u00f9 \u0110\u1ed5ng",
+    "way_id": 466200149
+  },
+  {
+    "edge_id": "node-10.785873-106.690029-node-10.783453-106.690783",
+    "start_node_id": "node-10.785873-106.690029",
+    "end_node_id": "node-10.783453-106.690783",
+    "distance_m": 281.4251541722001,
+    "road_type": "primary",
+    "road_name": "Pasteur",
+    "way_id": 306072864
+  },
+  {
+    "edge_id": "node-10.785873-106.690029-node-10.784663-106.695983",
+    "start_node_id": "node-10.785873-106.690029",
+    "end_node_id": "node-10.784663-106.695983",
+    "distance_m": 664.1503612843014,
+    "road_type": "primary",
+    "road_name": "Pasteur",
+    "way_id": 306072864
+  },
+  {
+    "edge_id": "node-10.785873-106.690029-node-10.779575-106.694991",
+    "start_node_id": "node-10.785873-106.690029",
+    "end_node_id": "node-10.779575-106.694991",
+    "distance_m": 885.5327276591102,
+    "road_type": "primary",
+    "road_name": "Pasteur",
+    "way_id": 306072864
+  },
+  {
+    "edge_id": "node-10.785873-106.690029-node-10.783793-106.698783",
+    "start_node_id": "node-10.785873-106.690029",
+    "end_node_id": "node-10.783793-106.698783",
+    "distance_m": 983.7250431351149,
+    "road_type": "primary",
+    "road_name": "Pasteur",
+    "way_id": 306072864
+  },
+  {
+    "edge_id": "node-10.766384-106.678785-node-10.762243-106.676490",
+    "start_node_id": "node-10.766384-106.678785",
+    "end_node_id": "node-10.762243-106.676490",
+    "distance_m": 524.2671668755878,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n \u00d0\u00ecnh Chi\u1ec3u",
+    "way_id": 1271931207
+  },
+  {
+    "edge_id": "node-10.766384-106.678785-node-10.760533-106.677134",
+    "start_node_id": "node-10.766384-106.678785",
+    "end_node_id": "node-10.760533-106.677134",
+    "distance_m": 675.1454796241615,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n \u00d0\u00ecnh Chi\u1ec3u",
+    "way_id": 1271931207
+  },
+  {
+    "edge_id": "node-10.766384-106.678785-node-10.772736-106.679015",
+    "start_node_id": "node-10.766384-106.678785",
+    "end_node_id": "node-10.772736-106.679015",
+    "distance_m": 706.791389257774,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n \u00d0\u00ecnh Chi\u1ec3u",
+    "way_id": 1271931207
+  },
+  {
+    "edge_id": "node-10.766384-106.678785-node-10.761091-106.674789",
+    "start_node_id": "node-10.766384-106.678785",
+    "end_node_id": "node-10.761091-106.674789",
+    "distance_m": 732.7239931147188,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n \u00d0\u00ecnh Chi\u1ec3u",
+    "way_id": 1271931207
+  },
+  {
+    "edge_id": "node-10.766384-106.678785-node-10.759503-106.684051",
+    "start_node_id": "node-10.766384-106.678785",
+    "end_node_id": "node-10.759503-106.684051",
+    "distance_m": 957.299150414461,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n \u00d0\u00ecnh Chi\u1ec3u",
+    "way_id": 1271931207
+  },
+  {
+    "edge_id": "node-10.784663-106.695983-node-10.783793-106.698783",
+    "start_node_id": "node-10.784663-106.695983",
+    "end_node_id": "node-10.783793-106.698783",
+    "distance_m": 320.71191019185386,
+    "road_type": "primary",
+    "road_name": "Hai B\u00e0 Tr\u01b0ng",
+    "way_id": 673254417
+  },
+  {
+    "edge_id": "node-10.784663-106.695983-node-10.781476-106.699636",
+    "start_node_id": "node-10.784663-106.695983",
+    "end_node_id": "node-10.781476-106.699636",
+    "distance_m": 533.6106918899171,
+    "road_type": "primary",
+    "road_name": "Hai B\u00e0 Tr\u01b0ng",
+    "way_id": 673254417
+  },
+  {
+    "edge_id": "node-10.784663-106.695983-node-10.779575-106.694991",
+    "start_node_id": "node-10.784663-106.695983",
+    "end_node_id": "node-10.779575-106.694991",
+    "distance_m": 576.0772211347703,
+    "road_type": "primary",
+    "road_name": "Hai B\u00e0 Tr\u01b0ng",
+    "way_id": 673254417
+  },
+  {
+    "edge_id": "node-10.784663-106.695983-node-10.788468-106.699588",
+    "start_node_id": "node-10.784663-106.695983",
+    "end_node_id": "node-10.788468-106.699588",
+    "distance_m": 577.9035746791259,
+    "road_type": "secondary",
+    "road_name": "Nguy\u1ec5n \u0110\u00ecnh Chi\u1ec3u",
+    "way_id": 1267653586
+  },
+  {
+    "edge_id": "node-10.784663-106.695983-node-10.783453-106.690783",
+    "start_node_id": "node-10.784663-106.695983",
+    "end_node_id": "node-10.783453-106.690783",
+    "distance_m": 583.7806720315804,
+    "road_type": "primary",
+    "road_name": "Hai B\u00e0 Tr\u01b0ng",
+    "way_id": 673254417
+  },
+  {
+    "edge_id": "node-10.759875-106.668686-node-10.757421-106.673939",
+    "start_node_id": "node-10.759875-106.668686",
+    "end_node_id": "node-10.757421-106.673939",
+    "distance_m": 635.3789368303671,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n Ch\u00ed Thanh",
+    "way_id": 1265471328
+  },
+  {
+    "edge_id": "node-10.759875-106.668686-node-10.761091-106.674789",
+    "start_node_id": "node-10.759875-106.668686",
+    "end_node_id": "node-10.761091-106.674789",
+    "distance_m": 680.1797456026213,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n Ch\u00ed Thanh",
+    "way_id": 1265471328
+  },
+  {
+    "edge_id": "node-10.759875-106.668686-node-10.762243-106.676490",
+    "start_node_id": "node-10.759875-106.668686",
+    "end_node_id": "node-10.762243-106.676490",
+    "distance_m": 892.2124103045852,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n Ch\u00ed Thanh",
+    "way_id": 1265471328
+  },
+  {
+    "edge_id": "node-10.759875-106.668686-node-10.767804-106.667123",
+    "start_node_id": "node-10.759875-106.668686",
+    "end_node_id": "node-10.767804-106.667123",
+    "distance_m": 898.0245257650789,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n Ch\u00ed Thanh",
+    "way_id": 1265471328
+  },
+  {
+    "edge_id": "node-10.759875-106.668686-node-10.760533-106.677134",
+    "start_node_id": "node-10.759875-106.668686",
+    "end_node_id": "node-10.760533-106.677134",
+    "distance_m": 925.7684715042907,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n Ch\u00ed Thanh",
+    "way_id": 1265471328
+  },
+  {
+    "edge_id": "node-10.761459-106.700184-node-10.767345-106.706097",
+    "start_node_id": "node-10.761459-106.700184",
+    "end_node_id": "node-10.767345-106.706097",
+    "distance_m": 919.5399189816446,
+    "road_type": "primary",
+    "road_name": "H\u1ebbm 150 B\u1ebfn V\u00e2n \u0110\u1ed3n",
+    "way_id": 165216648
+  },
+  {
+    "edge_id": "node-10.756666-106.718849-node-10.755484-106.723277",
+    "start_node_id": "node-10.756666-106.718849",
+    "end_node_id": "node-10.755484-106.723277",
+    "distance_m": 501.26602043202286,
+    "road_type": "primary",
+    "road_name": "C\u1ea7u T\u00e2n Thu\u1eadn 1",
+    "way_id": 165222495
+  },
+  {
+    "edge_id": "node-10.767345-106.706097-node-10.771050-106.701121",
+    "start_node_id": "node-10.767345-106.706097",
+    "end_node_id": "node-10.771050-106.701121",
+    "distance_m": 682.0908776740208,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n T\u1ea5t Th\u00e0nh",
+    "way_id": 165367632
+  },
+  {
+    "edge_id": "node-10.783453-106.690783-node-10.779575-106.694991",
+    "start_node_id": "node-10.783453-106.690783",
+    "end_node_id": "node-10.779575-106.694991",
+    "distance_m": 630.2401366371179,
+    "road_type": "secondary",
+    "road_name": "Nam K\u1ef3 Kh\u1edfi Ngh\u0129a",
+    "way_id": 193616433
+  },
+  {
+    "edge_id": "node-10.783453-106.690783-node-10.783793-106.698783",
+    "start_node_id": "node-10.783453-106.690783",
+    "end_node_id": "node-10.783793-106.698783",
+    "distance_m": 874.6347027995523,
+    "road_type": "primary",
+    "road_name": "Nam K\u1ef3 Kh\u1edfi Ngh\u0129a",
+    "way_id": 408246393
+  },
+  {
+    "edge_id": "node-10.783453-106.690783-node-10.774790-106.690611",
+    "start_node_id": "node-10.783453-106.690783",
+    "end_node_id": "node-10.774790-106.690611",
+    "distance_m": 963.4992741740249,
+    "road_type": "primary",
+    "road_name": "Nam K\u1ef3 Kh\u1edfi Ngh\u0129a",
+    "way_id": 408246393
+  },
+  {
+    "edge_id": "node-10.783453-106.690783-node-10.781476-106.699636",
+    "start_node_id": "node-10.783453-106.690783",
+    "end_node_id": "node-10.781476-106.699636",
+    "distance_m": 991.6556956586156,
+    "road_type": "primary",
+    "road_name": "Nam K\u1ef3 Kh\u1edfi Ngh\u0129a",
+    "way_id": 408246393
+  },
+  {
+    "edge_id": "node-10.783793-106.698783-node-10.781476-106.699636",
+    "start_node_id": "node-10.783793-106.698783",
+    "end_node_id": "node-10.781476-106.699636",
+    "distance_m": 273.9446766308623,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n Th\u1ecb Minh Khai",
+    "way_id": 193256699
+  },
+  {
+    "edge_id": "node-10.783793-106.698783-node-10.788468-106.699588",
+    "start_node_id": "node-10.783793-106.698783",
+    "end_node_id": "node-10.788468-106.699588",
+    "distance_m": 527.231532348812,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n Th\u1ecb Minh Khai",
+    "way_id": 193256699
+  },
+  {
+    "edge_id": "node-10.783793-106.698783-node-10.779575-106.694991",
+    "start_node_id": "node-10.783793-106.698783",
+    "end_node_id": "node-10.779575-106.694991",
+    "distance_m": 625.706871633404,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n Th\u1ecb Minh Khai",
+    "way_id": 1390471276
+  },
+  {
+    "edge_id": "node-10.746522-106.660427-node-10.746264-106.669053",
+    "start_node_id": "node-10.746522-106.660427",
+    "end_node_id": "node-10.746264-106.669053",
+    "distance_m": 942.7594237085382,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng T\u00f9ng Thi\u1ec7n V\u01b0\u01a1ng",
+    "way_id": 193514976
+  },
+  {
+    "edge_id": "node-10.759503-106.684051-node-10.760533-106.677134",
+    "start_node_id": "node-10.759503-106.684051",
+    "end_node_id": "node-10.760533-106.677134",
+    "distance_m": 764.2070846314284,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng Nguy\u1ec5n V\u0103n C\u1eeb",
+    "way_id": 718499095
+  },
+  {
+    "edge_id": "node-10.759503-106.684051-node-10.762243-106.676490",
+    "start_node_id": "node-10.759503-106.684051",
+    "end_node_id": "node-10.762243-106.676490",
+    "distance_m": 880.3617278698222,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng Nguy\u1ec5n V\u0103n C\u1eeb",
+    "way_id": 718499095
+  },
+  {
+    "edge_id": "node-10.757421-106.673939-node-10.761091-106.674789",
+    "start_node_id": "node-10.757421-106.673939",
+    "end_node_id": "node-10.761091-106.674789",
+    "distance_m": 418.57611812178453,
+    "road_type": "primary",
+    "road_name": "V\u00f2ng Xoay Tr\u1ea7n Ph\u00fa",
+    "way_id": 220972416
+  },
+  {
+    "edge_id": "node-10.757421-106.673939-node-10.760533-106.677134",
+    "start_node_id": "node-10.757421-106.673939",
+    "end_node_id": "node-10.760533-106.677134",
+    "distance_m": 491.52560362418546,
+    "road_type": "secondary",
+    "road_name": "Tr\u1ea7n Ph\u00fa",
+    "way_id": 723846594
+  },
+  {
+    "edge_id": "node-10.757421-106.673939-node-10.762243-106.676490",
+    "start_node_id": "node-10.757421-106.673939",
+    "end_node_id": "node-10.762243-106.676490",
+    "distance_m": 604.2906282732596,
+    "road_type": "primary",
+    "road_name": "V\u00f2ng Xoay Tr\u1ea7n Ph\u00fa",
+    "way_id": 220972416
+  },
+  {
+    "edge_id": "node-10.774790-106.690611-node-10.779575-106.694991",
+    "start_node_id": "node-10.774790-106.690611",
+    "end_node_id": "node-10.779575-106.694991",
+    "distance_m": 715.60692583411,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n Th\u1ecb Minh Khai",
+    "way_id": 326849844
+  },
+  {
+    "edge_id": "node-10.774790-106.690611-node-10.771120-106.696525",
+    "start_node_id": "node-10.774790-106.690611",
+    "end_node_id": "node-10.771120-106.696525",
+    "distance_m": 764.1458290259034,
+    "road_type": "primary",
+    "road_name": "B\u00e0 Huy\u1ec7n Thanh Quan",
+    "way_id": 1265405856
+  },
+  {
+    "edge_id": "node-10.788468-106.699588-node-10.781476-106.699636",
+    "start_node_id": "node-10.788468-106.699588",
+    "end_node_id": "node-10.781476-106.699636",
+    "distance_m": 777.4814130231533,
+    "road_type": "primary",
+    "road_name": "Nguy\u1ec5n \u0110\u00ecnh Chi\u1ec3u",
+    "way_id": 231983460
+  },
+  {
+    "edge_id": "node-10.771120-106.696525-node-10.771050-106.701121",
+    "start_node_id": "node-10.771120-106.696525",
+    "end_node_id": "node-10.771050-106.701121",
+    "distance_m": 502.0965653067988,
+    "road_type": "primary",
+    "road_name": "L\u00ea Lai",
+    "way_id": 1344042987
+  },
+  {
+    "edge_id": "node-10.771120-106.696525-node-10.779575-106.694991",
+    "start_node_id": "node-10.771120-106.696525",
+    "end_node_id": "node-10.779575-106.694991",
+    "distance_m": 955.0019692952883,
+    "road_type": "primary",
+    "road_name": "L\u00ea Lai",
+    "way_id": 1344042987
+  },
+  {
+    "edge_id": "node-10.779575-106.694991-node-10.781476-106.699636",
+    "start_node_id": "node-10.779575-106.694991",
+    "end_node_id": "node-10.781476-106.699636",
+    "distance_m": 549.625418141717,
+    "road_type": "primary",
+    "road_name": "Nam K\u1ef3 Kh\u1edfi Ngh\u0129a",
+    "way_id": 747226800
+  },
+  {
+    "edge_id": "node-10.760533-106.677134-node-10.762243-106.676490",
+    "start_node_id": "node-10.760533-106.677134",
+    "end_node_id": "node-10.762243-106.676490",
+    "distance_m": 202.77252858059077,
+    "road_type": "secondary",
+    "road_name": "L\u00ea H\u1ed3ng Phong",
+    "way_id": 1253458368
+  },
+  {
+    "edge_id": "node-10.760533-106.677134-node-10.761091-106.674789",
+    "start_node_id": "node-10.760533-106.677134",
+    "end_node_id": "node-10.761091-106.674789",
+    "distance_m": 263.70371908512016,
+    "road_type": "primary",
+    "road_name": "L\u00ea H\u1ed3ng Phong",
+    "way_id": 1253458368
+  },
+  {
+    "edge_id": "node-10.762243-106.676490-node-10.761091-106.674789",
+    "start_node_id": "node-10.762243-106.676490",
+    "end_node_id": "node-10.761091-106.674789",
+    "distance_m": 225.70955664131904,
+    "road_type": "primary",
+    "road_name": "H\u00f9ng V\u01b0\u01a1ng",
+    "way_id": 1269264068
+  },
+  {
+    "edge_id": "node-10.761091-106.674789-node-10.761259-106.683235",
+    "start_node_id": "node-10.761091-106.674789",
+    "end_node_id": "node-10.761259-106.683235",
+    "distance_m": 922.8908171390705,
+    "road_type": "primary",
+    "road_name": "\u0110\u01b0\u1eddng Nguy\u1ec5n Ch\u00ed Thanh",
+    "way_id": 330378025
+  }
+]

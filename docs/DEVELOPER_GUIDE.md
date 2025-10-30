@@ -604,6 +604,174 @@ cat ~/traffic-forecast/.env | grep GOOGLE_MAPS_API_KEY
 
 ---
 
+## Machine Learning Model Training
+
+### Available Models
+
+This project uses **Deep Learning models** for traffic forecasting:
+
+1. **LSTM (Long Short-Term Memory)**
+
+   - Temporal sequence modeling
+   - Best for short-term forecasting (15-60 minutes)
+   - Handles time-series dependencies
+
+2. **ATSCGN (Adaptive Traffic Spatial-Temporal Convolutional Graph Network)**
+   - Spatial-temporal graph modeling
+   - Captures road network topology
+   - Best for multi-node traffic prediction
+
+### Training Workflow
+
+#### 1. Prepare Data
+
+Ensure you have collected traffic data:
+
+```bash
+# Download latest data
+./scripts/data/download_latest.sh
+
+# Or collect locally
+python scripts/collect_once.py
+```
+
+#### 2. Train Models
+
+```bash
+# Activate environment
+conda activate dsp
+
+# Train LSTM model
+python -m traffic_forecast.ml.dl_trainer \
+  --model lstm \
+  --epochs 100 \
+  --batch-size 32 \
+  --learning-rate 0.001
+
+# Train ATSCGN model
+python -m traffic_forecast.ml.dl_trainer \
+  --model atscgn \
+  --epochs 100 \
+  --batch-size 32 \
+  --learning-rate 0.001
+```
+
+#### 3. Monitor Training
+
+Training progress is saved to:
+
+- `models/checkpoints/` - Model checkpoints
+- `models/history/` - Training history (loss, metrics)
+- TensorBoard logs (if enabled)
+
+```bash
+# View training history
+python -m traffic_forecast.ml.dl_trainer --model lstm --mode history
+
+# Or use TensorBoard
+tensorboard --logdir models/logs
+```
+
+#### 4. Evaluate Models
+
+```bash
+# Evaluate on test set
+python -m traffic_forecast.ml.dl_trainer \
+  --model lstm \
+  --mode evaluate \
+  --checkpoint models/checkpoints/lstm_best.h5
+```
+
+#### 5. Deploy Models
+
+```bash
+# Export for production
+python -m traffic_forecast.ml.dl_trainer \
+  --model lstm \
+  --mode export \
+  --checkpoint models/checkpoints/lstm_best.h5 \
+  --output models/production/lstm_v1.0
+```
+
+### Model Configuration
+
+Edit training parameters in `configs/project_config.yaml`:
+
+```yaml
+ml:
+  lstm:
+    hidden_units: 64
+    num_layers: 2
+    dropout: 0.2
+    sequence_length: 12 # 3 hours at 15-min intervals
+
+  atscgn:
+    gcn_units: 64
+    temporal_units: 64
+    num_layers: 3
+    dropout: 0.3
+    sequence_length: 12
+
+  training:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 0.001
+    early_stopping_patience: 10
+    validation_split: 0.2
+```
+
+### Training Best Practices
+
+1. **Data Quality**
+
+   - Ensure sufficient data (minimum 3 days of collections)
+   - Check for missing values
+   - Verify data consistency
+
+2. **Hyperparameter Tuning**
+
+   - Start with default parameters
+   - Use validation set for tuning
+   - Monitor for overfitting
+
+3. **Model Selection**
+
+   - Use LSTM for temporal patterns
+   - Use ATSCGN when network topology is important
+   - Compare both models on validation set
+
+4. **Production Deployment**
+   - Always validate on test set before deployment
+   - Keep multiple model versions
+   - Document model performance metrics
+
+### Troubleshooting Training
+
+**Out of Memory:**
+
+```bash
+# Reduce batch size
+python -m traffic_forecast.ml.dl_trainer --model lstm --batch-size 16
+```
+
+**Slow Training:**
+
+```bash
+# Check GPU availability
+python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+
+# Use CPU-only TensorFlow if needed (already installed)
+```
+
+**Poor Performance:**
+
+- Check data quality and preprocessing
+- Increase model capacity (more layers/units)
+- Collect more training data
+- Tune hyperparameters
+
+---
+
 ## Architecture Overview
 
 ```

@@ -175,9 +175,33 @@ See detailed guide: **docs/DEVELOPER_GUIDE.md**### 3. Deploy to GCP
 
 - Road type filtering (motorway, trunk, primary only)
 
-## 📚 Documentation
+## 🤖 Machine Learning Models
 
-**Deployment Automation:**
+**Deployment Automation:**This project uses **Deep Learning models** for traffic forecasting:
+
+### LSTM (Long Short-Term Memory)
+- Temporal sequence modeling for traffic prediction
+- Handles time-series dependencies effectively
+- Best for: Short-term traffic forecasting (15-60 minutes ahead)
+
+### ATSCGN (Adaptive Traffic Spatial-Temporal Convolutional Graph Network)
+- Combines spatial (graph) and temporal (sequence) modeling
+- Captures road network topology and traffic flow patterns
+- Best for: Complex multi-node traffic prediction
+
+**Training & Deployment:**
+```bash
+# Train models
+python -m traffic_forecast.ml.dl_trainer --model lstm --epochs 100
+python -m traffic_forecast.ml.dl_trainer --model atscgn --epochs 100
+
+# View training history
+python -m traffic_forecast.ml.dl_trainer --model lstm --mode history
+```
+
+See **[docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md)** for detailed training workflow.
+
+## 📚 Documentation
 
 - Git-based workflow- **[QUICK_START.md](QUICK_START.md)** - 5-minute getting started guide
 

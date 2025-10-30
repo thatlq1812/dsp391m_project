@@ -4,7 +4,7 @@ Machine Learning Pipeline for Traffic Forecast System.
 This module provides end-to-end ML pipeline:
 - Data loading from collected runs
 - Preprocessing and feature engineering
-- Model training and evaluation (Traditional ML + Deep Learning)
+- Deep Learning model training and evaluation (LSTM, ATSCGN)
 - Prediction and inference
 """
 
@@ -26,19 +26,14 @@ from traffic_forecast.ml.features import (
     add_weather_features,
     add_traffic_features
 )
-from traffic_forecast.ml.trainer import (
-    ModelTrainer,
-    compare_models
-)
 
-# Deep Learning models (optional - requires TensorFlow)
+# Deep Learning models (requires TensorFlow)
 try:
-    from traffic_forecast.ml.dl_trainer import DLModelTrainer, compare_dl_models
+    from traffic_forecast.ml.dl_trainer import DLModelTrainer
     HAS_DL = True
 except ImportError:
     HAS_DL = False
     DLModelTrainer = None
-    compare_dl_models = None
 
 __all__ = [
     # Data loading
@@ -56,8 +51,7 @@ __all__ = [
     'add_spatial_features',
     'add_weather_features',
     'add_traffic_features',
-    # Training (Traditional ML)
-    'ModelTrainer',
+    # Deep Learning Training
     'compare_models',
     # Training (Deep Learning)
     'DLModelTrainer',

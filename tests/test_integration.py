@@ -125,52 +125,6 @@ class TestDataCollectionPipeline(unittest.TestCase):
             TrafficDataSchema(**invalid_data)
 
 
-class TestModelPipeline(unittest.TestCase):
-    """Test model training and inference pipeline."""
-
-    def test_baseline_prediction_pipeline(self):
-        """Test baseline prediction pipeline."""
-        from traffic_forecast.models.baseline import predict_speed_persistence
-
-        # Simulate historical data
-        historical_speeds = [30, 35, 40, 45, 50]
-        horizons = [5, 15, 30]
-
-        predictions = predict_speed_persistence(historical_speeds, horizons)
-
-        self.assertEqual(len(predictions), len(horizons))
-        self.assertTrue(all(p > 0 for p in predictions))
-
-    def test_ensemble_training_pipeline(self):
-        """Test ensemble model training pipeline."""
-        import pandas as pd
-        import numpy as np
-        from traffic_forecast.models.ensemble import TrafficEnsemble
-
-        # Create synthetic training data
-        np.random.seed(42)
-        n_samples = 50
-
-        X = pd.DataFrame({
-            'hour': np.random.randint(0, 24, n_samples),
-            'day_of_week': np.random.randint(0, 7, n_samples),
-            'speed_lag_1': np.random.uniform(20, 60, n_samples),
-            'neighbor_avg_speed': np.random.uniform(20, 60, n_samples)
-        })
-
-        y = 0.5 * X['speed_lag_1'] + 0.3 * X['neighbor_avg_speed'] + np.random.normal(0, 5, n_samples)
-
-        # Train model
-        model = TrafficEnsemble()
-        model.fit(X, y)
-
-        # Make predictions
-        predictions = model.predict(X.head(10))
-
-        self.assertEqual(len(predictions), 10)
-        self.assertTrue(all(p > 0 for p in predictions))
-
-
 class TestStoragePipeline(unittest.TestCase):
     """Test data storage and retrieval pipeline."""
 
