@@ -5,10 +5,10 @@ Git-based deployment and version control
 
 import streamlit as st
 from pathlib import Path
-import subprocess
 import json
-from datetime import datetime
 import os
+
+from dashboard.utils.command_blocks import show_command_block, show_command_list
 
 st.set_page_config(page_title="Deployment", page_icon="", layout="wide")
 
@@ -93,37 +93,21 @@ with tab1:
     with col2:
         st.markdown("#### Quick Deploy")
         
-        if st.button("Deploy Now", width='stretch', type="primary"):
-            with st.spinner("Deploying to VM..."):
-                progress = st.progress(0)
-                status = st.empty()
-                
-                # Step 1: Git push
-                status.info("Pushing to GitHub...")
-                progress.progress(0.2)
-                time_module.sleep(1)
-                
-                # Step 2: SSH and pull
-                status.info("Pulling on VM...")
-                progress.progress(0.4)
-                time_module.sleep(1)
-                
-                # Step 3: Dependencies
-                if with_dependencies:
-                    status.info("Updating dependencies...")
-                    progress.progress(0.6)
-                    time_module.sleep(1)
-                
-                # Step 4: Restart
-                if restart_services:
-                    status.info("Restarting services...")
-                    progress.progress(0.8)
-                    time_module.sleep(1)
-                
-                # Complete
-                progress.progress(1.0)
-                status.success("Deployment completed!")
-                st.balloons()
+        if st.button("Show Deploy Steps", width='stretch', type="primary"):
+            commands = []
+            commands.append(["git", "push", "origin", branch])
+            commands.append([
+                "ssh",
+                f"{DEPLOY_CONFIG['remote_path'].split('/')[-1] if DEPLOY_CONFIG['remote_path'] else 'USER'}@<vm-ip>",
+            ])
+            show_command_list(
+                commands,
+                description="Execute the following commands manually to deploy your changes:",
+                cwd=PROJECT_ROOT,
+            )
+            st.info(
+                "After connecting via SSH, pull the latest code and run dependency/service commands as needed."
+            )
         
         st.divider()
         
@@ -172,35 +156,19 @@ with tab2:
         st.markdown("#### Repository Status")
         
         if st.button("Check Git Status"):
-            try:
-                result = subprocess.run(
-                    ["git", "status", "--short"],
-                    cwd=PROJECT_ROOT,
-                    capture_output=True,
-                    text=True,
-                    timeout=5
-                )
-                
-                if result.stdout:
-                    st.code(result.stdout, language="text")
-                else:
-                    st.success("Working tree clean")
-            except Exception as e:
-                st.error(f"NOT OK Error: {e}")
+            show_command_block(
+                ["git", "status", "--short"],
+                cwd=PROJECT_ROOT,
+                description="Run the command below to inspect the working tree:",
+            )
+            st.info("Review the output in your terminal to verify pending changes.")
         
         if st.button("View Git Log"):
-            try:
-                result = subprocess.run(
-                    ["git", "log", "--oneline", "-10"],
-                    cwd=PROJECT_ROOT,
-                    capture_output=True,
-                    text=True,
-                    timeout=5
-                )
-                
-                st.code(result.stdout, language="text")
-            except Exception as e:
-                st.error(f"NOT OK Error: {e}")
+            show_command_block(
+                ["git", "log", "--oneline", "-10"],
+                cwd=PROJECT_ROOT,
+                description="Run the command below to view recent commits:",
+            )
     
     with col2:
         st.markdown("#### Quick Git Actions")
@@ -208,61 +176,31 @@ with tab2:
         commit_msg = st.text_input("Commit Message", "Update from dashboard")
         
         if st.button("Commit Changes"):
-            try:
-                # Add all changes
-                subprocess.run(["git", "add", "."], cwd=PROJECT_ROOT, check=True)
-                
-                # Commit
-                result = subprocess.run(
+            show_command_list(
+                [
+                    ["git", "add", "."],
                     ["git", "commit", "-m", commit_msg],
-                    cwd=PROJECT_ROOT,
-                    capture_output=True,
-                    text=True
-                )
-                
-                if result.returncode == 0:
-                    st.success("Changes committed")
-                else:
-                    st.info("" + result.stdout)
-            except Exception as e:
-                st.error(f"NOT OK Error: {e}")
+                ],
+                description="Run the commands below to stage and commit your changes:",
+                cwd=PROJECT_ROOT,
+            )
+            st.success("Commands prepared. Execute them in a terminal to commit.")
         
         if st.button("Push to GitHub"):
-            try:
-                result = subprocess.run(
-                    ["git", "push", "origin", "master"],
-                    cwd=PROJECT_ROOT,
-                    capture_output=True,
-                    text=True,
-                    timeout=30
-                )
-                
-                if result.returncode == 0:
-                    st.success("Pushed to GitHub")
-                else:
-                    st.error("NOT OK Push failed")
-                    st.code(result.stderr)
-            except Exception as e:
-                st.error(f"NOT OK Error: {e}")
+            show_command_block(
+                ["git", "push", "origin", "master"],
+                cwd=PROJECT_ROOT,
+                description="Run the command below to push changes to GitHub:",
+            )
+            st.success("Command prepared. Execute it in your terminal.")
         
         if st.button("Pull from GitHub"):
-            try:
-                result = subprocess.run(
-                    ["git", "pull", "origin", "master"],
-                    cwd=PROJECT_ROOT,
-                    capture_output=True,
-                    text=True,
-                    timeout=30
-                )
-                
-                if result.returncode == 0:
-                    st.success("Pulled latest changes")
-                    st.code(result.stdout)
-                else:
-                    st.error("NOT OK Pull failed")
-                    st.code(result.stderr)
-            except Exception as e:
-                st.error(f"NOT OK Error: {e}")
+            show_command_block(
+                ["git", "pull", "origin", "master"],
+                cwd=PROJECT_ROOT,
+                description="Run the command below to pull latest changes:",
+            )
+            st.success("Command prepared. Execute it in your terminal.")
 
 with tab3:
     st.markdown("### Deployment History")
@@ -320,34 +258,16 @@ with tab4:
         
         # Get recent commits
         if st.button("Load Recent Commits"):
-            try:
-                result = subprocess.run(
-                    ["git", "log", "--oneline", "-20"],
-                    cwd=PROJECT_ROOT,
-                    capture_output=True,
-                    text=True,
-                    timeout=5
-                )
-                
-                commits = []
-                for line in result.stdout.strip().split('\n'):
-                    parts = line.split(' ', 1)
-                    if len(parts) == 2:
-                        commits.append(f"{parts[0]} - {parts[1]}")
-                
-                st.session_state.commits = commits
-            except Exception as e:
-                st.error(f"NOT OK Error: {e}")
-        
-        if 'commits' in st.session_state:
-            selected_commit = st.selectbox(
-                "Select Commit",
-                st.session_state.commits
+            show_command_block(
+                ["git", "log", "--oneline", "-20"],
+                cwd=PROJECT_ROOT,
+                description="Run the command below to list recent commits:",
             )
-            
-            if selected_commit:
-                commit_hash = selected_commit.split(' ')[0]
-                
+            st.session_state.show_commit_input = True
+
+        if st.session_state.get("show_commit_input"):
+            commit_hash = st.text_input("Paste commit hash to rollback", "")
+            if commit_hash:
                 st.code(f"git reset --hard {commit_hash}", language="bash")
     
     with col2:
@@ -376,4 +296,3 @@ with tab4:
 st.divider()
 st.caption("Tip: Always test deployments in develop branch before deploying to master")
 
-import time as time_module  # Fix the time import

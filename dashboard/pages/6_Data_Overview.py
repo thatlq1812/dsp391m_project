@@ -9,8 +9,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 from datetime import datetime
-import subprocess
 import sys
+from dashboard.utils.command_blocks import show_command_block, show_command_list
 
 st.set_page_config(page_title="Data Overview", page_icon="", layout="wide")
 
@@ -233,58 +233,29 @@ with tab3:
     """)
     
     if st.button("Combine All Runs", width='stretch', type="primary"):
-        with st.status("Combining runs...", expanded=True) as status:
-            try:
-                st.write("Reading collection runs...")
-                
-                # Try to run with conda first, fallback to direct python
-                try:
-                    result = subprocess.run(
-                        ["conda", "run", "-n", "dsp", "--no-capture-output",
-                         "python", "scripts/data/combine_runs.py"],
-                        cwd=PROJECT_ROOT,
-                        check=True,
-                        capture_output=True,
-                        text=True,
-                        timeout=60
-                    )
-                except (subprocess.CalledProcessError, FileNotFoundError):
-                    # Fallback to direct python execution
-                    result = subprocess.run(
-                        ["python", "scripts/data/combine_runs.py"],
-                        cwd=PROJECT_ROOT,
-                        check=True,
-                        capture_output=True,
-                        text=True,
-                        timeout=60
-                    )
-                
-                st.write("Runs combined successfully!")
-                
-                # Show output if available
-                if result.stdout:
-                    st.write("\n**Output:**")
-                    st.code(result.stdout)
-                
-                status.update(label="Combination complete!", state="complete")
-                st.success("All runs have been combined into parquet file!")
-                
-                # Auto-reload after 2 seconds
-                import time
-                time.sleep(2)
-                st.rerun()
-                
-            except subprocess.TimeoutExpired:
-                status.update(label="Combination timed out", state="error")
-                st.error("Combination took too long and was cancelled")
-            except subprocess.CalledProcessError as e:
-                status.update(label="Combination failed", state="error")
-                st.error(f"Script failed with exit code {e.returncode}")
-                if e.stderr:
-                    st.code(e.stderr)
-            except Exception as e:
-                status.update(label="Unexpected error", state="error")
-                st.error(f"Error: {e}")
+        show_command_list(
+            [
+                [
+                    "conda",
+                    "run",
+                    "-n",
+                    "dsp",
+                    "--no-capture-output",
+                    "python",
+                    "scripts/data/combine_runs.py",
+                ],
+                [
+                    "python",
+                    "scripts/data/combine_runs.py",
+                ],
+            ],
+            description=(
+                "Run one of the commands below to merge all collection runs into a parquet file. "
+                "Prefer the Conda variant; the direct Python command is provided as a fallback."
+            ),
+            cwd=PROJECT_ROOT,
+        )
+        st.success("Command prepared. Execute it manually to start the combination job.")
     
     st.divider()
     
@@ -294,29 +265,20 @@ with tab3:
     
     if st.button("Rebuild Cache", width='stretch', disabled=not cache_exists):
         if cache_exists:
-            with st.status("Rebuilding cache...", expanded=True) as status:
-                try:
-                    st.write("Regenerating adjacency matrix...")
-                    st.write("Rebuilding topology cache...")
-                    
-                    result = subprocess.run(
-                        ["conda", "run", "-n", "dsp", "--no-capture-output",
-                         "python", str(cache_rebuild_script)],
-                        cwd=PROJECT_ROOT,
-                        check=True,
-                        capture_output=True,
-                        text=True
-                    )
-                    
-                    status.update(label="Cache rebuilt!", state="complete")
-                    st.success("Cache has been regenerated!")
-                    
-                    if result.stdout:
-                        st.code(result.stdout)
-                        
-                except Exception as e:
-                    status.update(label="Cache rebuild failed", state="error")
-                    st.error(f"Error: {e}")
+            show_command_block(
+                [
+                    "conda",
+                    "run",
+                    "-n",
+                    "dsp",
+                    "--no-capture-output",
+                    "python",
+                    str(cache_rebuild_script),
+                ],
+                cwd=PROJECT_ROOT,
+                description="Run the command below to regenerate the cached adjacency matrix and topology data:",
+            )
+            st.success("Command prepared. Execute it manually to rebuild the cache.")
         else:
             st.warning("Cache rebuild script not found at: scripts/data/rebuild_cache.py")
 

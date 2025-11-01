@@ -15,6 +15,7 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn.functional as F
 from torch import Tensor
 from torch.amp import GradScaler, autocast
 from torch.optim import AdamW
@@ -55,6 +56,7 @@ class TrainingConfig:
     persistent_workers: bool = True
     prefetch_factor: Optional[int] = 2
     matmul_precision: str = "medium"
+    mse_loss_weight: float = 0.0
 
 
 @dataclass
@@ -195,6 +197,7 @@ def train_epoch(
     scaler: Optional[GradScaler],
     drop_edge_p: float,
     accumulation_steps: int,
+    mse_loss_weight: float,
 ) -> Tuple[float, Dict[str, float]]:
     model.train()
     total_loss = 0.0
@@ -219,7 +222,12 @@ def train_epoch(
 
         with autocast(device_type=device.type, enabled=scaler is not None):
             pred_params = model(x_traffic, edge_index, x_weather, temporal_features)
-            loss = mixture_nll_loss(pred_params, y_target) / accumulation_steps
+            pred_mean, pred_std = mixture_to_moments(pred_params)
+            base_loss = mixture_nll_loss(pred_params, y_target)
+            mse_term = 0.0
+            if mse_loss_weight > 0:
+                mse_term = mse_loss_weight * F.mse_loss(pred_mean, y_target)
+            loss = (base_loss + mse_term) / accumulation_steps
 
         if scaler is not None:
             scaler.scale(loss).backward()
@@ -242,7 +250,6 @@ def train_epoch(
         total_samples += batch_size
 
         with torch.no_grad():
-            pred_mean, pred_std = mixture_to_moments(pred_params)
             preds.append(pred_mean.detach().cpu())
             stds.append(pred_std.detach().cpu())
             targets.append(y_target.detach().cpu())
@@ -412,6 +419,7 @@ def main() -> None:
             "persistent_workers": training_cfg.persistent_workers,
             "prefetch_factor": training_cfg.prefetch_factor,
             "matmul_precision": training_cfg.matmul_precision,
+            "mse_loss_weight": training_cfg.mse_loss_weight,
         }
     )
     if gpu_name:
@@ -462,7 +470,7 @@ def main() -> None:
     print(
         f"Config: batch_size={training_cfg.batch_size}, num_workers={training_cfg.num_workers}, "
         f"pin_memory={training_cfg.pin_memory}, AMP={training_cfg.use_amp}, "
-        f"drop_edge_p={training_cfg.drop_edge_p}"
+        f"drop_edge_p={training_cfg.drop_edge_p}, mse_loss_weight={training_cfg.mse_loss_weight}"
     )
 
     for epoch in range(1, training_cfg.max_epochs + 1):
@@ -476,6 +484,7 @@ def main() -> None:
             scaler,
             training_cfg.drop_edge_p,
             training_cfg.accumulation_steps,
+            training_cfg.mse_loss_weight,
         )
         print(f"Train Loss: {train_loss:.4f}")
 

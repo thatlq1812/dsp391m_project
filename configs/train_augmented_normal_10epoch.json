@@ -1,0 +1,26 @@
+{
+  "model": {
+    "hidden_dim": 64,
+    "num_heads": 4,
+    "num_blocks": 2,
+    "mixture_components": 3,
+    "seq_len": 12,
+    "pred_len": 12
+  },
+  "training": {
+    "batch_size": 48,
+    "learning_rate": 0.0008,
+    "weight_decay": 0.00005,
+    "max_epochs": 10,
+    "patience": 20,
+    "drop_edge_p": 0.05,
+    "num_workers": -1,
+    "use_amp": true,
+    "accumulation_steps": 1,
+    "mse_loss_weight": 0.2,
+    "data_source": "all_runs_augmented.parquet"
+  },
+  "metadata": {
+    "label": "augmented_normal_e10_tuned"
+  }
+}

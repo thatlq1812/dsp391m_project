@@ -9,11 +9,12 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 import json
-import subprocess
-import sys
 import os
-from datetime import datetime
+import sys
 import time
+from datetime import datetime
+
+from dashboard.utils.command_blocks import show_command_block
 from traffic_forecast.utils.conda import resolve_conda_executable
 
 st.set_page_config(page_title="Training Control", page_icon="🎮", layout="wide")
@@ -40,10 +41,10 @@ def _training_command(config_path: Path) -> list[str]:
     ]
 
 # Initialize session state
-if 'training_process' not in st.session_state:
-    st.session_state.training_process = None
-if 'training_active' not in st.session_state:
-    st.session_state.training_active = False
+if "latest_training_command" not in st.session_state:
+    st.session_state.latest_training_command = None
+if "latest_training_config" not in st.session_state:
+    st.session_state.latest_training_config = None
 
 # Tabs
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
@@ -108,10 +109,9 @@ with tab1:
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if st.button("Start Training", width='stretch', type="primary"):
-            with st.status("Initializing training...", expanded=True) as status:
+        if st.button("Prepare Training Command", width='stretch', type="primary"):
+            with st.status("Preparing training command...", expanded=True) as status:
                 try:
-                    # Create config
                     st.write("Creating training configuration...")
                     config = {
                         "model": {
@@ -136,62 +136,41 @@ with tab1:
                             "data_source": data_map[data_source]
                         }
                     }
-                    
-                    # Save config
+
                     config_dir = PROJECT_ROOT / "configs"
                     config_dir.mkdir(exist_ok=True)
                     config_path = config_dir / f"train_config_{datetime.now():%Y%m%d_%H%M%S}.json"
-                    
+
                     with open(config_path, 'w') as f:
                         json.dump(config, f, indent=2)
-                    
-                    st.write(f"Config saved to `{config_path.name}`")
-                    st.write("Starting training process...")
-                    
-                    # Start training
-                    command = _training_command(config_path)
-                    st.write("Launching command:")
-                    st.code(" ".join(command), language="bash")
 
-                    process = subprocess.Popen(
+                    st.write(f"Config saved to `{config_path.name}`")
+
+                    command = _training_command(config_path)
+                    st.session_state.latest_training_command = command
+                    st.session_state.latest_training_config = config_path
+
+                    show_command_block(
                         command,
                         cwd=PROJECT_ROOT,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.STDOUT,
-                        text=True
+                        description="Run the following command in your terminal to start training:",
+                        success_hint="Keep the terminal open; training logs will stream there.",
                     )
-                    
-                    st.session_state.training_process = process
-                    st.session_state.training_active = True
-                    
-                    st.write(f"Training process started (PID: {process.pid})")
-                    st.write("\n**Initial output:**")
-                    
-                    # Show first few lines
-                    for i, line in enumerate(process.stdout):
-                        if i < 5:
-                            st.code(line.strip())
-                        else:
-                            break
-                    
-                    status.update(label="Training started successfully!", state="complete")
-                    st.success("Training is running! Go to 'Monitor Progress' tab to track.")
-                    st.info("Training runs in background. You can close this page.")
-                    
+
+                    status.update(label="Command ready", state="complete")
+                    st.success("Command prepared. Copy it and run from your terminal.")
+
                 except Exception as e:
-                    status.update(label="Failed to start training", state="error")
+                    status.update(label="Failed to prepare command", state="error")
                     st.error(f"Error: {e}")
                     import traceback
                     st.code(traceback.format_exc())
     
     with col2:
-        if st.button("Stop Training", width='stretch', type="secondary"):
-            if st.session_state.training_process:
-                st.session_state.training_process.terminate()
-                st.session_state.training_active = False
-                st.warning("Training stopped")
-            else:
-                st.info("No active training process")
+        if st.button("Stop Guidance", width='stretch', type="secondary"):
+            st.info(
+                "To stop training, switch to the terminal running the command and press Ctrl+C."
+            )
     
     with col3:
         if st.button("Save Custom Config", width='stretch'):
@@ -232,10 +211,10 @@ with tab1:
     st.divider()
     st.markdown("### Training Status")
     
-    if st.session_state.training_active:
-        st.success("Training is active")
+    if st.session_state.latest_training_command:
+        st.success("Latest training command is ready. Execute it in a terminal to start training.")
     else:
-        st.info("No active training")
+        st.info("No training command prepared yet.")
 
 with tab2:
     st.markdown("### Hyperparameter Tuning")

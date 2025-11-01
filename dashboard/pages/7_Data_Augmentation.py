@@ -9,9 +9,10 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 import json
-import subprocess
 import numpy as np
 import os
+
+from dashboard.utils.command_blocks import show_command_block
 from traffic_forecast.utils.conda import resolve_conda_executable
 
 st.set_page_config(page_title="Data Augmentation", page_icon="", layout="wide")
@@ -329,79 +330,29 @@ with tab4:
         st.markdown("#### Basic Augmentation (23.4x)")
         st.info("Applies moderate noise and interpolation for balanced augmentation")
         
-        if st.button("Run Basic Augmentation", width='stretch', type="primary"):
-            with st.status("Running basic augmentation...", expanded=True) as status:
-                try:
-                    st.write("Loading original data...")
-                    st.write("Applying augmentation strategies...")
-                    st.warning("This may take 5-10 minutes. Please wait...")
-                    
-                    result = subprocess.run(
-                        _conda_run_args("scripts/data/augment_data_advanced.py"),
-                        cwd=PROJECT_ROOT,
-                        capture_output=True,
-                        text=True,
-                        timeout=900  # 15 minutes timeout
-                    )
-                    
-                    if result.returncode == 0:
-                        status.update(label="Basic augmentation completed!", state="complete")
-                        st.success("Augmentation successful!")
-                        
-                        if result.stdout:
-                            st.write("\n**Output:**")
-                            st.code(result.stdout, language="text")
-                    else:
-                        status.update(label="Augmentation failed", state="error")
-                        st.error("Augmentation process failed. Check error below:")
-                        if result.stderr:
-                            st.code(result.stderr, language="text")
-                            
-                except subprocess.TimeoutExpired:
-                    status.update(label="Augmentation timeout", state="error")
-                    st.error("Augmentation took too long (>15 minutes). Check system resources.")
-                except Exception as e:
-                    status.update(label="Unexpected error", state="error")
-                    st.error(f"Error: {e}")
+        if st.button("Prepare Basic Augmentation Command", width='stretch', type="primary"):
+            st.warning("Estimated runtime: 5-10 minutes. Execute the command from your terminal.")
+            show_command_block(
+                _conda_run_args("scripts/data/augment_data_advanced.py"),
+                cwd=PROJECT_ROOT,
+                description="Run the command below to launch basic augmentation:",
+                success_hint="Progress logs will stream in the terminal window.",
+            )
+            st.success("Command prepared. Copy it into a terminal to start augmentation.")
     
     with col2:
         st.markdown("#### Extreme Augmentation (48.4x)")
         st.info("Applies aggressive augmentation for maximum data diversity")
         
-        if st.button("Run Extreme Augmentation", width='stretch', type="primary"):
-            with st.status("Running extreme augmentation...", expanded=True) as status:
-                try:
-                    st.write("Loading original data...")
-                    st.write("Applying aggressive augmentation...")
-                    st.warning("This may take 10-20 minutes. Please wait...")
-                    
-                    result = subprocess.run(
-                        _conda_run_args("scripts/data/augment_extreme.py"),
-                        cwd=PROJECT_ROOT,
-                        capture_output=True,
-                        text=True,
-                        timeout=1800  # 30 minutes timeout
-                    )
-                    
-                    if result.returncode == 0:
-                        status.update(label="Extreme augmentation completed!", state="complete")
-                        st.success("Augmentation successful!")
-                        
-                        if result.stdout:
-                            st.write("\n**Output:**")
-                            st.code(result.stdout, language="text")
-                    else:
-                        status.update(label="Augmentation failed", state="error")
-                        st.error("Augmentation process failed. Check error below:")
-                        if result.stderr:
-                            st.code(result.stderr, language="text")
-                            
-                except subprocess.TimeoutExpired:
-                    status.update(label="Augmentation timeout", state="error")
-                    st.error("Augmentation took too long (>30 minutes). Check system resources.")
-                except Exception as e:
-                    status.update(label="Unexpected error", state="error")
-                    st.error(f"Error: {e}")
+        if st.button("Prepare Extreme Augmentation Command", width='stretch', type="primary"):
+            st.warning("Estimated runtime: 10-20 minutes. Execute the command from your terminal.")
+            show_command_block(
+                _conda_run_args("scripts/data/augment_extreme.py"),
+                cwd=PROJECT_ROOT,
+                description="Run the command below to launch extreme augmentation:",
+                success_hint="Keep the terminal open until augmentation finishes.",
+            )
+            st.success("Command prepared. Copy it into a terminal to start augmentation.")
     
     st.divider()
     
