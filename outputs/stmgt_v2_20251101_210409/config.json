@@ -1,0 +1,44 @@
+{
+  "model": {
+    "seq_len": 12,
+    "pred_len": 12,
+    "hidden_dim": 64,
+    "num_heads": 4,
+    "num_blocks": 2,
+    "mixture_components": 3,
+    "num_nodes": 62
+  },
+  "training": {
+    "batch_size": 32,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "max_epochs": 10,
+    "patience": 20,
+    "drop_edge_p": 0.1,
+    "num_workers": 15,
+    "use_amp": true,
+    "accumulation_steps": 1,
+    "data_source": "all_runs_augmented.parquet",
+    "pin_memory": true,
+    "persistent_workers": true,
+    "prefetch_factor": 2,
+    "matmul_precision": "medium"
+  },
+  "metadata": {
+    "label": "augmented_normal_e10",
+    "source_config": "configs\\train_augmented_normal_10epoch.json",
+    "launched_at": "2025-11-01T14:04:09.580671",
+    "data_path": "D:\\UNI\\DSP391m\\project\\data\\processed\\all_runs_augmented.parquet",
+    "output_dir": "D:\\UNI\\DSP391m\\project\\outputs\\stmgt_v2_20251101_210409",
+    "device": "cuda",
+    "num_workers": 15,
+    "pin_memory": true,
+    "persistent_workers": true,
+    "prefetch_factor": 2,
+    "matmul_precision": "medium",
+    "gpu_name": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "best_val_mae": 5.492115497589111,
+    "completed_at": "2025-11-01T14:13:28.143158",
+    "status": "completed"
+  }
+}

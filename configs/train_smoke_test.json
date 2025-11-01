@@ -1,0 +1,26 @@
+{
+  "model": {
+    "num_nodes": 62,
+    "hidden_dim": 64,
+    "num_heads": 4,
+    "num_blocks": 2,
+    "mixture_components": 3,
+    "seq_len": 12,
+    "pred_len": 12
+  },
+  "training": {
+    "batch_size": 16,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "max_epochs": 1,
+    "patience": 1,
+    "drop_edge_p": 0.0,
+    "num_workers": 0,
+    "use_amp": false,
+    "accumulation_steps": 1,
+    "data_source": "all_runs_extreme_augmented.parquet"
+  },
+  "metadata": {
+    "label": "smoke_test_epoch1"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "basic": {
+    "noise_std_speed": 2.0,
+    "noise_std_weather": 0.1,
+    "interpolation_steps": 2,
+    "gmm_samples_per_run": 10,
+    "target_multiplier": 20
+  },
+  "extreme": {
+    "noise_std_speed": 3.0,
+    "noise_std_weather": 0.2,
+    "interpolation_steps": 3,
+    "gmm_samples_per_run": 20,
+    "target_multiplier": 50
+  }
+}

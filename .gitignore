@@ -1,53 +1,75 @@
 # Traffic Forecast System - .gitignore
-# Updated: October 25, 2025
+# Organized and consistent with project structure
 
-# Github
+# Repo / GitHub
 .github/
-/instructions
+instructions/
 
-# Python
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDEs / editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python bytecode / caches
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
-.Python
+
+# Python build / packaging
 build/
-develop-eggs/
 dist/
-downloads/
 eggs/
 .eggs/
 lib/
 lib64/
 parts/
 sdist/
-var/
 wheels/
 pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/
-.installed.cfg
 *.egg
 MANIFEST
+.installed.cfg
 
-# Documentation
-*.md
-*.pdf
-*.log
-*.aux
-*.out
-*.toc
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+# Python binary / extensions
+*.so
+.Python
 
-# Installer logs
+# Virtual envs / env managers
+.venv/
+.env
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+__pypackages__/
+
+# Pip / installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+miniconda.sh
 
-# Unit test / coverage reports
+# Development tools / linters / type checkers
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# Test / coverage
 htmlcov/
 .tox/
 .nox/
@@ -61,98 +83,86 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
+# Docs / Sphinx / LaTeX / PDF / logs
+!README.md
 docs/_build/
+*.md
+*.pdf
+*.log
+*.aux
+*.out
+*.toc
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.lof
+*.lot
+*.bcf
+*.run.xml
+
+# Jupyter / IPython
+.ipynb_checkpoints
+profile_default/
+ipython_config.py
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer / temporary
+*.tmp
+*.temp
+tmp/
+temp/
+log.txt
+
+# Docker
+.dockerignore
+
+# Node (if present)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cache / temp
+cache/
+.cache/
+
+# Logs (project)
+logs/
+*.log
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Scrapy
+.scrapy
 
 # PyBuilder
 target/
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-.python-version
-
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
-
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
+# SageMath
 *.sage.py
 
-# Environments
-.venv
-.env
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+# Archived / backups
+archive/*
 
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# Project specific
-# Data files (large files)
+# Project-specific: data (ignore all except listed)
 data/*
-data/processed/*.parquet
-*.pkl
-*.h5
-*.hdf5
-
-# Keep important data files
 !data/nodes.json
-!data/features_nodes_v2.json
 !data/processed/metadata.json
 !data/processed/summary.json
+data/processed/*.parquet
 
-# Models
+# Project-specific: models (ignore binaries but keep metadata)
+models/*
+!models/model_metadata.json
+!models/training_report.json
+# If you want to keep model files under version control, remove the next line
 models/*.keras
 models/*.h5
 models/*.pkl
@@ -161,75 +171,11 @@ models/*.ckpt
 models/*.bin
 models/*.pth
 models/*.onnx
-models/research/*
-
-# Keep model metadata
-!models/model_metadata.json
-!models/training_report.json
-
-# Logs
-logs/
-*.log
-
-# Cache
-cache/
-.cache/
-
-# Temporary files
-tmp/
-temp/
-*.tmp
-*.temp
 
 # Test fixtures (keep versioned)
 !tests/fixtures/*.json
 
-# OS generated files
+# Misc / OS-generated
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
 *~
-
-# LaTeX
-*.aux
-*.bbl
-*.blg
-*.fdb_latexmk
-*.fls
-*.log
-*.out
-*.synctex.gz
-*.toc
-*.lof
-*.lot
-*.bcf
-*.run.xml
-
-# Docker
-.dockerignore
-
-# Node.js (if any)
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Temporary/build artifacts
-*.log
-*.tmp
-*.temp
-log.txt
-=*
-
-# Miniconda installer (too large for GitHub)
-miniconda.sh
+=* 

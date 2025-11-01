@@ -27,5 +27,29 @@ def _register_lstm_models() -> None:
         pass
 
 
+def _register_astgcn() -> None:
+    """Expose the ASTGCN runner."""
+    try:
+        from traffic_forecast.models.astgcn import (
+            NotebookBaselineConfig,
+            NotebookBaselineRunner,
+            run_astgcn,
+        )
+
+        globals()["NotebookBaselineConfig"] = NotebookBaselineConfig
+        globals()["NotebookBaselineRunner"] = NotebookBaselineRunner
+        globals()["run_astgcn"] = run_astgcn
+        __all__.extend(
+            [
+                "NotebookBaselineConfig",
+                "NotebookBaselineRunner",
+                "run_astgcn",
+            ]
+        )
+    except (ImportError, IndentationError, SyntaxError):
+        pass
+
+
 _register_graph_models()
 _register_lstm_models()
+_register_astgcn()

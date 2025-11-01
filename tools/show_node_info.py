@@ -12,10 +12,10 @@ from typing import Dict, List
 def analyze_node_structure(filepath: str = "data/nodes.json") -> Dict:
  """Analyze what fields are available in nodes.json"""
  with open(filepath, 'r', encoding='utf-8') as f:
- nodes = json.load(f)
+  nodes = json.load(f)
  
  if not nodes:
- return {"error": "No nodes found"}
+  return {"error": "No nodes found"}
  
  # Analyze first node to see structure
  sample_node = nodes[0]
@@ -23,13 +23,13 @@ def analyze_node_structure(filepath: str = "data/nodes.json") -> Dict:
  
  # Collect all unique fields across all nodes
  for node in nodes:
- all_fields.update(node.keys())
+  all_fields.update(node.keys())
  
  return {
- "total_nodes": len(nodes),
- "available_fields": sorted(list(all_fields)),
- "sample_node": sample_node,
- "sample_count": min(5, len(nodes))
+  "total_nodes": len(nodes),
+  "available_fields": sorted(list(all_fields)),
+  "sample_node": sample_node,
+  "sample_count": min(5, len(nodes))
  }
 
 
@@ -45,43 +45,43 @@ def show_current_capabilities():
  print("-" * 80)
  
  try:
- info = analyze_node_structure("data/nodes.json")
- print(f"Total nodes: {info['total_nodes']}")
- print(f"\nAvailable fields:")
- for field in info['available_fields']:
- print(f" {field}")
- 
- print(f"\nSample node (first node):")
- sample = info['sample_node']
- for key, value in sample.items():
- print(f" {key}: {value}")
+  info = analyze_node_structure("data/nodes.json")
+  print(f"Total nodes: {info['total_nodes']}")
+  print(f"\nAvailable fields:")
+  for field in info['available_fields']:
+   print(f" {field}")
+  
+  print(f"\nSample node (first node):")
+  sample = info['sample_node']
+  for key, value in sample.items():
+   print(f" {key}: {value}")
  except FileNotFoundError:
- print(" File not found")
+  print(" File not found")
  except Exception as e:
- print(f" Error: {e}")
+  print(f" Error: {e}")
  
  # Analyze features_nodes_v2.json
  print("\n\n2⃣ FEATURES_NODES_V2.JSON")
  print("-" * 80)
  
  try:
- info = analyze_node_structure("data/features_nodes_v2.json")
- print(f"Total records: {info['total_nodes']}")
- print(f"\nAvailable fields:")
- for field in info['available_fields']:
- print(f" {field}")
- 
- print(f"\nSample record (first record):")
- sample = info['sample_node']
- for key, value in sample.items():
- if key == 'feature_vector':
- print(f" {key}: [array with {len(value)} elements]")
- else:
- print(f" {key}: {value}")
+  info = analyze_node_structure("data/features_nodes_v2.json")
+  print(f"Total records: {info['total_nodes']}")
+  print(f"\nAvailable fields:")
+  for field in info['available_fields']:
+   print(f" {field}")
+  
+  print(f"\nSample record (first record):")
+  sample = info['sample_node']
+  for key, value in sample.items():
+   if key == 'feature_vector':
+    print(f" {key}: [array with {len(value)} elements]")
+   else:
+    print(f" {key}: {value}")
  except FileNotFoundError:
- print(" File not found")
+  print(" File not found")
  except Exception as e:
- print(f" Error: {e}")
+  print(f" Error: {e}")
  
  # Show what we CAN extract
  print("\n\n3⃣ WHAT CAN BE EXTRACTED")
@@ -144,40 +144,40 @@ def generate_quick_csv():
  import csv
  
  try:
- with open('data/nodes.json', 'r') as f:
- nodes = json.load(f)
- 
- output_file = 'data/nodes_quick.csv'
- 
- with open(output_file, 'w', newline='', encoding='utf-8') as f:
- writer = csv.writer(f)
- writer.writerow([
- 'Node ID', 'Latitude', 'Longitude', 'Google Maps Link', 
- 'Road Type', 'Lanes', 'Speed Limit'
- ])
- 
- for node in nodes:
- lat = node.get('lat', 0)
- lon = node.get('lon', 0)
- gmaps = f"https://www.google.com/maps?q={lat},{lon}"
- 
- writer.writerow([
- node.get('node_id', ''),
- lat,
- lon,
- gmaps,
- node.get('road_type', ''),
- node.get('lane_count', ''),
- node.get('speed_limit', '')
- ])
- 
- print(f"\nQuick CSV generated: {output_file}")
- print(f" Total nodes: {len(nodes)}")
- return output_file
+  with open('data/nodes.json', 'r') as f:
+   nodes = json.load(f)
+  
+  output_file = 'data/nodes_quick.csv'
+  
+  with open(output_file, 'w', newline='', encoding='utf-8') as f:
+   writer = csv.writer(f)
+   writer.writerow([
+    'Node ID', 'Latitude', 'Longitude', 'Google Maps Link', 
+    'Road Type', 'Lanes', 'Speed Limit'
+   ])
+   
+   for node in nodes:
+    lat = node.get('lat', 0)
+    lon = node.get('lon', 0)
+    gmaps = f"https://www.google.com/maps?q={lat},{lon}"
+    
+    writer.writerow([
+     node.get('node_id', ''),
+     lat,
+     lon,
+     gmaps,
+     node.get('road_type', ''),
+     node.get('lane_count', ''),
+     node.get('speed_limit', '')
+    ])
+   
+   print(f"\nQuick CSV generated: {output_file}")
+   print(f" Total nodes: {len(nodes)}")
+   return output_file
  
  except Exception as e:
- print(f"\nError generating CSV: {e}")
- return None
+  print(f"\nError generating CSV: {e}")
+  return None
 
 
 if __name__ == '__main__':
@@ -187,7 +187,7 @@ if __name__ == '__main__':
  
  # Ask if user wants to generate quick CSV
  if len(sys.argv) > 1 and sys.argv[1] == '--generate-csv':
- print("\n Generating quick CSV...")
- generate_quick_csv()
+  print("\n Generating quick CSV...")
+  generate_quick_csv()
  else:
- print("\n Tip: Run with --generate-csv to create a quick CSV file")
+  print("\n Tip: Run with --generate-csv to create a quick CSV file")

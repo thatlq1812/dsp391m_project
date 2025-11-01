@@ -82,6 +82,50 @@ class RunPreprocessor:
         
         return False
     
+    def _generate_nodes_from_traffic(self, traffic_data):
+        """Generate nodes.json from traffic_edges.json (for augmented runs)"""
+        # Extract unique node IDs from traffic edges
+        node_ids = set()
+        for edge in traffic_data:
+            node_ids.add(edge['node_a_id'])
+            node_ids.add(edge['node_b_id'])
+        
+        # Create nodes with default importance scores
+        nodes = []
+        for node_id in sorted(node_ids):
+            nodes.append({
+                'node_id': node_id,
+                'importance_score': 1.0,  # Default importance
+                'name': f'Node {node_id}'
+            })
+        
+        return nodes
+    
+    def _generate_default_weather(self, traffic_data):
+        """Generate default weather_snapshot.json (for augmented runs)"""
+        # Extract unique node IDs and timestamp from traffic data
+        node_ids = set()
+        timestamp = None
+        
+        for edge in traffic_data:
+            node_ids.add(edge['node_a_id'])
+            node_ids.add(edge['node_b_id'])
+            if timestamp is None and 'timestamp' in edge:
+                timestamp = edge['timestamp']
+        
+        # Create default weather for each node
+        weather = []
+        for node_id in node_ids:
+            weather.append({
+                'node_id': node_id,
+                'timestamp': timestamp or datetime.now().isoformat(),
+                'temperature_c': 25.0,  # Default temperature
+                'wind_speed_kmh': 10.0,  # Default wind
+                'precipitation_mm': 0.0  # Default no rain
+            })
+        
+        return weather
+    
     def process_run(self, run_dir):
         """Process a single run directory"""
         run_name = run_dir.name
@@ -93,15 +137,27 @@ class RunPreprocessor:
         try:
             start_time = time.time()
             
-            # Load JSON files
-            with open(run_dir / 'nodes.json', 'r') as f:
-                nodes_data = json.load(f)
-            
+            # Load traffic data (always required)
             with open(run_dir / 'traffic_edges.json', 'r') as f:
                 traffic_data = json.load(f)
             
-            with open(run_dir / 'weather_snapshot.json', 'r') as f:
-                weather_data = json.load(f)
+            # Load or generate nodes.json
+            nodes_file = run_dir / 'nodes.json'
+            if nodes_file.exists():
+                with open(nodes_file, 'r') as f:
+                    nodes_data = json.load(f)
+            else:
+                # Generate nodes from traffic edges (for augmented runs)
+                nodes_data = self._generate_nodes_from_traffic(traffic_data)
+            
+            # Load or generate weather data
+            weather_file = run_dir / 'weather_snapshot.json'
+            if weather_file.exists():
+                with open(weather_file, 'r') as f:
+                    weather_data = json.load(f)
+            else:
+                # Use default weather (for augmented runs)
+                weather_data = self._generate_default_weather(traffic_data)
             
             # Convert to DataFrames
             df_traffic = pd.DataFrame(traffic_data)
@@ -194,7 +250,7 @@ class RunPreprocessor:
         results = []
         for run_dir in run_dirs:
             if not run_dir.is_dir():
-                print(f"⚠️  Skipping {run_dir.name} (not a directory)")
+                print(f"WARNING  Skipping {run_dir.name} (not a directory)")
                 continue
             
             df = self.process_run(run_dir)
@@ -206,19 +262,19 @@ class RunPreprocessor:
         
         # Print summary
         print(f"\n{'='*70}")
-        print(f"✅ PREPROCESSING COMPLETE")
+        print(f"PREPROCESSING COMPLETE")
         print(f"{'='*70}")
         print(f"Processed: {len([r for r in run_dirs if self.cache.get(r.name)])} runs")
         print(f"Total records: {sum(c['num_records'] for c in self.cache.values()):,}")
         print(f"Total size: {sum(c['file_size_mb'] for c in self.cache.values()):.2f} MB")
         print()
-        print(f"📁 Output files:")
+        print(f"Output files:")
         print(f"   • {self.output_dir}/*.parquet (main data)")
         print(f"   • {self.output_dir}/*_nodes.parquet (topology)")
         print(f"   • {self.output_dir}/*_weather.parquet (weather)")
         print(f"   • {self.cache_file} (cache info)")
         print()
-        print(f"💡 Quick load in Python:")
+        print(f"Quick load in Python:")
         print(f"   import pandas as pd")
         print(f"   df = pd.read_parquet('{self.output_dir}/run_name.parquet')")
         print()
@@ -232,7 +288,7 @@ class RunPreprocessor:
         parquet_files = sorted(self.output_dir.glob("run_*.parquet"))
         
         if not parquet_files:
-            print("⚠️  No processed runs found. Run preprocessing first.")
+            print("WARNING  No processed runs found. Run preprocessing first.")
             return None
         
         dfs = []

@@ -30,7 +30,7 @@ if scheduler_config['mode'] == 'adaptive':
     adaptive = scheduler_config['adaptive']
     
     # Peak hours
-    print("\n🔴 PEAK HOURS (High traffic variability):")
+    print("\nPEAK HOURS (High traffic variability):")
     peak = adaptive['peak_hours']
     print(f"   Interval: {peak['interval_minutes']} minutes")
     print("   Time ranges:")
@@ -38,7 +38,7 @@ if scheduler_config['mode'] == 'adaptive':
         print(f"      {tr['start']} - {tr['end']}")
     
     # Off-peak
-    print("\n🟡 OFF-PEAK HOURS (Moderate traffic):")
+    print("\nOFF-PEAK HOURS (Moderate traffic):")
     offpeak = adaptive['offpeak']
     print(f"   Interval: {offpeak['interval_minutes']} minutes")
     print("   Time ranges:")
@@ -55,7 +55,7 @@ if scheduler_config['mode'] == 'adaptive':
         print(f"      {tr['start']} - {tr['end']}")
     
     # Weekend
-    print("\n🟢 WEEKEND:")
+    print("\nWEEKEND:")
     weekend = adaptive['weekend']
     print(f"   Enabled: {weekend['enabled']}")
     print(f"   Interval: {weekend['interval_minutes']} minutes")
@@ -133,11 +133,11 @@ if daily_cost < old_cost:
     print(f"  SAVINGS: {savings:.1f}% = ${old_cost - daily_cost:.2f}/day")
 else:
     increase = ((daily_cost - old_cost) / old_cost) * 100
-    print(f"  📈 INCREASE: {increase:.1f}% = ${daily_cost - old_cost:.2f}/day")
+    print(f"  INCREASE: {increase:.1f}% = ${daily_cost - old_cost:.2f}/day")
     print(f"     (But better data during peak hours!)")
 
 print("\n" + "=" * 70)
-print("✅ Adaptive scheduler optimizes cost while maintaining data quality")
+print("Adaptive scheduler optimizes cost while maintaining data quality")
 print("   - Frequent collection during peaks (capture variations)")
 print("   - Infrequent collection at night (stable traffic)")
 print("=" * 70)

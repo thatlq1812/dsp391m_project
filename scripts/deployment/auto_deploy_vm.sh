@@ -111,7 +111,7 @@ echo "✓ Repository and environment setup completed"
 echo ""
 echo "Step 4: Configuring environment variables..."
 echo ""
-echo "⚠️  IMPORTANT: You need to manually set up the .env file with your API keys"
+echo "WARNING  IMPORTANT: You need to manually set up the .env file with your API keys"
 echo "    Run this command after deployment:"
 echo ""
 echo "    gcloud compute ssh $INSTANCE_NAME --zone=$ZONE"
@@ -154,7 +154,7 @@ EOF
 mkdir -p ~/traffic-forecast/logs
 
 echo '✓ Systemd service created'
-echo '⚠️  Service NOT started yet - configure .env first'
+echo 'WARNING  Service NOT started yet - configure .env first'
 "
 
 echo "✓ Systemd service configured"

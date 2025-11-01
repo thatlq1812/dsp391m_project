@@ -347,4 +347,4 @@ if __name__ == '__main__':
     output_path = PROJECT_ROOT / 'cache' / 'adjacency_matrix.npy'
     builder.save_adjacency(output_path)
     
-    print(f"\n✅ Adjacency matrix saved to {output_path}")
+    print(f"\nAdjacency matrix saved to {output_path}")

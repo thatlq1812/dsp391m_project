@@ -1,0 +1,46 @@
+{
+  "comment": "GCP VM Configuration - Auto-synced from deployment scripts",
+  "source": "scripts/deployment/*.sh",
+  "last_updated": "2025-11-01",
+  "gcp": {
+    "project_id": "sonorous-nomad-476606-g3",
+    "zone": "asia-southeast1-a",
+    "region": "asia-southeast1"
+  },
+  "vm": {
+    "instance_name": "traffic-forecast-collector",
+    "machine_type": "e2-micro",
+    "disk_size": "30GB",
+    "os": "ubuntu-2204-lts",
+    "tags": [
+      "http-server",
+      "https-server"
+    ]
+  },
+  "ssh": {
+    "user": "auto-detect",
+    "port": 22,
+    "key_path": "~/.ssh/google_compute_engine"
+  },
+  "github": {
+    "repo": "https://github.com/thatlq1812/dsp391m_project.git",
+    "branch": "master",
+    "remote_path": "~/traffic-forecast"
+  },
+  "services": {
+    "data_collection": {
+      "script": "scripts/collect_and_render.py",
+      "interval": 900,
+      "log_file": "~/traffic-forecast/logs/collection.log"
+    },
+    "api_server": {
+      "port": 8000,
+      "workers": 4,
+      "log_file": "~/traffic-forecast/logs/api.log"
+    }
+  },
+  "conda": {
+    "env_name": "dsp",
+    "python_version": "3.10"
+  }
+}

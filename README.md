@@ -5,33 +5,77 @@
 [![Status](https://img.shields.io/badge/status-production-green)]()
 [![Python](https://img.shields.io/badge/python-3.10+-blue)]()
 [![PyTorch](https://img.shields.io/badge/pytorch-2.5.1-orange)]()
+[![Streamlit](https://img.shields.io/badge/streamlit-dashboard-red)]()
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
-### Training
+### Interactive Dashboard (NEW v3.0)
+
 ```bash
 conda activate dsp
-python scripts/training/train_stmgt_v2.py
+streamlit run dashboard/dashboard.py
+# Access at http://localhost:8501
+```
+
+**Dashboard Features:**
+
+- **Data Overview:** Collection stats, augmentation summary, data quality
+- **Data Augmentation:** Configure parameters, validate quality, run augmentation
+- **Visualization:** Speed analysis, temporal patterns, correlation heatmap
+- **Training Monitor:** Start/stop training, tune hyperparameters, export reports
+- **Predictions:** Real-time forecast, scenarios, alerts, export results
+
+### Training (CLI)
+
+```bash
+conda activate dsp
+python scripts/training/train_stmgt.py
 ```
 
 ### Monitoring
+
 ```bash
 python scripts/monitoring/monitor_training.py
 ```
 
 ---
 
-## 📊 Current Performance
+## Current Performance
 
-- **MAE:** 3.05 km/h ✅ (Target: <5.0)
-- **R²:** 0.769 ✅ (Target: >0.45)
-- **MAPE:** 22.98% ✅ (Target: <30%)
+- **MAE:** 3.05 km/h -OK- (Target: <5.0)
+- **R²:** 0.769 -OK- (Target: >0.45)
+- **MAPE:** 22.98% -OK- (Target: <30%)
 
 ---
 
-## 📚 Documentation
+## Dashboard V3 Highlights
+
+**Page 2: Data Augmentation**
+
+- Interactive noise & interpolation controls
+- Strategy comparison (Basic vs Extreme)
+- KS test & correlation validation
+- One-click augmentation execution
+
+**Page 4: Training Control**
+
+- Subprocess-based training (Start/Stop)
+- Live resource monitoring (CPU/GPU/Memory)
+- Hyperparameter grid/random search
+- HTML report export to `docs/report/`
+
+**Page 5: Advanced Predictions**
+
+- 12-step forecast with uncertainty (GMM)
+- Weather scenario simulation
+- Congestion alert system
+- Multi-format export (CSV/Parquet/JSON)
+
+---
+
+## Documentation
 
 **Complete documentation is in the `docs/` directory:**
 
@@ -41,13 +85,24 @@ python scripts/monitoring/monitor_training.py
 - **[docs/STMGT_ARCHITECTURE.md](docs/STMGT_ARCHITECTURE.md)** - Model architecture
 - **[docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md)** - Development guide
 - **[docs/TRAINING_GUIDE.md](docs/TRAINING_GUIDE.md)** - Training guide
+- **[docs/DASHBOARD_V3_COMPLETE.md](docs/DASHBOARD_V3_COMPLETE.md)** - Dashboard V3 guide (NEW)
+- **[docs/DASHBOARD_V3_QUICKREF.md](docs/DASHBOARD_V3_QUICKREF.md)** - Quick reference (NEW)
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 project/
+├── dashboard/           # Streamlit Dashboard V3 (NEW)
+│   ├── dashboard.py    # Main entry
+│   └── pages/         # 5 interactive pages
+│       ├── 1_Data_Overview.py
+│       ├── 2_Data_Augmentation.py    # NEW
+│       ├── 3_Visualization.py        # ENHANCED
+│       ├── 4_Training_Monitor.py     # ENHANCED
+│       └── 5_Predictions.py          # ENHANCED
+│
 ├── traffic_forecast/      # Core library
 │   ├── models/           # STMGT implementation
 │   ├── data/            # Dataset & DataLoader
@@ -60,16 +115,19 @@ project/
 │   └── monitoring/     # Monitoring tools
 │
 ├── data/
-│   └── processed/      # Processed datasets
+│   ├── processed/      # Processed datasets
+│   └── predictions/    # Prediction exports (NEW)
+│
+├── docs/
+│   └── report/        # Training reports (NEW)
 │
 ├── outputs/            # Training outputs
-├── docs/              # Documentation
 └── archive/           # Archived files
 ```
 
 ---
 
-## 🛠️ Setup
+## Setup
 
 ```bash
 # Create conda environment
@@ -82,7 +140,7 @@ pip install -e .
 
 ---
 
-## 📖 Learn More
+## Learn More
 
 - **Architecture:** [docs/STMGT_ARCHITECTURE.md](docs/STMGT_ARCHITECTURE.md)
 - **Workflows:** [docs/WORKFLOW.md](docs/WORKFLOW.md)
@@ -90,7 +148,7 @@ pip install -e .
 
 ---
 
-## 👥 Team
+## Team
 
 DSP391m Team - Traffic Forecasting Project
 
@@ -98,4 +156,4 @@ DSP391m Team - Traffic Forecasting Project
 
 ---
 
-*For detailed documentation, see the `docs/` directory.*
+_For detailed documentation, see the `docs/` directory._

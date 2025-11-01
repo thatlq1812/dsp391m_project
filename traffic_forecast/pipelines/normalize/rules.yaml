@@ -1,9 +1,0 @@
-time:
- tz: Asia/Ho_Chi_Minh
- resample_minutes: 10
-weather_forecast:
- horizons_min: [5, 15, 30, 60]
- interpolate: linear # nội suy phút từ hourly
- clamp:
- rain_mm: [0, 200]
- wind_speed_kmh: [0, 200]

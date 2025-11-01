@@ -59,7 +59,7 @@ class QuickDataLoader:
         if not run_dir.exists():
             raise FileNotFoundError(f"Run not found: {run_name}")
         
-        print(f"⚠️  Loading from JSON (slower). Run preprocessing first:")
+        print(f"WARNING  Loading from JSON (slower). Run preprocessing first:")
         print(f"   python scripts/data/preprocess_runs.py")
         
         import json
@@ -320,7 +320,7 @@ def load_for_modeling(
 # Print helpful info when imported
 def _show_usage_hint():
     """Show usage hint on import"""
-    print("💡 Quick Data Loader imported!")
+    print("Quick Data Loader imported!")
     print("   from traffic_forecast.utils.data_loader import quick_load, QuickDataLoader")
     print("   df = quick_load()  # Load latest run")
     print("   df_all = QuickDataLoader().load_all_runs()  # Load all runs")
@@ -334,11 +334,11 @@ if __name__ == '__main__':
     loader = QuickDataLoader()
     stats = loader.get_summary_stats()
     
-    print("\n📊 Dataset Summary:")
+    print("\nDataset Summary:")
     for key, value in stats.items():
         print(f"   • {key}: {value}")
     
-    print("\n💡 Usage Examples:")
+    print("\nUsage Examples:")
     print("   # Load latest run")
     print("   df = quick_load()")
     print("")

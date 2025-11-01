@@ -129,7 +129,7 @@ gcloud compute ssh $VM_NAME \
 
 echo ""
 echo "======================================================================"
-echo "  ✅ DOWNLOAD COMPLETED!"
+echo "  DOWNLOAD COMPLETED!"
 echo "======================================================================"
 echo ""
 echo "Downloaded to: $DOWNLOAD_DIR/runs"
@@ -142,7 +142,7 @@ if [ -d "$DOWNLOAD_DIR/runs" ]; then
     LATEST_RUN=$(ls -t "$DOWNLOAD_DIR/runs" | head -1)
     
     if [ -n "$LATEST_RUN" ]; then
-        echo "📈 Latest run: $LATEST_RUN"
+        echo "Latest run: $LATEST_RUN"
         
         # Count edges in latest run
         if [ -f "$DOWNLOAD_DIR/runs/$LATEST_RUN/traffic_edges.json" ]; then
