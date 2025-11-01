@@ -140,10 +140,8 @@ dmypy.json
 
 # Project specific
 # Data files (large files)
-data/node/*/
-data/archive/
-data/*.csv
-data/*.parquet
+data/*
+data/processed/*.parquet
 *.pkl
 *.h5
 *.hdf5
