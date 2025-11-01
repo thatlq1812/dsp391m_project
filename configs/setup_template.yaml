@@ -13,6 +13,9 @@ environment:
     - conda run -n dsp pip install -e .
   streamlit_port: 8505
   fastapi_port: 8000
+  conda_fallback_paths:
+    - "~/miniconda3/bin/conda"
+    - "C:/ProgramData/miniconda3/Scripts/conda.exe"
 
 files:
   env_file: .env

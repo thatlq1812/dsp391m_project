@@ -14,6 +14,7 @@ import sys
 import os
 from datetime import datetime
 import time
+from traffic_forecast.utils.conda import resolve_conda_executable
 
 st.set_page_config(page_title="Training Control", page_icon="🎮", layout="wide")
 
@@ -21,28 +22,16 @@ st.title("Training Control")
 st.markdown("Train and monitor STMGT models")
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-DEFAULT_CONDA_PATH = Path("C:/ProgramData/miniconda3/Scripts/conda.exe")
-
-
-def _conda_executable() -> str:
-    """Resolve conda executable path with Windows fallback."""
-    env_path = os.environ.get("CONDA_EXE")
-    if env_path:
-        candidate = Path(env_path)
-        if candidate.exists():
-            return str(candidate)
-    if DEFAULT_CONDA_PATH.exists():
-        return str(DEFAULT_CONDA_PATH)
-    return "conda"
 
 
 def _training_command(config_path: Path) -> list[str]:
     """Build training launch command using the dsp environment."""
+    env_name = os.environ.get("CONDA_ENV", "dsp")
     return [
-        _conda_executable(),
+        resolve_conda_executable(),
         "run",
         "-n",
-        "dsp",
+        env_name,
         "--no-capture-output",
         "python",
         "scripts/training/train_stmgt.py",

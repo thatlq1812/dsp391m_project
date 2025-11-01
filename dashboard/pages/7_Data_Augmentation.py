@@ -12,6 +12,7 @@ import json
 import subprocess
 import numpy as np
 import os
+from traffic_forecast.utils.conda import resolve_conda_executable
 
 st.set_page_config(page_title="Data Augmentation", page_icon="", layout="wide")
 
@@ -19,24 +20,19 @@ st.title("Data Augmentation")
 st.markdown("Configure and run data augmentation strategies")
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-DEFAULT_CONDA_PATH = Path("C:/ProgramData/miniconda3/Scripts/conda.exe")
-
-
-def _conda_executable() -> str:
-    """Find conda executable with Windows-friendly fallback."""
-    env_path = os.environ.get("CONDA_EXE")
-    if env_path:
-        candidate = Path(env_path)
-        if candidate.exists():
-            return str(candidate)
-    if DEFAULT_CONDA_PATH.exists():
-        return str(DEFAULT_CONDA_PATH)
-    return "conda"
 
 
 def _conda_run_args(script: str) -> list[str]:
     """Build the conda run invocation for the dsp environment."""
-    return [_conda_executable(), "run", "-n", "dsp", "python", script]
+    env_name = os.environ.get("CONDA_ENV", "dsp")
+    return [
+        resolve_conda_executable(),
+        "run",
+        "-n",
+        env_name,
+        "python",
+        script,
+    ]
 CONFIG_PATH = PROJECT_ROOT / "configs" / "augmentation_config.json"
 
 # Load or create default config
