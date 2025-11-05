@@ -16,6 +16,103 @@ Complete changelog for STMGT Traffic Forecasting System
 
 ---
 
+## [PROJECT STRUCTURE REORGANIZATION] - 2025-11-05
+
+### Overview
+
+Comprehensive cleanup and reorganization of project structure for production readiness. Archived experimental code, cleaned old training runs, reorganized documentation, and removed deprecated files.
+
+### Changes Summary
+
+**Code Cleanup:**
+- ✅ Archived experimental implementations: `temps/astgcn_v0/` → `archive/experimental/`
+- ✅ Archived GraphWaveNet baseline: `temps/hunglm/` → `archive/experimental/`
+- ✅ Kept `temps/datdtq/` (team member workspace, currently empty)
+- ✅ Removed deprecated files: `tools/visualize_nodes_old.py`, `training_output.log`
+- ✅ Cleaned all Python cache: `__pycache__/`, `.pyc`, `.pytest_cache/`
+
+**Training Runs Cleanup:**
+- ✅ Archived 8 experimental runs (Nov 1-2): → `archive/training_runs/`
+  - `stmgt_v2_20251101_012257/` (854K params)
+  - `stmgt_v2_20251101_200526/` (config test)
+  - `stmgt_v2_20251101_210409/` (hyperparameter tuning)
+  - `stmgt_v2_20251101_215205/` (2.7M params)
+  - `stmgt_v2_20251102_170455/` (8.0M params)
+  - `stmgt_v2_20251102_182710/` (4.0M optimized)
+  - `stmgt_v2_20251102_195854/` (final tuning)
+  - `stmgt_v2_20251102_200136/` (pre-production)
+- ✅ Kept only production model: `outputs/stmgt_v2_20251102_200308/` (4.0M params)
+
+**Documentation Reorganization:**
+- ✅ Created `docs/sessions/` - Session summaries and development logs
+  - Moved `SESSION_2025-11-05_WEB_MVP.md`
+- ✅ Created `docs/audits/` - Quality and transparency audits
+  - Moved `PROJECT_TRANSPARENCY_AUDIT.md`
+  - Moved `GRAPHWAVENET_TRANSPARENCY_AUDIT.md`
+- ✅ Created `docs/guides/` - Setup, workflow, and pipeline guides
+  - Moved `README_SETUP.md`
+  - Moved `WORKFLOW.md`
+  - Moved `PROCESSED_DATA_PIPELINE.md`
+- ✅ Updated `docs/INDEX.md` - Complete reorganization with quick navigation
+- ✅ Updated `README.md` - Removed references to deleted files (TaskofNov02.md)
+- ✅ Created `archive/README.md` - Archive policy and restoration instructions
+
+### Metrics
+
+**Space Savings:**
+- Archive: 46 MB (experimental code + old runs)
+- Active outputs: 4.0 MB (production model only)
+- temps/: 0 bytes (cleaned)
+- Total saved: ~20 MB in active workspace
+
+**Structure Quality:**
+- ✅ Clean root directory (no loose log files)
+- ✅ Organized documentation (3 new subdirs)
+- ✅ Clear archive with retention policy
+- ✅ No broken references in active code
+- ✅ Production-ready structure
+
+### Archive Contents
+
+**`archive/experimental/`:**
+- `astgcn_v0/` - ASTGCN notebook (unreliable, see audit report)
+- `hunglm/` - GraphWaveNet baseline (unverified)
+
+**`archive/training_runs/`:**
+- 8 experimental training runs from Nov 1-2, 2025
+
+**`archive/research_report/`:**
+- Old research documentation and analysis
+
+### Rationale
+
+**Why Archive temps/?**
+Per `docs/audits/PROJECT_TRANSPARENCY_AUDIT.md`:
+- ASTGCN results unreliable (dataset 6.3x smaller, severe overfitting)
+- MAPE 6.94% too good to be realistic (likely data leakage)
+- No production infrastructure (notebook only)
+- Kept for reference and concept extraction (H/D/W multi-period)
+
+**Why Clean Training Runs?**
+- Production model identified: `stmgt_v2_20251102_200308/`
+- Old runs were hyperparameter experiments
+- Save disk space and reduce confusion
+- All kept in archive for historical reference
+
+**Why Reorganize Docs?**
+- Better navigation (sessions/audits/guides separation)
+- Clearer purpose for each document
+- Easier to find relevant information
+- Maintains professional structure
+
+### Related Documentation
+
+- `archive/README.md` - Archive policy and restoration guide
+- `docs/INDEX.md` - Updated documentation index
+- `docs/audits/PROJECT_TRANSPARENCY_AUDIT.md` - Why temps/ archived
+
+---
+
 ## [TRANSPARENCY AUDIT COMPLETED] - 2025-11-05
 
 ### Overview
