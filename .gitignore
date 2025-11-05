@@ -179,3 +179,7 @@ models/*.onnx
 .DS_Store
 *~
 =* 
+
+# Ref repo
+temps/*
+temps/*

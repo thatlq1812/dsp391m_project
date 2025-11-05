@@ -1,77 +1,92 @@
-"""
-Data Augmentation Strategy Analysis
+"""Data Augmentation Strategy Analysis for STMGT datasets."""
 
-Purpose:
-    - Analyze current data usage
-    - Design augmentation strategy
-    - Implement temporal & spatial augmentation
-    
-Key Questions:
-1. Model đang dùng temporal dependencies chưa? → CÓ (seq_len=12)
-2. Model có dùng spatial relationships? → CÓ (GAT qua edges)
-3. Weather correlations được leverage? → CÓ (cross-attention)
-4. Có thể synthetic data không? → CÓ THỂ với constraints
+from __future__ import annotations
 
-Author: DSP391m Team
-Date: November 1, 2025
-"""
-
-import pandas as pd
-import numpy as np
+import argparse
 from pathlib import Path
+from typing import Optional, Sequence
 
-# Load existing data
-df = pd.read_parquet('data/processed/all_runs_combined.parquet')
+import numpy as np
+import pandas as pd
+from scipy import stats
 
-print("=" * 70)
-print("CURRENT DATA ANALYSIS")
-print("=" * 70)
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-# Temporal coverage
-df['timestamp'] = pd.to_datetime(df['timestamp'])
-print(f"\nTemporal Coverage:")
-print(f"  Start: {df['timestamp'].min()}")
-print(f"  End: {df['timestamp'].max()}")
-print(f"  Duration: {(df['timestamp'].max() - df['timestamp'].min()).days} days")
-print(f"  Unique timestamps: {df['timestamp'].nunique()}")
 
-# Spatial coverage
-print(f"\nSpatial Coverage:")
-print(f"  Unique node_a: {df['node_a_id'].nunique()}")
-print(f"  Unique node_b: {df['node_b_id'].nunique()}")
-print(f"  Unique edges: {df.groupby(['node_a_id', 'node_b_id']).size().shape[0]}")
+def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Assess data coverage for STMGT augmentation planning.")
+    parser.add_argument(
+        "--dataset",
+        type=Path,
+        default=Path("data/processed/all_runs_combined.parquet"),
+        help="Processed parquet summarising raw collection runs (default: data/processed/all_runs_combined.parquet)",
+    )
+    return parser.parse_args(argv)
 
-# Traffic patterns
-print(f"\nTraffic Patterns:")
-print(f"  Speed range: {df['speed_kmh'].min():.2f} - {df['speed_kmh'].max():.2f} km/h")
-print(f"  Speed mean: {df['speed_kmh'].mean():.2f} ± {df['speed_kmh'].std():.2f}")
-print(f"  Speed quartiles:")
-for q, val in df['speed_kmh'].quantile([0.25, 0.5, 0.75]).items():
-    print(f"    {q*100:.0f}%: {val:.2f} km/h")
 
-# Weather patterns
-print(f"\nWeather Patterns:")
-weather_cols = ['temperature_c', 'wind_speed_kmh', 'precipitation_mm']
-for col in weather_cols:
-    if col in df.columns:
-        print(f"  {col}: {df[col].min():.2f} - {df[col].max():.2f}")
+def load_dataset(dataset: Path) -> pd.DataFrame:
+    dataset_path = dataset if dataset.is_absolute() else (PROJECT_ROOT / dataset)
+    frame = pd.read_parquet(dataset_path)
+    frame['timestamp'] = pd.to_datetime(frame['timestamp'])
+    return frame
 
-# Temporal patterns
-df['hour'] = df['timestamp'].dt.hour
-df['dow'] = df['timestamp'].dt.dayofweek
-hourly_speed = df.groupby('hour')['speed_kmh'].mean()
-dow_speed = df.groupby('dow')['speed_kmh'].mean()
 
-print(f"\nTemporal Patterns Detected:")
-print(f"  Peak hour (slowest): {hourly_speed.idxmin()}:00 ({hourly_speed.min():.2f} km/h)")
-print(f"  Off-peak (fastest): {hourly_speed.idxmax()}:00 ({hourly_speed.max():.2f} km/h)")
-print(f"  Weekday vs Weekend variance: {dow_speed.std():.2f}")
+def print_current_analysis(df: pd.DataFrame) -> None:
+    print("=" * 70)
+    print("CURRENT DATA ANALYSIS")
+    print("=" * 70)
 
-print("\n" + "=" * 70)
-print("AUGMENTATION STRATEGY")
-print("=" * 70)
+    print("\nTemporal Coverage:")
+    print(f"  Start: {df['timestamp'].min()}")
+    print(f"  End: {df['timestamp'].max()}")
+    duration_days = (df['timestamp'].max() - df['timestamp'].min()).days
+    print(f"  Duration: {duration_days} days")
+    print(f"  Unique timestamps: {df['timestamp'].nunique()}")
 
-print("""
+    print("\nSpatial Coverage:")
+    if {'node_a_id', 'node_b_id'}.issubset(df.columns):
+        unique_edges = df.groupby(['node_a_id', 'node_b_id']).size().shape[0]
+        print(f"  Unique node_a: {df['node_a_id'].nunique()}")
+        print(f"  Unique node_b: {df['node_b_id'].nunique()}")
+        print(f"  Unique edges: {unique_edges}")
+    else:
+        print("  Edge columns missing in dataset")
+
+    print("\nTraffic Patterns:")
+    if 'speed_kmh' in df.columns:
+        print(f"  Speed range: {df['speed_kmh'].min():.2f} - {df['speed_kmh'].max():.2f} km/h")
+        print(f"  Speed mean: {df['speed_kmh'].mean():.2f} ± {df['speed_kmh'].std():.2f}")
+        print("  Speed quartiles:")
+        for quantile, value in df['speed_kmh'].quantile([0.25, 0.5, 0.75]).items():
+            print(f"    {quantile * 100:.0f}%: {value:.2f} km/h")
+
+    print("\nWeather Patterns:")
+    for column in ['temperature_c', 'wind_speed_kmh', 'precipitation_mm']:
+        if column in df.columns:
+            print(f"  {column}: {df[column].min():.2f} - {df[column].max():.2f}")
+
+    df['hour'] = df['timestamp'].dt.hour
+    df['dow'] = df['timestamp'].dt.dayofweek
+    if 'speed_kmh' in df.columns:
+        hourly_speed = df.groupby('hour')['speed_kmh'].mean()
+        dow_speed = df.groupby('dow')['speed_kmh'].mean()
+
+        print("\nTemporal Patterns Detected:")
+        print(f"  Peak hour (slowest): {hourly_speed.idxmin()}:00 ({hourly_speed.min():.2f} km/h)")
+        print(f"  Off-peak (fastest): {hourly_speed.idxmax()}:00 ({hourly_speed.max():.2f} km/h)")
+        print(f"  Weekday vs Weekend variance: {dow_speed.std():.2f}")
+    else:
+        print("\nTemporal Patterns Detected:")
+        print("  Speed column missing; temporal analysis skipped")
+
+
+def print_strategy_guidance() -> None:
+    print("\n" + "=" * 70)
+    print("AUGMENTATION STRATEGY")
+    print("=" * 70)
+
+    print(
+        """
 APPROACH 1: TEMPORAL EXTRAPOLATION (Back to Oct 1)
 Pros:
   ✓ Tạo nhiều data (30 days vs 2 days → 15x increase)
@@ -111,35 +126,50 @@ Combine both:
   3. Validate: Check statistical properties match
 
 IMPLEMENTATION PLAN:
-""")
+"""
+    )
 
-# Statistical analysis for augmentation
-print("\nKey Statistics to Preserve:")
 
-# 1. Speed distribution
-from scipy import stats
-speed_dist = df['speed_kmh'].values
-shapiro_stat, shapiro_p = stats.shapiro(speed_dist[:5000] if len(speed_dist) > 5000 else speed_dist)
-print(f"  Speed distribution: Shapiro-Wilk p={shapiro_p:.4f}")
+def print_statistical_checks(df: pd.DataFrame) -> None:
+    print("\nKey Statistics to Preserve:")
 
-# 2. Correlations
-corr_data = df[['speed_kmh', 'temperature_c', 'wind_speed_kmh']].dropna()
-if len(corr_data) > 0:
-    corr_matrix = corr_data.corr()
-    print(f"  Speed-Temperature corr: {corr_matrix.loc['speed_kmh', 'temperature_c']:.3f}")
-    print(f"  Speed-Wind corr: {corr_matrix.loc['speed_kmh', 'wind_speed_kmh']:.3f}")
+    if 'speed_kmh' not in df.columns:
+        print("  Speed column missing; distribution checks skipped")
+        return
 
-# 3. Temporal autocorrelation
-speeds_sorted = df.sort_values('timestamp').groupby(['node_a_id', 'node_b_id'])['speed_kmh'].first()
-if len(speeds_sorted) > 1:
-    lag1_corr = np.corrcoef(speeds_sorted[:-1], speeds_sorted[1:])[0, 1]
-    print(f"  Temporal autocorr (lag-1): {lag1_corr:.3f}")
+    speed_values = df['speed_kmh'].dropna().values
+    if speed_values.size > 0:
+        sample = speed_values[:5000] if len(speed_values) > 5000 else speed_values
+        _, shapiro_p = stats.shapiro(sample)
+        print(f"  Speed distribution: Shapiro-Wilk p={shapiro_p:.4f}")
 
-print("\n" + "=" * 70)
-print("RECOMMENDED AUGMENTATION PARAMETERS")
-print("=" * 70)
+    corr_columns = {'speed_kmh', 'temperature_c', 'wind_speed_kmh'}
+    if corr_columns.issubset(df.columns):
+        corr_data = df[list(corr_columns)].dropna()
+        if not corr_data.empty:
+            corr_matrix = corr_data.corr()
+            print(f"  Speed-Temperature corr: {corr_matrix.loc['speed_kmh', 'temperature_c']:.3f}")
+            print(f"  Speed-Wind corr: {corr_matrix.loc['speed_kmh', 'wind_speed_kmh']:.3f}")
 
-print("""
+    node_columns = {'node_a_id', 'node_b_id'}
+    if node_columns.issubset(df.columns):
+        speeds_sorted = (
+            df.sort_values('timestamp')
+            .groupby(['node_a_id', 'node_b_id'])['speed_kmh']
+            .first()
+        )
+        if len(speeds_sorted) > 1:
+            lag1_corr = np.corrcoef(speeds_sorted[:-1], speeds_sorted[1:])[0, 1]
+            print(f"  Temporal autocorr (lag-1): {lag1_corr:.3f}")
+
+
+def print_recommendations() -> None:
+    print("\n" + "=" * 70)
+    print("RECOMMENDED AUGMENTATION PARAMETERS")
+    print("=" * 70)
+
+    print(
+        """
 TARGET: 100+ samples (vs current 3)
 
 Option A - Conservative (30 samples):
@@ -161,13 +191,15 @@ Option C - Aggressive (300+ samples):
   - Samples: 300+ samples
 
 RECOMMENDATION: Start with Option B (moderate)
-""")
+"""
+    )
 
-print("\n" + "=" * 70)
-print("MODEL'S CURRENT DATA USAGE")
-print("=" * 70)
+    print("\n" + "=" * 70)
+    print("MODEL'S CURRENT DATA USAGE")
+    print("=" * 70)
 
-print("""
+    print(
+        """
 ✓ TEMPORAL DEPENDENCIES:
   - seq_len=12: Model nhìn 12 timesteps trước
   - Temporal encoder: sin/cos + embeddings
@@ -200,6 +232,21 @@ AUGMENTATION SẼ GIÚP:
   2. Model học monthly trends (if any)
   3. Better generalization (more diverse scenarios)
   4. Robust weather correlations (more weather conditions)
-""")
+"""
+    )
 
-print("\n" + "=" * 70)
+    print("\n" + "=" * 70)
+
+
+def main(argv: Optional[Sequence[str]] = None) -> None:
+    args = parse_args(argv)
+    df = load_dataset(args.dataset)
+
+    print_current_analysis(df)
+    print_strategy_guidance()
+    print_statistical_checks(df)
+    print_recommendations()
+
+
+if __name__ == "__main__":
+    main()

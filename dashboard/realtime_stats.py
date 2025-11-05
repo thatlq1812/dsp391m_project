@@ -255,7 +255,13 @@ def get_training_stats():
     candidate_dirs.sort(key=lambda path: path.stat().st_mtime, reverse=True)
 
     best_mae_value = None
-    last_training_time = candidate_dirs[0].stat().st_mtime
+    latest_dir = candidate_dirs[0]
+    last_training_time = latest_dir.stat().st_mtime
+
+    for artifact_name in ("training_history.csv", "test_results.json", "config.json"):
+        artifact_path = latest_dir / artifact_name
+        if artifact_path.exists():
+            last_training_time = max(last_training_time, artifact_path.stat().st_mtime)
 
     for run_dir in candidate_dirs:
         # Prefer explicit test metrics

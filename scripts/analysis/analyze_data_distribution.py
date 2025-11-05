@@ -16,28 +16,55 @@ Author: DSP391m Team
 Date: October 31, 2025
 """
 
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.mixture import GaussianMixture
-from scipy import stats
+from __future__ import annotations
+
+import argparse
 import warnings
+from pathlib import Path
+from typing import Optional, Sequence
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from scipy import stats
+from sklearn.mixture import GaussianMixture
+
 warnings.filterwarnings('ignore')
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-def load_data():
-    """Load processed traffic data"""
+
+def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Analyze processed dataset distributions for STMGT.")
+    parser.add_argument(
+        "--dataset",
+        type=Path,
+        default=Path("data/processed/all_runs_combined.parquet"),
+        help="Path to the processed dataset (default: data/processed/all_runs_combined.parquet)",
+    )
+    parser.add_argument(
+        "--outputs-dir",
+        type=Path,
+        default=Path("outputs"),
+        help="Directory to store generated analysis charts (default: outputs)",
+    )
+    return parser.parse_args(argv)
+
+
+def load_data(dataset_path: Path) -> pd.DataFrame:
+    """Load processed traffic data."""
+
     print("Loading data...")
-    df = pd.read_parquet('data/processed/all_runs_combined.parquet')
+    df = pd.read_parquet(dataset_path)
     print(f"Loaded {len(df):,} records")
     print(f"Unique runs: {df['run_id'].nunique() if 'run_id' in df.columns else 'N/A'}")
     print(f"Date range: {df['timestamp'].min()} to {df['timestamp'].max()}")
     return df
 
 
-def analyze_speed_distribution(df):
-    """Analyze speed distribution and test for multi-modality"""
+def analyze_speed_distribution(df: pd.DataFrame, outputs_dir: Path) -> pd.Series:
+    """Analyze speed distribution and test for multi-modality."""
     print("\n" + "="*70)
     print("SPEED DISTRIBUTION ANALYSIS")
     print("="*70)
@@ -78,15 +105,16 @@ def analyze_speed_distribution(df):
     axes[1].grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('outputs/speed_distribution.png', dpi=150, bbox_inches='tight')
-    print("\nSaved: outputs/speed_distribution.png")
+    output_path = outputs_dir / 'speed_distribution.png'
+    plt.savefig(output_path, dpi=150, bbox_inches='tight')
+    print(f"\nSaved: {output_path}")
     plt.close()
     
     return speeds
 
 
-def fit_gaussian_mixtures(speeds):
-    """Fit Gaussian Mixture Models with K=1..5 and compare BIC/AIC"""
+def fit_gaussian_mixtures(speeds: pd.Series, outputs_dir: Path) -> tuple[pd.DataFrame, GaussianMixture]:
+    """Fit Gaussian Mixture Models with K=1..5 and compare BIC/AIC."""
     print("\n" + "="*70)
     print("GAUSSIAN MIXTURE MODEL SELECTION")
     print("="*70)
@@ -132,8 +160,9 @@ def fit_gaussian_mixtures(speeds):
     ax.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('outputs/gmm_model_selection.png', dpi=150, bbox_inches='tight')
-    print("\nSaved: outputs/gmm_model_selection.png")
+    output_path = outputs_dir / 'gmm_model_selection.png'
+    plt.savefig(output_path, dpi=150, bbox_inches='tight')
+    print(f"\nSaved: {output_path}")
     plt.close()
     
     # Fit best model and show components
@@ -153,8 +182,8 @@ def fit_gaussian_mixtures(speeds):
     return results_df, gmm_best
 
 
-def analyze_weather_correlations(df):
-    """Analyze correlations between weather and traffic speed"""
+def analyze_weather_correlations(df: pd.DataFrame, outputs_dir: Path) -> None:
+    """Analyze correlations between weather and traffic speed."""
     print("\n" + "="*70)
     print("WEATHER-TRAFFIC CORRELATION ANALYSIS")
     print("="*70)
@@ -197,24 +226,25 @@ def analyze_weather_correlations(df):
     axes[1].set_title('Spearman Correlation Matrix', fontsize=12, fontweight='bold')
     
     plt.tight_layout()
-    plt.savefig('outputs/weather_correlation.png', dpi=150, bbox_inches='tight')
-    print("\nSaved: outputs/weather_correlation.png")
+    corr_path = outputs_dir / 'weather_correlation.png'
+    plt.savefig(corr_path, dpi=150, bbox_inches='tight')
+    print(f"\nSaved: {corr_path}")
     plt.close()
     
     # Scatter plots
     if 'temperature_c' in df.columns and 'precipitation_mm' in df.columns:
         fig, axes = plt.subplots(1, 3, figsize=(16, 5))
-        
+
         # Sample for visualization
         sample = corr_data.sample(min(5000, len(corr_data)), random_state=42)
-        
+
         # Speed vs Temperature
         axes[0].scatter(sample['temperature_c'], sample['speed_kmh'], alpha=0.3, s=10)
         axes[0].set_xlabel('Temperature (C)', fontsize=11)
         axes[0].set_ylabel('Speed (km/h)', fontsize=11)
         axes[0].set_title('Speed vs Temperature', fontsize=12, fontweight='bold')
         axes[0].grid(True, alpha=0.3)
-        
+
         # Speed vs Wind
         if 'wind_speed_kmh' in sample.columns:
             axes[1].scatter(sample['wind_speed_kmh'], sample['speed_kmh'], alpha=0.3, s=10)
@@ -222,7 +252,7 @@ def analyze_weather_correlations(df):
             axes[1].set_ylabel('Speed (km/h)', fontsize=11)
             axes[1].set_title('Speed vs Wind Speed', fontsize=12, fontweight='bold')
             axes[1].grid(True, alpha=0.3)
-        
+
         # Speed vs Precipitation
         if 'precipitation_mm' in sample.columns:
             axes[2].scatter(sample['precipitation_mm'], sample['speed_kmh'], alpha=0.3, s=10)
@@ -230,15 +260,16 @@ def analyze_weather_correlations(df):
             axes[2].set_ylabel('Speed (km/h)', fontsize=11)
             axes[2].set_title('Speed vs Precipitation', fontsize=12, fontweight='bold')
             axes[2].grid(True, alpha=0.3)
-        
+
         plt.tight_layout()
-        plt.savefig('outputs/weather_scatter_plots.png', dpi=150, bbox_inches='tight')
-        print("\nSaved: outputs/weather_scatter_plots.png")
+        scatter_path = outputs_dir / 'weather_scatter_plots.png'
+        plt.savefig(scatter_path, dpi=150, bbox_inches='tight')
+        print(f"\nSaved: {scatter_path}")
         plt.close()
 
 
-def analyze_temporal_patterns(df):
-    """Analyze temporal patterns in traffic speed"""
+def analyze_temporal_patterns(df: pd.DataFrame, outputs_dir: Path) -> None:
+    """Analyze temporal patterns in traffic speed."""
     print("\n" + "="*70)
     print("TEMPORAL PATTERN ANALYSIS")
     print("="*70)
@@ -292,44 +323,40 @@ def analyze_temporal_patterns(df):
     axes[1].grid(True, alpha=0.3, axis='y')
     
     plt.tight_layout()
-    plt.savefig('outputs/temporal_patterns.png', dpi=150, bbox_inches='tight')
-    print("\nSaved: outputs/temporal_patterns.png")
+    temporal_path = outputs_dir / 'temporal_patterns.png'
+    plt.savefig(temporal_path, dpi=150, bbox_inches='tight')
+    print(f"\nSaved: {temporal_path}")
     plt.close()
 
 
-def main():
-    """Main analysis pipeline"""
-    print("="*70)
+def main(argv: Optional[Sequence[str]] = None) -> None:
+    """Main analysis pipeline."""
+
+    args = parse_args(argv)
+    dataset_path = args.dataset if args.dataset.is_absolute() else (PROJECT_ROOT / args.dataset)
+    outputs_dir = args.outputs_dir if args.outputs_dir.is_absolute() else (PROJECT_ROOT / args.outputs_dir)
+    outputs_dir.mkdir(parents=True, exist_ok=True)
+
+    print("=" * 70)
     print("DATA DISTRIBUTION ANALYSIS FOR STMGT MODEL")
-    print("="*70)
-    
-    # Create outputs directory
-    import os
-    os.makedirs('outputs', exist_ok=True)
-    
-    # Load data
-    df = load_data()
-    
-    # Analyze speed distribution
-    speeds = analyze_speed_distribution(df)
-    
-    # Fit Gaussian mixtures
-    gmm_results, gmm_best = fit_gaussian_mixtures(speeds)
-    
-    # Analyze weather correlations
-    analyze_weather_correlations(df)
-    
-    # Analyze temporal patterns
-    analyze_temporal_patterns(df)
-    
-    print("\n" + "="*70)
+    print("=" * 70)
+
+    df = load_data(dataset_path)
+
+    speeds = analyze_speed_distribution(df, outputs_dir)
+    fit_gaussian_mixtures(speeds, outputs_dir)
+    analyze_weather_correlations(df, outputs_dir)
+    analyze_temporal_patterns(df, outputs_dir)
+
+    print("\n" + "=" * 70)
     print("ANALYSIS COMPLETE")
-    print("="*70)
+    print("=" * 70)
     print("\nKey Findings:")
-    print("  1. Speed distribution multi-modality: Check outputs/speed_distribution.png")
-    print("  2. Optimal GMM components: Check outputs/gmm_model_selection.png")
-    print("  3. Weather correlations: Check outputs/weather_correlation.png")
-    print("  4. Temporal patterns: Check outputs/temporal_patterns.png")
+    print(f"  1. Speed distribution multi-modality: {outputs_dir / 'speed_distribution.png'}")
+    print(f"  2. Optimal GMM components: {outputs_dir / 'gmm_model_selection.png'}")
+    print(f"  3. Weather correlations: {outputs_dir / 'weather_correlation.png'}")
+    print(f"  4. Temporal patterns: {outputs_dir / 'temporal_patterns.png'}")
+
     print("\nNext steps:")
     print("  - If K=3 is optimal -> Gaussian Mixture output validated")
     print("  - If weather correlation > 0.1 -> Weather features useful")

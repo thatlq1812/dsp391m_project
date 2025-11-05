@@ -1,24 +1,86 @@
-"""
-Advanced Data Augmentation for STMGT
+"""Advanced Data Augmentation for STMGT datasets."""
 
-Strategy: HYBRID AGGRESSIVE
-- Temporal extrapolation: Oct 1-31 (15x)
-- Pattern variations: 5x different scenarios
-- Statistical preservation: Maintain correlations & distributions
-- Total target: 500+ samples
-
-Author: DSP391m Team
-Date: November 1, 2025
-"""
-
-import pandas as pd
-import numpy as np
-from pathlib import Path
+import argparse
 from datetime import datetime, timedelta
-from scipy import stats
-import json
+from pathlib import Path
+from typing import Optional, Sequence
 
-np.random.seed(42)
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+from traffic_forecast.data.dataset_validation import (
+    DEFAULT_REQUIRED_COLUMNS,
+    validate_processed_dataset,
+)
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _resolve_path(path: Path) -> Path:
+    return path if path.is_absolute() else (PROJECT_ROOT / path).resolve()
+
+
+def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Generate augmented STMGT training datasets.")
+    parser.add_argument(
+        "--input-dataset",
+        type=Path,
+        default=Path("data/processed/all_runs_combined.parquet"),
+        help="Baseline processed parquet to augment (default: data/processed/all_runs_combined.parquet)",
+    )
+    parser.add_argument(
+        "--output-dataset",
+        type=Path,
+        default=Path("data/processed/all_runs_augmented.parquet"),
+        help="Destination parquet for augmented data (default: data/processed/all_runs_augmented.parquet)",
+    )
+    parser.add_argument(
+        "--temporal-start",
+        default="2025-10-01",
+        help="Start date for temporal extrapolation (YYYY-MM-DD)",
+    )
+    parser.add_argument(
+        "--temporal-end",
+        default="2025-10-29",
+        help="End date for temporal extrapolation (YYYY-MM-DD)",
+    )
+    parser.add_argument(
+        "--pattern-variations",
+        type=int,
+        default=5,
+        help="Number of pattern variation copies to generate",
+    )
+    parser.add_argument(
+        "--noise-copies",
+        type=int,
+        default=3,
+        help="Number of noise-injected dataset copies",
+    )
+    parser.add_argument(
+        "--noise-level",
+        type=float,
+        default=0.15,
+        help="Noise level multiplier for speed standard deviation",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Random seed for reproducible augmentation",
+    )
+    parser.add_argument(
+        "--no-validate",
+        action="store_true",
+        help="Skip validating the augmented parquet after writing",
+    )
+    parser.add_argument(
+        "--require",
+        nargs="*",
+        default=None,
+        help="Extra column names required during validation",
+    )
+    return parser.parse_args(argv)
 
 class TrafficDataAugmentor:
     """
@@ -307,43 +369,41 @@ class TrafficDataAugmentor:
             print("  ⚠ Distributions differ (p < 0.05) - expected with augmentation")
 
 
-def main():
+def main(argv: Optional[Sequence[str]] = None) -> None:
+    args = parse_args(argv)
+    np.random.seed(args.seed)
+
     print("=" * 70)
     print("ADVANCED DATA AUGMENTATION")
     print("=" * 70)
-    
-    # Load original data
-    df_orig = pd.read_parquet('data/processed/all_runs_combined.parquet')
+
+    input_path = _resolve_path(args.input_dataset)
+    output_path = _resolve_path(args.output_dataset)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    df_orig = pd.read_parquet(input_path)
     print(f"\nOriginal data: {len(df_orig)} records, {df_orig['run_id'].nunique()} runs")
-    
-    # Create augmentor
+
     augmentor = TrafficDataAugmentor(df_orig)
-    
-    # Apply all augmentation methods
+
     augmented_parts = []
-    
-    # 1. Temporal extrapolation (Oct 1-29)
-    df_temporal = augmentor.augment_temporal_extrapolation('2025-10-01', '2025-10-29')
-    if len(df_temporal) > 0:
+
+    df_temporal = augmentor.augment_temporal_extrapolation(args.temporal_start, args.temporal_end)
+    if not df_temporal.empty:
         augmented_parts.append(df_temporal)
-    
-    # 2. Pattern variations (5x)
-    df_patterns = augmentor.augment_pattern_variations(num_variations=5)
-    if len(df_patterns) > 0:
+
+    df_patterns = augmentor.augment_pattern_variations(num_variations=args.pattern_variations)
+    if not df_patterns.empty:
         augmented_parts.append(df_patterns)
-    
-    # 3. Noise injection (3x)
-    df_noise = augmentor.augment_noise_injection(num_copies=3, noise_level=0.15)
-    if len(df_noise) > 0:
+
+    df_noise = augmentor.augment_noise_injection(num_copies=args.noise_copies, noise_level=args.noise_level)
+    if not df_noise.empty:
         augmented_parts.append(df_noise)
-    
-    # Combine all
+
     if augmented_parts:
         df_all_augmented = pd.concat(augmented_parts, ignore_index=True)
-        
-        # Add original data
         df_combined = pd.concat([df_orig, df_all_augmented], ignore_index=True)
-        
+
         print("\n" + "=" * 70)
         print("AUGMENTATION SUMMARY")
         print("=" * 70)
@@ -354,28 +414,41 @@ def main():
         print(f"\nOriginal records: {len(df_orig)}")
         print(f"Augmented records: {len(df_all_augmented)}")
         print(f"Total records: {len(df_combined)}")
-        
-        # Validate
+
         augmentor.validate_augmented_data(df_all_augmented)
-        
-        # Save
-        output_path = Path('data/processed/all_runs_augmented.parquet')
+
         df_combined.to_parquet(output_path, index=False)
         print(f"\n✓ Saved to {output_path}")
-        
-        # Estimate samples
+
+        if not args.no_validate:
+            required = list(DEFAULT_REQUIRED_COLUMNS) + ["temperature_c", "wind_speed_kmh", "precipitation_mm"]
+            if args.require:
+                required.extend(args.require)
+            validation = validate_processed_dataset(output_path, required)
+            print("\n== Dataset Validation Report ==")
+            print(f"Path: {validation.path}")
+            print(f"Rows: {validation.rows}")
+            print(f"Missing Columns: {validation.missing_columns or '-'}")
+            print(f"Columns With Nulls: {validation.null_columns or '-'}")
+            print(f"Duplicate Rows: {validation.duplicate_rows}")
+            if validation.errors:
+                print("Errors:")
+                for error in validation.errors:
+                    print(f"  - {error}")
+            if not validation.is_valid:
+                raise SystemExit("Augmented dataset validation failed; please review output.")
+
         print("\n" + "=" * 70)
         print("EXPECTED TRAINING SAMPLES")
         print("=" * 70)
-        
+
         total_runs = df_combined['run_id'].nunique()
-        
         configs = [
             (12, 12, "Original (High quality)"),
             (6, 3, "Moderate (Balanced)"),
-            (4, 2, "Conservative (More samples)")
+            (4, 2, "Conservative (More samples)"),
         ]
-        
+
         for seq_len, pred_len, desc in configs:
             window_size = seq_len + pred_len
             samples = max(0, total_runs - window_size + 1)
@@ -384,9 +457,9 @@ def main():
             print(f"  Window size: {window_size} runs")
             print(f"  Training samples: ~{samples}")
             print()
-        
+
         print("=" * 70)
-        
+
     else:
         print("\n⚠ No augmented data generated")
 

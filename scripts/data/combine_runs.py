@@ -1,47 +1,87 @@
-"""
-Combine all run data into a single parquet file for analysis
+"""Combine collection runs into a validated parquet dataset."""
 
-Purpose:
-    - Load all run directories from data/runs/
-    - Combine traffic, weather, and temporal data
-    - Save to data/processed/all_runs_combined.parquet
-
-Output schema:
-    - run_id: str
-    - timestamp: datetime
-    - node_a_id, node_b_id: int
-    - speed_kmh: float
-    - temperature_c: float
-    - wind_speed_kmh: float
-    - precipitation_mm: float
-    - lat, lon: float
-
-Author: DSP391m Team
-Date: October 31, 2025
-"""
-
-import json
+import argparse
 import glob
-import pandas as pd
-from pathlib import Path
-from datetime import datetime
+import json
 import warnings
-warnings.filterwarnings('ignore')
+from datetime import datetime
+from pathlib import Path
+from typing import Iterable, List, Optional, Sequence
 
-PROJECT_ROOT = Path(__file__).parent.parent.parent  # Go up to project root
+import pandas as pd
+
+from traffic_forecast.data.dataset_validation import (
+    DEFAULT_REQUIRED_COLUMNS,
+    DatasetValidationResult,
+    validate_processed_dataset,
+)
+
+warnings.filterwarnings("ignore")
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
-def parse_run_timestamp(run_dir_name):
+def _resolve_relative(path: Path) -> Path:
+    return path if path.is_absolute() else (PROJECT_ROOT / path).resolve()
+
+
+def _print_validation(result: DatasetValidationResult) -> None:
+    print("\n== Dataset Validation Report ==")
+    print(f"Path: {result.path}")
+    print(f"Exists: {result.exists}")
+    if not result.exists:
+        for error in result.errors:
+            print(f"  - {error}")
+        return
+    print(f"Rows: {result.rows}")
+    print(f"Missing Columns: {result.missing_columns or '-'}")
+    print(f"Columns With Nulls: {result.null_columns or '-'}")
+    print(f"Duplicate Rows: {result.duplicate_rows}")
+    if result.errors:
+        print("Errors:")
+        for error in result.errors:
+            print(f"  - {error}")
+
+
+def _build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Combine collection runs into a parquet dataset.")
+    parser.add_argument(
+        "--runs-dir",
+        type=Path,
+        default=Path("data/runs"),
+        help="Directory containing run_* folders (default: data/runs)",
+    )
+    parser.add_argument(
+        "--output-file",
+        type=Path,
+        default=Path("data/processed/all_runs_combined.parquet"),
+        help="Destination parquet file (default: data/processed/all_runs_combined.parquet)",
+    )
+    parser.add_argument(
+        "--validate",
+        action="store_true",
+        help="Run dataset validation after writing the parquet",
+    )
+    parser.add_argument(
+        "--require",
+        nargs="*",
+        default=None,
+        help="Additional required columns for validation (space separated)",
+    )
+    return parser
+
+
+def parse_run_timestamp(run_dir_name: str) -> Optional[datetime]:
     """Extract timestamp from run directory name"""
     # run_20251030_032440 -> 2025-10-30 03:24:40
     try:
         timestamp_str = run_dir_name.replace('run_', '')
         return datetime.strptime(timestamp_str, '%Y%m%d_%H%M%S')
-    except:
+    except Exception:
         return None
 
 
-def load_run_data(run_dir):
+def load_run_data(run_dir: Path) -> Optional[List[dict]]:
     """Load all data from a single run directory"""
     run_path = Path(run_dir)
     run_id = run_path.name
@@ -114,11 +154,17 @@ def load_run_data(run_dir):
     return records
 
 
-def combine_all_runs(runs_dir='data/runs', output_file='data/processed/all_runs_combined.parquet'):
-    """Combine all run data into a single parquet file"""
-    
-    runs_path = PROJECT_ROOT / runs_dir
-    output_path = PROJECT_ROOT / output_file
+def combine_all_runs(
+    runs_dir: Path,
+    output_file: Path,
+    *,
+    validate: bool = False,
+    extra_required: Optional[Sequence[str]] = None,
+) -> pd.DataFrame:
+    """Combine all run data into a single parquet file."""
+
+    runs_path = _resolve_relative(runs_dir)
+    output_path = _resolve_relative(output_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     
     print("="*70)
@@ -152,7 +198,7 @@ def combine_all_runs(runs_dir='data/runs', output_file='data/processed/all_runs_
     
     if not all_records:
         print("Error: No data loaded!")
-        return
+        raise SystemExit(1)
     
     # Convert to DataFrame
     print("\nConverting to DataFrame...")
@@ -189,6 +235,15 @@ def combine_all_runs(runs_dir='data/runs', output_file='data/processed/all_runs_
     
     file_size_mb = output_path.stat().st_size / 1024 / 1024
     print(f"Saved: {file_size_mb:.2f} MB")
+
+    if validate:
+        required = list(DEFAULT_REQUIRED_COLUMNS)
+        if extra_required:
+            required.extend(extra_required)
+        validation = validate_processed_dataset(output_path, required)
+        _print_validation(validation)
+        if not validation.is_valid:
+            raise SystemExit("Dataset validation failed; see report above.")
     
     print("\n" + "="*70)
     print("COMPLETE")
@@ -197,5 +252,15 @@ def combine_all_runs(runs_dir='data/runs', output_file='data/processed/all_runs_
     return df
 
 
+def main(argv: Optional[Sequence[str]] = None) -> None:
+    args = _build_parser().parse_args(argv)
+    combine_all_runs(
+        runs_dir=args.runs_dir,
+        output_file=args.output_file,
+        validate=args.validate,
+        extra_required=args.require,
+    )
+
+
 if __name__ == "__main__":
-    df = combine_all_runs()
+    main()

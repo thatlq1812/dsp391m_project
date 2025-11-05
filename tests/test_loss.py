@@ -1,5 +1,6 @@
 """Test model + loss"""
-from traffic_forecast.models.stmgt import STMGT, mixture_nll_loss
+from traffic_forecast.models.stmgt.losses import mixture_nll_loss
+from traffic_forecast.models.stmgt.model import STMGT
 from traffic_forecast.data.stmgt_dataset import create_stmgt_dataloaders
 import torch
 

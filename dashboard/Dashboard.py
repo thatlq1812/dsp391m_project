@@ -15,11 +15,13 @@ import sys
 import os
 from datetime import datetime
 
-# Add dashboard to path for imports
-sys.path.append(str(Path(__file__).parent))
-from realtime_stats import get_training_stats
+CURRENT_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = CURRENT_DIR.parent
 
-PROJECT_ROOT = Path(__file__).parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from dashboard.realtime_stats import get_training_stats
 
 # Page config
 st.set_page_config(
@@ -78,30 +80,26 @@ with st.sidebar:
     
     with st.expander("Infrastructure & DevOps", expanded=False):
         st.markdown("""
-        - **1. System Overview** - Dashboard tổng quan
-        - **2. VM Management** - GCP VM control
-        - **3. Deployment** - Deploy & version control
-        - **4. Monitoring & Logs** - System health & logs
+        - **9. API & Integration** – FastAPI endpoints & webhooks
+        - **10. Monitoring & Logs** – System health snapshots
+        - **11. Deployment** – Git deploy workflow
+        - **12. VM Management** – GCP instance control
         """)
-    
+
     with st.expander("Data Pipeline", expanded=False):
         st.markdown("""
-        - **5. Data Collection** - API collection control
-        - **6. Data Overview** - Existing data stats
-        - **7. Data Augmentation** - Augmentation pipeline
+        - **2. Data Overview** – Processed parquet inventory
+        - **3. Data Collection** – Collection scripts & scheduling
+        - **4. Data Augmentation** – Augmentation configs & jobs
+        - **5. Data Visualization** – Exploratory analytics
         """)
-    
+
     with st.expander("ML Workflow", expanded=False):
         st.markdown("""
-        - **8. Data Visualization** - Patterns & analysis
-        - **9. Training Control** - Train & monitor
-        - **10. Model Registry** - Version management
-        """)
-    
-    with st.expander("Production", expanded=False):
-        st.markdown("""
-        - **11. Predictions** - Real-time inference
-        - **12. API & Integration** - Endpoints & webhooks
+        - **6. Training Control** – Launch & monitor runs
+        - **7. Model Registry** – Artifact review & tagging
+        - **8. Predictions** – Prototype inference console
+        - **13. Legacy ASTGCN** – Notebook baseline replay
         """)
     
     st.divider()
@@ -263,19 +261,19 @@ with tab1:
     
     with col1:
         if st.button("View Data", width='stretch'):
-            st.switch_page("pages/6_Data_Overview.py")
+            st.switch_page("pages/2_Data_Overview.py")
     
     with col2:
         if st.button("Train Model", width='stretch'):
-            st.switch_page("pages/9_Training_Control.py")
+            st.switch_page("pages/6_Training_Control.py")
     
     with col3:
         if st.button("Predict", width='stretch'):
-            st.switch_page("pages/11_Predictions.py")
+            st.switch_page("pages/8_Predictions.py")
     
     with col4:
         if st.button("Manage VM", width='stretch'):
-            st.switch_page("pages/2_VM_Management.py")
+            st.switch_page("pages/12_VM_Management.py")
 
 with tab2:
     st.markdown("## STMGT Architecture")
@@ -312,8 +310,6 @@ with tab2:
         - **CRPS:** 2.84 
         - **Coverage (80%):** 81.2% 
         """)
-    
-    st.info("**Learn more:** See `docs/STMGT_ARCHITECTURE.md` for detailed architecture documentation")
 
 with tab3:
     st.markdown("## Navigation Guide")

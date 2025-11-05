@@ -1,0 +1,45 @@
+{
+  "model": {
+    "hidden_dim": 96,
+    "num_heads": 6,
+    "num_blocks": 4,
+    "mixture_components": 3,
+    "seq_len": 12,
+    "pred_len": 12
+  },
+  "training": {
+    "batch_size": 64,
+    "learning_rate": 0.0004,
+    "weight_decay": 0.0001,
+    "max_epochs": 100,
+    "patience": 20,
+    "drop_edge_p": 0.08,
+    "num_workers": 8,
+    "use_amp": true,
+    "accumulation_steps": 1,
+    "mse_loss_weight": 0.4,
+    "data_source": "all_runs_augmented.parquet",
+    "pin_memory": true,
+    "persistent_workers": true,
+    "prefetch_factor": 2
+  },
+  "metadata": {
+    "label": "production_ready_h96_b4_mix3",
+    "description": "RECOMMENDED PRODUCTION CONFIG: K=3 mixture for tri-modal traffic (free/moderate/heavy), balanced MSE/NLL loss (0.4/0.6), optimized data loading. Expected: MAE ~3.9-4.1 km/h, well-calibrated 80% CI coverage.",
+    "improvements_over_final": [
+      "mixture_components: 2 -> 3 (captures tri-modal traffic distribution)",
+      "mse_loss_weight: 0.3 -> 0.4 (better MAE/calibration balance)",
+      "pin_memory: false -> true (faster GPU data transfer)",
+      "persistent_workers: false -> true (reduces worker restart overhead)",
+      "prefetch_factor: null -> 2 (pipeline data loading)"
+    ],
+    "expected_results": {
+      "val_mae": "3.9-4.1 km/h",
+      "val_rmse": "6.0-6.5 km/h",
+      "r2_score": "0.70-0.75",
+      "coverage_80": "78-82% (well-calibrated)",
+      "training_time": "~20 hours (100 epochs @ 12 min/epoch)"
+    },
+    "usage": "python -m traffic_forecast.models.train --config configs/train_production_ready.json"
+  }
+}

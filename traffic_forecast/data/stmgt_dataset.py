@@ -88,7 +88,7 @@ class STMGTDataset(Dataset):
         self.df = df
         
         # Create edge mapping for data lookup
-        df['edge_key'] = df['node_a_id'] + '--' + df['node_b_id']
+        df['edge_key'] = df['node_a_id'].astype(str) + '--' + df['node_b_id'].astype(str)
         
         # Get unique runs
         runs = df['run_id'].unique()
