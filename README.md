@@ -102,17 +102,31 @@ project/
 
 Documentation lives in `docs/` (all files include Maintainer metadata):
 
-- `docs/CHANGELOG.md` – Project-level change log updated for Phase 1 completion.
-- `docs/INDEX.md` – Canonical index of all documentation.
-- `docs/WORKFLOW.md` – Step-by-step operations workflow, now referencing validation checkpoints.
-- `docs/DASHBOARD_V4_QUICKSTART.md` – Task-oriented dashboard onboarding.
-- `docs/DASHBOARD_V4_REFERENCE.md` – Detailed dashboard feature catalogue.
-- `docs/PROCESSED_DATA_PIPELINE.md` – Collection-to-parquet pipeline with validator requirements.
-- `docs/VM_CONFIG_INTEGRATION.md` – VM provisioning and sync notes.
-- `docs/README_SETUP.md` – Environment bootstrap and task runner guidance.
-- `docs/README_FULLREPORT.md` – Full technical report and experiment log.
-- `docs/STMGT_RESEARCH_CONSOLIDATED.md` – Merged research findings (Claude, Gemini, OpenAI).
-- `docs/TaskofNov02.md` – Phase plan and execution checklist (latest status recorded).
+**Core Documentation:**
+- `docs/CHANGELOG.md` – Project-level change log with full history
+- `docs/INDEX.md` – Canonical index of all documentation (reorganized Nov 2025)
+- `docs/STMGT_ARCHITECTURE.md` – Model architecture and design decisions
+- `docs/STMGT_DATA_IO.md` – Data schemas and I/O specifications
+- `docs/STMGT_RESEARCH_CONSOLIDATED.md` – Merged research findings (Claude, Gemini, OpenAI)
+
+**Guides (`docs/guides/`):**
+- `docs/guides/README_SETUP.md` – Environment setup and installation
+- `docs/guides/WORKFLOW.md` – Development workflow and operations
+- `docs/guides/PROCESSED_DATA_PIPELINE.md` – Data collection and processing pipeline
+
+**Quality Audits (`docs/audits/`):**
+- `docs/audits/PROJECT_TRANSPARENCY_AUDIT.md` – Comprehensive project evaluation (8.7/10)
+- `docs/audits/GRAPHWAVENET_TRANSPARENCY_AUDIT.md` – Baseline model analysis
+
+**Dashboard:**
+- `docs/DASHBOARD_V4_QUICKSTART.md` – Dashboard quick start guide
+- `docs/DASHBOARD_V4_REFERENCE.md` – Complete dashboard reference
+
+**Phase Instructions (`docs/instructions/`):**
+- Phase 1-4 implementation guides and task lists
+
+**Archived Content:**
+- `archive/README.md` – Experimental code, old training runs, retention policy
 
 ---
 

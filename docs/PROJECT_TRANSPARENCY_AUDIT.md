@@ -49,6 +49,7 @@ This report provides a comprehensive audit of the STMGT Traffic Forecasting proj
 ### 1.1 Evaluation Framework
 
 **Transparency Metrics (0-10 scale):**
+
 - Code structure and modularity
 - Documentation completeness
 - Architecture explainability
@@ -56,6 +57,7 @@ This report provides a comprehensive audit of the STMGT Traffic Forecasting proj
 - Reproducibility
 
 **Reliability Metrics (0-10 scale):**
+
 - Dataset size and quality
 - Training procedure validity
 - Result realism and consistency
@@ -63,6 +65,7 @@ This report provides a comprehensive audit of the STMGT Traffic Forecasting proj
 - Literature alignment
 
 **Feasibility Metrics (0-10 scale):**
+
 - Deployment readiness
 - Scalability potential
 - Maintenance complexity
@@ -72,6 +75,7 @@ This report provides a comprehensive audit of the STMGT Traffic Forecasting proj
 ### 1.2 Projects Under Review
 
 **A. Main Project (Root Directory):**
+
 - **Name:** STMGT v2 (Spatial-Temporal Multi-modal Graph Transformer)
 - **Location:** `/traffic_forecast/`, `/traffic_api/`
 - **Status:** Production deployment ready
@@ -80,12 +84,14 @@ This report provides a comprehensive audit of the STMGT Traffic Forecasting proj
 **B. Experimental Work (temps/):**
 
 **B1. ASTGCN Implementation**
+
 - **Location:** `temps/astgcn_v0/`
 - **Type:** Jupyter notebook (1,123 lines)
 - **Dataset:** 2,586 samples, 50 nodes
 - **Status:** Experimental only
 
 **B2. GraphWaveNet Implementation**
+
 - **Location:** `temps/hunglm/Traffic-Forecasting-GraphWaveNet/`
 - **Type:** Modular Python project
 - **Dataset:** Unknown (not verified)
@@ -102,6 +108,7 @@ This report provides a comprehensive audit of the STMGT Traffic Forecasting proj
 **Strengths:**
 
 **Architecture Clarity (10/10):**
+
 ```
 traffic_forecast/
 ├── models/
@@ -120,6 +127,7 @@ traffic_forecast/
 ```
 
 **Documentation Excellence:**
+
 - ✅ 19 comprehensive markdown documents
 - ✅ `STMGT_ARCHITECTURE.md` (448 lines of architecture explanation)
 - ✅ `STMGT_DATA_IO.md` (tensor shapes, data flow)
@@ -128,12 +136,13 @@ traffic_forecast/
 - ✅ Session summaries with context
 
 **Code Quality:**
+
 ```python
 # Example: Type hints and docstrings throughout
 class STMGT(nn.Module):
     """
     Spatial-Temporal Multi-modal Graph Transformer for Traffic Forecasting.
-    
+
     Args:
         num_nodes (int): Number of traffic nodes
         in_dim (int): Input feature dimension
@@ -142,7 +151,7 @@ class STMGT(nn.Module):
         num_heads (int): Number of attention heads
         dropout (float): Dropout rate
         ...
-    
+
     Returns:
         Tuple[Tensor, Tensor, Tensor]: (mu, log_sigma, logits_pi)
             - mu: Mean predictions [B, N, pred_len, K]
@@ -152,24 +161,18 @@ class STMGT(nn.Module):
 ```
 
 **Configuration Management:**
+
 ```yaml
 # configs/training_config.json - All hyperparameters externalized
 {
-  "model": {
-    "num_blocks": 4,
-    "num_heads": 6,
-    "hidden_dim": 96,
-    "dropout": 0.2
-  },
-  "training": {
-    "batch_size": 16,
-    "learning_rate": 0.001,
-    "epochs": 100
-  }
+  "model":
+    { "num_blocks": 4, "num_heads": 6, "hidden_dim": 96, "dropout": 0.2 },
+  "training": { "batch_size": 16, "learning_rate": 0.001, "epochs": 100 },
 }
 ```
 
 **Reproducibility:**
+
 - ✅ `requirements.txt` + `environment.yml`
 - ✅ Training logs with all hyperparameters
 - ✅ Checkpoint metadata includes config
@@ -177,6 +180,7 @@ class STMGT(nn.Module):
 - ✅ Random seeds configurable
 
 **Minor Issues:**
+
 - ⚠️ Phase 4 explainability features not yet implemented (SHAP, attention visualization)
 - ⚠️ Test coverage could be higher (~40% estimated)
 
@@ -189,6 +193,7 @@ class STMGT(nn.Module):
 **Critical Issues:**
 
 **Code Structure (2/10):**
+
 ```python
 # Single monolithic notebook: astgcn-merge-3.ipynb (1,123 lines)
 # No modular separation
@@ -197,6 +202,7 @@ class STMGT(nn.Module):
 ```
 
 **Documentation (2/10):**
+
 ```markdown
 ❌ No README.md in temps/astgcn_v0/
 ❌ No architecture documentation
@@ -206,6 +212,7 @@ class STMGT(nn.Module):
 ```
 
 **Reproducibility (4/10):**
+
 ```python
 # Hard-coded paths:
 file_path = '/kaggle/input/data-merge-3/merge_3.csv'  # ❌ Non-portable
@@ -218,6 +225,7 @@ Th = 12  # What does this mean?
 ```
 
 **Configuration (1/10):**
+
 ```python
 # All hyperparameters hard-coded in notebook cells
 hidden_dim = 32  # No config file
@@ -225,6 +233,7 @@ lr = 0.001       # Scattered throughout
 ```
 
 **Explainability (3/10):**
+
 - ✅ Some EDA visualizations (speed distribution)
 - ❌ No attention weight analysis
 - ❌ No feature importance
@@ -240,6 +249,7 @@ lr = 0.001       # Scattered throughout
 **Strengths:**
 
 **Modular Structure (8/10):**
+
 ```
 Traffic-Forecasting-GraphWaveNet/
 ├── models/
@@ -254,6 +264,7 @@ Traffic-Forecasting-GraphWaveNet/
 ```
 
 **Documentation (7/10):**
+
 - ✅ Comprehensive README with step-by-step instructions
 - ✅ Architecture explained
 - ✅ Usage examples clear
@@ -261,12 +272,14 @@ Traffic-Forecasting-GraphWaveNet/
 - ⚠️ No architecture diagrams
 
 **Reproducibility (8/10):**
+
 - ✅ `requirements.txt` included
 - ✅ Clear preprocessing pipeline
 - ✅ Train/test split documented
 - ⚠️ Results not verified (need to run)
 
 **Weaknesses:**
+
 - ❌ No explainability tools
 - ❌ No API layer
 - ⚠️ Limited documentation depth
@@ -280,6 +293,7 @@ Traffic-Forecasting-GraphWaveNet/
 #### **STMGT v2 Dataset:**
 
 **Size & Coverage:**
+
 ```
 Total samples: 16,328
 Nodes: 62 traffic intersections
@@ -289,6 +303,7 @@ File: data/processed/all_runs_extreme_augmented.parquet (205,920 rows)
 ```
 
 **Data Quality:**
+
 ```python
 # Verified statistics:
 Speed range: 12.0 - 42.8 km/h
@@ -299,6 +314,7 @@ Spatial coverage: Major intersections across HCMC
 ```
 
 **Train/Val/Test Split:**
+
 ```
 Train: ~13,000 samples (80%)
 Val: ~1,600 samples (10%)
@@ -315,6 +331,7 @@ Validation: Proper holdout, no overlap
 #### **ASTGCN Dataset:**
 
 **Size & Coverage:**
+
 ```
 Total samples: 2,586 (6.3x SMALLER than STMGT)
 Nodes: 50 intersections
@@ -325,6 +342,7 @@ File: temps/astgcn_v0/dataset_ASTGCN.npz
 **Critical Issues Identified:**
 
 **1. Insufficient Dataset Size:**
+
 ```python
 Train: 1,810 samples (70%)
 Val: 258 samples (10%)
@@ -338,6 +356,7 @@ Test: 518 samples (20%)
 ```
 
 **2. Suspicious Data Preprocessing:**
+
 ```python
 # From notebook cell analysis:
 # StandardScaler likely fit on ALL data (including test)
@@ -349,6 +368,7 @@ pv_scaled = scaler.fit_transform(pv_data)  # ⚠️ Before split?
 ```
 
 **3. Sliding Window Overlap:**
+
 ```python
 # Each sample uses:
 Th = 12  # Recent 12 timesteps (6 hours)
@@ -361,6 +381,7 @@ Tw = 12  # Weekly lookback (7 days ago)
 ```
 
 **Quality Score: 3/10** ❌
+
 - Dataset too small for reliable training
 - Likely data leakage in preprocessing
 - Temporal overlap not properly handled
@@ -372,6 +393,7 @@ Tw = 12  # Weekly lookback (7 days ago)
 #### **STMGT v2 Training:**
 
 **Proper Training Protocol:**
+
 ```python
 # From outputs/stmgt_v2_20251102_200308/training_history.csv
 
@@ -385,6 +407,7 @@ Epoch 26 (Best):
 ```
 
 **Training Characteristics:**
+
 - ✅ Gradual loss decrease (no sudden drops)
 - ✅ Train/val loss gap reasonable (12.42 vs 2.40 - loss type differs)
 - ✅ Validation metrics stabilize (early stopping at epoch 26)
@@ -392,6 +415,7 @@ Epoch 26 (Best):
 - ✅ 26 epochs with proper early stopping
 
 **Training Time:**
+
 - Total time: ~2-3 hours for 26 epochs (estimated)
 - Per epoch: ~5-7 minutes
 - **REALISTIC** for 16K samples, 267K params on GPU
@@ -403,6 +427,7 @@ Epoch 26 (Best):
 #### **ASTGCN Training:**
 
 **Suspicious Training Behavior:**
+
 ```python
 # From temps/astgcn_v0/astgcn-merge-3.ipynb output:
 
@@ -416,6 +441,7 @@ Epoch 030: Train loss: 0.120813 | Val loss: 0.225130  # ← Spike!
 **Red Flags:**
 
 **1. Overfitting Evidence:**
+
 ```
 Best epoch: 28 (val loss: 0.134779)
 Epoch 30: val loss: 0.225130 (+67% increase!)
@@ -425,6 +451,7 @@ Epoch 30: val loss: 0.225130 (+67% increase!)
 ```
 
 **2. Unrealistic Convergence:**
+
 ```
 Train loss: 0.727 → 0.121 (83% reduction in 30 epochs)
 Val loss: 0.632 → 0.135 (79% reduction)
@@ -433,6 +460,7 @@ For traffic forecasting, this is SUSPICIOUSLY fast
 ```
 
 **3. Training Time Issues:**
+
 ```
 User claim: "train 5 phút ra kết quả trong mơ"
 30 epochs in 5 minutes = 10 seconds per epoch
@@ -448,6 +476,7 @@ This is IMPOSSIBLY fast for:
 ```
 
 **Validation Score: 2/10** ❌
+
 - Clear overfitting
 - Unrealistic training speed
 - Validation procedure questionable
@@ -461,6 +490,7 @@ This is IMPOSSIBLY fast for:
 #### **STMGT v2: No Leakage Detected** ✅
 
 **Verification:**
+
 ```python
 # Proper temporal split in training code:
 # 1. Load raw data
@@ -477,6 +507,7 @@ test_scaled = scaler.transform(test_data)  # ✅ Use train stats
 ```
 
 **Temporal Integrity:**
+
 - ✅ No sliding window overlap between splits
 - ✅ Test set is strictly future data
 - ✅ Validation set temporally between train/test
@@ -486,6 +517,7 @@ test_scaled = scaler.transform(test_data)  # ✅ Use train stats
 #### **ASTGCN: High Leakage Risk** ❌
 
 **Issue 1: Scaler Fitting**
+
 ```python
 # From notebook inspection:
 # Line ~290: Load data
@@ -502,6 +534,7 @@ for t in range(..., T_total - horizon):
 ```
 
 **Issue 2: Sliding Window Overlap**
+
 ```python
 # Sample creation logic:
 Train samples: 0 - 1809
@@ -528,6 +561,7 @@ Test sample 2068 uses timesteps 2056-2068
 #### **Traffic Speed Distribution:**
 
 **STMGT v2:**
+
 ```
 Mean: 19.4 km/h
 Std: ~8.5 km/h (estimated from R²)
@@ -538,6 +572,7 @@ Coefficient of Variation: ~44%
 ```
 
 **ASTGCN:**
+
 ```
 Test MAE: 2.20 km/h
 Test MAPE: 6.94%
@@ -552,6 +587,7 @@ MAE 2.20 km/h
 ```
 
 **Reality Check:**
+
 ```
 Real urban traffic speed variance factors:
 - Time of day (rush hour vs off-peak): ±10-15 km/h
@@ -571,19 +607,20 @@ ASTGCN MAPE 6.94% is TOO LOW to be realistic
 
 **Academic Benchmarks:**
 
-| Paper | Dataset Size | Nodes | MAE (km/h) | RMSE (km/h) | MAPE |
-|-------|-------------|-------|-----------|------------|------|
-| **Graph WaveNet** (2019) | 34,272 | 207 | 2.99 | 5.79 | 12.7% |
-| **ASTGCN** (2019 paper) | 17,544 | 228 | 4.33 | 8.14 | 18.2% |
-| **GMAN** (2020) | 26,304 | 207 | 2.85 | 5.56 | 12.0% |
-| **MTGNN** (2020) | 34,272 | 207 | 2.92 | 5.65 | 12.3% |
-||||
-| **STMGT v2 (ours)** | **16,328** | **62** | **3.69** | **5.99** | **20.71%** |
-| **temps/ASTGCN** | **2,586** | **50** | **2.20** | **4.36** | **6.94%** |
+| Paper                    | Dataset Size | Nodes  | MAE (km/h) | RMSE (km/h) | MAPE       |
+| ------------------------ | ------------ | ------ | ---------- | ----------- | ---------- |
+| **Graph WaveNet** (2019) | 34,272       | 207    | 2.99       | 5.79        | 12.7%      |
+| **ASTGCN** (2019 paper)  | 17,544       | 228    | 4.33       | 8.14        | 18.2%      |
+| **GMAN** (2020)          | 26,304       | 207    | 2.85       | 5.56        | 12.0%      |
+| **MTGNN** (2020)         | 34,272       | 207    | 2.92       | 5.65        | 12.3%      |
+|                          |              |        |
+| **STMGT v2 (ours)**      | **16,328**   | **62** | **3.69**   | **5.99**    | **20.71%** |
+| **temps/ASTGCN**         | **2,586**    | **50** | **2.20**   | **4.36**    | **6.94%**  |
 
 **Analysis:**
 
 **STMGT v2 vs Literature:**
+
 ```
 MAE: 3.69 km/h
 - Similar to ASTGCN paper (4.33)
@@ -597,6 +634,7 @@ MAPE: 20.71%
 ```
 
 **temps/ASTGCN vs Literature:**
+
 ```
 MAE: 2.20 km/h
 - BETTER than all papers
@@ -610,6 +648,7 @@ MAPE: 6.94%
 ```
 
 **Verdict:**
+
 - ✅ **STMGT results align with literature** (accounting for dataset size)
 - ❌ **temps/ASTGCN results are UNREALISTIC** (violate statistical expectations)
 
@@ -620,6 +659,7 @@ MAPE: 6.94%
 #### **STMGT v2 Metrics Consistency:**
 
 **Train vs Val Performance:**
+
 ```
 Epoch 26 (final):
 Train MAE: 3.74 km/h
@@ -631,6 +671,7 @@ Gap: 0.05 km/h (1.3%)
 ```
 
 **R² Analysis:**
+
 ```
 Val R²: 0.660
 Explained variance: 66%
@@ -643,6 +684,7 @@ For traffic forecasting:
 ```
 
 **Uncertainty Quantification:**
+
 ```
 80% Confidence Interval Coverage: 89.8%
 Target: 80%
@@ -659,6 +701,7 @@ Slight overestimation of uncertainty (conservative)
 #### **temps/ASTGCN Inconsistencies:**
 
 **Train vs Test Performance:**
+
 ```
 Best train loss: 0.121 (epoch 28)
 Best val loss: 0.135 (epoch 28)
@@ -672,6 +715,7 @@ Issues:
 ```
 
 **Statistical Impossibility:**
+
 ```
 With 1,810 training samples:
 - Expected test MAPE: 15-25% (given overfitting)
@@ -697,6 +741,7 @@ d) Preprocessing error
 **Score: 9/10** ✅✅
 
 **Infrastructure:**
+
 ```
 ✅ FastAPI Backend (traffic_api/main.py)
   - REST API endpoints (/health, /nodes, /predict)
@@ -724,6 +769,7 @@ d) Preprocessing error
 ```
 
 **Deployment Architecture:**
+
 ```
 ┌─────────────────────────────────────────┐
 │         Load Balancer (nginx)           │
@@ -748,6 +794,7 @@ d) Preprocessing error
 ```
 
 **Cloud Deployment Estimate:**
+
 ```
 Infrastructure: Google Cloud Run / AWS ECS
 Cost: $5-10/month (auto-scaling)
@@ -756,6 +803,7 @@ Availability: 99.9% uptime
 ```
 
 **Missing (Phase 3):**
+
 - ⚠️ Redis caching (reduces 600ms → <100ms)
 - ⚠️ API authentication
 - ⚠️ Rate limiting
@@ -769,6 +817,7 @@ Availability: 99.9% uptime
 **Score: 1/10** ❌
 
 **Critical Issues:**
+
 ```
 ❌ Jupyter Notebook Only
   - Cannot run as service
@@ -794,6 +843,7 @@ Availability: 99.9% uptime
 ```
 
 **To Deploy Would Require:**
+
 ```
 Effort: 2-3 weeks of work
 Tasks:
@@ -813,6 +863,7 @@ Tasks:
 **Score: 5/10** ⚠️
 
 **Strengths:**
+
 ```
 ✅ Modular code structure
 ✅ train.py / test.py separation
@@ -820,6 +871,7 @@ Tasks:
 ```
 
 **Missing:**
+
 ```
 ❌ No API wrapper
 ❌ No web interface
@@ -836,6 +888,7 @@ Tasks:
 #### **STMGT v2:**
 
 **Current Scale:**
+
 ```
 Nodes: 62
 Inference: 600ms for all nodes
@@ -845,27 +898,31 @@ Model size: 267K params (~3 MB)
 **Scaling Projections:**
 
 **100 nodes:**
+
 - Memory: ~5 MB model
 - Inference: ~800ms
 - Feasible: ✅ Yes
 
 **500 nodes:**
+
 - Memory: ~25 MB model
 - Inference: ~2-3s
 - Feasible: ✅ With optimization
 
 **1000+ nodes:**
+
 - Memory: ~50 MB model
 - Inference: ~5-10s
 - Feasible: ⚠️ Need architecture changes
 - Solution: Graph sampling, hierarchical models
 
 **Bottlenecks:**
+
 ```
 1. GAT attention: O(N²) complexity
    → Solution: Sparse attention, sampling
 
-2. Cross-attention: O(N*F) 
+2. Cross-attention: O(N*F)
    → Acceptable up to 1000 nodes
 
 3. Inference time: Linear with nodes
@@ -879,6 +936,7 @@ Model size: 267K params (~3 MB)
 #### **temps/ASTGCN:**
 
 **Current Scale:**
+
 ```
 Nodes: 50
 Inference: Unknown
@@ -886,6 +944,7 @@ Model size: Unknown (~50-100 KB estimated)
 ```
 
 **Issues:**
+
 - ❌ Notebook doesn't scale
 - ❌ No batch processing
 - ❌ Cannot handle real-time updates
@@ -902,6 +961,7 @@ Model size: Unknown (~50-100 KB estimated)
 **Maintenance Score: 9/10** ✅✅
 
 **Code Maintainability:**
+
 ```python
 # Clean separation of concerns:
 traffic_forecast/models/stmgt/
@@ -917,18 +977,20 @@ traffic_forecast/models/stmgt/
 ```
 
 **Configuration-Driven:**
+
 ```json
 // Easy to experiment without code changes:
 {
   "model": {
-    "num_blocks": 4,     // Change to 3, 5, etc.
-    "num_heads": 6,      // Change to 4, 8, etc.
-    "hidden_dim": 96     // Adjust model capacity
+    "num_blocks": 4, // Change to 3, 5, etc.
+    "num_heads": 6, // Change to 4, 8, etc.
+    "hidden_dim": 96 // Adjust model capacity
   }
 }
 ```
 
 **Extensibility:**
+
 ```python
 # Add new features:
 class STMGT_Extended(STMGT):
@@ -936,13 +998,14 @@ class STMGT_Extended(STMGT):
     def __init__(self, *args, poi_dim=10, **kwargs):
         super().__init__(*args, **kwargs)
         self.poi_encoder = nn.Linear(poi_dim, self.hidden_dim)
-    
+
     def forward(self, x_traffic, x_weather, x_poi, timestamps):
         # Easy to add new input modality
         ...
 ```
 
 **Testing:**
+
 ```
 tests/
 ├── test_model_with_data.py      # Integration tests
@@ -960,6 +1023,7 @@ Coverage: ~40% (needs improvement)
 **Maintenance Score: 2/10** ❌
 
 **Issues:**
+
 ```python
 # Monolithic notebook (1,123 lines)
 # - All code in one file
@@ -975,6 +1039,7 @@ Coverage: ~40% (needs improvement)
 ```
 
 **No Extensibility:**
+
 - Cannot import as module
 - Cannot reuse components
 - Cannot inherit/extend classes
@@ -986,30 +1051,30 @@ Coverage: ~40% (needs improvement)
 
 ### 7.1 Comprehensive Scoring Matrix
 
-| Dimension | Weight | ASTGCN | GraphWaveNet | **STMGT v2** |
-|-----------|--------|--------|--------------|--------------|
-| **TRANSPARENCY** ||||
-| Code Structure | 15% | 2/10 | 7/10 | **9/10** |
-| Documentation | 15% | 2/10 | 7/10 | **10/10** |
-| Explainability | 10% | 3/10 | 4/10 | **7/10** |
-| Reproducibility | 10% | 4/10 | 8/10 | **9/10** |
-| **Subtotal** | **50%** | **2.8/10** | **6.5/10** | **8.8/10** ✅ |
-||||
-| **RELIABILITY** ||||
-| Dataset Quality | 15% | 3/10 | ?/10 | **9/10** |
-| Training Valid | 10% | 2/10 | ?/10 | **9/10** |
-| Results Realism | 15% | 1/10 | ?/10 | **9/10** |
-| Consistency | 10% | 2/10 | ?/10 | **9/10** |
-| **Subtotal** | **50%** | **2.0/10** | **?** | **9.0/10** ✅ |
-||||
-| **FEASIBILITY** ||||
-| Deployment | 20% | 1/10 | 5/10 | **9/10** |
-| Scalability | 10% | 2/10 | 6/10 | **7/10** |
-| Maintenance | 15% | 2/10 | 7/10 | **9/10** |
-| Performance | 5% | 6/10 | 8/10 | **7/10** |
-| **Subtotal** | **50%** | **2.5/10** | **6.3/10** | **8.3/10** ✅ |
-||||
-| **FINAL SCORE** || **2.4/10** ❌ | **6.4/10** ⚠️ | **8.7/10** ✅✅ |
+| Dimension        | Weight  | ASTGCN        | GraphWaveNet  | **STMGT v2**    |
+| ---------------- | ------- | ------------- | ------------- | --------------- |
+| **TRANSPARENCY** |         |               |               |
+| Code Structure   | 15%     | 2/10          | 7/10          | **9/10**        |
+| Documentation    | 15%     | 2/10          | 7/10          | **10/10**       |
+| Explainability   | 10%     | 3/10          | 4/10          | **7/10**        |
+| Reproducibility  | 10%     | 4/10          | 8/10          | **9/10**        |
+| **Subtotal**     | **50%** | **2.8/10**    | **6.5/10**    | **8.8/10** ✅   |
+|                  |         |               |
+| **RELIABILITY**  |         |               |               |
+| Dataset Quality  | 15%     | 3/10          | ?/10          | **9/10**        |
+| Training Valid   | 10%     | 2/10          | ?/10          | **9/10**        |
+| Results Realism  | 15%     | 1/10          | ?/10          | **9/10**        |
+| Consistency      | 10%     | 2/10          | ?/10          | **9/10**        |
+| **Subtotal**     | **50%** | **2.0/10**    | **?**         | **9.0/10** ✅   |
+|                  |         |               |
+| **FEASIBILITY**  |         |               |               |
+| Deployment       | 20%     | 1/10          | 5/10          | **9/10**        |
+| Scalability      | 10%     | 2/10          | 6/10          | **7/10**        |
+| Maintenance      | 15%     | 2/10          | 7/10          | **9/10**        |
+| Performance      | 5%      | 6/10          | 8/10          | **7/10**        |
+| **Subtotal**     | **50%** | **2.5/10**    | **6.3/10**    | **8.3/10** ✅   |
+|                  |         |               |
+| **FINAL SCORE**  |         | **2.4/10** ❌ | **6.4/10** ⚠️ | **8.7/10** ✅✅ |
 
 ---
 
@@ -1018,6 +1083,7 @@ Coverage: ~40% (needs improvement)
 #### **STMGT v2 Unique Strengths:**
 
 **1. Multi-Modal Fusion** (Unique)
+
 ```python
 # Traffic + Weather + Temporal
 x_traffic = self.traffic_encoder(traffic_data)
@@ -1027,11 +1093,13 @@ x_temporal = self.temporal_encoder(timestamps)
 # Cross-attention fusion
 x_fused = self.weather_cross_attn(x_traffic, x_weather)
 ```
+
 - No other implementation has this
 - Provides richer context for predictions
 - Weather impact quantifiable
 
 **2. Uncertainty Quantification** (Unique)
+
 ```python
 # Gaussian Mixture Model head (K=3)
 mu, log_sigma, logits_pi = self.output_head(x)
@@ -1042,11 +1110,13 @@ upper_80 = mu + 1.28 * sigma
 
 # Coverage: 89.8% (slightly overconfident but safe)
 ```
+
 - Critical for production deployment
 - Enables risk-aware decision making
 - No other model provides this
 
 **3. Production Infrastructure** (Unique)
+
 ```
 ✅ Full-stack implementation
 ✅ REST API ready
@@ -1054,9 +1124,11 @@ upper_80 = mu + 1.28 * sigma
 ✅ Documentation comprehensive
 ✅ Git history clean
 ```
+
 - temps/ models have NONE of this
 
 **4. Transparency & Reproducibility** (Best)
+
 ```
 ✅ 19 comprehensive docs
 ✅ Config-driven architecture
@@ -1064,6 +1136,7 @@ upper_80 = mu + 1.28 * sigma
 ✅ Training history preserved
 ✅ Clear git commits
 ```
+
 - Exceeds academic paper standards
 
 ---
@@ -1071,6 +1144,7 @@ upper_80 = mu + 1.28 * sigma
 #### **temps/ASTGCN Issues:**
 
 **1. Unreliable Results** ❌
+
 ```
 MAE 2.20 km/h with 2.6K samples = IMPLAUSIBLE
 MAPE 6.94% for traffic = UNREALISTIC
@@ -1078,6 +1152,7 @@ Training 5 min = TOO FAST
 ```
 
 **2. Data Quality Concerns** ❌
+
 ```
 Dataset: 6.3x smaller than STMGT
 Likely data leakage (scaler, sliding window)
@@ -1085,6 +1160,7 @@ Severe overfitting (val loss spike epoch 30)
 ```
 
 **3. Zero Production Value** ❌
+
 ```
 Notebook only (cannot deploy)
 No API, no interface, no infrastructure
@@ -1092,6 +1168,7 @@ Hard-coded paths (/kaggle/...)
 ```
 
 **4. Poor Documentation** ❌
+
 ```
 No README
 Comments in Vietnamese mixed with English
@@ -1108,6 +1185,7 @@ No design rationale
 **For STMGT v2:** (Priority: HIGH)
 
 **1. Accept Current Results as Baseline** ✅
+
 ```
 MAE 3.69 km/h is REALISTIC and TRUSTWORTHY
 MAPE 20.71% aligns with literature for this dataset size
@@ -1115,6 +1193,7 @@ DO NOT compare with temps/ASTGCN (unreliable)
 ```
 
 **2. Complete Phase 2 Model Improvements**
+
 ```
 Tasks:
 - Investigate temporal variance issue (flat predictions)
@@ -1126,6 +1205,7 @@ Expected: MAE 3.69 → 3.0-3.2 km/h
 ```
 
 **3. Implement Phase 4 Explainability**
+
 ```
 Priority features:
 - SHAP values for feature importance
@@ -1137,6 +1217,7 @@ Timeline: 2-3 days
 ```
 
 **4. Document Comparison with Literature**
+
 ```
 Create section in paper/report:
 "Our MAE 3.69 is comparable to ASTGCN paper (4.33)
@@ -1148,6 +1229,7 @@ and reasonable given our smaller dataset (16K vs 17K+)"
 **For temps/ Code:** (Priority: LOW)
 
 **1. ASTGCN - DO NOT USE**
+
 ```
 ❌ Results unreliable
 ❌ Code not maintainable
@@ -1156,6 +1238,7 @@ and reasonable given our smaller dataset (16K vs 17K+)"
 ```
 
 **2. GraphWaveNet - Verify First**
+
 ```
 Action: Run hunglm code to verify claimed results
 If MAE 0.65-1.55 is real → good baseline
@@ -1164,6 +1247,7 @@ Timeline: 2-3 hours
 ```
 
 **3. Archive temps/ Folder**
+
 ```
 # Clear project structure:
 mkdir archive/experimental/
@@ -1178,6 +1262,7 @@ git commit -m "chore: archive experimental notebooks"
 **Academic Contribution:**
 
 **Position STMGT v2 as:**
+
 ```
 1. Multi-modal architecture (Traffic + Weather + Temporal)
 2. Uncertainty quantification (GMM head)
@@ -1187,6 +1272,7 @@ git commit -m "chore: archive experimental notebooks"
 ```
 
 **Comparative Statement:**
+
 ```
 "While simpler models may achieve lower MAE on small,
 well-curated datasets (e.g., temps/ASTGCN: 2.20 km/h on 2.6K samples),
@@ -1199,6 +1285,7 @@ uncertainty quantification not available in baseline models."
 **Production Deployment:**
 
 **Phase 3 Completion:**
+
 ```
 Week 1: Redis caching + API auth
 Week 2: Prometheus monitoring + Docker
@@ -1207,6 +1294,7 @@ Week 4: Production deployment + User testing
 ```
 
 **Phase 4 Excellence:**
+
 ```
 Week 1: Explainability features (SHAP, attention viz)
 Week 2: Model calibration + multi-horizon evaluation
@@ -1223,18 +1311,21 @@ Week 4: Final report + presentation
 **Main Findings:**
 
 **1. STMGT v2 is Production-Ready and Reliable** ✅
+
 - Comprehensive transparency (8.8/10)
 - Trustworthy results (9.0/10)
 - Excellent feasibility (8.3/10)
 - **Overall: 8.7/10** (Ready for deployment)
 
 **2. temps/ASTGCN Results are Unreliable** ❌
+
 - Poor transparency (2.8/10)
 - Questionable reliability (2.0/10)
 - Not deployable (2.5/10)
 - **Overall: 2.4/10** (Not usable)
 
 **3. temps/GraphWaveNet Needs Verification** ⚠️
+
 - Moderate transparency (6.5/10)
 - Results unverified
 - Moderate feasibility (6.3/10)
@@ -1249,6 +1340,7 @@ Week 4: Final report + presentation
 > **STMGT v2 with MAE 3.69 km/h and MAPE 20.71% represents REALISTIC, RELIABLE, and PRODUCTION-READY performance on a real-world traffic forecasting task.**
 
 **These metrics are:**
+
 - ✅ Consistent with academic literature
 - ✅ Appropriate for the dataset size (16.3K samples)
 - ✅ Verifiable and reproducible
@@ -1256,6 +1348,7 @@ Week 4: Final report + presentation
 - ✅ Backed by comprehensive documentation
 
 **The superior metrics from temps/ASTGCN (MAE 2.20, MAPE 6.94%) are:**
+
 - ❌ Likely affected by data leakage
 - ❌ Result of severe overfitting (2.6K samples)
 - ❌ Unrealistic for traffic forecasting
@@ -1267,6 +1360,7 @@ Week 4: Final report + presentation
 ### 9.3 Project Status
 
 **Current State:**
+
 ```
 ✅ Phase 1: Web MVP - 30% complete (Tasks 1.1-1.3 done)
 ⏳ Phase 2: Model Improvements - Not started
@@ -1275,6 +1369,7 @@ Week 4: Final report + presentation
 ```
 
 **To 10/10 Grade:**
+
 ```
 Required:
 1. Complete Phase 1 (web interface polish) - 1 day
@@ -1286,6 +1381,7 @@ Total: ~2-3 weeks of focused work
 ```
 
 **Production Deployment:**
+
 ```
 Ready NOW with current state (8.7/10)
 Can deploy to:
@@ -1303,6 +1399,7 @@ Expected uptime: 99.9%
 ### 9.4 Recommendations Summary
 
 **DO:**
+
 - ✅ Use STMGT v2 as primary model
 - ✅ Document results transparently
 - ✅ Highlight multi-modal + uncertainty advantages
@@ -1310,12 +1407,14 @@ Expected uptime: 99.9%
 - ✅ Deploy to production (ready now)
 
 **DON'T:**
+
 - ❌ Compare with temps/ASTGCN results
 - ❌ Use temps/ASTGCN for any benchmarking
 - ❌ Cite temps/ASTGCN metrics in papers
 - ❌ Attempt to deploy notebook code
 
 **MAYBE:**
+
 - ⚠️ Verify temps/GraphWaveNet results
 - ⚠️ Extract h/d/w multi-period concept from ASTGCN
 - ⚠️ Use GraphWaveNet as comparison if verified
@@ -1335,6 +1434,7 @@ epoch,train_mae,val_mae,train_rmse,val_rmse,train_mape,val_mape,train_r2,val_r2
 ```
 
 **Best Model:** Epoch 26
+
 - Val MAE: 3.69 km/h
 - Val RMSE: 5.99 km/h
 - Val MAPE: 20.71%
@@ -1346,6 +1446,7 @@ epoch,train_mae,val_mae,train_rmse,val_rmse,train_mape,val_mape,train_r2,val_r2
 ### A.2 Dataset Statistics
 
 **STMGT v2:**
+
 ```
 Source: HCMC traffic, October 2025
 Total rows: 205,920
@@ -1357,6 +1458,7 @@ Split: 80/10/10 (temporal)
 ```
 
 **temps/ASTGCN:**
+
 ```
 Source: Unknown (merge_3.csv)
 Total rows: ~129,300 (50 nodes × 2,946 timesteps)
@@ -1386,20 +1488,20 @@ Split: 70/10/20
 class STBlock(nn.Module):
     """
     Spatial-Temporal Block with parallel processing.
-    
+
     Processes spatial and temporal information in parallel,
     then fuses them with a learned gate mechanism.
-    
+
     Architecture:
         Input → [Spatial Branch (GAT), Temporal Branch (Attention)]
               → Gate Fusion → Layer Norm → Output
-    
+
     Args:
         hidden_dim (int): Hidden layer dimension
         num_heads (int): Number of attention heads for GAT
         dropout (float): Dropout probability
         drop_edge_rate (float): Edge dropout rate for GAT
-        
+
     Returns:
         Tensor: Fused spatial-temporal features [B, N, T, D]
     """
@@ -1412,7 +1514,7 @@ class STBlock(nn.Module):
     ):
         super().__init__()
         self.hidden_dim = hidden_dim
-        
+
         # Spatial processing (GAT)
         self.gat = GATv2Conv(
             in_channels=hidden_dim,
@@ -1421,7 +1523,7 @@ class STBlock(nn.Module):
             concat=False,
             dropout=dropout,
         )
-        
+
         # Temporal processing (Multi-head Attention)
         self.temporal_attn = nn.MultiheadAttention(
             embed_dim=hidden_dim,
@@ -1429,10 +1531,10 @@ class STBlock(nn.Module):
             dropout=dropout,
             batch_first=True,
         )
-        
+
         # Fusion gate
         self.fusion_gate = nn.Linear(hidden_dim * 2, hidden_dim)
-        
+
         # Normalization layers
         self.ln_spatial = nn.LayerNorm([hidden_dim])
         self.ln_temporal = nn.LayerNorm([hidden_dim])
@@ -1461,9 +1563,9 @@ batch_size = 16
 ---
 
 **Report Metadata:**
+
 - Generated: November 5, 2025
 - Version: 1.0
 - Pages: ~45 (estimated)
 - Word Count: ~8,500
 - Confidence Level: HIGH (based on code inspection and statistical analysis)
-

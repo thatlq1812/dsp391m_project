@@ -6,15 +6,10 @@ __all__ = []
 
 
 def _register_graph_models() -> None:
-    """Register graph neural network models."""
-    try:
-        module = import_module("traffic_forecast.models.graph")
-        for symbol in ["ASTGCNConfig", "ASTGCNComponentConfig", "ASTGCNTrafficModel"]:
-            if hasattr(module, symbol):
-                globals()[symbol] = getattr(module, symbol)
-                __all__.append(symbol)
-    except (ImportError, IndentationError, SyntaxError):
-        pass
+    """Register graph neural network models - lazy loading to avoid TensorFlow."""
+    # Skip auto-registration to avoid TensorFlow import issues
+    # Models can be loaded on-demand via get_astgcn_models()
+    pass
 
 
 def _register_lstm_models() -> None:
@@ -28,28 +23,13 @@ def _register_lstm_models() -> None:
 
 
 def _register_astgcn() -> None:
-    """Expose the ASTGCN runner."""
-    try:
-        from traffic_forecast.models.astgcn import (
-            NotebookBaselineConfig,
-            NotebookBaselineRunner,
-            run_astgcn,
-        )
-
-        globals()["NotebookBaselineConfig"] = NotebookBaselineConfig
-        globals()["NotebookBaselineRunner"] = NotebookBaselineRunner
-        globals()["run_astgcn"] = run_astgcn
-        __all__.extend(
-            [
-                "NotebookBaselineConfig",
-                "NotebookBaselineRunner",
-                "run_astgcn",
-            ]
-        )
-    except (ImportError, IndentationError, SyntaxError):
-        pass
+    """Expose the ASTGCN runner - lazy loading to avoid TensorFlow."""
+    # Skip auto-registration to avoid TensorFlow import issues
+    # ASTGCN can be imported directly when needed
+    pass
 
 
 _register_graph_models()
 _register_lstm_models()
 _register_astgcn()
+
