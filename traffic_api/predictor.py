@@ -104,14 +104,33 @@ class STMGTPredictor:
         print(f"Graph: {self.num_nodes} nodes, {self.edge_index.size(1)} edges")
         
         # Load node metadata from topology for display purposes
-        topology_path = self.checkpoint_path.parents[1] / "cache" / "overpass_topology.json"
-        self.node_metadata = {}
+        # Try multiple possible locations
+        possible_topology_paths = [
+            Path("cache/overpass_topology.json"),  # Project root
+            self.checkpoint_path.parents[2] / "cache" / "overpass_topology.json",  # From checkpoint
+        ]
         
-        if topology_path.exists():
-            with open(topology_path, 'r', encoding='utf-8') as f:
-                topology = json.load(f)
-                for node in topology['nodes']:
-                    self.node_metadata[node['node_id']] = node
+        self.node_metadata = {}
+        topology_loaded = False
+        
+        for topology_path in possible_topology_paths:
+            if topology_path.exists():
+                try:
+                    with open(topology_path, 'r', encoding='utf-8') as f:
+                        topology = json.load(f)
+                        for node in topology.get('nodes', []):
+                            node_id = node.get('node_id')
+                            if node_id:
+                                self.node_metadata[node_id] = node
+                    print(f"✓ Loaded {len(self.node_metadata)} node metadata from {topology_path}")
+                    topology_loaded = True
+                    break
+                except Exception as e:
+                    print(f"Failed to load topology from {topology_path}: {e}")
+        
+        if not topology_loaded:
+            print("WARNING: Node metadata not loaded. Map will show coordinates as (0,0)")
+
         
         # Verify node count matches config
         if self.config and self.config['model']['num_nodes'] != self.num_nodes:
@@ -121,21 +140,79 @@ class STMGTPredictor:
     def _load_model(self) -> STMGT:
         """Load STMGT model from checkpoint."""
         # Load checkpoint
-        checkpoint = torch.load(self.checkpoint_path, map_location=self.device)
+        checkpoint = torch.load(self.checkpoint_path, map_location=self.device, weights_only=False)
         
-        # Extract model config (from checkpoint or use defaults)
-        model_config = {
-            'num_nodes': 62,  # Will update based on topology
-            'in_dim': 1,
-            'hidden_dim': 96,
-            'num_blocks': 3,
-            'num_heads': 4,
-            'dropout': 0.2,
-            'drop_edge_rate': 0.05,
-            'mixture_components': 3,
-            'seq_len': 12,
-            'pred_len': 12,
-        }
+        # Extract model config from checkpoint if available
+        if 'config' in checkpoint and 'model' in checkpoint['config']:
+            print("Using model config from checkpoint")
+            saved_config = checkpoint['config']['model']
+            model_config = {
+                'num_nodes': saved_config.get('num_nodes', 62),
+                'in_dim': saved_config.get('in_dim', 1),
+                'hidden_dim': saved_config.get('hidden_dim', 96),
+                'num_blocks': saved_config.get('num_blocks', 3),
+                'num_heads': saved_config.get('num_heads', 4),
+                'dropout': saved_config.get('dropout', 0.2),
+                'drop_edge_rate': saved_config.get('drop_edge_rate', 0.05),
+                'mixture_components': saved_config.get('mixture_components', 3),
+                'seq_len': saved_config.get('seq_len', 12),
+                'pred_len': saved_config.get('pred_len', 12),
+            }
+        else:
+            # Detect config from checkpoint state_dict shapes
+            print("Config not found in checkpoint, detecting from state_dict...")
+            state_dict = checkpoint.get('model_state_dict', checkpoint.get('state_dict', checkpoint))
+            
+            # Detect num_blocks from keys
+            num_blocks = 0
+            for key in state_dict.keys():
+                if 'st_blocks.' in key:
+                    block_idx = int(key.split('st_blocks.')[1].split('.')[0])
+                    num_blocks = max(num_blocks, block_idx + 1)
+            
+            # Detect num_heads from attention shape
+            # att shape: [1, num_heads, hidden_dim]
+            if 'st_blocks.0.gat.att' in state_dict:
+                num_heads = state_dict['st_blocks.0.gat.att'].shape[1]
+            else:
+                num_heads = 4
+            
+            # Detect pred_len and mixture_components from output head
+            # mu_head output: [mixture_components * pred_len, hidden_dim]
+            # Standard configs: K=3 mixtures, pred_len in {8, 12}
+            if 'output_head.mu_head.weight' in state_dict:
+                out_dim = state_dict['output_head.mu_head.weight'].shape[0]
+                # Try K=3 first (most common)
+                for K in [3, 2, 4]:
+                    if out_dim % K == 0:
+                        pred_len = out_dim // K
+                        if pred_len in [6, 8, 12, 16]:  # Reasonable horizons
+                            mixture_components = K
+                            break
+                else:
+                    # Fallback
+                    mixture_components = 3
+                    pred_len = out_dim // mixture_components
+            else:
+                mixture_components = 3
+                pred_len = 12
+            
+            print(f"Detected: num_blocks={num_blocks}, num_heads={num_heads}, mixture_components={mixture_components}, pred_len={pred_len}")
+            
+            model_config = {
+                'num_nodes': 62,
+                'in_dim': 1,
+                'hidden_dim': 96,
+                'num_blocks': num_blocks,
+                'num_heads': num_heads,
+                'dropout': 0.2,
+                'drop_edge_rate': 0.05,
+                'mixture_components': mixture_components,
+                'seq_len': 12,
+                'pred_len': pred_len,
+            }
+        
+        print(f"Model config: {model_config}")
         
         # Create model
         model = STMGT(**model_config)
