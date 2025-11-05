@@ -85,6 +85,12 @@ async function loadNodes() {
         const data = await apiGetNodes();
         nodes = data.nodes || data;
         
+        // Add 'id' alias for 'node_id' for easier access
+        nodes = nodes.map(node => ({
+            ...node,
+            id: node.node_id
+        }));
+        
         console.log(`Loaded ${nodes.length} traffic nodes`);
         
         // Update stats

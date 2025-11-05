@@ -57,10 +57,10 @@ async function apiGetNodes() {
 
 /**
  * Get predictions for all nodes
- * @param {Array} horizons - Forecast horizons (e.g., [1, 4, 12])
+ * @param {Array} horizons - Forecast horizons (e.g., [1, 4, 8])
  * @returns {Promise} Prediction object
  */
-async function apiGetPredictions(horizons = [1, 4, 12]) {
+async function apiGetPredictions(horizons = [1, 4, 8]) {
     const data = await apiCall('/predict', {
         method: 'POST',
         body: JSON.stringify({ horizons })
@@ -71,10 +71,10 @@ async function apiGetPredictions(horizons = [1, 4, 12]) {
 /**
  * Get prediction for specific node
  * @param {number} nodeId - Node ID
- * @param {Array} horizons - Forecast horizons
+ * @param {Array} horizons - Forecast horizons (max 8 steps)
  * @returns {Promise} Prediction object for node
  */
-async function apiGetNodePrediction(nodeId, horizons = [1, 2, 3, 4, 6, 8, 12]) {
+async function apiGetNodePrediction(nodeId, horizons = [1, 2, 3, 4, 6, 8]) {
     const data = await apiCall(`/predict`, {
         method: 'POST',
         body: JSON.stringify({ 
@@ -84,13 +84,14 @@ async function apiGetNodePrediction(nodeId, horizons = [1, 2, 3, 4, 6, 8, 12]) {
     });
     
     // Extract prediction for this node
-    if (data.predictions && data.predictions.length > 0) {
-        const nodePred = data.predictions.find(p => p.node_id === nodeId);
+    if (data.nodes && data.nodes.length > 0) {
+        const nodePred = data.nodes.find(p => p.node_id === nodeId);
         if (nodePred) {
             return {
                 ...nodePred,
                 inference_time_ms: data.inference_time_ms,
-                cache_hit: data.cache_hit || false
+                timestamp: data.timestamp,
+                forecast_time: data.forecast_time
             };
         }
     }
