@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Optional
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from traffic_api.config import config
 from traffic_api.predictor import STMGTPredictor
@@ -34,6 +36,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount static files
+static_dir = Path(__file__).parent / "static"
+if static_dir.exists():
+    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+    print(f"✅ Static files mounted from {static_dir}")
+else:
+    print(f"⚠️ Static directory not found: {static_dir}")
 
 # Global predictor instance
 predictor: Optional[STMGTPredictor] = None
@@ -65,19 +75,26 @@ async def startup_event():
         traceback.print_exc()
 
 
-@app.get("/", response_model=dict)
+@app.get("/", response_class=FileResponse)
 async def root():
-    """Root endpoint."""
-    return {
-        "service": "STMGT Traffic Forecasting API",
-        "version": "0.1.0",
-        "status": "running",
-        "endpoints": {
-            "health": "/health",
-            "nodes": "/nodes",
-            "predict": "/predict",
-        },
-    }
+    """Serve web interface."""
+    static_dir = Path(__file__).parent / "static"
+    index_path = static_dir / "index.html"
+    
+    if index_path.exists():
+        return FileResponse(index_path)
+    else:
+        # Fallback to JSON response if static files not available
+        return {
+            "service": "STMGT Traffic Forecasting API",
+            "version": "0.1.0",
+            "status": "running",
+            "endpoints": {
+                "health": "/health",
+                "nodes": "/nodes",
+                "predict": "/predict",
+            },
+        }
 
 
 @app.get("/health", response_model=HealthResponse)
