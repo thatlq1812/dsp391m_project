@@ -19,29 +19,28 @@ This index organizes the project documentation for fast navigation. All docs liv
 
 - **Project Overview** — `README.md` (root)
 - **Changelog** — `docs/CHANGELOG.md`
-- **Documentation Consolidation Log** — `docs/DOCS_CONSOLIDATION.md`
 
 ---
 
 ## Core Documentation
 
-### Model Architecture
-- **STMGT Architecture** — `docs/STMGT_ARCHITECTURE.md`
-- **Data I/O & Schemas** — `docs/STMGT_DATA_IO.md`
-- **Model Analysis** — `docs/STMGT_MODEL_ANALYSIS.md`
+### Model Architecture (`docs/architecture/`)
+- **STMGT Architecture** — `docs/architecture/STMGT_ARCHITECTURE.md`
+- **Data I/O & Schemas** — `docs/architecture/STMGT_DATA_IO.md`
+- **Model Analysis** — `docs/architecture/STMGT_MODEL_ANALYSIS.md`
 
-### Research
-- **Consolidated Research** (merged from Claude, Gemini, OpenAI) — `docs/STMGT_RESEARCH_CONSOLIDATED.md`
-- **Full Report Notes** — `docs/README_FULLREPORT.md`
-- **Roadmap to Final Report** — `docs/ROADMAP_REPORT3_TO_FINAL.md`
-- **Report Files** — `docs/report/` (RP3.md, RP3_ReCheck.md, FIGURES_USAGE_GUIDE.md, REPORT_COMPLETION_TODO.md)
+### Research (`docs/research/`)
+- **Consolidated Research** (merged from Claude, Gemini, OpenAI) — `docs/research/STMGT_RESEARCH_CONSOLIDATED.md`
 
-### Dashboard
-- **Quickstart Guide** — `docs/DASHBOARD_V4_QUICKSTART.md`
-- **Reference Manual** — `docs/DASHBOARD_V4_REFERENCE.md`
+### Dashboard (`docs/dashboard/`)
+- **Quickstart Guide** — `docs/dashboard/DASHBOARD_V4_QUICKSTART.md`
+- **Reference Manual** — `docs/dashboard/DASHBOARD_V4_REFERENCE.md`
 
-### Configuration & Operations
-- **VM Config Integration** — `docs/VM_CONFIG_INTEGRATION.md`
+### Reports (`docs/report/`)
+- **Full Report Notes** — `docs/report/README_FULLREPORT.md`
+- **Roadmap to Final** — `docs/report/ROADMAP_REPORT3_TO_FINAL.md`
+- **RP3 Documents** — `docs/report/RP3.md`, `RP3_ReCheck.md`
+- **Figures Guide** — `docs/report/FIGURES_USAGE_GUIDE.md`
 
 ---
 
@@ -50,6 +49,7 @@ This index organizes the project documentation for fast navigation. All docs liv
 - **Setup Guide** — `docs/guides/README_SETUP.md`
 - **Workflow** — `docs/guides/WORKFLOW.md`
 - **Data Pipeline** — `docs/guides/PROCESSED_DATA_PIPELINE.md`
+- **VM Config Integration** — `docs/guides/VM_CONFIG_INTEGRATION.md`
 
 ---
 

@@ -103,6 +103,7 @@ project/
 Documentation lives in `docs/` (all files include Maintainer metadata):
 
 **Core Documentation:**
+
 - `docs/CHANGELOG.md` – Project-level change log with full history
 - `docs/INDEX.md` – Canonical index of all documentation (reorganized Nov 2025)
 - `docs/STMGT_ARCHITECTURE.md` – Model architecture and design decisions
@@ -110,22 +111,27 @@ Documentation lives in `docs/` (all files include Maintainer metadata):
 - `docs/STMGT_RESEARCH_CONSOLIDATED.md` – Merged research findings (Claude, Gemini, OpenAI)
 
 **Guides (`docs/guides/`):**
+
 - `docs/guides/README_SETUP.md` – Environment setup and installation
 - `docs/guides/WORKFLOW.md` – Development workflow and operations
 - `docs/guides/PROCESSED_DATA_PIPELINE.md` – Data collection and processing pipeline
 
 **Quality Audits (`docs/audits/`):**
+
 - `docs/audits/PROJECT_TRANSPARENCY_AUDIT.md` – Comprehensive project evaluation (8.7/10)
 - `docs/audits/GRAPHWAVENET_TRANSPARENCY_AUDIT.md` – Baseline model analysis
 
 **Dashboard:**
+
 - `docs/DASHBOARD_V4_QUICKSTART.md` – Dashboard quick start guide
 - `docs/DASHBOARD_V4_REFERENCE.md` – Complete dashboard reference
 
 **Phase Instructions (`docs/instructions/`):**
+
 - Phase 1-4 implementation guides and task lists
 
 **Archived Content:**
+
 - `archive/README.md` – Experimental code, old training runs, retention policy
 
 ---

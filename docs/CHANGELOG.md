@@ -25,6 +25,7 @@ Comprehensive cleanup and reorganization of project structure for production rea
 ### Changes Summary
 
 **Code Cleanup:**
+
 - ✅ Archived experimental implementations: `temps/astgcn_v0/` → `archive/experimental/`
 - ✅ Archived GraphWaveNet baseline: `temps/hunglm/` → `archive/experimental/`
 - ✅ Kept `temps/datdtq/` (team member workspace, currently empty)
@@ -32,6 +33,7 @@ Comprehensive cleanup and reorganization of project structure for production rea
 - ✅ Cleaned all Python cache: `__pycache__/`, `.pyc`, `.pytest_cache/`
 
 **Training Runs Cleanup:**
+
 - ✅ Archived 8 experimental runs (Nov 1-2): → `archive/training_runs/`
   - `stmgt_v2_20251101_012257/` (854K params)
   - `stmgt_v2_20251101_200526/` (config test)
@@ -44,6 +46,7 @@ Comprehensive cleanup and reorganization of project structure for production rea
 - ✅ Kept only production model: `outputs/stmgt_v2_20251102_200308/` (4.0M params)
 
 **Documentation Reorganization:**
+
 - ✅ Created `docs/sessions/` - Session summaries and development logs
   - Moved `SESSION_2025-11-05_WEB_MVP.md`
 - ✅ Created `docs/audits/` - Quality and transparency audits
@@ -60,12 +63,14 @@ Comprehensive cleanup and reorganization of project structure for production rea
 ### Metrics
 
 **Space Savings:**
+
 - Archive: 46 MB (experimental code + old runs)
 - Active outputs: 4.0 MB (production model only)
 - temps/: 0 bytes (cleaned)
 - Total saved: ~20 MB in active workspace
 
 **Structure Quality:**
+
 - ✅ Clean root directory (no loose log files)
 - ✅ Organized documentation (3 new subdirs)
 - ✅ Clear archive with retention policy
@@ -75,31 +80,37 @@ Comprehensive cleanup and reorganization of project structure for production rea
 ### Archive Contents
 
 **`archive/experimental/`:**
+
 - `astgcn_v0/` - ASTGCN notebook (unreliable, see audit report)
 - `hunglm/` - GraphWaveNet baseline (unverified)
 
 **`archive/training_runs/`:**
+
 - 8 experimental training runs from Nov 1-2, 2025
 
 **`archive/research_report/`:**
+
 - Old research documentation and analysis
 
 ### Rationale
 
 **Why Archive temps/?**
 Per `docs/audits/PROJECT_TRANSPARENCY_AUDIT.md`:
+
 - ASTGCN results unreliable (dataset 6.3x smaller, severe overfitting)
 - MAPE 6.94% too good to be realistic (likely data leakage)
 - No production infrastructure (notebook only)
 - Kept for reference and concept extraction (H/D/W multi-period)
 
 **Why Clean Training Runs?**
+
 - Production model identified: `stmgt_v2_20251102_200308/`
 - Old runs were hyperparameter experiments
 - Save disk space and reduce confusion
 - All kept in archive for historical reference
 
 **Why Reorganize Docs?**
+
 - Better navigation (sessions/audits/guides separation)
 - Clearer purpose for each document
 - Easier to find relevant information
