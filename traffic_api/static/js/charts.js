@@ -10,11 +10,19 @@ function updateForecastChart(prediction) {
     const ctx = document.getElementById('forecastChart').getContext('2d');
     
     // Prepare data from prediction
-    const predictions = prediction.predictions || prediction;
+    // Backend returns: { node_id, lat, lon, forecasts: [...], ... }
+    const forecasts = prediction.forecasts || prediction.predictions || prediction;
+    
+    if (!Array.isArray(forecasts)) {
+        console.error('Invalid forecast data:', prediction);
+        showChartError('Invalid forecast data format');
+        return;
+    }
     
     // Generate labels (time ahead)
-    const labels = predictions.map((_, idx) => {
-        const minutes = (idx + 1) * 15; // 15-min intervals
+    const labels = forecasts.map((f, idx) => {
+        // Use horizon_minutes if available, otherwise calculate
+        const minutes = f.horizon_minutes || (f.horizon * 15);
         const hours = Math.floor(minutes / 60);
         const mins = minutes % 60;
         
@@ -28,9 +36,9 @@ function updateForecastChart(prediction) {
     });
     
     // Extract mean predictions and confidence intervals
-    const means = predictions.map(p => p.mean);
-    const upperBounds = predictions.map(p => p.mean + p.std);
-    const lowerBounds = predictions.map(p => Math.max(0, p.mean - p.std)); // Don't go negative
+    const means = forecasts.map(f => f.mean);
+    const upperBounds = forecasts.map(f => f.upper_80 || (f.mean + f.std));
+    const lowerBounds = forecasts.map(f => f.lower_80 || Math.max(0, f.mean - f.std));
     
     // Destroy existing chart if it exists
     if (forecastChart) {
