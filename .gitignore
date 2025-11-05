@@ -3,7 +3,7 @@
 
 # Repo / GitHub
 .github/
-instructions/
+# instructions/  # Allow docs/instructions/ for roadmap
 
 # OS
 .DS_Store
@@ -86,7 +86,7 @@ coverage.xml
 # Docs / Sphinx / LaTeX / PDF / logs
 !README.md
 docs/_build/
-*.md
+# *.md  # Allow .md files in docs/ for documentation
 *.pdf
 *.log
 *.aux
