@@ -16,6 +16,137 @@ Complete changelog for STMGT Traffic Forecasting System
 
 ---
 
+## [Phase 1 Web MVP - Tasks 1.1-1.3 COMPLETED] - 2025-11-05
+
+### Overview
+
+Successfully implemented functional web interface with real-time traffic visualization. Server running at `http://localhost:8000` with full API and frontend integration.
+
+### Completed Tasks
+
+**Task 1.1 Quick Fixes (✅ DONE):**
+
+- Fixed duplicate header in `docs/STMGT_RESEARCH_CONSOLIDATED.md`
+- Verified `.env` file exists with conda environment configuration
+- Confirmed `requirements.txt` tracked in git
+- Updated `.gitignore` to allow docs/instructions tracking
+
+**Task 1.2 Frontend Structure (✅ DONE):**
+
+- Created `traffic_api/static/` directory structure
+- Implemented `index.html` with Bootstrap 5.3 responsive layout
+- Developed `css/style.css` with professional design and color-coded markers
+- Built `js/api.js` - API client wrapper with error handling
+- Created `js/charts.js` - Chart.js forecast visualization
+- Implemented `js/map.js` - Google Maps integration with HCMC center
+- Updated `main.py` to serve static files at root endpoint
+
+**Task 1.3 Google Maps Integration (✅ DONE):**
+
+- Map displays 62 traffic nodes with color-coded markers (green/yellow/red)
+- Click node → forecast chart appears with 2-hour predictions
+- Auto-refresh every 15 minutes
+- Responsive control panel with node details and statistics
+
+### Critical Fixes Applied
+
+**1. Model Checkpoint Loading Issue (BLOCKING → RESOLVED):**
+
+- **Problem:** Architecture mismatch - checkpoint had 4 ST blocks with 6 heads, code expected 3 blocks with 4 heads
+- **Solution:** Implemented auto-detection from state_dict in `traffic_api/predictor.py`:
+  - Detect `num_blocks` from `st_blocks.*` keys
+  - Detect `num_heads` from GAT attention tensor shape
+  - Detect `pred_len` from output head dimensions (24 / K=3 mixtures = 8)
+- **Result:** Model loads successfully with detected config: `{num_blocks: 4, num_heads: 6, pred_len: 8}`
+
+**2. Node Metadata Loading (lat/lon = 0.0 → RESOLVED):**
+
+- **Problem:** Topology path incorrectly computed as `outputs/cache/overpass_topology.json`
+- **Solution:** Fixed path to `cache/overpass_topology.json` (project root)
+- **Result:** ✓ Loaded 78 node metadata with full coordinates
+
+**3. Frontend API Integration (422 errors → RESOLVED):**
+
+- **Problem:** Frontend expected `predictions` array, backend returned `nodes` array
+- **Solution:** Updated `api.js` to use `data.nodes` instead of `data.predictions`
+- **Additional Fixes:**
+  - Added `id` alias for `node_id` in `map.js` for easier field access
+  - Updated horizons from [1,2,3,4,6,8,12] → [1,2,3,4,6,8] (matches pred_len=8)
+  - Fixed chart.js to use `prediction.forecasts` field with validation
+
+**4. Chart Visualization (map error → RESOLVED):**
+
+- **Problem:** `predictions.map is not a function` - code expected different structure
+- **Solution:** Updated `charts.js` to:
+  - Use `prediction.forecasts` instead of `prediction.predictions`
+  - Add `Array.isArray()` validation
+  - Use `horizon_minutes` and `upper_80/lower_80` from backend
+- **Result:** Charts render correctly with confidence intervals
+
+### Technical Achievements
+
+**API Endpoints Working:**
+
+- `GET /` → Serves web interface (index.html)
+- `GET /health` → Returns 200 OK with model status
+- `GET /nodes` → Returns 62 nodes with full metadata (lat/lon/streets)
+- `POST /predict` → Predictions for specific nodes with configurable horizons
+
+**Performance Metrics:**
+
+- Inference time: ~600ms per request (< 1s target ✓)
+- Model size: 267K parameters (~3MB)
+- Prediction horizon: 8 timesteps (2 hours @ 15-min intervals)
+
+**Infrastructure:**
+
+- FastAPI backend: Running on uvicorn with auto-reload
+- Static files: Served at `/static/` with FileResponse at root
+- Model device: CUDA (GPU acceleration)
+- Data source: `all_runs_extreme_augmented.parquet` (16K samples, 62 nodes)
+
+### Known Issues & Next Phase Focus
+
+**⚠️ Model Quality Issues (Phase 2 Priority):**
+
+- **Low temporal variance:** Forecasts are nearly flat across horizons (18.5-19.2 km/h)
+  - Example node: h=1→18.57, h=2→18.39, h=8→19.19 km/h (only 0.8 km/h variance)
+  - Spatial variance OK: 14.7-20.4 km/h across nodes
+  - **Root cause:** ST blocks not learning temporal dynamics properly
+- **Implications:** Model predicts near-constant speed, not realistic traffic patterns
+- **Phase 2 Tasks to address this:**
+  - Task 2.1: Investigate test/val metric discrepancy
+  - Task 2.2: Add temporal smoothness regularization
+  - Task 2.3: Ablation study on ST block architecture
+  - Task 2.4: Cross-validation with proper splits
+
+### Git Commits (Session)
+
+```bash
+40549b8 - docs: fix duplicate header in research consolidated
+8332816 - feat(frontend): complete web interface with maps and charts
+a742c31 - fix(predictor): auto-detect model config from checkpoint
+fee024f - fix(frontend): correct API response handling and field mapping
+d04892c - fix(charts): use 'forecasts' field and backend confidence intervals
+```
+
+### Next Session Goals
+
+**Remaining Phase 1 Tasks (1.4-1.10):**
+
+- Task 1.4: API client comprehensive testing
+- Task 1.5: Forecast chart validation and polish
+- Task 1.6: Backend enhancements (if needed)
+- Task 1.7: Styling improvements and mobile responsiveness
+- Task 1.8: End-to-end testing (all nodes, error cases)
+- Task 1.9: Documentation updates (API docs, deployment guide)
+- Task 1.10: Demo preparation and video recording
+
+**Or Jump to Phase 2:**
+Focus on improving model quality to generate realistic temporal patterns instead of flat predictions. This is higher priority for academic/production value.
+
+---
+
 ## [Roadmap to Excellence - Phase 1 Started] - 2025-11-05
 
 ### Planning
@@ -31,11 +162,13 @@ Complete changelog for STMGT Traffic Forecasting System
 ### Phase 1 Progress - Web MVP
 
 **Task 1.1 Quick Fixes (COMPLETED):**
+
 - ✅ Fixed duplicate header in `docs/STMGT_RESEARCH_CONSOLIDATED.md`
 - ✅ Verified `.env` file exists with conda environment configuration
 - ✅ Confirmed `requirements.txt` tracked in git
 
 **Next Steps:**
+
 - Task 1.2: Create frontend structure (HTML/CSS/JS)
 - Task 1.3: Implement Google Maps integration
 - Task 1.4-1.10: Complete web interface and demo preparation
