@@ -294,6 +294,9 @@ class ASTGCNBlock(layers.Layer):
         temporal_att = self.temporal_attention(inputs)
         spatial_att = self.spatial_attention(inputs)
 
+        # Expand attention weights to match input dimensions
+        temporal_att = tf.expand_dims(temporal_att, axis=-1)  # [batch, time, nodes, 1]
+        
         x = inputs * temporal_att
         x = self.cheb_conv(x, spatial_att, training=training)
 

@@ -46,6 +46,9 @@ class TrainingConfig:
     prefetch_factor: Optional[int] = 2
     matmul_precision: str = "medium"
     mse_loss_weight: float = 0.0
+    use_lr_scheduler: bool = False
+    scheduler_type: str = "plateau"
+    scheduler_params: dict = field(default_factory=dict)
 
     def resolve_data_path(self, base_dir: Optional[Path] = None, *, strict: bool = True) -> Path:
         """Return the parquet path for ``data_source`` relative to the data root."""

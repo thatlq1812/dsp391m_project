@@ -8,6 +8,28 @@ import torch.nn as nn
 from torch_geometric.nn import GATv2Conv
 
 
+class Normalizer(nn.Module):
+    """
+    Feature normalizer with learnable affine transformation.
+    
+    Normalizes input to zero mean and unit variance.
+    """
+
+    def __init__(self, mean: float | list, std: float | list, eps: float = 1e-8) -> None:
+        super().__init__()
+        self.register_buffer("mean", torch.tensor(mean, dtype=torch.float32))
+        self.register_buffer("std", torch.tensor(std, dtype=torch.float32))
+        self.eps = eps
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Normalize input."""
+        return (x - self.mean) / (self.std + self.eps)
+
+    def denormalize(self, x: torch.Tensor) -> torch.Tensor:
+        """Inverse transformation for predictions."""
+        return x * (self.std + self.eps) + self.mean
+
+
 class TemporalEncoder(nn.Module):
     """Hierarchical temporal encoding with cyclical features and embeddings."""
 
@@ -172,11 +194,25 @@ class STMGT(nn.Module):
         mixture_components: int = 3,
         seq_len: int = 48,
         pred_len: int = 12,
+        speed_mean: float = 18.72,
+        speed_std: float = 7.03,
+        weather_mean: list[float] | None = None,
+        weather_std: list[float] | None = None,
     ) -> None:
         super().__init__()
         self.num_nodes = num_nodes
         self.seq_len = seq_len
         self.pred_len = pred_len
+
+        # Default weather statistics
+        if weather_mean is None:
+            weather_mean = [25.0, 15.0, 1.0]
+        if weather_std is None:
+            weather_std = [5.0, 10.0, 2.0]
+
+        # Normalizers
+        self.speed_normalizer = Normalizer(mean=speed_mean, std=speed_std)
+        self.weather_normalizer = Normalizer(mean=weather_mean, std=weather_std)
 
         self.traffic_encoder = nn.Linear(in_dim, hidden_dim)
         self.weather_encoder = nn.Linear(3, hidden_dim)
@@ -208,6 +244,10 @@ class STMGT(nn.Module):
         x_weather: torch.Tensor,
         temporal_features: dict[str, torch.Tensor],
     ) -> dict[str, torch.Tensor]:
+        # Normalize inputs
+        x_traffic = self.speed_normalizer(x_traffic)
+        x_weather = self.weather_normalizer(x_weather)
+        
         traffic_emb = self.traffic_encoder(x_traffic)
         temporal_emb = self.temporal_encoder(temporal_features)
         x = traffic_emb + temporal_emb.unsqueeze(1)
@@ -218,3 +258,47 @@ class STMGT(nn.Module):
         x = x.mean(dim=2)
         x, _ = self.weather_cross_attn(x, x_weather)
         return self.output_head(x)
+    
+    def denormalize_predictions(self, pred_params: dict[str, torch.Tensor]) -> dict[str, torch.Tensor]:
+        """
+        Denormalize prediction parameters back to original scale.
+        
+        Args:
+            pred_params: dict with 'means', 'stds', 'logits' (normalized)
+        
+        Returns:
+            dict with denormalized parameters
+        """
+        means_denorm = self.speed_normalizer.denormalize(pred_params["means"])
+        stds_denorm = pred_params["stds"] * self.speed_normalizer.std
+        
+        return {
+            "means": means_denorm,
+            "stds": stds_denorm,
+            "logits": pred_params["logits"],
+        }
+    
+    def predict(
+        self,
+        x_traffic: torch.Tensor,
+        edge_index: torch.Tensor,
+        x_weather: torch.Tensor,
+        temporal_features: dict[str, torch.Tensor],
+        denormalize: bool = False,
+    ) -> dict[str, torch.Tensor]:
+        """
+        Prediction with optional denormalization.
+        
+        Args:
+            denormalize: If True, denormalize outputs. Set False for old models trained
+                        with unnormalized targets (before Nov 9, 2025 fix).
+        
+        Returns predictions in original speed scale (km/h).
+        """
+        pred_params = self.forward(x_traffic, edge_index, x_weather, temporal_features)
+        
+        if denormalize:
+            return self.denormalize_predictions(pred_params)
+        else:
+            # Old models already output raw scale
+            return pred_params

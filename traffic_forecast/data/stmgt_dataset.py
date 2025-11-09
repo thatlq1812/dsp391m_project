@@ -52,10 +52,46 @@ class STMGTDataset(Dataset):
         # Sort by timestamp
         df = df.sort_values('timestamp').reset_index(drop=True)
         
-        # Add temporal features
+        # Data preprocessing and validation
+        print("Preprocessing data...")
+        
+        # Fix temporal features (recompute from timestamp to avoid NaN)
         df['hour'] = df['timestamp'].dt.hour
         df['dow'] = df['timestamp'].dt.dayofweek
         df['is_weekend'] = (df['dow'] >= 5).astype(int)
+        
+        # Fix missing weather data
+        weather_cols = ['temperature_c', 'wind_speed_kmh', 'precipitation_mm']
+        for col in weather_cols:
+            if col in df.columns:
+                # Fill NaN with column mean
+                mean_val = df[col].mean()
+                if pd.isna(mean_val):
+                    mean_val = 0.0
+                df[col] = df[col].fillna(mean_val)
+                print(f"  {col}: filled {df[col].isna().sum()} missing values")
+            else:
+                # Create column with zeros if not exists
+                df[col] = 0.0
+                print(f"  {col}: created with zeros")
+        
+        # Validate data
+        print("Validating data...")
+        assert df['speed_kmh'].notna().all(), "Speed contains NaN"
+        assert (df['speed_kmh'] >= 0).all(), "Speed contains negative values"
+        assert (df['hour'] >= 0).all() and (df['hour'] <= 23).all(), "Invalid hour values"
+        assert (df['dow'] >= 0).all() and (df['dow'] <= 6).all(), "Invalid day of week"
+        print("  Data validation passed!")
+        
+        # Compute normalization statistics (will be used by model)
+        self.speed_mean = df['speed_kmh'].mean()
+        self.speed_std = df['speed_kmh'].std()
+        self.weather_mean = df[weather_cols].mean().values
+        self.weather_std = df[weather_cols].std().values
+        
+        print(f"  Speed: mean={self.speed_mean:.2f}, std={self.speed_std:.2f}")
+        print(f"  Weather means: {self.weather_mean}")
+        print(f"  Weather stds: {self.weather_std}")
         
         # Load graph structure
         # Use actual edges from data instead of topology file
@@ -82,6 +118,13 @@ class STMGTDataset(Dataset):
         
         edge_list = list(edge_set)
         self.edge_index = torch.tensor(edge_list, dtype=torch.long).t()
+        
+        # OPTIMIZATION: Pre-group data by run_id to avoid repeated filtering in __getitem__
+        print("Pre-grouping data by run_id for faster loading...")
+        self.run_data_cache = {}
+        for run_id in df['run_id'].unique():
+            self.run_data_cache[run_id] = df[df['run_id'] == run_id].copy()
+        print(f"  Cached {len(self.run_data_cache)} runs")
         print(f"Number of edges: {self.edge_index.size(1)}")
         
         # Store dataframe for later access
@@ -142,16 +185,16 @@ class STMGTDataset(Dataset):
         """
         sample = self.samples[idx]
         
-        # Load data for all runs in window
+        # Load data for all runs in window (use pre-cached data)
         input_data_list = []
         target_data_list = []
         
         for run_id in sample['input_runs']:
-            run_data = self.df[self.df['run_id'] == run_id]
+            run_data = self.run_data_cache[run_id]
             input_data_list.append(run_data)
         
         for run_id in sample['target_runs']:
-            run_data = self.df[self.df['run_id'] == run_id]
+            run_data = self.run_data_cache[run_id]
             target_data_list.append(run_data)
         
         # Prepare graph tensors
@@ -162,21 +205,23 @@ class STMGTDataset(Dataset):
         x_traffic = torch.zeros(self.num_nodes, self.seq_len, 1)
         y_target = torch.zeros(self.num_nodes, self.pred_len)
         
-        # Fill input data
+        # Fill input data (vectorized - much faster than iterrows)
         for t, run_data in enumerate(input_data_list):
-            for _, row in run_data.iterrows():
-                node_a_idx = self.node_to_idx.get(row['node_a_id'])
-                
+            node_ids = run_data['node_a_id'].values
+            speeds = run_data['speed_kmh'].values
+            for node_id, speed in zip(node_ids, speeds):
+                node_a_idx = self.node_to_idx.get(node_id)
                 if node_a_idx is not None:
-                    x_traffic[node_a_idx, t, 0] = row['speed_kmh']
+                    x_traffic[node_a_idx, t, 0] = speed
         
-        # Fill target data
+        # Fill target data (vectorized)
         for t, run_data in enumerate(target_data_list):
-            for _, row in run_data.iterrows():
-                node_a_idx = self.node_to_idx.get(row['node_a_id'])
-                
+            node_ids = run_data['node_a_id'].values
+            speeds = run_data['speed_kmh'].values
+            for node_id, speed in zip(node_ids, speeds):
+                node_a_idx = self.node_to_idx.get(node_id)
                 if node_a_idx is not None:
-                    y_target[node_a_idx, t] = row['speed_kmh']
+                    y_target[node_a_idx, t] = speed
         
         # Weather data (use from first run - assumed same for all nodes)
         x_weather = torch.zeros(self.seq_len, 3)

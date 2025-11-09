@@ -19,6 +19,10 @@ from traffic_api.schemas import (
     NodeInfo,
     PredictionRequest,
     PredictionResponse,
+    TrafficCurrentResponse,
+    EdgeTraffic,
+    RouteRequest,
+    RoutePlanResponse,
 )
 
 # Create FastAPI app
@@ -152,6 +156,109 @@ async def predict(request: PredictionRequest = PredictionRequest()):
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+
+
+@app.get("/api/traffic/current", response_model=TrafficCurrentResponse)
+async def get_current_traffic():
+    """Get current traffic status for all edges with color coding."""
+    if predictor is None:
+        raise HTTPException(status_code=503, detail="Predictor not initialized")
+    
+    try:
+        # Get latest data
+        current_data = predictor.get_current_traffic()
+        
+        # Convert speeds to colors
+        edges = []
+        for edge in current_data:
+            speed = edge['speed_kmh']
+            color, category = _speed_to_color(speed)
+            
+            edges.append(EdgeTraffic(
+                edge_id=edge['edge_id'],
+                node_a_id=edge['node_a_id'],
+                node_b_id=edge['node_b_id'],
+                speed_kmh=speed,
+                color=color,
+                color_category=category,
+                timestamp=edge['timestamp'],
+                lat_a=edge['lat_a'],
+                lon_a=edge['lon_a'],
+                lat_b=edge['lat_b'],
+                lon_b=edge['lon_b']
+            ))
+        
+        return TrafficCurrentResponse(
+            edges=edges,
+            timestamp=datetime.now(),
+            total_edges=len(edges)
+        )
+    
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Failed to get traffic: {str(e)}")
+
+
+@app.post("/api/route/plan", response_model=RoutePlanResponse)
+async def plan_route(request: RouteRequest):
+    """Plan optimal route from start to end node."""
+    if predictor is None:
+        raise HTTPException(status_code=503, detail="Predictor not initialized")
+    
+    try:
+        departure_time = request.departure_time or datetime.now()
+        
+        # Get 3 route options
+        routes = predictor.plan_routes(
+            start_node_id=request.start_node_id,
+            end_node_id=request.end_node_id,
+            departure_time=departure_time
+        )
+        
+        return RoutePlanResponse(
+            start_node_id=request.start_node_id,
+            end_node_id=request.end_node_id,
+            departure_time=departure_time,
+            routes=routes,
+            timestamp=datetime.now()
+        )
+    
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Route planning failed: {str(e)}")
+
+
+@app.get("/api/predict/{edge_id}")
+async def predict_edge(edge_id: str, horizon: int = 12):
+    """Get prediction for specific edge."""
+    if predictor is None:
+        raise HTTPException(status_code=503, detail="Predictor not initialized")
+    
+    try:
+        prediction = predictor.predict_edge(edge_id, horizon)
+        return prediction
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+
+
+def _speed_to_color(speed_kmh: float) -> tuple[str, str]:
+    """Convert speed to gradient color."""
+    if speed_kmh >= 50:
+        return "#0066FF", "blue"  # Very smooth
+    elif speed_kmh >= 40:
+        return "#00CC00", "green"  # Smooth
+    elif speed_kmh >= 30:
+        return "#90EE90", "light_green"  # Normal
+    elif speed_kmh >= 20:
+        return "#FFD700", "yellow"  # Slow
+    elif speed_kmh >= 10:
+        return "#FF8800", "orange"  # Congested
+    else:
+        return "#FF0000", "red"  # Heavy traffic
 
 
 @app.exception_handler(Exception)

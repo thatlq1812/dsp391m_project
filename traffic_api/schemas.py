@@ -70,3 +70,68 @@ class ErrorResponse(BaseModel):
     error: str
     detail: Optional[str] = None
     timestamp: datetime
+
+
+class EdgeTraffic(BaseModel):
+    """Current traffic status for an edge."""
+
+    edge_id: str
+    node_a_id: str
+    node_b_id: str
+    speed_kmh: float
+    color: str  # Hex color code
+    color_category: str  # 'blue', 'green', 'yellow', 'orange', 'red'
+    timestamp: datetime
+    lat_a: float
+    lon_a: float
+    lat_b: float
+    lon_b: float
+
+
+class TrafficCurrentResponse(BaseModel):
+    """Response for current traffic on all edges."""
+
+    edges: list[EdgeTraffic]
+    timestamp: datetime
+    total_edges: int
+
+
+class RouteRequest(BaseModel):
+    """Request for route planning."""
+
+    start_node_id: str = Field(..., description="Starting node ID")
+    end_node_id: str = Field(..., description="Destination node ID")
+    departure_time: Optional[datetime] = Field(default=None, description="Departure time (defaults to now)")
+
+
+class RouteSegment(BaseModel):
+    """One segment of a route."""
+
+    edge_id: str
+    node_a_id: str
+    node_b_id: str
+    distance_km: float
+    predicted_speed_kmh: float
+    predicted_travel_time_min: float
+    uncertainty_std: float
+
+
+class Route(BaseModel):
+    """One possible route from A to B."""
+
+    route_type: str  # 'fastest', 'shortest', 'balanced'
+    segments: list[RouteSegment]
+    total_distance_km: float
+    expected_travel_time_min: float
+    travel_time_uncertainty_min: float
+    confidence_level: float  # 0-1
+
+
+class RoutePlanResponse(BaseModel):
+    """Response for route planning."""
+
+    start_node_id: str
+    end_node_id: str
+    departure_time: datetime
+    routes: list[Route]  # 3 routes: fastest, shortest, balanced
+    timestamp: datetime

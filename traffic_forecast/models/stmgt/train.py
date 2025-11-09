@@ -123,10 +123,14 @@ def train_epoch(
         with autocast(device_type=device.type, enabled=scaler is not None):
             pred_params = model(x_traffic, edge_index, x_weather, temporal_features)
             pred_mean, pred_std = mixture_to_moments(pred_params)
-            base_loss = mixture_nll_loss(pred_params, y_target)
+            
+            # Normalize target to match model output space
+            y_target_norm = model.speed_normalizer(y_target.unsqueeze(-1)).squeeze(-1)
+            
+            base_loss = mixture_nll_loss(pred_params, y_target_norm)
             mse_term = 0.0
             if mse_loss_weight > 0:
-                mse_term = mse_loss_weight * F.mse_loss(pred_mean, y_target)
+                mse_term = mse_loss_weight * F.mse_loss(pred_mean, y_target_norm)
             loss = (base_loss + mse_term) / accumulation_steps
 
         if scaler is not None:
@@ -150,8 +154,12 @@ def train_epoch(
         total_samples += batch_size
 
         with torch.no_grad():
-            preds.append(pred_mean.detach().cpu())
-            stds.append(pred_std.detach().cpu())
+            # Denormalize predictions for metrics
+            pred_mean_denorm = model.speed_normalizer.denormalize(pred_mean.unsqueeze(-1)).squeeze(-1)
+            pred_std_denorm = pred_std * model.speed_normalizer.std
+            
+            preds.append(pred_mean_denorm.detach().cpu())
+            stds.append(pred_std_denorm.detach().cpu())
             targets.append(y_target.detach().cpu())
 
         loop.set_postfix({"loss": f"{loss.item() * accumulation_steps:.4f}"})

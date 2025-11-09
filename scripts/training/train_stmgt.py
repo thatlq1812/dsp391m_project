@@ -2,10 +2,23 @@
 
 from __future__ import annotations
 
-# Suppress TensorFlow warnings BEFORE any other imports
+# Suppress ALL warnings BEFORE any other imports
 import os
+import warnings
+
+# Suppress Python warnings
+warnings.filterwarnings('ignore')
+
+# Suppress TensorFlow warnings
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # 3 = ERROR only
+
+# Suppress PyTorch warnings
+os.environ['PYTHONWARNINGS'] = 'ignore'
+
+# Suppress logging warnings
+import logging
+logging.getLogger().setLevel(logging.ERROR)
 
 import argparse
 import sys
@@ -164,6 +177,18 @@ def main() -> None:
     print(f"Test batches:  {len(test_loader)}")
     print(f"Nodes:         {num_nodes}")
     print(f"Edges:         {edge_index.size(1)}")
+    
+    # Get normalization statistics from dataset
+    train_dataset = train_loader.dataset
+    speed_mean = train_dataset.speed_mean
+    speed_std = train_dataset.speed_std
+    weather_mean = train_dataset.weather_mean.tolist()
+    weather_std = train_dataset.weather_std.tolist()
+    
+    print(f"\nNormalization Statistics:")
+    print(f"  Speed: mean={speed_mean:.2f}, std={speed_std:.2f}")
+    print(f"  Weather means: {[f'{x:.2f}' for x in weather_mean]}")
+    print(f"  Weather stds: {[f'{x:.2f}' for x in weather_std]}")
 
     print_section("Creating Model")
     model = STMGT(
@@ -174,6 +199,10 @@ def main() -> None:
         num_blocks=run_cfg.model.num_blocks,
         seq_len=run_cfg.model.seq_len,
         pred_len=run_cfg.model.pred_len,
+        speed_mean=speed_mean,
+        speed_std=speed_std,
+        weather_mean=weather_mean,
+        weather_std=weather_std,
     ).to(device)
 
     total_params = sum(p.numel() for p in model.parameters())
@@ -184,7 +213,25 @@ def main() -> None:
         lr=training_cfg.learning_rate,
         weight_decay=training_cfg.weight_decay,
     )
-    scheduler = ReduceLROnPlateau(optimizer, mode="min", factor=0.5, patience=5, verbose=True)
+    
+    # Setup LR scheduler
+    if hasattr(training_cfg, 'use_lr_scheduler') and training_cfg.use_lr_scheduler:
+        scheduler_type = getattr(training_cfg, 'scheduler_type', 'plateau')
+        if scheduler_type == 'cosine':
+            from torch.optim.lr_scheduler import CosineAnnealingLR
+            scheduler_params = getattr(training_cfg, 'scheduler_params', {})
+            scheduler = CosineAnnealingLR(
+                optimizer,
+                T_max=scheduler_params.get('T_max', 100),
+                eta_min=scheduler_params.get('eta_min', 1e-5)
+            )
+            print(f"Using CosineAnnealingLR scheduler (T_max={scheduler_params.get('T_max', 100)})")
+        else:
+            scheduler = ReduceLROnPlateau(optimizer, mode="min", factor=0.5, patience=5, verbose=True)
+            print("Using ReduceLROnPlateau scheduler")
+    else:
+        scheduler = ReduceLROnPlateau(optimizer, mode="min", factor=0.5, patience=5, verbose=True)
+        print("Using ReduceLROnPlateau scheduler (default)")
     scaler: Optional[GradScaler] = None
     if training_cfg.use_amp:
         try:
@@ -229,7 +276,12 @@ def main() -> None:
             print(f"Val Metrics -> {format_metric_line(val_metrics)}")
             row.update({f"val_{k}": v for k, v in val_metrics.items()})
 
-            scheduler.step(val_metrics["loss"])
+            # Step scheduler
+            if hasattr(training_cfg, 'scheduler_type') and training_cfg.scheduler_type == 'cosine':
+                scheduler.step()  # CosineAnnealingLR steps per epoch
+            else:
+                scheduler.step(val_metrics["loss"])  # ReduceLROnPlateau steps on metric
+            
             early_stopping(val_metrics["mae"], model)
 
             if val_metrics["mae"] < best_val_mae:

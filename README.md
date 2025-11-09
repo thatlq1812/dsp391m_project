@@ -27,23 +27,47 @@ pip install -e .
 
 All scripts assume the Conda environment name `dsp` recorded in `.env`.
 
-### 2. Interactive Dashboard (Streamlit V4)
+### 2. CLI Tool (NEW - Replaces Dashboard)
+
+**Simple, fast command-line interface for all operations:**
 
 ```bash
-conda activate dsp
-streamlit run dashboard/Dashboard.py
-# Visit http://localhost:8501
+# For Git Bash on Windows - use wrapper script
+cd /d/UNI/DSP391m/project
+./stmgt.sh --help
+
+# Common commands
+./stmgt.sh model list              # List all models
+./stmgt.sh api start               # Start API server
+./stmgt.sh data info               # Show dataset info
+./stmgt.sh train status            # Training status
+
+# Add to PATH (optional)
+export PATH="$PATH:/d/UNI/DSP391m/project"
+stmgt --help
 ```
 
-Key pages:
+**Full documentation:** `docs/guides/CLI_USER_GUIDE.md`
 
-- `pages/2_VM_Management.py`: VM orchestration shortcuts and health checks.
-- `pages/5_Data_Collection.py`: Collection schedule, validation status, and Overpass cache previews.
-- `pages/6_Data_Overview.py`: Dataset profiler pulling from the validated parquet registry.
-- `pages/9_Training_Control.py`: Launch STMGT training via the schema-checked registry entries.
-- `pages/11_Predictions.py`: Batch inference using the currently selected checkpoint.
+### 3. Web Interface
 
-### 3. Training via CLI
+**Interactive traffic visualization and route planning:**
+
+```bash
+# Start API server first
+./stmgt.sh api start
+
+# Open in browser
+# http://localhost:8000/route_planner.html
+```
+
+Features:
+
+- Real-time traffic visualization with gradient colors
+- Route planning with 3 algorithms (fastest/shortest/balanced)
+- Interactive map with Leaflet.js
+
+### 4. Training via CLI
 
 ```bash
 conda run -n dsp --no-capture-output python scripts/training/train_stmgt.py --config configs/training_config.json

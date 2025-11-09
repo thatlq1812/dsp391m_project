@@ -33,11 +33,19 @@ def evaluate_model(model: STMGT, loader, device: torch.device) -> Dict[str, floa
         y_target = batch["y_target"].to(device)
 
         pred_params = model(x_traffic, edge_index, x_weather, temporal_features)
-        loss = mixture_nll_loss(pred_params, y_target)
+        
+        # Normalize target to match model output space
+        y_target_norm = model.speed_normalizer(y_target.unsqueeze(-1)).squeeze(-1)
+        loss = mixture_nll_loss(pred_params, y_target_norm)
 
         pred_mean, pred_std = mixture_to_moments(pred_params)
-        preds.append(pred_mean.cpu())
-        stds.append(pred_std.cpu())
+        
+        # Denormalize predictions for metrics (compare with raw targets)
+        pred_mean_denorm = model.speed_normalizer.denormalize(pred_mean.unsqueeze(-1)).squeeze(-1)
+        pred_std_denorm = pred_std * model.speed_normalizer.std
+        
+        preds.append(pred_mean_denorm.cpu())
+        stds.append(pred_std_denorm.cpu())
         targets.append(y_target.cpu())
 
         batch_size = x_traffic.size(0)

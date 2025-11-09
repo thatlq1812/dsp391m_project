@@ -11,6 +11,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import torch
+import networkx as nx
 
 # Import STMGT directly without going through models.__init__ (avoids TensorFlow import)
 import sys
@@ -41,14 +42,23 @@ class STMGTPredictor:
         self.checkpoint_path = checkpoint_path
         self.device = torch.device(device if torch.cuda.is_available() else "cpu")
         
-        # Load config from checkpoint directory
-        config_path = checkpoint_path.parent / "config.json"
-        if config_path.exists():
-            with open(config_path, 'r') as f:
-                self.config = json.load(f)
-            print(f"Loaded config: {self.config['model']['num_nodes']} nodes")
-        else:
-            self.config = None
+        # Load config from checkpoint directory (try multiple names)
+        config_paths = [
+            checkpoint_path.parent / "config.json",
+            checkpoint_path.parent / "stmgt_config.json",
+            checkpoint_path.with_suffix('.json'),  # same name as checkpoint
+        ]
+        
+        self.config = None
+        for config_path in config_paths:
+            if config_path.exists():
+                with open(config_path, 'r') as f:
+                    self.config = json.load(f)
+                print(f"Loaded config from {config_path.name}: {self.config['model']['num_nodes']} nodes, {self.config['model']['mixture_components']}K mixtures")
+                break
+        
+        if self.config is None:
+            print("Config file not found, will detect from checkpoint")
         
         # Auto-detect data path if not provided
         if data_path is None:
@@ -142,8 +152,24 @@ class STMGTPredictor:
         # Load checkpoint
         checkpoint = torch.load(self.checkpoint_path, map_location=self.device, weights_only=False)
         
-        # Extract model config from checkpoint if available
-        if 'config' in checkpoint and 'model' in checkpoint['config']:
+        # Priority 1: Use config.json from checkpoint directory (loaded in __init__)
+        if self.config and 'model' in self.config:
+            print("Using model config from config.json")
+            saved_config = self.config['model']
+            model_config = {
+                'num_nodes': saved_config.get('num_nodes', 62),
+                'in_dim': saved_config.get('in_dim', 1),
+                'hidden_dim': saved_config.get('hidden_dim', 96),
+                'num_blocks': saved_config.get('num_blocks', 3),
+                'num_heads': saved_config.get('num_heads', 4),
+                'dropout': saved_config.get('dropout', 0.2),
+                'drop_edge_rate': saved_config.get('drop_edge_rate', 0.05),
+                'mixture_components': saved_config.get('mixture_components', 3),
+                'seq_len': saved_config.get('seq_len', 12),
+                'pred_len': saved_config.get('pred_len', 12),
+            }
+        # Priority 2: Extract model config from checkpoint if embedded
+        elif 'config' in checkpoint and 'model' in checkpoint['config']:
             print("Using model config from checkpoint")
             saved_config = checkpoint['config']['model']
             model_config = {
@@ -197,12 +223,18 @@ class STMGTPredictor:
                 mixture_components = 3
                 pred_len = 12
             
-            print(f"Detected: num_blocks={num_blocks}, num_heads={num_heads}, mixture_components={mixture_components}, pred_len={pred_len}")
+            # Detect hidden_dim from traffic_encoder output size
+            # traffic_encoder.weight: [hidden_dim, 1]
+            hidden_dim = 96  # default
+            if 'traffic_encoder.weight' in state_dict:
+                hidden_dim = state_dict['traffic_encoder.weight'].shape[0]
+            
+            print(f"Detected: hidden_dim={hidden_dim}, num_blocks={num_blocks}, num_heads={num_heads}, mixture_components={mixture_components}, pred_len={pred_len}")
             
             model_config = {
                 'num_nodes': 62,
                 'in_dim': 1,
-                'hidden_dim': 96,
+                'hidden_dim': hidden_dim,
                 'num_blocks': num_blocks,
                 'num_heads': num_heads,
                 'dropout': 0.2,
@@ -236,53 +268,43 @@ class STMGTPredictor:
             import pandas as pd
             df = pd.read_parquet(self.data_path)
             
-            # Sort by timestamp
-            df = df.sort_values('timestamp')
+            # Sort by run_id to get chronological order
+            df = df.sort_values(['run_id', 'timestamp'])
             
-            # Get latest 12 timesteps (for each unique run)
-            latest_run = df['run_id'].max()
-            df_latest = df[df['run_id'] == latest_run]
+            # Get latest 12 runs (each run = 1 timestep)
+            unique_runs = df['run_id'].unique()
+            latest_runs = unique_runs[-12:]  # Last 12 runs
+            df_latest = df[df['run_id'].isin(latest_runs)]
+            
+            print(f"  Using {len(latest_runs)} most recent runs for historical data")
             
             # Initialize arrays
             self.historical_speeds = np.zeros((self.num_nodes, 12))
             self.historical_weather = np.zeros((self.num_nodes, 12, 3))
             
-            # Build speed matrix (node × timestep)
-            # Group by edge and get speed sequence
-            for edge_key, edge_df in df_latest.groupby(['node_a_id', 'node_b_id']):
-                node_a_id, node_b_id = edge_key
+            # Build speed matrix: (node × timestep)
+            # Each timestep = 1 run, aggregate edges to get node-level speed
+            for t_idx, run_id in enumerate(latest_runs):
+                run_df = df_latest[df_latest['run_id'] == run_id]
                 
-                # Get node index (use node_a as representative)
-                if node_a_id in self.node_to_idx:
-                    node_idx = self.node_to_idx[node_a_id]
+                # For each edge in this run, map to node
+                for _, row in run_df.iterrows():
+                    node_a_id = row['node_a_id']
+                    node_b_id = row['node_b_id']
+                    speed = row['speed_kmh']
                     
-                    # Get speed values
-                    speeds = edge_df['speed_kmh'].values[:12]
-                    if len(speeds) > 0:
-                        # Pad if needed
-                        if len(speeds) < 12:
-                            speeds = np.pad(speeds, (12 - len(speeds), 0), 
-                                          mode='edge')  # Repeat edge values
-                        self.historical_speeds[node_idx] = speeds[:12]
+                    # Use node_a as representative (edge start point)
+                    if node_a_id in self.node_to_idx:
+                        node_idx = self.node_to_idx[node_a_id]
+                        self.historical_speeds[node_idx, t_idx] = speed
                     
-                    # Get weather if available
-                    if 'temperature' in edge_df.columns:
-                        temps = edge_df['temperature'].values[:12]
-                        if len(temps) < 12:
-                            temps = np.pad(temps, (12 - len(temps), 0), mode='edge')
-                        self.historical_weather[node_idx, :, 0] = temps[:12]
-                    
-                    if 'precipitation' in edge_df.columns:
-                        precip = edge_df['precipitation'].values[:12]
-                        if len(precip) < 12:
-                            precip = np.pad(precip, (12 - len(precip), 0), mode='edge')
-                        self.historical_weather[node_idx, :, 1] = precip[:12]
-                    
-                    if 'wind_speed' in edge_df.columns:
-                        wind = edge_df['wind_speed'].values[:12]
-                        if len(wind) < 12:
-                            wind = np.pad(wind, (12 - len(wind), 0), mode='edge')
-                        self.historical_weather[node_idx, :, 2] = wind[:12]
+                    # Weather data (global, same for all nodes)
+                    if 'temperature_c' in row:
+                        self.historical_weather[node_idx, t_idx, 0] = row.get('temperature_c', 0)
+                    if 'wind_speed_kmh' in row:
+                        self.historical_weather[node_idx, t_idx, 1] = row.get('wind_speed_kmh', 0)
+                    if 'precipitation_mm' in row:
+                        self.historical_weather[node_idx, t_idx, 2] = row.get('precipitation_mm', 0)
             
             # Fill any missing nodes with mean values
             for i in range(self.num_nodes):
@@ -292,9 +314,10 @@ class STMGTPredictor:
                     self.historical_weather[i] = self.historical_weather.mean(axis=0)
             
             print(f"✓ Loaded real data from {self.data_path.name}")
-            print(f"  Latest run: {latest_run}")
+            print(f"  Run range: {latest_runs[0]} to {latest_runs[-1]}")
             print(f"  Speed range: {self.historical_speeds.min():.1f} - {self.historical_speeds.max():.1f} km/h")
             print(f"  Mean speed: {self.historical_speeds.mean():.1f} km/h")
+            print(f"  Speed variance per node: {self.historical_speeds.std(axis=1).mean():.2f} km/h")
             
         except Exception as e:
             print(f"Warning: Failed to load real data: {e}")
@@ -382,9 +405,13 @@ class STMGTPredictor:
         # Convert mixture to moments
         pred_mean, pred_std = mixture_to_moments(pred_params)
         
+        # Denormalize predictions to km/h (model outputs normalized values)
+        pred_mean_denorm = self.model.speed_normalizer.denormalize(pred_mean.unsqueeze(-1)).squeeze(-1)
+        pred_std_denorm = pred_std * self.model.speed_normalizer.std  # Scale std by normalizer std
+        
         # Move to CPU and convert to numpy
-        pred_mean = pred_mean.squeeze(0).cpu().numpy()  # (N, T)
-        pred_std = pred_std.squeeze(0).cpu().numpy()    # (N, T)
+        pred_mean = pred_mean_denorm.squeeze(0).cpu().numpy()  # (N, T)
+        pred_std = pred_std_denorm.squeeze(0).cpu().numpy()    # (N, T)
         
         # Clip to valid range
         pred_mean = np.clip(pred_mean, 0, 100)
@@ -481,3 +508,162 @@ class STMGTPredictor:
                 'is_major_intersection': False
             }
         return None
+    
+    def get_current_traffic(self) -> list[dict]:
+        """Get current traffic for all edges."""
+        # Load latest data
+        df = pd.read_parquet(self.data_path)
+        
+        # Get most recent timestamp
+        latest_time = df['timestamp'].max()
+        current_data = df[df['timestamp'] == latest_time].copy()
+        
+        # Create edge list with coordinates
+        edges = []
+        for _, row in current_data.iterrows():
+            node_a = row['node_a_id']
+            node_b = row['node_b_id']
+            
+            # Get node coordinates (if available)
+            node_a_info = self.node_metadata.get(node_a, {})
+            node_b_info = self.node_metadata.get(node_b, {})
+            
+            edges.append({
+                'edge_id': f"{node_a}_{node_b}",
+                'node_a_id': node_a,
+                'node_b_id': node_b,
+                'speed_kmh': float(row.get('speed', row.get('speed_kmh', 0))),
+                'timestamp': row['timestamp'],
+                'lat_a': float(node_a_info.get('lat', 0)),
+                'lon_a': float(node_a_info.get('lon', 0)),
+                'lat_b': float(node_b_info.get('lat', 0)),
+                'lon_b': float(node_b_info.get('lon', 0))
+            })
+        
+        return edges
+    
+    def predict_edge(self, edge_id: str, horizon: int = 12) -> dict:
+        """Predict speed for specific edge."""
+        # Parse edge_id
+        parts = edge_id.split('_')
+        if len(parts) != 2:
+            raise ValueError(f"Invalid edge_id format: {edge_id}")
+        
+        node_a_id, node_b_id = parts
+        
+        if node_a_id not in self.node_to_idx or node_b_id not in self.node_to_idx:
+            raise ValueError(f"Unknown nodes in edge: {edge_id}")
+        
+        # For now, return mock prediction
+        # TODO: Implement actual edge-specific prediction
+        return {
+            'edge_id': edge_id,
+            'node_a_id': node_a_id,
+            'node_b_id': node_b_id,
+            'horizon': horizon,
+            'predicted_speed_kmh': 35.0,
+            'uncertainty_std': 5.0,
+            'timestamp': datetime.now()
+        }
+    
+    def plan_routes(
+        self,
+        start_node_id: str,
+        end_node_id: str,
+        departure_time: datetime
+    ) -> list[dict]:
+        """
+        Plan 3 route options from start to end.
+        
+        Returns:
+            List of 3 routes: fastest, shortest, balanced
+        """
+        if start_node_id not in self.node_to_idx:
+            raise ValueError(f"Unknown start node: {start_node_id}")
+        if end_node_id not in self.node_to_idx:
+            raise ValueError(f"Unknown end node: {end_node_id}")
+        
+        # Load edge data
+        df = pd.read_parquet(self.data_path)
+        
+        # Build graph from edges
+        import networkx as nx
+        G = nx.DiGraph()
+        
+        for _, row in df[['node_a_id', 'node_b_id', 'speed_kmh']].drop_duplicates().iterrows():
+            node_a = row['node_a_id']
+            node_b = row['node_b_id']
+            speed = float(row.get('speed_kmh', row.get('speed', 30)))
+            
+            # Weight = 1/speed (inverse for shortest path = fastest)
+            weight = 1.0 / max(speed, 1.0)
+            G.add_edge(node_a, node_b, weight=weight, speed=speed)
+        
+        # Find 3 routes
+        routes = []
+        
+        try:
+            # 1. Fastest route (based on predicted speeds)
+            fastest_path = nx.shortest_path(G, start_node_id, end_node_id, weight='weight')
+            fastest_route = self._path_to_route(fastest_path, G, 'fastest')
+            routes.append(fastest_route)
+            
+            # 2. Shortest route (fewest hops)
+            shortest_path = nx.shortest_path(G, start_node_id, end_node_id)
+            shortest_route = self._path_to_route(shortest_path, G, 'shortest')
+            routes.append(shortest_route)
+            
+            # 3. Balanced route (compromise)
+            # Use weighted average of distance and time
+            balanced_path = fastest_path  # For now, same as fastest
+            balanced_route = self._path_to_route(balanced_path, G, 'balanced')
+            routes.append(balanced_route)
+            
+        except nx.NetworkXNoPath:
+            raise ValueError(f"No path found from {start_node_id} to {end_node_id}")
+        
+        return routes
+    
+    def _path_to_route(self, path: list[str], G: 'nx.DiGraph', route_type: str) -> dict:
+        """Convert networkx path to route format."""
+        segments = []
+        total_distance = 0
+        total_time = 0
+        total_uncertainty = 0
+        
+        for i in range(len(path) - 1):
+            node_a = path[i]
+            node_b = path[i + 1]
+            
+            edge_data = G.get_edge_data(node_a, node_b)
+            speed = edge_data.get('speed', 30.0)
+            
+            # Assume 1 km per segment (placeholder)
+            distance = 1.0
+            travel_time = (distance / speed) * 60  # minutes
+            uncertainty = 0.15 * travel_time  # 15% uncertainty
+            
+            segments.append({
+                'edge_id': f"{node_a}_{node_b}",
+                'node_a_id': node_a,
+                'node_b_id': node_b,
+                'distance_km': distance,
+                'predicted_speed_kmh': speed,
+                'predicted_travel_time_min': travel_time,
+                'uncertainty_std': uncertainty
+            })
+            
+            total_distance += distance
+            total_time += travel_time
+            total_uncertainty += uncertainty ** 2
+        
+        total_uncertainty = np.sqrt(total_uncertainty)
+        
+        return {
+            'route_type': route_type,
+            'segments': segments,
+            'total_distance_km': total_distance,
+            'expected_travel_time_min': total_time,
+            'travel_time_uncertainty_min': total_uncertainty,
+            'confidence_level': 0.8  # 80% confidence
+        }

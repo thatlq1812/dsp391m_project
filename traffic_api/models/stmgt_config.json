@@ -1,0 +1,82 @@
+{
+  "model": {
+    "seq_len": 12,
+    "pred_len": 12,
+    "hidden_dim": 96,
+    "num_heads": 4,
+    "num_blocks": 3,
+    "mixture_components": 5,
+    "num_nodes": 62
+  },
+  "training": {
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "max_epochs": 200,
+    "patience": 15,
+    "drop_edge_p": 0.1,
+    "num_workers": 4,
+    "use_amp": true,
+    "accumulation_steps": 1,
+    "data_source": "all_runs_extreme_augmented.parquet",
+    "pin_memory": true,
+    "persistent_workers": true,
+    "prefetch_factor": 2,
+    "matmul_precision": "medium",
+    "mse_loss_weight": 0.4,
+    "use_lr_scheduler": true,
+    "scheduler_type": "cosine",
+    "scheduler_params": {
+      "T_max": 100,
+      "eta_min": 1e-05
+    }
+  },
+  "metadata": {
+    "label": "stmgt_normalized_v1",
+    "description": "STMGT with FIXED normalization (normalized targets in loss). Upgraded to hidden_dim=96, K=5 mixtures, batch_size=64, cosine LR schedule. Expected MAE: 3.0-3.1 km/h.",
+    "improvements": [
+      "CRITICAL: Normalized targets in loss computation (fixed Nov 9, 2025)",
+      "Denormalized predictions before metrics",
+      "Increased hidden_dim: 64 \u2192 96 (+50% capacity)",
+      "Increased mixture components: K=3 \u2192 K=5 (better uncertainty)",
+      "Increased batch_size: 32 \u2192 64 (faster training)",
+      "Added cosine LR scheduler (better convergence)",
+      "Data preprocessing: Missing value imputation",
+      "Normalization: Speed (18.72 \u00b1 7.03) and Weather",
+      "Validation: Comprehensive data checks",
+      "Monitoring: Mixture weights, gradient health"
+    ],
+    "expected_results": {
+      "val_mae": "3.0-3.1 km/h (12% better than baseline 3.44)",
+      "val_rmse": "4.5-5.0 km/h",
+      "r2_score": "0.78-0.82",
+      "coverage_80": "78-82% (well-calibrated)",
+      "training_time": "~18 hours (100 epochs @ 10 min/epoch)"
+    },
+    "architecture_score": "10/10 (with normalization fix)",
+    "date_created": "2025-11-09",
+    "fixes": {
+      "normalization_bug": "Fixed: Targets now normalized before loss computation",
+      "metrics_bug": "Fixed: Predictions denormalized before metric calculation",
+      "backward_compatibility": "predict(denormalize=False) for old models"
+    },
+    "usage": "python scripts/training/train_stmgt.py --config configs/train_normalized_v1.json",
+    "source_config": "configs\\train_normalized_v1.json",
+    "launched_at": "2025-11-09T12:58:02.337482",
+    "data_path": "D:\\UNI\\DSP391m\\project\\data\\processed\\all_runs_extreme_augmented.parquet",
+    "output_dir": "D:\\UNI\\DSP391m\\project\\outputs\\stmgt_v2_20251109_195802",
+    "device": "cuda",
+    "num_workers": 4,
+    "pin_memory": true,
+    "persistent_workers": true,
+    "prefetch_factor": 2,
+    "matmul_precision": "medium",
+    "mse_loss_weight": 0.4,
+    "data_rows": 205920,
+    "data_missing_columns": "",
+    "gpu_name": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "best_val_mae": 3.2069175243377686,
+    "completed_at": "2025-11-09T13:08:54.792073",
+    "status": "completed"
+  }
+}

@@ -172,6 +172,8 @@ models/*.bin
 models/*.pth
 models/*.onnx
 
+outputs*
+
 # Test fixtures (keep versioned)
 !tests/fixtures/*.json
 
