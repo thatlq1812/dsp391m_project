@@ -17,7 +17,7 @@
 
 ## PHASE 1: Report 3 Completion (Current Sprint)
 
-### ✅ Model Architecture Analysis
+### Model Architecture Analysis
 
 **Current STMGT Architecture:**
 
@@ -62,7 +62,7 @@ Output: (batch, 62 nodes, 12 horizons, 3 components)
 - Learning Rate: 0.0006
 - Mixture Loss + MSE (weight 0.2)
 
-### 🎯 Inference Web Build
+### Inference Web Build
 
 **Goal:** Simple Google Maps interface showing real-time predictions
 
@@ -239,7 +239,7 @@ Compare against:
 
 ## PHASE 3: Production API (Report 4 Prep)
 
-### 🚀 API Development
+###API Development
 
 **FastAPI Structure:**
 
@@ -331,7 +331,7 @@ traffic_api/
 - Time slider (show predictions at different hours)
 - Route ETA calculator (stretch goal)
 
-### 📦 Deployment
+### Deployment
 
 **Docker Setup:**
 
@@ -487,19 +487,19 @@ CMD ["uvicorn", "traffic_api.main:app", "--host", "0.0.0.0", "--port", "8080"]
 
 ### Report 3 Goals:
 
-- ✅ Working inference API (latency <100ms)
-- ✅ Google Maps web demo (78 nodes displayed)
-- ✅ Color-coded predictions (real-time)
-- ✅ Forecast visualization (3-hour chart)
+- Working inference API (latency <100ms)
+- Google Maps web demo (78 nodes displayed)
+- Color-coded predictions (real-time)
+- Forecast visualization (3-hour chart)
 
 ### Report 4 Goals:
 
-- 🎯 Test MAE <2.5 km/h (current: 2.78)
-- 🎯 Test R² >0.80 (current: 0.79)
-- 🎯 Model size <5 MB (current: 2.7 MB ✓)
-- 🎯 Inference latency <50ms
-- 🎯 >5 ablation experiments documented
-- 🎯 Web demo deployed publicly
+- Test MAE <2.5 km/h (current: 2.78)
+- Test R² >0.80 (current: 0.79)
+- Model size <5 MB (current: 2.7 MB ✓)
+- Inference latency <50ms
+- > 5 ablation experiments documented
+- Web demo deployed publicly
 
 ### Final Delivery:
 

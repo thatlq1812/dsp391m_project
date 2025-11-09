@@ -55,11 +55,11 @@ gap = latest['val_mae'] - latest['train_mae']
 gap_pct = (gap / latest['val_mae']) * 100
 print(f'Train/Val Gap: {gap:.4f} km/h ({gap_pct:.2f}%)')
 if gap < 1.0:
-    print('✅ Excellent generalization (gap < 1.0)')
+    print('Excellent generalization (gap < 1.0)')
 elif gap < 2.0:
-    print('✅ Good generalization (gap < 2.0)')
+    print('Good generalization (gap < 2.0)')
 else:
-    print('⚠️  Possible overfitting (gap >= 2.0)')
+    print(' Possible overfitting (gap >= 2.0)')
 
 print('\n' + '='*80)
 print('CALIBRATION QUALITY')
@@ -71,11 +71,11 @@ print(f'Target 80% CI Coverage: 80.0%')
 print(f'Actual Coverage:        {actual_cov:.2%}')
 print(f'Calibration Error:      {cov_error:.2%}')
 if cov_error < 0.05:
-    print('✅ Well-calibrated (error < 5%)')
+    print('Well-calibrated (error < 5%)')
 elif cov_error < 0.10:
-    print('✅ Acceptable calibration (error < 10%)')
+    print('Acceptable calibration (error < 10%)')
 else:
-    print('⚠️  Poor calibration (error >= 10%)')
+    print(' Poor calibration (error >= 10%)')
 
 print('\n' + '='*80)
 print('REALISTIC PERFORMANCE CHECK')
@@ -87,13 +87,13 @@ print('  - Graph WaveNet claim: 1.55 km/h MAE (UNREALISTIC)')
 print()
 print(f'Current run: {latest["val_mae"]:.2f} km/h')
 if latest['val_mae'] < 3.0:
-    print('⚠️  SUSPICIOUS: Too good, verify data leakage')
+    print(' SUSPICIOUS: Too good, verify data leakage')
 elif latest['val_mae'] < 5.0:
-    print('✅ EXCELLENT: Realistic and competitive')
+    print('EXCELLENT: Realistic and competitive')
 elif latest['val_mae'] < 7.0:
-    print('✅ GOOD: Reasonable performance')
+    print('GOOD: Reasonable performance')
 else:
-    print('⚠️  WEAK: Below naive baseline')
+    print(' WEAK: Below naive baseline')
 
 print('\n' + '='*80)
 print('PREDICTION')

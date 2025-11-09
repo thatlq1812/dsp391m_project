@@ -96,7 +96,7 @@ class AutoRetrainer:
 
         # Check if data modified in last 24 hours
         if datetime.now() - last_modified < timedelta(hours=24):
-            print(f"✅ New data available: {latest_data.name}")
+            print(f"New data available: {latest_data.name}")
             return True
         else:
             print(f"⏭️ No new data (last update: {last_modified})")
@@ -116,10 +116,10 @@ class AutoRetrainer:
         }
 
         if all(checks.values()):
-            print("✅ Data quality checks passed")
+            print("Data quality checks passed")
             return True
         else:
-            print(f"❌ Data quality issues: {checks}")
+            print(f"Data quality issues: {checks}")
             return False
 
     def train_new_model(self):
@@ -140,10 +140,10 @@ class AutoRetrainer:
         )
 
         if result.returncode == 0:
-            print("✅ Training completed successfully")
+            print("Training completed successfully")
             return True
         else:
-            print(f"❌ Training failed:\n{result.stderr}")
+            print(f"Training failed:\n{result.stderr}")
             return False
 
     def evaluate_new_model(self, new_model_path):
@@ -177,7 +177,7 @@ class AutoRetrainer:
         print(f"  Improvement: {improvement*100:.1f}%")
 
         if improvement > 0.02:  # 2% improvement threshold
-            print("✅ New model is better!")
+            print("New model is better!")
             return True
         else:
             print("⏭️ New model not significantly better, keeping current")
@@ -193,7 +193,7 @@ class AutoRetrainer:
         backup_path = backup_dir / f"model_backup_{timestamp}.pt"
 
         shutil.copy(self.current_model_path, backup_path)
-        print(f"📦 Backed up current model to {backup_path}")
+        print(f"Backed up current model to {backup_path}")
 
         # Update symlink to new model
         latest_link = self.output_dir / "latest_model.pt"
@@ -213,7 +213,7 @@ class AutoRetrainer:
             cache.invalidate_all()
             print("🗑️ Prediction cache cleared")
         except Exception as e:
-            print(f"⚠️ Could not clear cache: {e}")
+            print(f"Could not clear cache: {e}")
 
     def send_notification(self, status, message):
         """Send notification about retraining results."""
@@ -364,7 +364,7 @@ def visualize_spatial_attention(attn_weights, node_ids, save_path):
     plt.savefig(save_path, dpi=300)
     plt.close()
 
-    print(f"✅ Saved spatial attention to {save_path}")
+    print(f"Saved spatial attention to {save_path}")
 
 def visualize_temporal_attention(attn_weights, save_path):
     """Visualize temporal attention patterns."""
@@ -389,7 +389,7 @@ def visualize_temporal_attention(attn_weights, save_path):
     plt.savefig(save_path, dpi=300)
     plt.close()
 
-    print(f"✅ Saved temporal attention to {save_path}")
+    print(f"Saved temporal attention to {save_path}")
 
 def visualize_weather_attention(attn_weights, save_path):
     """Visualize weather cross-attention."""
@@ -407,7 +407,7 @@ def visualize_weather_attention(attn_weights, save_path):
     plt.savefig(save_path, dpi=300)
     plt.close()
 
-    print(f"✅ Saved weather attention to {save_path}")
+    print(f"Saved weather attention to {save_path}")
 ```
 
 #### 4.2.2 Feature Importance (SHAP)
@@ -463,7 +463,7 @@ def explain_predictions_with_shap(model, data_loader):
     plt.savefig("outputs/shap_feature_importance.png", dpi=300)
     plt.close()
 
-    print("✅ SHAP analysis complete")
+    print("SHAP analysis complete")
 
 # Note: SHAP is computationally expensive for large models
 # Consider using simpler gradient-based attribution instead
@@ -550,7 +550,7 @@ def plot_calibration_curve(results, save_path):
     plt.savefig(save_path, dpi=300)
     plt.close()
 
-    print(f"✅ Saved calibration curve to {save_path}")
+    print(f"Saved calibration curve to {save_path}")
 
 def calibration_metrics(results):
     """Compute overall calibration metrics."""
@@ -567,11 +567,11 @@ def calibration_metrics(results):
     print(f"  Maximum Calibration Error (MCE): {mce:.3f}")
 
     if ece < 0.05:
-        print("  ✅ Excellent calibration!")
+        print("  Excellent calibration!")
     elif ece < 0.10:
         print("  ✔️ Good calibration")
     else:
-        print("  ⚠️ Poor calibration - consider recalibration")
+        print("  Poor calibration - consider recalibration")
 
     return {'ece': ece, 'mce': mce}
 
@@ -702,7 +702,7 @@ def plot_horizon_performance(df, save_dir):
     plt.savefig(f"{save_dir}/horizon_performance.png", dpi=300)
     plt.close()
 
-    print(f"✅ Saved horizon analysis to {save_dir}/horizon_performance.png")
+    print(f"Saved horizon analysis to {save_dir}/horizon_performance.png")
 
 if __name__ == "__main__":
     df = evaluate_by_horizon(model, test_loader)
@@ -912,13 +912,13 @@ def create_comparison_table(results):
 
 ## Phase 4 Success Criteria
 
-✅ **Automated retraining pipeline operational**  
-✅ **Model explainability visualizations created**  
-✅ **Confidence calibration verified (ECE < 0.10)**  
-✅ **Multi-horizon analysis complete**  
-✅ **Benchmark comparison shows STMGT superiority**  
-✅ **Academic paper draft ready**  
-✅ **Project rated 10/10** 🌟
+**Automated retraining pipeline operational**  
+**Model explainability visualizations created**  
+**Confidence calibration verified (ECE < 0.10)**  
+**Multi-horizon analysis complete**  
+**Benchmark comparison shows STMGT superiority**  
+**Academic paper draft ready**  
+**Project rated 10/10** 🌟
 
 ---
 
@@ -1008,11 +1008,11 @@ Spread across 3-4 days = 7-10 hours per day (final push!).
 
 Congratulations on completing all 4 phases! Your project is now:
 
-✅ **Functional** - Web MVP works  
-✅ **Reliable** - Model metrics verified  
-✅ **Production-Ready** - Deployed with monitoring  
-✅ **Excellent** - Publication-quality features
+**Functional** - Web MVP works  
+**Reliable** - Model metrics verified  
+**Production-Ready** - Deployed with monitoring  
+**Excellent** - Publication-quality features
 
-**You've built something truly impressive! 🚀**
+**You've built something truly impressive!**
 
 Now go ace that final presentation! 💪

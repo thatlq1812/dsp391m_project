@@ -35,7 +35,7 @@ Validated Analytics: scripts/analysis/analyze_augmentation_strategy.py
 
 ---
 
-## 🔄 STANDARDIZED WORKFLOWS
+## STANDARDIZED WORKFLOWS
 
 ### 1. TRAINING WORKFLOW
 

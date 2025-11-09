@@ -239,7 +239,7 @@ class RunPreprocessor:
             run_dirs = sorted([d for d in self.data_dir.iterdir() if d.is_dir()])
         
         print(f"\n{'='*70}")
-        print(f"🔄 PREPROCESSING TRAFFIC DATA RUNS")
+        print(f"PREPROCESSING TRAFFIC DATA RUNS")
         print(f"{'='*70}")
         print(f"Input:  {self.data_dir}")
         print(f"Output: {self.output_dir}")

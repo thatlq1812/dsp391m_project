@@ -98,9 +98,9 @@ class PredictionCache:
         # Test connection
         try:
             self.redis_client.ping()
-            print(f"✅ Redis connected at {host}:{port}")
+            print(f"Redis connected at {host}:{port}")
         except redis.ConnectionError:
-            print(f"⚠️ Redis not available at {host}:{port}")
+            print(f"Redis not available at {host}:{port}")
             self.redis_client = None
 
     def _make_key(self, node_id: Optional[int], horizons: list) -> str:
@@ -1038,13 +1038,13 @@ redis_client = redis.Redis(
 
 ## Phase 3 Success Criteria
 
-✅ **Redis caching reduces latency to <5ms for cache hits**  
-✅ **API authentication protects endpoints**  
-✅ **Rate limiting prevents abuse**  
-✅ **Monitoring dashboards show real-time metrics**  
-✅ **Load testing confirms 100+ req/sec capacity**  
-✅ **Docker containers ready for deployment**  
-✅ **Configuration supports multiple environments**
+**Redis caching reduces latency to <5ms for cache hits**  
+**API authentication protects endpoints**  
+**Rate limiting prevents abuse**  
+**Monitoring dashboards show real-time metrics**  
+**Load testing confirms 100+ req/sec capacity**  
+**Docker containers ready for deployment**  
+**Configuration supports multiple environments**
 
 ---
 
@@ -1090,4 +1090,4 @@ Spread across 4-5 days = 5-6 hours per day.
 
 ---
 
-**This phase transforms your prototype into a production-grade service! 🚀**
+**This phase transforms your prototype into a production-grade service!**

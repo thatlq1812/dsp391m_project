@@ -41,9 +41,9 @@ app.add_middleware(
 static_dir = Path(__file__).parent / "static"
 if static_dir.exists():
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
-    print(f"✅ Static files mounted from {static_dir}")
+    print(f"Static files mounted from {static_dir}")
 else:
-    print(f"⚠️ Static directory not found: {static_dir}")
+    print(f"Static directory not found: {static_dir}")
 
 # Global predictor instance
 predictor: Optional[STMGTPredictor] = None

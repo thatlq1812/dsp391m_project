@@ -25,18 +25,22 @@ This index organizes the project documentation for fast navigation. All docs liv
 ## Core Documentation
 
 ### Model Architecture (`docs/architecture/`)
+
 - **STMGT Architecture** — `docs/architecture/STMGT_ARCHITECTURE.md`
 - **Data I/O & Schemas** — `docs/architecture/STMGT_DATA_IO.md`
 - **Model Analysis** — `docs/architecture/STMGT_MODEL_ANALYSIS.md`
 
 ### Research (`docs/research/`)
+
 - **Consolidated Research** (merged from Claude, Gemini, OpenAI) — `docs/research/STMGT_RESEARCH_CONSOLIDATED.md`
 
 ### Dashboard (`docs/dashboard/`)
+
 - **Quickstart Guide** — `docs/dashboard/DASHBOARD_V4_QUICKSTART.md`
 - **Reference Manual** — `docs/dashboard/DASHBOARD_V4_REFERENCE.md`
 
 ### Reports (`docs/report/`)
+
 - **Full Report Notes** — `docs/report/README_FULLREPORT.md`
 - **Roadmap to Final** — `docs/report/ROADMAP_REPORT3_TO_FINAL.md`
 - **RP3 Documents** — `docs/report/RP3.md`, `RP3_ReCheck.md`
@@ -105,23 +109,27 @@ This index organizes the project documentation for fast navigation. All docs liv
 ## Quick Navigation
 
 ### For New Contributors
+
 1. Start with `README.md` (root)
 2. Read `docs/guides/README_SETUP.md` for setup
 3. Review `docs/STMGT_ARCHITECTURE.md` for model understanding
 4. Check `docs/instructions/` for current phase tasks
 
 ### For Development
+
 - API development: `traffic_api/README.md`
 - Model changes: `docs/STMGT_ARCHITECTURE.md`, `docs/STMGT_MODEL_ANALYSIS.md`
 - Data pipeline: `docs/guides/PROCESSED_DATA_PIPELINE.md`
 - Training: `configs/README.md`
 
 ### For Research
+
 - Literature review: `docs/STMGT_RESEARCH_CONSOLIDATED.md`
 - Model comparison: `docs/audits/PROJECT_TRANSPARENCY_AUDIT.md`
 - Report writing: `docs/report/`
 
 ### For Deployment
+
 - Production guide: `docs/instructions/PHASE3_PRODUCTION.md`
 - API docs: `traffic_api/README.md`
 - Config management: `configs/README.md`

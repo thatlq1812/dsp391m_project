@@ -13,14 +13,14 @@ This directory contains training configuration files for the STMGT traffic forec
 
 ## Configuration Files Overview
 
-| File                          | Status             | Description                                                         | Use Case                      |
-| ----------------------------- | ------------------ | ------------------------------------------------------------------- | ----------------------------- |
-| `train_production_ready.json` | ✅ **RECOMMENDED** | Production-ready config with K=3 mixture, optimized hyperparameters | Final training for deployment |
-| `train_optimized_final.json`  | ✅ Good            | K=2 mixture, well-tuned but sub-optimal calibration                 | Baseline comparison           |
-| `train_balanced_v3.json`      | ⚠️ Experimental    | Earlier balanced config                                             | Development/testing           |
-| `train_smoke_test.json`       | 🧪 Debug           | Quick 5-epoch test                                                  | Verify code changes           |
-| `train_smoke_config.json`     | 🧪 Debug           | Fast sanity check                                                   | CI/CD pipeline                |
-| `training_config.json`        | ⚠️ Legacy          | Old config format                                                   | Deprecated                    |
+| File                          | Status          | Description                                                         | Use Case                      |
+| ----------------------------- | --------------- | ------------------------------------------------------------------- | ----------------------------- |
+| `train_production_ready.json` | **RECOMMENDED** | Production-ready config with K=3 mixture, optimized hyperparameters | Final training for deployment |
+| `train_optimized_final.json`  | Good            | K=2 mixture, well-tuned but sub-optimal calibration                 | Baseline comparison           |
+| `train_balanced_v3.json`      | Experimental    | Earlier balanced config                                             | Development/testing           |
+| `train_smoke_test.json`       | 🧪 Debug        | Quick 5-epoch test                                                  | Verify code changes           |
+| `train_smoke_config.json`     | 🧪 Debug        | Fast sanity check                                                   | CI/CD pipeline                |
+| `training_config.json`        | Legacy          | Old config format                                                   | Deprecated                    |
 
 ---
 
@@ -69,7 +69,7 @@ python -m traffic_forecast.models.train --config configs/train_production_ready.
 | `hidden_dim`             | 96         | 96              | Good balance                       |
 | `num_blocks`             | 4          | 4               | Parallel ST-blocks                 |
 | `num_heads`              | 6          | 6               | Multi-head attention               |
-| **`mixture_components`** | **3** ✅   | **2** ⚠️        | **K=3 captures tri-modal traffic** |
+| **`mixture_components`** | **3**      | **2**           | **K=3 captures tri-modal traffic** |
 | `seq_len`                | 12         | 12              | 3-hour input window                |
 | `pred_len`               | 12         | 12              | 3-hour forecast horizon            |
 
@@ -80,19 +80,19 @@ python -m traffic_forecast.models.train --config configs/train_production_ready.
 | `batch_size`          | 64         | 64              | Stable gradients                   |
 | `learning_rate`       | 0.0004     | 0.0004          | Conservative convergence           |
 | `weight_decay`        | 0.0001     | 0.0001          | L2 regularization                  |
-| **`mse_loss_weight`** | **0.4** ✅ | **0.3** ⚠️      | **Better MAE/calibration balance** |
+| **`mse_loss_weight`** | **0.4**    | **0.3**         | **Better MAE/calibration balance** |
 | `drop_edge_p`         | 0.08       | 0.08            | Graph dropout                      |
 | `max_epochs`          | 100        | 100             | With early stopping                |
 | `patience`            | 20         | 20              | Early stopping trigger             |
 
 ### Data Loading Optimization
 
-| Parameter                | Production  | Optimized Final | Improvement                    |
-| ------------------------ | ----------- | --------------- | ------------------------------ |
-| **`pin_memory`**         | **true** ✅ | **false** ⚠️    | **Faster GPU transfer**        |
-| **`persistent_workers`** | **true** ✅ | **false** ⚠️    | **No worker restart overhead** |
-| **`prefetch_factor`**    | **2** ✅    | **null** ⚠️     | **Pipeline 2 batches ahead**   |
-| `num_workers`            | 8           | 8               | Parallel data loading          |
+| Parameter                | Production | Optimized Final | Improvement                    |
+| ------------------------ | ---------- | --------------- | ------------------------------ |
+| **`pin_memory`**         | **true**   | **false**       | **Faster GPU transfer**        |
+| **`persistent_workers`** | **true**   | **false**       | **No worker restart overhead** |
+| **`prefetch_factor`**    | **2**      | **null**        | **Pipeline 2 batches ahead**   |
+| `num_workers`            | 8          | 8               | Parallel data loading          |
 
 ---
 
@@ -138,11 +138,11 @@ Total Loss = mse_weight * MSE + (1 - mse_weight) * NLL
 
 ### Impact on Performance
 
-| `mse_loss_weight` | MAE Focus    | Calibration | Recommendation              |
-| ----------------- | ------------ | ----------- | --------------------------- |
-| 0.1-0.2           | ❌ Poor      | ✅ Good     | Over-emphasizes uncertainty |
-| **0.4-0.5** ✅    | **✅ Good**  | **✅ Good** | **Balanced**                |
-| 0.7-0.8           | ✅ Excellent | ❌ Poor     | Point prediction only       |
+| `mse_loss_weight` | MAE Focus | Calibration | Recommendation              |
+| ----------------- | --------- | ----------- | --------------------------- |
+| 0.1-0.2           | Poor      | Good        | Over-emphasizes uncertainty |
+| **0.4-0.5**       | **Good**  | **Good**    | **Balanced**                |
+| 0.7-0.8           | Excellent | Poor        | Point prediction only       |
 
 **Production config uses 0.4:** Best balance between accurate predictions and well-calibrated uncertainty.
 
@@ -226,7 +226,7 @@ python -m traffic_forecast.models.train --config configs/train_production_ready.
 **Mixture Components:**
 
 - Binary states: `K=2` (e.g., congested/free)
-- Tri-modal: `K=3` ✅ (e.g., heavy/moderate/free)
+- Tri-modal: `K=3` (e.g., heavy/moderate/free)
 - Multi-modal: `K=5` (complex urban scenarios)
 
 ---
@@ -297,13 +297,13 @@ python -m traffic_forecast.models.train --config configs/train_production_ready.
 
 ### Validation Performance by Config
 
-| Config                        | Val MAE  | Val RMSE | R²       | Coverage 80% | Status                |
-| ----------------------------- | -------- | -------- | -------- | ------------ | --------------------- |
-| `train_production_ready.json` | **TBD**  | **TBD**  | **TBD**  | **TBD**      | 🔄 **To be trained**  |
-| `train_optimized_final.json`  | 4.48     | 7.06     | 0.53     | 92.7%        | ✅ Running (epoch 17) |
-| Run `20251102_182710`         | **3.91** | **6.29** | **0.72** | **78.1%**    | ✅ **Best so far**    |
-| Run `20251101_215205`         | 5.00     | 7.10     | 0.68     | 85.3%        | ✅ Complete           |
-| Naive baseline                | 7.20     | 10.50    | 0.00     | N/A          | Reference             |
+| Config                        | Val MAE  | Val RMSE | R²       | Coverage 80% | Status             |
+| ----------------------------- | -------- | -------- | -------- | ------------ | ------------------ |
+| `train_production_ready.json` | **TBD**  | **TBD**  | **TBD**  | **TBD**      | **To be trained**  |
+| `train_optimized_final.json`  | 4.48     | 7.06     | 0.53     | 92.7%        | Running (epoch 17) |
+| Run `20251102_182710`         | **3.91** | **6.29** | **0.72** | **78.1%**    | **Best so far**    |
+| Run `20251101_215205`         | 5.00     | 7.10     | 0.68     | 85.3%        | Complete           |
+| Naive baseline                | 7.20     | 10.50    | 0.00     | N/A          | Reference          |
 
 ### Training Time Estimates
 
@@ -371,7 +371,7 @@ python scripts/analysis/create_report_figures_part2.py
 | -------- | -------------- | --------------------------- | --------------------- |
 | v1.0     | 2025-11-01     | Initial config (h64_b2)     | MAE 10.81             |
 | v2.0     | 2025-11-01     | Increased capacity (h96_b3) | MAE 5.00              |
-| v3.0     | 2025-11-02     | Tuned LR/WD                 | **MAE 3.91** ✅       |
+| v3.0     | 2025-11-02     | Tuned LR/WD                 | **MAE 3.91**          |
 | v4.0     | 2025-11-02     | K=2, optimized data loading | MAE 4.48 (running)    |
 | **v5.0** | **2025-11-02** | **K=3, balanced loss**      | **TBD (recommended)** |
 

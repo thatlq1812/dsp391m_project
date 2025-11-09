@@ -107,7 +107,7 @@ ax.text(4.5, 0.7, 'Gaussian Mixture Output (K=3 components)\nμ₁,σ₁,π₁  
 
 plt.tight_layout()
 plt.savefig('docs/report/figures/fig1_stmgt_architecture.png', dpi=300, bbox_inches='tight')
-print("✅ Saved: fig1_stmgt_architecture.png")
+print("Saved: fig1_stmgt_architecture.png")
 plt.close()
 
 # ============================================================================
@@ -155,7 +155,7 @@ for bars in [bars1, bars2]:
 
 plt.tight_layout()
 plt.savefig('docs/report/figures/fig2_experimental_progression.png', dpi=300, bbox_inches='tight')
-print("✅ Saved: fig2_experimental_progression.png")
+print("Saved: fig2_experimental_progression.png")
 plt.close()
 
 # ============================================================================
@@ -203,7 +203,7 @@ ax2.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('docs/report/figures/fig3_performance_by_horizon.png', dpi=300, bbox_inches='tight')
-print("✅ Saved: fig3_performance_by_horizon.png")
+print("Saved: fig3_performance_by_horizon.png")
 plt.close()
 
 # ============================================================================
@@ -253,8 +253,8 @@ ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('docs/report/figures/fig4_gmm_visualization.png', dpi=300, bbox_inches='tight')
-print("✅ Saved: fig4_gmm_visualization.png")
+print("Saved: fig4_gmm_visualization.png")
 plt.close()
 
-print("\n✅ Part 1 complete! (4/10 figures created)")
+print("\nPart 1 complete! (4/10 figures created)")
 print("=" * 80)

@@ -8,7 +8,7 @@ ASTGCN (Attention-based Spatial-Temporal Graph Convolutional Network) đã đư�
 
 ---
 
-## 📦 What Was Added
+## What Was Added
 
 ### 1. **Model Implementation** (PyTorch)
 

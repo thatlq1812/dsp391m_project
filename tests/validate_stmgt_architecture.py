@@ -74,9 +74,9 @@ if isinstance(output_dict, dict):
     print()
     
     result = 'PASSED' if stds.min() > 0 and abs(probs.sum(dim=-1).mean() - 1.0) < 0.01 else 'FAILED'
-    print(f'✅ Architecture validation: {result}')
+    print(f'Architecture validation: {result}')
 else:
-    print('❌ Unexpected output format!')
+    print('Unexpected output format!')
     result = 'FAILED'
 print()
 
@@ -96,7 +96,7 @@ print('  - Mean speed: 18.8 ± 6.9 km/h')
 print('  - Speed changes between measurements: 2.1 km/h (mean)')
 print()
 
-print('🎯 BASELINE PERFORMANCE:')
+print('BASELINE PERFORMANCE:')
 print('  - Naive "Persistence" (predict same as current): MAE ≈ 2.1 km/h')
 print('  - This is the MINIMUM any model should beat')
 print()
@@ -129,7 +129,7 @@ print('     → Coverage@80%: % of true values within predicted intervals')
 print('     → Target: ~80% (well-calibrated uncertainty)')
 print()
 
-print('⚠️ POTENTIAL ISSUES TO WATCH:')
+print('POTENTIAL ISSUES TO WATCH:')
 print('  1. Data augmentation (26.7x): May introduce artificial patterns')
 print('     → Check if model "memorizes" augmentation artifacts')
 print('     → Validate on truly held-out test set (non-augmented)')
@@ -143,7 +143,7 @@ print('     → Harder to learn consistent temporal patterns')
 print('     → Transformer may struggle with non-uniform time gaps')
 print()
 
-print('✅ ARCHITECTURE SOUNDNESS VERDICT:')
+print('ARCHITECTURE SOUNDNESS VERDICT:')
 print('=' * 80)
 print()
 print('STMGT design is SOLID and research-grade because:')

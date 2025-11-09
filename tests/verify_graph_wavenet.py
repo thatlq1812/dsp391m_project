@@ -105,7 +105,7 @@ print('   - Driver behavior variability')
 print('   → These add IRREDUCIBLE uncertainty of ~1-2 km/h minimum')
 print()
 
-print('✅ REALISTIC PERFORMANCE EXPECTATIONS:')
+print('REALISTIC PERFORMANCE EXPECTATIONS:')
 print('-' * 80)
 print(f'Dataset characteristics:')
 print(f'  - {df["run_id"].nunique()} observations over {(df["timestamp"].max() - df["timestamp"].min()).days} days')
@@ -127,7 +127,7 @@ print('│ **REPORTED**        │ **0.65**     │ **0.991**   │ **FAKE**   �
 print('└─────────────────────┴──────────────┴─────────────┴────────────┘')
 print()
 
-print('🎯 VERDICT:')
+print('VERDICT:')
 print('-' * 80)
 print('The reported MAE=0.65 km/h is STATISTICALLY IMPOSSIBLE because:')
 print()

@@ -109,9 +109,9 @@ def investigate_data_splits():
     overlap_train_test = train_dates & test_dates
 
     print("\n=== Overlap Check ===")
-    print(f"Train ∩ Val: {len(overlap_train_val)} samples {'⚠️ LEAKAGE!' if overlap_train_val else '✅'}")
-    print(f"Val ∩ Test: {len(overlap_val_test)} samples {'⚠️ LEAKAGE!' if overlap_val_test else '✅'}")
-    print(f"Train ∩ Test: {len(overlap_train_test)} samples {'⚠️ LEAKAGE!' if overlap_train_test else '✅'}")
+    print(f"Train ∩ Val: {len(overlap_train_val)} samples {'LEAKAGE!' if overlap_train_val else '✅'}")
+    print(f"Val ∩ Test: {len(overlap_val_test)} samples {'LEAKAGE!' if overlap_val_test else '✅'}")
+    print(f"Train ∩ Test: {len(overlap_train_test)} samples {'LEAKAGE!' if overlap_train_test else '✅'}")
 
     # Statistical comparison
     print("\n=== Speed Distribution Comparison ===")
@@ -247,7 +247,7 @@ def comprehensive_evaluation(checkpoint_path, config_path):
 
     # Sanity check: test should NOT be better than validation
     if metrics['test']['mae'] < metrics['val']['mae'] * 0.9:
-        print("\n⚠️ WARNING: Test MAE is suspiciously better than validation!")
+        print("\nWARNING: Test MAE is suspiciously better than validation!")
         print("Possible issues: data leakage, small test set, or overfitting to val")
 
     return metrics
@@ -745,17 +745,17 @@ df.to_csv("outputs/ablation_study_results.csv", index=False)
 
 ### When to Use
 
-✅ Traffic planning and forecasting  
-✅ Research on traffic patterns  
-✅ Benchmarking other models  
-✅ Educational demonstrations
+Traffic planning and forecasting  
+Research on traffic patterns  
+Benchmarking other models  
+Educational demonstrations
 
 ### When NOT to Use
 
-❌ Safety-critical real-time decisions (use with human oversight)  
-❌ Legal/contractual commitments (predictions not guaranteed)  
-❌ Other cities without domain adaptation  
-❌ Long-term infrastructure planning (>1 year)
+Safety-critical real-time decisions (use with human oversight)  
+Legal/contractual commitments (predictions not guaranteed)  
+Other cities without domain adaptation  
+Long-term infrastructure planning (>1 year)
 
 ## Maintenance
 
@@ -786,12 +786,12 @@ df.to_csv("outputs/ablation_study_results.csv", index=False)
 
 ## Phase 2 Success Criteria
 
-✅ **Test/validation discrepancy resolved**  
-✅ **Cross-validation completed (5 folds)**  
-✅ **Overfitting mitigation strategies tested**  
-✅ **Ablation study shows component importance**  
-✅ **Model card documented**  
-✅ **R² stable at 0.45-0.55 with verified metrics**
+**Test/validation discrepancy resolved**  
+**Cross-validation completed (5 folds)**  
+**Overfitting mitigation strategies tested**  
+**Ablation study shows component importance**  
+**Model card documented**  
+**R² stable at 0.45-0.55 with verified metrics**
 
 ---
 

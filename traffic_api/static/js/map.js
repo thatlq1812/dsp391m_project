@@ -63,10 +63,10 @@ async function initMap() {
         // Auto-refresh every 15 minutes
         setInterval(updatePredictions, 15 * 60 * 1000);
         
-        console.log('✅ Map initialized successfully');
+        console.log('Map initialized successfully');
         
     } catch (error) {
-        console.error('❌ Map initialization failed:', error);
+        console.error('Map initialization failed:', error);
         loadingOverlay.innerHTML = `
             <div class="error-message">
                 <h4>Failed to load map</h4>
@@ -160,7 +160,7 @@ async function updatePredictions() {
         document.getElementById('lastUpdate').textContent = 
             `Last update: ${now.toLocaleTimeString()}`;
         
-        console.log('✅ Predictions updated');
+        console.log('Predictions updated');
         
     } catch (error) {
         console.error('Failed to update predictions:', error);

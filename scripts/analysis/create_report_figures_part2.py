@@ -58,7 +58,7 @@ ax.text(2.5, 30, 'Well-Calibrated:\nCoverage matches confidence',
 
 plt.tight_layout()
 plt.savefig('docs/report/figures/fig5_calibration_quality.png', dpi=300, bbox_inches='tight')
-print("✅ Saved: fig5_calibration_quality.png")
+print("Saved: fig5_calibration_quality.png")
 plt.close()
 
 # ============================================================================
@@ -110,7 +110,7 @@ ax2.annotate('MOST CRITICAL', xy=(1.21, 5), xytext=(0.7, 4.5),
 
 plt.tight_layout()
 plt.savefig('docs/report/figures/fig6_ablation_study.png', dpi=300, bbox_inches='tight')
-print("✅ Saved: fig6_ablation_study.png")
+print("Saved: fig6_ablation_study.png")
 plt.close()
 
 # ============================================================================
@@ -168,7 +168,7 @@ ax2.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('docs/report/figures/fig7_training_convergence.png', dpi=300, bbox_inches='tight')
-print("✅ Saved: fig7_training_convergence.png")
+print("Saved: fig7_training_convergence.png")
 plt.close()
 
 # ============================================================================
@@ -224,7 +224,7 @@ for i, (gt, pred) in enumerate(zip(ground_truth, stmgt_pred)):
 
 plt.tight_layout()
 plt.savefig('docs/report/figures/fig8_prediction_vs_truth.png', dpi=300, bbox_inches='tight')
-print("✅ Saved: fig8_prediction_vs_truth.png")
+print("Saved: fig8_prediction_vs_truth.png")
 plt.close()
 
 # ============================================================================
@@ -266,7 +266,7 @@ for bar, val, metric in zip(bars, values, metrics):
 
 plt.tight_layout()
 plt.savefig('docs/report/figures/fig9_computational_efficiency.png', dpi=300, bbox_inches='tight')
-print("✅ Saved: fig9_computational_efficiency.png")
+print("Saved: fig9_computational_efficiency.png")
 plt.close()
 
 # ============================================================================
@@ -325,11 +325,11 @@ ax.text(5, -0.5, '✨ Combined, these create a comprehensive uncertainty-aware f
 
 plt.tight_layout()
 plt.savefig('docs/report/figures/fig10_unique_capabilities.png', dpi=300, bbox_inches='tight')
-print("✅ Saved: fig10_unique_capabilities.png")
+print("Saved: fig10_unique_capabilities.png")
 plt.close()
 
 print("\n" + "="*80)
-print("✅ ALL FIGURES CREATED SUCCESSFULLY!")
+print("ALL FIGURES CREATED SUCCESSFULLY!")
 print("="*80)
 print("\nGenerated 10 figures in docs/report/figures/:")
 print("  1. fig1_stmgt_architecture.png - Architecture diagram")
