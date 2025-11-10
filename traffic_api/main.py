@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Optional
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -25,12 +25,38 @@ from traffic_api.schemas import (
     RoutePlanResponse,
 )
 
+# Authentication and rate limiting
+from traffic_api.auth import (
+    authenticate_user,
+    create_access_token,
+    get_current_user,
+    Token,
+    User,
+)
+from traffic_api.rate_limit import (
+    limiter,
+    custom_rate_limit_handler,
+    RateLimitMiddleware,
+)
+from slowapi.errors import RateLimitExceeded
+
 # Create FastAPI app
 app = FastAPI(
     title="STMGT Traffic Forecasting API",
-    description="Real-time traffic speed forecasting for Ho Chi Minh City",
-    version="0.1.0",
+    description="Real-time traffic speed forecasting for Ho Chi Minh City with JWT authentication",
+    version="1.0.0",
+    docs_url="/api/docs",  # Swagger UI
+    redoc_url="/api/redoc",  # ReDoc
 )
+
+# Add rate limiter state
+app.state.limiter = limiter
+
+# Add rate limit exceeded handler
+app.add_exception_handler(RateLimitExceeded, custom_rate_limit_handler)
+
+# Add rate limit middleware
+app.add_middleware(RateLimitMiddleware)
 
 # CORS middleware
 app.add_middleware(
@@ -79,7 +105,63 @@ async def startup_event():
         traceback.print_exc()
 
 
+# ============================================================================
+# Authentication Endpoints
+# ============================================================================
+
+@app.post("/api/auth/login", response_model=Token, tags=["Authentication"])
+@limiter.limit("10/minute")  # Strict rate limit for login
+async def login(username: str = Form(...), password: str = Form(...)):
+    """
+    Login with username and password to get JWT token.
+    
+    **Rate limit:** 10 requests/minute
+    
+    **Example:**
+    ```bash
+    curl -X POST "http://localhost:8000/api/auth/login" \\
+         -d "username=demo&password=demo123"
+    ```
+    """
+    user = authenticate_user(username, password)
+    
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    access_token = create_access_token(
+        data={"sub": user.username, "role": user.role}
+    )
+    
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+@app.get("/api/auth/me", response_model=User, tags=["Authentication"])
+@limiter.limit("60/minute")
+async def get_me(current_user: User = Depends(get_current_user)):
+    """
+    Get current authenticated user information.
+    
+    **Requires:** JWT token in Authorization header
+    
+    **Example:**
+    ```bash
+    curl -H "Authorization: Bearer YOUR_TOKEN" \\
+         http://localhost:8000/api/auth/me
+    ```
+    """
+    return current_user
+
+
+# ============================================================================
+# Public Endpoints (No Authentication Required)
+# ============================================================================
+
 @app.get("/", response_class=FileResponse)
+@limiter.limit("200/minute")
 async def root():
     """Serve web interface."""
     static_dir = Path(__file__).parent / "static"
@@ -91,7 +173,7 @@ async def root():
         # Fallback to JSON response if static files not available
         return {
             "service": "STMGT Traffic Forecasting API",
-            "version": "0.1.0",
+            "version": "1.0.0",
             "status": "running",
             "endpoints": {
                 "health": "/health",
@@ -101,9 +183,14 @@ async def root():
         }
 
 
-@app.get("/health", response_model=HealthResponse)
+@app.get("/health", response_model=HealthResponse, tags=["System"])
+@limiter.limit("200/minute")
 async def health_check():
-    """Health check endpoint."""
+    """
+    Health check endpoint (public, no authentication required).
+    
+    **Rate limit:** 200 requests/minute
+    """
     return HealthResponse(
         status="healthy" if predictor else "no_model",
         model_loaded=predictor is not None,
@@ -153,9 +240,26 @@ async def get_node(node_id: str):
     return NodeInfo(**node)
 
 
-@app.post("/predict", response_model=PredictionResponse)
-async def predict(request: PredictionRequest = PredictionRequest()):
-    """Generate traffic predictions."""
+@app.post("/predict", response_model=PredictionResponse, tags=["Predictions"])
+@limiter.limit("60/minute")  # Rate limit expensive predictions
+async def predict(
+    request: PredictionRequest = PredictionRequest(),
+    current_user: User = Depends(get_current_user)  # Require authentication
+):
+    """
+    Generate traffic predictions (requires authentication).
+    
+    **Requires:** JWT token in Authorization header  
+    **Rate limit:** 60 requests/minute
+    
+    **Example:**
+    ```bash
+    curl -X POST "http://localhost:8000/predict" \\
+         -H "Authorization: Bearer YOUR_TOKEN" \\
+         -H "Content-Type: application/json" \\
+         -d '{"node_ids": ["node_1"], "horizons": [1, 3, 6]}'
+    ```
+    """
     if predictor is None:
         raise HTTPException(status_code=503, detail="Predictor not initialized")
     
