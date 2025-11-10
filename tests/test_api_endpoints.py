@@ -6,7 +6,7 @@ Tests all new routes added in Phase 2.
 import sys
 sys.path.insert(0, 'd:/UNI/DSP391m/project')
 
-from fastapi.testclient import TestClient
+from starlette.testclient import TestClient
 from traffic_api.main import app
 
 client = TestClient(app)
