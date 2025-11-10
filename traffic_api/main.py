@@ -362,6 +362,16 @@ async def get_predicted_traffic(horizon: int):
             horizons=[horizon]
         )
         
+        # Build lookup dict for node predictions
+        node_predictions = {}
+        for node_pred in predictions['nodes']:
+            node_id = node_pred['node_id']
+            # Get forecast for this horizon
+            for forecast in node_pred['forecasts']:
+                if forecast['horizon'] == horizon:
+                    node_predictions[node_id] = forecast['mean']
+                    break
+        
         # Map node predictions to edges
         current_edges = predictor.get_current_traffic()
         predicted_edges = []
@@ -369,15 +379,9 @@ async def get_predicted_traffic(horizon: int):
         for edge in current_edges:
             node_a_id = edge['node_a_id']
             
-            # Find prediction for source node
-            node_pred = next(
-                (p for p in predictions['predictions'] if p['node_id'] == node_a_id),
-                None
-            )
-            
-            if node_pred and str(horizon) in node_pred['forecasts']:
-                # Use predicted speed from source node
-                predicted_speed = node_pred['forecasts'][str(horizon)]['mean']
+            # Use predicted speed from source node if available
+            if node_a_id in node_predictions:
+                predicted_speed = node_predictions[node_a_id]
             else:
                 # Fallback to current speed
                 predicted_speed = edge['speed_kmh']
