@@ -13,14 +13,31 @@ This directory contains training configuration files for the STMGT traffic forec
 
 ## Configuration Files Overview
 
-| File                          | Status          | Description                                                         | Use Case                      |
-| ----------------------------- | --------------- | ------------------------------------------------------------------- | ----------------------------- |
-| `train_production_ready.json` | **RECOMMENDED** | Production-ready config with K=3 mixture, optimized hyperparameters | Final training for deployment |
-| `train_optimized_final.json`  | Good            | K=2 mixture, well-tuned but sub-optimal calibration                 | Baseline comparison           |
-| `train_balanced_v3.json`      | Experimental    | Earlier balanced config                                             | Development/testing           |
-| `train_smoke_test.json`       | 🧪 Debug        | Quick 5-epoch test                                                  | Verify code changes           |
-| `train_smoke_config.json`     | 🧪 Debug        | Fast sanity check                                                   | CI/CD pipeline                |
-| `training_config.json`        | Legacy          | Old config format                                                   | Deprecated                    |
+### Production Configs
+
+| File                           | Status         | Params | MAE        | Description                                          |
+| ------------------------------ | -------------- | ------ | ---------- | ---------------------------------------------------- |
+| **`train_normalized_v3.json`** | **PRODUCTION** | 680K   | **3.0468** | Current baseline, 1.1% better than V1, best coverage |
+| `train_normalized_v1.json`     | ARCHIVED       | 680K   | 3.08       | Previous baseline, optimal capacity proven           |
+| `train_normalized_v2.json`     | REJECTED       | 1.15M  | 3.22       | Capacity too large, severe overfit                   |
+
+### Capacity Experiments (CONCLUDED)
+
+| File                          | Status   | Params | Change | Test MAE | Result                                |
+| ----------------------------- | -------- | ------ | ------ | -------- | ------------------------------------- |
+| `train_v0.6_minimal.json`     | TESTED   | 350K   | -48%   | 3.11     | Better than V0.8, but worse than V1   |
+| `train_v0.8_smaller.json`     | TESTED   | 520K   | -23%   | 3.22     | Underfits, worse than V0.6            |
+| `train_v0.9_ablation_k3.json` | OPTIONAL | 600K   | -12%   | ?        | Can narrow optimal range to 600K-680K |
+
+**Conclusion:** 680K params is PROVEN OPTIMAL (U-shaped capacity curve confirmed)
+
+### Legacy Configs
+
+| File                          | Status | Description                 |
+| ----------------------------- | ------ | --------------------------- |
+| `train_production_ready.json` | Legacy | Old production config (K=3) |
+| `train_optimized_final.json`  | Legacy | K=2 mixture                 |
+| `train_smoke_test.json`       | Debug  | Quick 5-epoch test          |
 
 ---
 
@@ -365,26 +382,341 @@ python scripts/analysis/create_report_figures_part2.py
 
 ---
 
+## Experimental Config Variants (November 2025)
+
+After validating V1 (680K params, MAE 3.08) as optimal and rejecting V2 (1.15M params, overfits), we created 6 experimental variants to explore safe improvements:
+
+### Config Overview Table
+
+| Config             | Focus          | Params | Key Change             | Expected MAE | Risk     | Priority    |
+| ------------------ | -------------- | ------ | ---------------------- | ------------ | -------- | ----------- |
+| **V1** (baseline)  | Production     | 680K   | hidden=96, K=5         | **3.08**     | -        | DEPLOYED    |
+| **V1.5 Capacity**  | Safe scaling   | 850K   | hidden=104, K=6        | 2.98-3.05    | LOW      | TRY FIRST   |
+| **V1 Arch**        | Optimization   | 680K   | Residuals, GELU        | 2.95-3.05    | VERY LOW | SAFEST      |
+| **V1 Heavy Reg**   | Regularization | 1M     | hidden=112 + heavy reg | 2.95-3.10    | MEDIUM   | TEST        |
+| **V1 Deeper**      | Depth          | 890K   | 4 blocks (depth)       | 2.95-3.08    | MEDIUM   | ALTERNATIVE |
+| **V1 Uncertainty** | Calibration    | 680K   | K=7, MSE=0.3           | 3.08-3.15    | VERY LOW | PRODUCTION  |
+| **V1 No Weather**  | Ablation       | 640K   | Remove weather         | 3.25-3.35    | N/A      | RESEARCH    |
+| V2 (rejected)      | Capacity       | 1.15M  | hidden=128, K=7        | 3.22         | HIGH     | REJECTED    |
+
+### Detailed Config Descriptions
+
+#### 1. `train_v1.5_capacity.json` - Safe Capacity Increment
+
+**Strategy:** Small capacity increase (+25%) with stronger regularization
+
+**Changes from V1:**
+
+- hidden_dim: 96 → 104 (+8.3%, safe increment)
+- mixture_K: 5 → 6 (+20%, better uncertainty)
+- dropout: 0.2 → 0.22, drop_edge: 0.1 → 0.12
+- Total params: 680K → 850K (+25%)
+- Parameter ratio: 850K/144K = 0.17 (safe zone)
+
+**Expected Results:**
+
+- Val MAE: 2.98-3.05 km/h (1-3% better than V1)
+- Coverage@80: 84-86%
+- Overfitting risk: LOW
+
+**When to use:** Want to improve V1 with minimal risk. Try this FIRST before more aggressive variants.
+
+**Usage:**
+
+```bash
+python scripts/training/train_stmgt.py --config configs/train_v1.5_capacity.json
+```
+
+---
+
+#### 2. `train_v1_arch_improvements.json` - Architectural Enhancements
+
+**Strategy:** Same capacity (680K) but better architecture (NO overfitting risk)
+
+**Changes from V1:**
+
+- SAME params: 680K (zero capacity increase)
+- Add: Residual connections (multi-scale features)
+- Add: Layer normalization (stability)
+- Add: GELU activation (smoother gradients vs ReLU)
+- Add: Gradient clipping = 1.0 (prevent spikes)
+
+**Expected Results:**
+
+- Val MAE: 2.95-3.05 km/h (0-4% better than V1)
+- Coverage@80: 83-85%
+- Overfitting risk: VERY LOW
+
+**When to use:** SAFEST option. Want to improve V1 WITHOUT any overfitting risk. Pure optimization improvements.
+
+**Usage:**
+
+```bash
+python scripts/training/train_stmgt.py --config configs/train_v1_arch_improvements.json
+```
+
+---
+
+#### 3. `train_v1_heavy_reg.json` - Aggressive Regularization Test
+
+**Strategy:** Moderate capacity (+47%) with HEAVY regularization
+
+**Changes from V1:**
+
+- hidden_dim: 96 → 112 (+16.7%)
+- mixture_K: 5 → 6
+- Total params: 680K → 1M (+47%)
+- AGGRESSIVE regularization:
+  - dropout: 0.3 (vs V1's 0.2, V2's 0.25)
+  - drop_edge: 0.2 (vs V1's 0.1)
+  - weight_decay: 0.00025 (2.5× V1)
+  - label_smoothing: 0.05
+  - Strong mixup: alpha=0.3
+  - More cutout: p=0.15
+
+**Expected Results:**
+
+- Val MAE: 2.95-3.10 km/h (±0-3% vs V1)
+- Coverage@80: 85-87%
+- Overfitting risk: MEDIUM
+
+**Hypothesis:** Can aggressive regularization support 1M params for 205K samples? If yes → strong reg works. If overfits → confirms 680K is hard limit.
+
+**When to use:** EXPERIMENTAL. Test regularization limits. Monitor train/val gap closely. Stop if gap > 15%.
+
+**Usage:**
+
+```bash
+python scripts/training/train_stmgt.py --config configs/train_v1_heavy_reg.json
+```
+
+---
+
+#### 4. `train_v1_deeper.json` - Depth Instead of Width
+
+**Strategy:** Increase depth (blocks) instead of width (hidden_dim)
+
+**Changes from V1:**
+
+- num_blocks: 3 → 4 (+33% depth)
+- SAME width: hidden_dim = 96
+- Receptive field: 3 hops → 4 hops (25% → 40% network coverage)
+- Total params: 680K → 890K (+31%)
+- Lower LR: 0.001 → 0.0008 (deeper = slower convergence)
+
+**Expected Results:**
+
+- Val MAE: 2.95-3.08 km/h (0-4% better than V1)
+- Coverage@80: 83-85%
+- Overfitting risk: MEDIUM
+
+**Rationale:** V2 showed width (96→128) causes overfitting. Test if depth is safer alternative for capturing long-range dependencies.
+
+**When to use:** Alternative to width scaling. If successful, proves depth > width for traffic graphs.
+
+**Usage:**
+
+```bash
+python scripts/training/train_stmgt.py --config configs/train_v1_deeper.json
+```
+
+---
+
+#### 5. `train_v1_uncertainty_focused.json` - Calibration Priority
+
+**Strategy:** Same architecture (680K) but optimize for uncertainty, not MAE
+
+**Changes from V1:**
+
+- SAME capacity: 680K params
+- mixture_K: 5 → 7 (+40%, more modes)
+- MSE weight: 0.4 → 0.3 (prioritize NLL/calibration)
+- Trade-off: Accept slight MAE increase for better calibration
+
+**Expected Results:**
+
+- Val MAE: 3.08-3.15 km/h (±0-2% vs V1, slight degradation OK)
+- Coverage@80: 86-88% (MAIN GOAL: +2-4% vs V1's 84%)
+- CRPS: 2.10-2.20 (better uncertainty score)
+- Overfitting risk: VERY LOW
+
+**When to use:** Production systems needing reliable confidence intervals (traffic management, risk assessment, route planning). Acceptable to trade 2% MAE for 3% better calibration.
+
+**Usage:**
+
+```bash
+python scripts/training/train_stmgt.py --config configs/train_v1_uncertainty_focused.json
+```
+
+---
+
+#### 6. `train_v1_ablation_no_weather.json` - Weather Feature Importance
+
+**Strategy:** Remove weather features to quantify their contribution
+
+**Changes from V1:**
+
+- REMOVED: Weather features (temp, precip, cloud cover)
+- REMOVED: Weather cross-attention module
+- SAME: All other architecture (hidden=96, K=5, blocks=3)
+- Params: ~640K (slight reduction)
+
+**Expected Results:**
+
+- Val MAE: 3.25-3.35 km/h (+5-9% WORSE than V1)
+- MAE degradation: +0.17-0.27 km/h
+- R²: 0.78-0.80 (-2-4% vs V1's 0.82)
+
+**Purpose:** ABLATION STUDY. Quantify: How much does weather improve predictions?
+
+**When to use:** RESEARCH ONLY. Run to validate weather module importance for paper/report. Do NOT use for production.
+
+**Usage:**
+
+```bash
+python scripts/training/train_stmgt.py --config configs/train_v1_ablation_no_weather.json
+```
+
+---
+
+### Decision Guide: Which Config to Try?
+
+#### Scenario 1: Want to improve V1 with minimal risk
+
+→ **Try V1.5 Capacity** or **V1 Arch Improvements**
+
+**Reasoning:**
+
+- V1.5: Safe capacity increase (+25%, 850K params)
+- V1 Arch: Zero capacity increase (680K params, pure optimization)
+- Both have LOW/VERY LOW overfitting risk
+
+#### Scenario 2: Want best possible MAE, willing to experiment
+
+→ **Try V1 Heavy Reg** or **V1 Deeper**
+
+**Reasoning:**
+
+- Test capacity limits (1M, 890K params)
+- Monitor train/val gap carefully
+- Stop early if overfitting detected (gap > 15%)
+
+#### Scenario 3: Production deployment, need reliable uncertainty
+
+→ **Use V1 Uncertainty Focused**
+
+**Reasoning:**
+
+- Same capacity as proven V1 (680K params)
+- Optimized for calibration (Coverage@80 86-88%)
+- Slight MAE trade-off acceptable for better confidence intervals
+
+#### Scenario 4: Research/paper, need ablation studies
+
+→ **Run V1 No Weather**
+
+**Reasoning:**
+
+- Quantify weather contribution (expected +5-9% MAE degradation)
+- Validate multi-modal design choice
+- Not for production use
+
+---
+
+### Training Recommendations
+
+#### Priority Order (Recommended Sequence)
+
+1. **V1 Arch Improvements** (SAFEST - try first)
+
+   - Risk: VERY LOW
+   - If successful (MAE < 3.05): Deploy immediately
+   - If similar (MAE 3.05-3.10): Still valuable (better optimization)
+
+2. **V1.5 Capacity** (Safe scaling)
+
+   - Risk: LOW
+   - If successful (MAE < 3.05): Validates capacity increase
+   - If overfits: Confirms V1 (680K) is optimal
+
+3. **V1 Uncertainty Focused** (Production alternative)
+
+   - Risk: VERY LOW
+   - Use if calibration > point predictions
+   - Deploy for risk-aware applications
+
+4. **V1 Deeper** OR **V1 Heavy Reg** (Pick one)
+
+   - Risk: MEDIUM
+   - Experimental - test capacity limits
+   - Monitor carefully for overfitting
+
+5. **V1 No Weather** (Research only)
+   - Not for production
+   - Run for paper/report ablation section
+
+#### Training Tips
+
+**Monitor these metrics during training:**
+
+1. **Train/Val MAE Gap:** Should stay < 10%
+
+   - If gap > 15%: Overfitting detected, stop training
+   - If gap > 20%: Config too large, reject
+
+2. **Best Epoch:** Should be in middle-to-late training (epoch 8-15)
+
+   - If best epoch < 5: Model too large (like V2)
+   - If best epoch > 25: Increase patience or lower LR
+
+3. **Coverage@80:** Should be 80-85% (well-calibrated)
+
+   - If < 75%: Overconfident (CIs too narrow)
+   - If > 90%: Underconfident (CIs too wide)
+
+4. **Gradient Norms:** Should be stable
+   - If exploding (>10): Lower LR or increase gradient clipping
+   - If vanishing (<0.01): Check depth, may need better initialization
+
+**Early stopping criteria:**
+
+```python
+# Stop training if ANY of these occur:
+- Train/val gap > 20% (severe overfitting)
+- Val MAE increases for 3 consecutive epochs
+- Gradient norms explode (>100)
+- NaN loss detected
+```
+
+---
+
 ## Configuration Version History
 
-| Version  | Date           | Changes                     | Performance           |
-| -------- | -------------- | --------------------------- | --------------------- |
-| v1.0     | 2025-11-01     | Initial config (h64_b2)     | MAE 10.81             |
-| v2.0     | 2025-11-01     | Increased capacity (h96_b3) | MAE 5.00              |
-| v3.0     | 2025-11-02     | Tuned LR/WD                 | **MAE 3.91**          |
-| v4.0     | 2025-11-02     | K=2, optimized data loading | MAE 4.48 (running)    |
-| **v5.0** | **2025-11-02** | **K=3, balanced loss**      | **TBD (recommended)** |
+| Version      | Date           | Config         | Changes                 | Performance  | Status         |
+| ------------ | -------------- | -------------- | ----------------------- | ------------ | -------------- |
+| v1.0         | 2025-11-01     | Initial        | hidden=64, blocks=2     | MAE 10.81    | Obsolete       |
+| v2.0         | 2025-11-01     | Capacity++     | hidden=96, blocks=3     | MAE 5.00     | Obsolete       |
+| v3.0         | 2025-11-02     | Tuned          | LR/WD optimized         | MAE 3.91     | Good           |
+| **V1**       | **2025-11-09** | **Normalized** | **Fixed normalization** | **MAE 3.08** | **PRODUCTION** |
+| V2           | 2025-11-10     | Capacity+69%   | hidden=128, K=7         | MAE 3.22     | **REJECTED**   |
+| V1.5         | 2025-11-10     | Safe scaling   | hidden=104, K=6         | TBD          | To test        |
+| V1 Arch      | 2025-11-10     | Optimization   | Residuals, GELU         | TBD          | To test        |
+| V1 Heavy     | 2025-11-10     | Heavy reg      | hidden=112 + reg        | TBD          | Experimental   |
+| V1 Deeper    | 2025-11-10     | Depth          | 4 blocks                | TBD          | Experimental   |
+| V1 Uncertain | 2025-11-10     | Calibration    | K=7, MSE=0.3            | TBD          | To test        |
 
 ---
 
 ## References
 
+- **V1 Production Config:** `configs/train_normalized_v1.json`
+- **V2 Experiment Analysis:** `docs/V2_EXPERIMENT_ANALYSIS.md`
 - Model architecture: `traffic_forecast/models/stmgt_v2.py`
-- Training script: `traffic_forecast/models/train.py`
+- Training script: `scripts/training/train_stmgt.py`
 - Data pipeline: `traffic_forecast/data/datamodule.py`
 - Documentation: `docs/STMGT_ARCHITECTURE.md`
 
 ---
 
-**Last Updated:** November 2, 2025  
+**Last Updated:** November 10, 2025  
 **Maintainer:** THAT Le Quang

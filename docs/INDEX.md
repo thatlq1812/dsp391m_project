@@ -11,7 +11,7 @@
 
 This index organizes the project documentation for fast navigation. All docs live under `docs/` per project conventions.
 
-**Last Updated:** November 5, 2025
+**Last Updated:** November 10, 2025
 
 ---
 
@@ -45,6 +45,16 @@ This index organizes the project documentation for fast navigation. All docs liv
 - **Roadmap to Final** — `docs/report/ROADMAP_REPORT3_TO_FINAL.md`
 - **RP3 Documents** — `docs/report/RP3.md`, `RP3_ReCheck.md`
 - **Figures Guide** — `docs/report/FIGURES_USAGE_GUIDE.md`
+
+### Discussion & Analysis (`docs/`)
+
+- **Model Value and Limitations** — `docs/MODEL_VALUE_AND_LIMITATIONS.md`
+  - Research value assessment (beats SOTA 21-28%, uncertainty quantification)
+  - Spatial propagation mechanisms (3-hop GNN, accident scenarios)
+  - Scale challenges (district vs city-wide)
+  - Research contributions (capacity analysis, engineering quality)
+  - Limitations (temporal, spatial, data quality)
+  - Future work roadmap (3-phase plan)
 
 ---
 

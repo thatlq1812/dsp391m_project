@@ -25,6 +25,8 @@ class ModelConfig:
     num_blocks: int = 2
     mixture_components: int = 3
     num_nodes: Optional[int] = None
+    dropout: float = 0.2
+    drop_edge_rate: float = 0.2
 
 
 @dataclass
@@ -49,6 +51,8 @@ class TrainingConfig:
     use_lr_scheduler: bool = False
     scheduler_type: str = "plateau"
     scheduler_params: dict = field(default_factory=dict)
+    gradient_clip_val: float = 5.0
+    label_smoothing: float = 0.0
 
     def resolve_data_path(self, base_dir: Optional[Path] = None, *, strict: bool = True) -> Path:
         """Return the parquet path for ``data_source`` relative to the data root."""
@@ -76,6 +80,7 @@ class RunConfig:
     model: ModelConfig = field(default_factory=ModelConfig)
     training: TrainingConfig = field(default_factory=TrainingConfig)
     metadata: Dict[str, str] = field(default_factory=dict)
+    augmentation: Dict[str, object] = field(default_factory=dict)
 
     @classmethod
     def from_json(cls, path: Path) -> "RunConfig":
@@ -84,7 +89,8 @@ class RunConfig:
         training_cfg = TrainingConfig(**payload.get("training", {}))
         metadata = payload.get("metadata", {})
         metadata["source_config"] = str(path)
-        return cls(model=model_cfg, training=training_cfg, metadata=metadata)
+        augmentation = payload.get("augmentation", {})
+        return cls(model=model_cfg, training=training_cfg, metadata=metadata, augmentation=augmentation)
 
     def to_dict(self) -> Dict[str, Dict[str, object]]:
         return {

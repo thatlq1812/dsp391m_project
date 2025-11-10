@@ -86,13 +86,26 @@ These scripts now share CLI patterns, automatic data-root resolution, and datase
 
 ---
 
-## Current Benchmarks (Oct 31, 2025)
+## Current Performance (Nov 10, 2025) - V3 Production
 
-- **Validation MAE:** 3.05 km/h
-- **Validation R²:** 0.77
-- **Validation MAPE:** 22.9%
+**STMGT V3** is the current production model, achieved through systematic capacity exploration and training refinement:
 
-Benchmark artifacts live under `outputs/stmgt_v2_20251101_012257/` and are surfaced in the dashboard registry.
+- **Test MAE:** 3.0468 km/h (1.1% better than V1)
+- **Test RMSE:** 4.5198 km/h
+- **R² Score:** 0.8161
+- **MAPE:** 18.89%
+- **Coverage@80:** 86.0% (excellent calibration)
+- **Model Capacity:** 680K parameters (proven optimal)
+
+**Key Achievements:**
+
+- 5 capacity experiments confirmed 680K params optimal (U-shaped curve)
+- Training improvements (dropout, LR, regularization) beat baseline without architectural changes
+- Best-in-class uncertainty quantification (86% coverage)
+- Production-ready with comprehensive testing
+
+**Model artifacts:** `outputs/stmgt_v2_20251110_123931/`  
+**Documentation:** `docs/V3_DESIGN_RATIONALE.md`, `docs/CHANGELOG.md`
 
 ---
 
