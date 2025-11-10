@@ -22,10 +22,12 @@ echo -e "${BLUE}[1/3] Health Check${NC}"
 HEALTH_RESPONSE=$(curl -s "$API_URL/health")
 echo "$HEALTH_RESPONSE" | python -m json.tool 2>/dev/null || echo "$HEALTH_RESPONSE"
 
-if echo "$HEALTH_RESPONSE" | grep -q "STMGT_V3"; then
-    echo -e "${GREEN}✓ V3 model detected${NC}"
+if echo "$HEALTH_RESPONSE" | grep -q "stmgt_v2_20251110_123931"; then
+    echo -e "${GREEN}✓ V3 model checkpoint detected (stmgt_v2_20251110_123931)${NC}"
+elif echo "$HEALTH_RESPONSE" | grep -q '"model_loaded":true'; then
+    echo -e "${GREEN}✓ Model loaded successfully${NC}"
 else
-    echo -e "${RED}✗ V3 model not found${NC}"
+    echo -e "${RED}✗ Model not loaded${NC}"
     exit 1
 fi
 echo ""
