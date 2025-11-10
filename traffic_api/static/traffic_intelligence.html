@@ -1008,24 +1008,50 @@
         }
         
         // Draw node markers
+        // Find largest connected component
+        function findLargestComponent(graph) {
+            const visited = new Set();
+            const components = [];
+            
+            graph.forEach((_, nodeId) => {
+                if (!visited.has(nodeId)) {
+                    const component = findComponent(graph, nodeId);
+                    component.forEach(n => visited.add(n));
+                    components.push(component);
+                }
+            });
+            
+            // Return largest component
+            return components.reduce((max, comp) => comp.size > max.size ? comp : max, new Set());
+        }
+        
         function drawNodeMarkers() {
+            // Build graph to find main component
+            const graph = buildGraph(trafficData.edges);
+            const mainComponent = findLargestComponent(graph);
+            
+            console.log(`Main component has ${mainComponent.size} nodes out of ${nodeIndex.size} total`);
+            
             nodeIndex.forEach(node => {
                 const avgSpeed = node.speeds.reduce((a, b) => a + b, 0) / node.speeds.length;
                 const color = getSpeedColor(avgSpeed);
                 
+                // Different styling for nodes in/out of main component
+                const isInMainComponent = mainComponent.has(node.id);
+                
                 const marker = L.circleMarker([node.lat, node.lon], {
-                    radius: 8,
+                    radius: isInMainComponent ? 8 : 5,
                     fillColor: color,
-                    color: '#333',
-                    weight: 2,
-                    opacity: 1,
-                    fillOpacity: 0.85
+                    color: isInMainComponent ? '#333' : '#999',
+                    weight: isInMainComponent ? 2 : 1,
+                    opacity: isInMainComponent ? 1 : 0.5,
+                    fillOpacity: isInMainComponent ? 0.85 : 0.4
                 });
                 
                 // Add popup
                 const popupContent = `
                     <div class="popup-content">
-                        <div class="popup-title">Traffic Node</div>
+                        <div class="popup-title">Traffic Node ${isInMainComponent ? '' : '(Isolated)'}</div>
                         <div class="popup-metric">
                             <span class="popup-label">Location:</span>
                             <span class="popup-value">${node.lat.toFixed(5)}, ${node.lon.toFixed(5)}</span>
@@ -1038,6 +1064,7 @@
                             <span class="popup-label">Connections:</span>
                             <span class="popup-value">${node.edges.length} edges</span>
                         </div>
+                        ${!isInMainComponent ? '<div style="color: #856404; font-size: 11px; margin-top: 5px;"><i class="fas fa-exclamation-triangle"></i> Node in small isolated network</div>' : ''}
                     </div>
                 `;
                 
