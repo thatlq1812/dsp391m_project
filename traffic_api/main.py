@@ -335,6 +335,81 @@ async def get_current_traffic():
         raise HTTPException(status_code=500, detail=f"Failed to get traffic: {str(e)}")
 
 
+@app.get("/api/traffic/predicted/{horizon}", response_model=TrafficCurrentResponse)
+async def get_predicted_traffic(horizon: int):
+    """
+    Get predicted traffic for all edges at specific time horizon.
+    
+    Args:
+        horizon: Forecast horizon (1-12 timesteps, each 5 minutes)
+    
+    Returns:
+        Predicted traffic with speeds and colors for all edges
+    """
+    if predictor is None:
+        raise HTTPException(status_code=503, detail="Predictor not initialized")
+    
+    if horizon < 1 or horizon > 12:
+        raise HTTPException(status_code=400, detail="Horizon must be between 1 and 12")
+    
+    try:
+        # Get all nodes
+        all_node_ids = list(predictor.node_to_idx.keys())
+        
+        # Get predictions for all nodes
+        predictions = predictor.predict(
+            node_ids=all_node_ids,
+            horizons=[horizon]
+        )
+        
+        # Map node predictions to edges
+        current_edges = predictor.get_current_traffic()
+        predicted_edges = []
+        
+        for edge in current_edges:
+            node_a_id = edge['node_a_id']
+            
+            # Find prediction for source node
+            node_pred = next(
+                (p for p in predictions['predictions'] if p['node_id'] == node_a_id),
+                None
+            )
+            
+            if node_pred and str(horizon) in node_pred['forecasts']:
+                # Use predicted speed from source node
+                predicted_speed = node_pred['forecasts'][str(horizon)]['mean']
+            else:
+                # Fallback to current speed
+                predicted_speed = edge['speed_kmh']
+            
+            color, category = _speed_to_color(predicted_speed)
+            
+            predicted_edges.append(EdgeTraffic(
+                edge_id=edge['edge_id'],
+                node_a_id=edge['node_a_id'],
+                node_b_id=edge['node_b_id'],
+                speed_kmh=predicted_speed,
+                color=color,
+                color_category=category,
+                timestamp=edge['timestamp'],
+                lat_a=edge['lat_a'],
+                lon_a=edge['lon_a'],
+                lat_b=edge['lat_b'],
+                lon_b=edge['lon_b']
+            ))
+        
+        return TrafficCurrentResponse(
+            edges=predicted_edges,
+            timestamp=datetime.now(),
+            total_edges=len(predicted_edges)
+        )
+    
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+
+
 @app.post("/api/route/plan", response_model=RoutePlanResponse)
 async def plan_route(request: RouteRequest):
     """Plan optimal route from start to end node."""

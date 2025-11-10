@@ -640,34 +640,29 @@
                 document.getElementById('loadingOverlay').style.display = 'flex';
                 document.querySelector('.loading-text').textContent = `Loading ${horizon * 5}min prediction...`;
                 
-                // Call predict API for all nodes
-                const allNodes = Array.from(nodeIndex.keys());
-                const response = await fetch(`${API_BASE}/predict`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // 'Authorization': 'Bearer YOUR_TOKEN'  // Add if auth required
-                    },
-                    body: JSON.stringify({
-                        node_ids: allNodes.slice(0, 10),  // Limit to avoid timeout
-                        horizons: [horizon]
-                    })
-                });
+                // Call prediction API
+                const response = await fetch(`${API_BASE}/api/traffic/predicted/${horizon}`);
                 
                 if (!response.ok) {
-                    console.warn('Prediction API not available, showing current data');
+                    console.warn('Prediction API failed, showing current data');
                     await loadTrafficData();
                     return;
                 }
                 
-                const predictions = await response.json();
+                const predictedData = await response.json();
+                console.log(`Loaded ${predictedData.total_edges} predicted edges for horizon ${horizon}`);
                 
-                // Update traffic data with predictions
-                // (This would need backend support to convert node predictions to edge speeds)
-                console.log('Predictions:', predictions);
+                // Store as current traffic data
+                trafficData = predictedData;
                 
-                // For now, just reload current data
-                await loadTrafficData();
+                // Build node index
+                buildNodeIndex(trafficData.edges);
+                
+                // Update stats
+                updateStats(trafficData);
+                
+                // Draw predicted traffic network
+                drawTrafficNetwork(trafficData.edges);
                 
                 document.getElementById('loadingOverlay').style.display = 'none';
             } catch (error) {
