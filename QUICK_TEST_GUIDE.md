@@ -3,17 +3,20 @@
 ## Option 1: Python Script (Easiest for Windows)
 
 ### Start API Server
+
 ```bash
 # In terminal 1 (keep this running)
 python scripts/deployment/start_api.py
 ```
 
 Wait until you see:
+
 ```
 INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
 ```
 
 ### Test API
+
 ```bash
 # In terminal 2 (new terminal)
 ./scripts/deployment/test_api.sh
@@ -27,7 +30,9 @@ curl http://localhost:8080/health
 ## Option 2: Using stmgt.sh (If conda in PATH)
 
 ### Check stmgt.sh config
+
 Edit `stmgt.sh` and update CONDA_PATH if needed:
+
 ```bash
 # Current setting
 CONDA_PATH="C:/ProgramData/miniconda3/Scripts/conda.exe"
@@ -39,6 +44,7 @@ CONDA_PATH="C:/ProgramData/miniconda3/Scripts/conda.exe"
 ```
 
 ### Start API
+
 ```bash
 ./stmgt.sh api start
 ```
@@ -60,11 +66,13 @@ uvicorn traffic_api.main:app --host 0.0.0.0 --port 8080
 ## Testing
 
 ### Health Check
+
 ```bash
 curl http://localhost:8080/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "healthy",
@@ -76,12 +84,15 @@ Expected response:
 ```
 
 ### Full Test Suite
+
 ```bash
 ./scripts/deployment/test_api.sh
 ```
 
 ### API Documentation
+
 Open in browser:
+
 - API Docs: http://localhost:8080/docs
 - Health: http://localhost:8080/health
 
@@ -92,6 +103,7 @@ Open in browser:
 ### Issue: "curl: command not found"
 
 **Solution 1: Use Python**
+
 ```bash
 python -c "import requests; print(requests.get('http://localhost:8080/health').json())"
 ```
@@ -102,6 +114,7 @@ Open http://localhost:8080/health in browser
 ### Issue: "Connection refused"
 
 Check if API is running:
+
 ```bash
 # Windows
 netstat -ano | findstr :8080
@@ -113,6 +126,7 @@ netstat -ano | findstr :8080
 ### Issue: "Model not found"
 
 Check model exists:
+
 ```bash
 ls -la outputs/stmgt_v2_20251110_123931/best_model.pt
 ```
@@ -151,10 +165,10 @@ streamlit run dashboard/Dashboard.py
 
 ## Quick Reference
 
-| Action | Command |
-|--------|---------|
+| Action           | Command                                  |
+| ---------------- | ---------------------------------------- |
 | Start API (easy) | `python scripts/deployment/start_api.py` |
-| Test API | `curl http://localhost:8080/health` |
-| Full test | `./scripts/deployment/test_api.sh` |
-| Stop API | Press Ctrl+C in API terminal |
-| API docs | http://localhost:8080/docs |
+| Test API         | `curl http://localhost:8080/health`      |
+| Full test        | `./scripts/deployment/test_api.sh`       |
+| Stop API         | Press Ctrl+C in API terminal             |
+| API docs         | http://localhost:8080/docs               |

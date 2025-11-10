@@ -17,6 +17,7 @@ All major tasks completed successfully. STMGT V3 is now the production baseline 
 ### 1. Model Development & Training
 
 **Capacity Exploration (5 Experiments)**
+
 - [x] V0.6 (350K params): MAE 3.11 - Underfitting
 - [x] V0.8 (520K params): MAE 3.22 - Worse than V0.6
 - [x] V1 (680K params): MAE 3.08 - **Optimal baseline**
@@ -26,6 +27,7 @@ All major tasks completed successfully. STMGT V3 is now the production baseline 
 **Finding:** U-shaped capacity curve confirmed, 680K is proven optimal
 
 **V3 Training (Production Model)**
+
 - [x] Configuration: train_normalized_v3.json (training refinement)
 - [x] Training completed: 29 epochs, early stop at epoch 9
 - [x] **Test MAE: 3.0468 km/h** (1.1% better than V1)
@@ -36,70 +38,80 @@ All major tasks completed successfully. STMGT V3 is now the production baseline 
 ### 2. Documentation (15,000+ Lines)
 
 **Core Documentation**
+
 - [x] `README.md` - Updated with V3 performance
 - [x] `docs/CHANGELOG.md` - V3 production entry
 - [x] `configs/README.md` - V3 marked as PRODUCTION
 - [x] `docs/V3_DESIGN_RATIONALE.md` - Complete design + actual results
 
 **Comprehensive Reports**
+
 - [x] `docs/report/V3_FINAL_SUMMARY.md` - 8,000+ word final report
-  * Executive summary
-  * 5 capacity experiments analysis
-  * V3 design philosophy and results
-  * Production deployment guide
-  * Research contributions
-  * Future work roadmap
+
+  - Executive summary
+  - 5 capacity experiments analysis
+  - V3 design philosophy and results
+  - Production deployment guide
+  - Research contributions
+  - Future work roadmap
 
 - [x] `docs/report/RP3_ReCheck.md` - Updated with V3 results
-  * Experimental progression table
-  * Performance summary
-  * Capacity curve findings
+  - Experimental progression table
+  - Performance summary
+  - Capacity curve findings
 
 **Deployment Guide**
+
 - [x] `docs/guides/DEPLOYMENT.md` - 10-section comprehensive guide
-  * Quick start (5-minute setup)
-  * Environment setup
-  * Model deployment
-  * API/Dashboard configuration
-  * Testing and validation
-  * Monitoring and logging
-  * Troubleshooting
-  * Rollback procedures
-  * Production checklist
+  - Quick start (5-minute setup)
+  - Environment setup
+  - Model deployment
+  - API/Dashboard configuration
+  - Testing and validation
+  - Monitoring and logging
+  - Troubleshooting
+  - Rollback procedures
+  - Production checklist
 
 ### 3. Automation & Scripts
 
 **Deployment Automation**
+
 - [x] `scripts/deployment/deploy_v3.sh`
-  * Environment validation
-  * Model and data integrity checks
-  * API startup automation
-  * Health check verification
-  * Service status reporting
+  - Environment validation
+  - Model and data integrity checks
+  - API startup automation
+  - Health check verification
+  - Service status reporting
 
 **Testing Scripts**
+
 - [x] `scripts/deployment/test_api.sh`
-  * Health endpoint testing
-  * Prediction API testing
-  * Response time benchmarking
-  * Network topology validation
+  - Health endpoint testing
+  - Prediction API testing
+  - Response time benchmarking
+  - Network topology validation
 
 **Release Management**
+
 - [x] `COMMIT_MESSAGE.md` - Comprehensive release notes
 - [x] `RELEASE_CHECKLIST.md` - Production release checklist
 
 ### 4. Git & Version Control
 
 **Commits**
+
 - [x] Documentation updates committed
 - [x] Deployment scripts committed
 - [x] Release notes committed
 
 **Tagging**
+
 - [x] Created tag: `v3.0-production`
 - [x] Tag message: "STMGT V3 Production Release - MAE 3.0468, Coverage 86.0%"
 
 **Ready to Push**
+
 - [x] All changes staged and committed
 - [x] Tag created
 - [x] Ready for: `git push origin master --tags`
@@ -110,15 +122,15 @@ All major tasks completed successfully. STMGT V3 is now the production baseline 
 
 ### Model Comparison
 
-| Metric | V1 (Previous) | V3 (Current) | Improvement |
-|--------|---------------|--------------|-------------|
-| **Test MAE** | 3.08 km/h | **3.0468 km/h** | **-1.1%** ✅ |
-| **Test RMSE** | 4.58 km/h | **4.5198 km/h** | **-1.3%** ✅ |
-| **R² Score** | 0.82 | **0.8161** | Stable ✅ |
-| **MAPE** | N/A | **18.89%** | Excellent ✅ |
-| **Coverage@80** | 83.75% | **86.0%** | **+2.7%** ✅✅ |
-| **Best Epoch** | 9 | **9** | Same ✅ |
-| **Parameters** | 680K | **680K** | Same ✅ |
+| Metric          | V1 (Previous) | V3 (Current)    | Improvement    |
+| --------------- | ------------- | --------------- | -------------- |
+| **Test MAE**    | 3.08 km/h     | **3.0468 km/h** | **-1.1%** ✅   |
+| **Test RMSE**   | 4.58 km/h     | **4.5198 km/h** | **-1.3%** ✅   |
+| **R² Score**    | 0.82          | **0.8161**      | Stable ✅      |
+| **MAPE**        | N/A           | **18.89%**      | Excellent ✅   |
+| **Coverage@80** | 83.75%        | **86.0%**       | **+2.7%** ✅✅ |
+| **Best Epoch**  | 9             | **9**           | Same ✅        |
+| **Parameters**  | 680K          | **680K**        | Same ✅        |
 
 ### Key Achievements
 
@@ -134,11 +146,13 @@ All major tasks completed successfully. STMGT V3 is now the production baseline 
 ### Methodological Contributions
 
 1. **Systematic Capacity Exploration**
+
    - 5 experiments spanning 3.3× parameter range (350K-1.15M)
    - U-shaped capacity curve empirically validated
    - Optimal ratio: 0.21 params per sample (680K/205K)
 
 2. **Evidence-Based Design**
+
    - V3 design informed by experiment findings
    - Training refinement validated (+1.1% MAE)
    - Architecture coherence > raw parameter count (V0.6 beat V0.8)
@@ -156,6 +170,7 @@ All major tasks completed successfully. STMGT V3 is now the production baseline 
 - **Novelty:** Systematic capacity exploration + training refinement
 
 **Potential Papers:**
+
 1. Workshop: "Systematic Capacity Exploration for Traffic Forecasting"
 2. Local Conference: "STMGT V3: Evidence-Based Model Refinement"
 
@@ -168,17 +183,20 @@ All major tasks completed successfully. STMGT V3 is now the production baseline 
 **Status:** ✅ Ready for deployment
 
 **Configuration:**
+
 - Auto-detects V3 model: `outputs/stmgt_v2_20251110_123931/best_model.pt`
 - Endpoint: `http://localhost:8080`
 - Performance: ~50ms inference (RTX 3060)
 
 **Endpoints:**
+
 - `GET /health` - Service health and model info
 - `POST /predict` - Traffic speed prediction
 - `GET /nodes` - Network topology
 - `GET /route` - Route planning
 
 **Start Command:**
+
 ```bash
 ./stmgt.sh api start
 # or
@@ -190,6 +208,7 @@ conda run -n dsp uvicorn traffic_api.main:app --host 0.0.0.0 --port 8080
 **Status:** ✅ Ready for deployment
 
 **Features:**
+
 - Real-time traffic visualization
 - Model comparison (V1 vs V3)
 - Prediction quality analysis
@@ -197,6 +216,7 @@ conda run -n dsp uvicorn traffic_api.main:app --host 0.0.0.0 --port 8080
 - Calibration plots
 
 **Start Command:**
+
 ```bash
 ./stmgt.sh dashboard start
 # or
@@ -206,12 +226,14 @@ conda run -n dsp streamlit run dashboard/Dashboard.py
 ### Automation
 
 **Deployment Script:** `./scripts/deployment/deploy_v3.sh`
+
 - Full environment validation
 - Model integrity checks
 - Automated API startup
 - Health verification
 
 **Testing Script:** `./scripts/deployment/test_api.sh`
+
 - API health check
 - Prediction testing
 - Response time benchmarking
@@ -223,12 +245,14 @@ conda run -n dsp streamlit run dashboard/Dashboard.py
 ### Immediate (Today)
 
 **Option 1: Push to GitHub**
+
 ```bash
 cd /d/UNI/DSP391m/project
 git push origin master --tags
 ```
 
 **Option 2: Test Deployment (Optional)**
+
 ```bash
 # Test API
 ./scripts/deployment/test_api.sh
@@ -240,6 +264,7 @@ git push origin master --tags
 ### Short-term (This Week)
 
 1. **Production Monitoring**
+
    - Deploy API to production server
    - Monitor performance (MAE should stay ~3.05)
    - Track coverage (should be 85-87%)
@@ -253,6 +278,7 @@ git push origin master --tags
 ### Medium-term (This Month)
 
 1. **Paper Preparation**
+
    - Convert V3_FINAL_SUMMARY.md to LaTeX
    - Add figures (training curves, calibration plots)
    - Submit to workshop/conference
@@ -265,6 +291,7 @@ git push origin master --tags
 ### Long-term (3-6 Months)
 
 1. **V4 Consideration**
+
    - Only if production shows issues
    - Implement architectural improvements (residuals, layer norm)
    - Cost-benefit analysis first
@@ -279,12 +306,14 @@ git push origin master --tags
 ## 🎯 Success Metrics - All Met!
 
 ### Critical Requirements
+
 - ✅ Test MAE < 3.1 km/h → **3.0468 achieved**
 - ✅ Coverage > 84% → **86.0% achieved**
 - ✅ Documentation complete → **15,000+ lines**
 - ✅ Deployment ready → **Scripts + guide complete**
 
 ### Quality Standards
+
 - ✅ Systematic research → **5 experiments, U-shaped curve**
 - ✅ Evidence-based design → **V3 validated hypothesis**
 - ✅ Production ready → **API, dashboard, monitoring**
@@ -295,6 +324,7 @@ git push origin master --tags
 ## 👥 Team Contribution
 
 **THAT Le Quang** (Primary Contributor)
+
 - Model architecture and training
 - Capacity experiments (V0.6-V3)
 - Documentation (15,000+ lines)
@@ -302,6 +332,7 @@ git push origin master --tags
 - Research analysis
 
 **Project Timeline:**
+
 - Oct 30-Nov 2: Data collection (66 runs)
 - Nov 1-9: Capacity experiments (V0.6-V2)
 - Nov 9-10: V3 design and training
@@ -314,6 +345,7 @@ git push origin master --tags
 ## 📚 Documentation Index
 
 **Main Documentation:**
+
 1. `README.md` - Project overview, V3 performance
 2. `docs/CHANGELOG.md` - Complete change history
 3. `docs/V3_DESIGN_RATIONALE.md` - V3 design and results
@@ -322,11 +354,13 @@ git push origin master --tags
 6. `RELEASE_CHECKLIST.md` - Production checklist
 
 **Configuration:**
+
 - `configs/train_normalized_v3.json` - V3 training config
 - `configs/README.md` - Config documentation
 - `traffic_api/config.py` - API configuration
 
 **Scripts:**
+
 - `scripts/deployment/deploy_v3.sh` - Deployment automation
 - `scripts/deployment/test_api.sh` - API testing
 - `stmgt.sh` - CLI wrapper
@@ -338,6 +372,7 @@ git push origin master --tags
 ### Project Completion: 100% ✅
 
 **Major Milestones:**
+
 - ✅ Data collection (205K samples)
 - ✅ Baseline models (LSTM, ASTGCN)
 - ✅ STMGT development (V1-V3)
@@ -348,6 +383,7 @@ git push origin master --tags
 - ✅ Release preparation
 
 **Quality Indicators:**
+
 - Code: Production-ready
 - Documentation: Publication-quality
 - Performance: Best-in-class (MAE 3.0468)
@@ -356,9 +392,10 @@ git push origin master --tags
 
 ### Overall Assessment
 
-**Project Grade: A+** 
+**Project Grade: A+**
 
 **Strengths:**
+
 1. Systematic experimental approach
 2. Evidence-based design decisions
 3. Comprehensive documentation
@@ -366,6 +403,7 @@ git push origin master --tags
 5. Research-quality contributions
 
 **What Makes This Excellent:**
+
 - Not just model training, but systematic exploration
 - Not just results, but methodology validation
 - Not just code, but complete deployment system
@@ -403,6 +441,7 @@ git push origin master --tags
 **STMGT V3 project is COMPLETE and PRODUCTION-READY!**
 
 **What You've Built:**
+
 - State-of-the-art traffic forecasting model (MAE 3.0468)
 - Systematic research methodology (5 capacity experiments)
 - Comprehensive documentation (15,000+ lines)
@@ -410,6 +449,7 @@ git push origin master --tags
 - Publication-ready research (workshop paper quality)
 
 **Next Steps:**
+
 1. Push to GitHub: `git push origin master --tags`
 2. Deploy to production (optional)
 3. Write workshop paper (when ready)
@@ -420,7 +460,7 @@ git push origin master --tags
 **Project Status:** ✅ COMPLETE  
 **Production Status:** ✅ READY  
 **Research Status:** ✅ PUBLICATION-READY  
-**Documentation Status:** ✅ COMPREHENSIVE  
+**Documentation Status:** ✅ COMPREHENSIVE
 
 **Thank you for your excellent work on STMGT V3!**
 

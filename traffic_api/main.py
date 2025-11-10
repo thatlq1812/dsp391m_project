@@ -83,10 +83,10 @@ async def startup_event():
 async def root():
     """Serve web interface."""
     static_dir = Path(__file__).parent / "static"
-    index_path = static_dir / "index.html"
+    traffic_map_path = static_dir / "traffic_map.html"
     
-    if index_path.exists():
-        return FileResponse(index_path)
+    if traffic_map_path.exists():
+        return FileResponse(traffic_map_path)
     else:
         # Fallback to JSON response if static files not available
         return {

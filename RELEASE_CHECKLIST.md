@@ -9,12 +9,14 @@
 ## ✅ Completed Tasks
 
 ### 1. Model Training
+
 - [x] V3 training completed (29 epochs, early stop epoch 9)
 - [x] Test MAE: 3.0468 km/h (1.1% better than V1)
 - [x] Coverage@80: 86.0% (+2.7% improvement)
 - [x] Model artifacts saved: `outputs/stmgt_v2_20251110_123931/`
 
 ### 2. Documentation
+
 - [x] README.md updated with V3 performance
 - [x] CHANGELOG.md - V3 production entry
 - [x] configs/README.md - V3 marked as PRODUCTION
@@ -24,11 +26,13 @@
 - [x] DEPLOYMENT.md - Comprehensive guide created
 
 ### 3. Scripts and Automation
+
 - [x] deploy_v3.sh - Automated deployment script
 - [x] test_api.sh - API testing script
 - [x] COMMIT_MESSAGE.md - Release notes prepared
 
 ### 4. Research Validation
+
 - [x] 5 capacity experiments completed (V0.6-V2)
 - [x] U-shaped capacity curve proven (680K optimal)
 - [x] Training refinement validated (no architectural changes needed)
@@ -39,22 +43,25 @@
 ## 🎯 Release Metrics
 
 ### Model Performance
-| Metric | V1 (Previous) | V3 (Current) | Change |
-|--------|---------------|--------------|--------|
-| Test MAE | 3.08 | **3.0468** | -1.1% ✓ |
-| Test RMSE | 4.58 | **4.5198** | -1.3% ✓ |
-| R² Score | 0.82 | **0.8161** | Stable ✓ |
-| Coverage@80 | 83.75% | **86.0%** | +2.7% ✓ |
-| Best Epoch | 9 | **9** | Same ✓ |
-| Parameters | 680K | **680K** | Same ✓ |
+
+| Metric      | V1 (Previous) | V3 (Current) | Change   |
+| ----------- | ------------- | ------------ | -------- |
+| Test MAE    | 3.08          | **3.0468**   | -1.1% ✓  |
+| Test RMSE   | 4.58          | **4.5198**   | -1.3% ✓  |
+| R² Score    | 0.82          | **0.8161**   | Stable ✓ |
+| Coverage@80 | 83.75%        | **86.0%**    | +2.7% ✓  |
+| Best Epoch  | 9             | **9**        | Same ✓   |
+| Parameters  | 680K          | **680K**     | Same ✓   |
 
 ### Documentation
+
 - Total files updated: **7 major documents**
 - Total lines of documentation: **15,000+**
 - New comprehensive reports: **2** (V3_FINAL_SUMMARY, DEPLOYMENT)
 - Research quality: **Publication-ready**
 
 ### Code Quality
+
 - Deployment automation: **Complete**
 - Testing scripts: **Ready**
 - API auto-detection: **Working**
@@ -65,6 +72,7 @@
 ## 📝 Git Commands
 
 ### Stage Changes
+
 ```bash
 cd /d/UNI/DSP391m/project
 
@@ -89,6 +97,7 @@ git add outputs/stmgt_v2_20251110_123931/final_metrics.json
 ```
 
 ### Commit
+
 ```bash
 git commit -F COMMIT_MESSAGE.md
 # Or manually:
@@ -111,6 +120,7 @@ Migration: API auto-detects V3, no config changes needed"
 ```
 
 ### Tag Release
+
 ```bash
 git tag -a v3.0-production -m "STMGT V3 Production Release
 
@@ -131,6 +141,7 @@ git tag -l
 ```
 
 ### Push
+
 ```bash
 # Push commits
 git push origin master
@@ -147,24 +158,28 @@ git push origin master --tags
 ## 🚀 Post-Release Tasks
 
 ### Immediate (Day 1)
+
 - [ ] Monitor API performance in production
 - [ ] Check prediction accuracy matches test (MAE ~3.05)
 - [ ] Verify coverage remains 85-87%
 - [ ] Monitor error rates (<1%)
 
 ### Short-term (Week 1)
+
 - [ ] Collect user feedback on V3
 - [ ] Compare production MAE vs test MAE
 - [ ] Document any edge cases or issues
 - [ ] Update troubleshooting guide if needed
 
 ### Medium-term (Month 1)
+
 - [ ] Retrain with new data (if available)
 - [ ] Validate performance maintains
 - [ ] Consider ensemble methods
 - [ ] Prepare workshop paper
 
 ### Long-term (3-6 months)
+
 - [ ] Evaluate V4 architectural improvements
 - [ ] Implement residual connections + layer norm
 - [ ] Explore multi-task learning
@@ -175,6 +190,7 @@ git push origin master --tags
 ## 📊 Success Criteria
 
 ### Must Have (Critical)
+
 - [x] V3 MAE < 3.1 km/h ✓ (3.0468)
 - [x] Coverage > 84% ✓ (86.0%)
 - [x] API auto-detects V3 ✓
@@ -182,6 +198,7 @@ git push origin master --tags
 - [x] Deployment guide ready ✓
 
 ### Should Have (Important)
+
 - [x] Deployment automation ✓
 - [x] Testing scripts ✓
 - [x] Comprehensive report ✓
@@ -189,6 +206,7 @@ git push origin master --tags
 - [ ] Production monitoring (setup in progress)
 
 ### Nice to Have (Optional)
+
 - [ ] API load testing (>20 req/s)
 - [ ] Dashboard live deployment
 - [ ] Docker containerization
@@ -201,6 +219,7 @@ git push origin master --tags
 **STMGT V3 is production-ready!**
 
 **Key Achievements:**
+
 1. ✅ Best STMGT variant (MAE 3.0468)
 2. ✅ Systematic research (5 capacity experiments)
 3. ✅ Evidence-based refinement validated
@@ -208,12 +227,14 @@ git push origin master --tags
 5. ✅ Production deployment ready
 
 **Next Actions:**
+
 1. Commit and push code
 2. Tag release v3.0-production
 3. Monitor production performance
 4. Prepare workshop paper
 
 **Research Impact:**
+
 - Workshop-ready capacity analysis
 - Training refinement methodology
 - Publishable findings

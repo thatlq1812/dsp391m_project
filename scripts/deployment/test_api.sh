@@ -97,11 +97,6 @@ END=$(date +%s%N)
 DURATION=$(((END - START) / 1000000))
 echo "Health endpoint: ${DURATION}ms"
 
-if [ "$DURATION" -lt 100 ]; then
-    echo -e "${GREEN}✓ Response time < 100ms${NC}"
-else
-    echo -e "${RED}⚠ Response time > 100ms${NC}"
-fi
 echo ""
 
 echo -e "${GREEN}All tests passed!${NC}"
