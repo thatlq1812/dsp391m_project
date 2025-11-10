@@ -16,16 +16,35 @@ Complete changelog for STMGT Traffic Forecasting System
 
 ---
 
-## [V3 PRODUCTION] - 2025-11-10
+## [V3 PRODUCTION - DEPLOYED] - 2025-11-10
 
-### STMGT V3 - Training Complete, New Production Baseline
+### STMGT V3 - Training Complete, Deployed to GitHub
 
-**V3 Training COMPLETED** with excellent results:
+**V3 Training COMPLETED and DEPLOYED** with excellent results:
 
 - **Test MAE:** 3.0468 km/h (1.1% better than V1's 3.08)
 - **Coverage@80:** 86.0% (+2.7% better calibration vs V1's 83.75%)
 - **Best Epoch:** 9 (same as V1, confirms 680K capacity optimal)
 - **Status:** V3 is now **PRODUCTION baseline model**
+- **Deployed:** Pushed to GitHub with tag `v3.0-production`
+
+### Deployment Artifacts Created
+
+**Automation Scripts:**
+- `scripts/deployment/deploy_v3.sh` - One-command V3 deployment script
+- `scripts/deployment/start_api.py` - Direct Python API launcher for Windows
+- `scripts/deployment/test_api.sh` - Comprehensive API testing (health, nodes, predictions)
+
+**Documentation:**
+- `docs/report/V3_FINAL_SUMMARY.md` - 8,000+ word comprehensive project summary
+- `docs/guides/DEPLOYMENT.md` - 10-section deployment guide
+- `PROJECT_COMPLETION_SUMMARY.md` - Executive summary for stakeholders
+- `QUICK_TEST_GUIDE.md` - Fast testing instructions
+
+**Git Release:**
+- **Tag:** `v3.0-production` (commit ffd30f2)
+- **Commits:** 4 new commits pushed to master
+- **Total Documentation:** 15,000+ lines updated across 7 major files
 
 ### V3 Configuration
 
