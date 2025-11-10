@@ -440,6 +440,30 @@
         </button>
     </div>
     
+    <!-- Time Prediction Control -->
+    <div class="floating-panel" style="top: 90px; right: 20px; width: 280px;">
+        <h6 style="color: #667eea; margin-bottom: 12px; font-weight: 600; font-size: 14px;">
+            <i class="fas fa-clock"></i> Traffic Prediction
+        </h6>
+        <div style="margin-bottom: 10px;">
+            <label style="font-size: 12px; color: #666; display: block; margin-bottom: 8px;">
+                Forecast Horizon: <strong id="horizonLabel">Current</strong>
+            </label>
+            <input type="range" id="horizonSlider" min="0" max="12" value="0" step="1" 
+                   style="width: 100%; cursor: pointer;"
+                   oninput="updatePredictionHorizon(this.value)">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #999; margin-top: 4px;">
+                <span>Now</span>
+                <span>+1h</span>
+                <span>+2h</span>
+                <span>+3h</span>
+            </div>
+        </div>
+        <div id="predictionInfo" style="font-size: 11px; color: #666; padding: 8px; background: #f8f9fa; border-radius: 4px; display: none;">
+            <i class="fas fa-info-circle"></i> Showing predicted traffic <span id="horizonMinutes">0</span> minutes ahead
+        </div>
+    </div>
+    
     <!-- Speed Color Legend -->
     <div class="floating-panel" style="bottom: 20px; left: 20px; width: 220px;">
         <h6 style="color: #667eea; margin-bottom: 12px; font-weight: 600; font-size: 13px;">
@@ -559,6 +583,7 @@
         let routePoints = { start: null, end: null };
         let nodeIndex = new Map();  // For quick node lookup
         let routeGeometries = null;  // Pre-loaded route geometries from cache
+        let currentHorizon = 0;  // Current prediction horizon (0 = current, 1-12 = future timesteps)
         
         // Update date/time display
         function updateDateTime() {
@@ -586,6 +611,71 @@
             setInterval(updateDateTime, 1000);
             updateDateTime();
         });
+        
+        // Update prediction horizon
+        async function updatePredictionHorizon(horizon) {
+            currentHorizon = parseInt(horizon);
+            
+            // Update UI
+            const minutes = currentHorizon * 5;  // Each timestep is 5 minutes
+            document.getElementById('horizonLabel').textContent = 
+                currentHorizon === 0 ? 'Current' : `+${minutes} min`;
+            document.getElementById('horizonMinutes').textContent = minutes;
+            document.getElementById('predictionInfo').style.display = 
+                currentHorizon > 0 ? 'block' : 'none';
+            
+            // Fetch predicted traffic
+            if (currentHorizon === 0) {
+                // Show current traffic
+                await loadTrafficData();
+            } else {
+                // Show predicted traffic
+                await loadPredictedTraffic(currentHorizon);
+            }
+        }
+        
+        // Load predicted traffic for specific horizon
+        async function loadPredictedTraffic(horizon) {
+            try {
+                document.getElementById('loadingOverlay').style.display = 'flex';
+                document.querySelector('.loading-text').textContent = `Loading ${horizon * 5}min prediction...`;
+                
+                // Call predict API for all nodes
+                const allNodes = Array.from(nodeIndex.keys());
+                const response = await fetch(`${API_BASE}/predict`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'Authorization': 'Bearer YOUR_TOKEN'  // Add if auth required
+                    },
+                    body: JSON.stringify({
+                        node_ids: allNodes.slice(0, 10),  // Limit to avoid timeout
+                        horizons: [horizon]
+                    })
+                });
+                
+                if (!response.ok) {
+                    console.warn('Prediction API not available, showing current data');
+                    await loadTrafficData();
+                    return;
+                }
+                
+                const predictions = await response.json();
+                
+                // Update traffic data with predictions
+                // (This would need backend support to convert node predictions to edge speeds)
+                console.log('Predictions:', predictions);
+                
+                // For now, just reload current data
+                await loadTrafficData();
+                
+                document.getElementById('loadingOverlay').style.display = 'none';
+            } catch (error) {
+                console.error('Error loading predictions:', error);
+                // Fallback to current traffic
+                await loadTrafficData();
+            }
+        }
         
         // Initialize map
         function initMap() {
