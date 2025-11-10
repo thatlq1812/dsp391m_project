@@ -16,6 +16,62 @@ Complete changelog for STMGT Traffic Forecasting System
 
 ---
 
+## [CODE CLEANUP & WEB ENHANCEMENT] - 2025-11-10
+
+### Project Cleanup & Organization
+
+**Files Removed:**
+- Removed duplicate `traffic_forecast/models/stmgt.py` (556 lines) - consolidated to `stmgt/model.py`
+- Removed `scripts/training/run_v2_training.bat` - obsolete Windows batch file
+- Cleaned all `__pycache__` directories and `.pyc` files
+
+**Files Reorganized:**
+- Moved `setup_cli.py` → `scripts/setup_cli.py`
+- Moved `start_api_simple.py` → `scripts/deployment/start_api_simple.py`
+
+**Rationale:**
+- Single source of truth for STMGT model (only `stmgt/model.py` used in production)
+- All scripts now in `/scripts/` directory per project conventions
+- Cleaner project structure for production deployment
+
+### Web Inference Enhancement
+
+**Edge Prediction Implementation:**
+- Completed TODO in `traffic_api/predictor.py:558`
+- Implemented actual edge-specific predictions using node-level predictions
+- Added node-to-edge mapping for accurate speed forecasting
+- Added confidence intervals (80% CI) for edge predictions
+- Added current speed tracking for comparison
+
+**New Features:**
+- Edge predictions now use source node (node_a) as representative
+- Proper uncertainty quantification with standard deviation
+- Model version tracking (`stmgt_v3`)
+- Better error handling with meaningful messages
+
+### Documentation
+
+**New Documents:**
+- `docs/IMPROVEMENT_CHECKLIST.md` - Comprehensive improvement roadmap
+  - High priority: Testing, configuration, API security
+  - Medium priority: Model interpretability, data quality monitoring
+  - Low priority: Scaling, advanced features
+  - Technical debt tracking
+  - Success metrics and review schedule
+
+**Updated Documents:**
+- `docs/CHANGELOG.md` - Added cleanup and enhancement entries
+- All files now follow American English standards
+
+### Impact
+
+- **Code Quality:** Removed 600+ lines of duplicate/obsolete code
+- **Maintainability:** Clearer project structure, single model source
+- **Functionality:** Web inference now fully operational with real predictions
+- **Documentation:** Clear roadmap for future improvements
+
+---
+
 ## [V3 PRODUCTION - DEPLOYED] - 2025-11-10
 
 ### STMGT V3 - Training Complete, Deployed to GitHub

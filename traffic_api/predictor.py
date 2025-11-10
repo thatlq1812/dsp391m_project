@@ -543,27 +543,71 @@ class STMGTPredictor:
         return edges
     
     def predict_edge(self, edge_id: str, horizon: int = 12) -> dict:
-        """Predict speed for specific edge."""
+        """
+        Predict speed for specific edge using node-level predictions.
+        
+        Edge speed is derived from source node (node_a) predictions,
+        representing traffic leaving that node.
+        
+        Args:
+            edge_id: Format "node_a_id_node_b_id"
+            horizon: Forecast horizon in timesteps (1-12)
+        
+        Returns:
+            Dictionary with edge-specific predictions
+        """
         # Parse edge_id
         parts = edge_id.split('_')
         if len(parts) != 2:
-            raise ValueError(f"Invalid edge_id format: {edge_id}")
+            raise ValueError(f"Invalid edge_id format: {edge_id}. Expected 'node_a_node_b'")
         
         node_a_id, node_b_id = parts
         
         if node_a_id not in self.node_to_idx or node_b_id not in self.node_to_idx:
             raise ValueError(f"Unknown nodes in edge: {edge_id}")
         
-        # For now, return mock prediction
-        # TODO: Implement actual edge-specific prediction
+        # Get node-level predictions (use node_a as representative)
+        node_predictions = self.predict(
+            timestamp=datetime.now(),
+            node_ids=[node_a_id],
+            horizons=[horizon]
+        )
+        
+        if not node_predictions['nodes']:
+            raise ValueError(f"Failed to generate prediction for node {node_a_id}")
+        
+        node_pred = node_predictions['nodes'][0]
+        forecast = node_pred['forecasts'][0] if node_pred['forecasts'] else None
+        
+        if not forecast:
+            raise ValueError(f"No forecast available for horizon {horizon}")
+        
+        # Load current speed from data
+        try:
+            df = pd.read_parquet(self.data_path)
+            edge_data = df[
+                (df['node_a_id'] == node_a_id) & 
+                (df['node_b_id'] == node_b_id)
+            ].tail(1)
+            
+            current_speed = float(edge_data.iloc[0]['speed_kmh']) if not edge_data.empty else None
+        except Exception as e:
+            print(f"Warning: Could not load current speed for edge {edge_id}: {e}")
+            current_speed = None
+        
         return {
             'edge_id': edge_id,
             'node_a_id': node_a_id,
             'node_b_id': node_b_id,
             'horizon': horizon,
-            'predicted_speed_kmh': 35.0,
-            'uncertainty_std': 5.0,
-            'timestamp': datetime.now()
+            'horizon_minutes': horizon * 15,
+            'predicted_speed_kmh': forecast['mean'],
+            'uncertainty_std': forecast['std'],
+            'confidence_80_lower': forecast['lower_80'],
+            'confidence_80_upper': forecast['upper_80'],
+            'current_speed_kmh': current_speed,
+            'timestamp': datetime.now(),
+            'model_version': 'stmgt_v3'
         }
     
     def plan_routes(
