@@ -574,13 +574,18 @@
                 minute: '2-digit',
                 second: '2-digit'
             });
-            document.getElementById('dateDisplay').textContent = dateStr;
-            document.getElementById('timeDisplay').textContent = timeStr;
+            
+            const dateElem = document.getElementById('dateDisplay');
+            const timeElem = document.getElementById('timeDisplay');
+            if (dateElem) dateElem.textContent = dateStr;
+            if (timeElem) timeElem.textContent = timeStr;
         }
         
-        // Update datetime every second
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
+        // Update datetime every second (after DOM loaded)
+        document.addEventListener('DOMContentLoaded', () => {
+            setInterval(updateDateTime, 1000);
+            updateDateTime();
+        });
         
         // Initialize map
         function initMap() {
@@ -746,7 +751,15 @@
                     return null;
                 }
                 
+                // Response is the JSON object directly (not wrapped)
                 const geometries = await response.json();
+                
+                // Validate it's an object with route data
+                if (!geometries || typeof geometries !== 'object') {
+                    console.error('Invalid route geometries format');
+                    return null;
+                }
+                
                 console.log(`Loaded ${Object.keys(geometries).length} route geometries from Google Maps`);
                 return geometries;
             } catch (error) {

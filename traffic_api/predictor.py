@@ -510,7 +510,7 @@ class STMGTPredictor:
         return None
     
     def get_current_traffic(self) -> list[dict]:
-        """Get current traffic for all edges."""
+        """Get current traffic for all edges (unique edges only)."""
         # Load latest data
         df = pd.read_parquet(self.data_path)
         
@@ -518,9 +518,18 @@ class STMGTPredictor:
         latest_time = df['timestamp'].max()
         current_data = df[df['timestamp'] == latest_time].copy()
         
+        # Group by edge to get unique edges (average speed if multiple entries)
+        current_data['edge_key'] = current_data['node_a_id'] + '_' + current_data['node_b_id']
+        unique_edges = current_data.groupby('edge_key').agg({
+            'node_a_id': 'first',
+            'node_b_id': 'first',
+            'speed_kmh': 'mean',  # Average speed if multiple entries
+            'timestamp': 'first'
+        }).reset_index()
+        
         # Create edge list with coordinates
         edges = []
-        for _, row in current_data.iterrows():
+        for _, row in unique_edges.iterrows():
             node_a = row['node_a_id']
             node_b = row['node_b_id']
             
@@ -532,7 +541,7 @@ class STMGTPredictor:
                 'edge_id': f"{node_a}_{node_b}",
                 'node_a_id': node_a,
                 'node_b_id': node_b,
-                'speed_kmh': float(row.get('speed', row.get('speed_kmh', 0))),
+                'speed_kmh': float(row['speed_kmh']),
                 'timestamp': row['timestamp'],
                 'lat_a': float(node_a_info.get('lat', 0)),
                 'lon_a': float(node_a_info.get('lon', 0)),
