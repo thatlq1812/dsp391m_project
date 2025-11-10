@@ -765,26 +765,65 @@
             });
         }
         
+        // Fetch route from OSRM with timeout and retry
+        async function fetchOSRMRoute(lonA, latA, lonB, latB, retries = 2) {
+            const timeout = 5000; // 5 second timeout
+            
+            for (let attempt = 0; attempt < retries; attempt++) {
+                try {
+                    const url = `https://router.project-osrm.org/route/v1/driving/${lonA},${latA};${lonB},${latB}?overview=full&geometries=geojson`;
+                    
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), timeout);
+                    
+                    const response = await fetch(url, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    
+                    const data = await response.json();
+                    
+                    if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
+                        const coords = data.routes[0].geometry.coordinates;
+                        return coords.map(c => [c[1], c[0]]);
+                    }
+                    
+                    return null;
+                } catch (error) {
+                    if (attempt < retries - 1) {
+                        // Wait before retry (exponential backoff)
+                        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+                        continue;
+                    }
+                    return null;
+                }
+            }
+            return null;
+        }
+        
         // Pre-load all route geometries from OSRM
         async function preloadRouteGeometry(edges) {
             const loadingText = document.querySelector('.loading-text');
             loadingText.textContent = 'Pre-loading route geometries...';
             
-            // Process in batches to avoid rate limiting
-            const batchSize = 10;
-            const batchDelay = 500;
+            // Process in smaller batches with longer delays
+            const batchSize = 5;  // Reduced from 10
+            const batchDelay = 1000;  // Increased to 1 second
             let processed = 0;
+            let cached = 0;
+            let short = 0;
+            let osrmSuccess = 0;
+            let osrmFailed = 0;
             
             for (let i = 0; i < edges.length; i += batchSize) {
                 const batch = edges.slice(i, i + batchSize);
                 const progress = Math.round((i / edges.length) * 100);
-                loadingText.textContent = `Pre-loading routes... ${progress}% (${processed}/${edges.length})`;
+                loadingText.textContent = `Pre-loading routes... ${progress}% (${processed}/${edges.length}) - Success: ${osrmSuccess}, Failed: ${osrmFailed}`;
                 
                 await Promise.all(batch.map(async (edge) => {
                     const cacheKey = `${edge.lat_a.toFixed(5)},${edge.lon_a.toFixed(5)}-${edge.lat_b.toFixed(5)},${edge.lon_b.toFixed(5)}`;
                     
                     // Skip if already cached
                     if (routeCache.has(cacheKey)) {
+                        cached++;
                         processed++;
                         return;
                     }
@@ -792,30 +831,24 @@
                     // Calculate distance
                     const distance = map.distance([edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]);
                     
-                    // Short edges: use straight line
-                    if (distance < 200) {
+                    // Short edges: use straight line (increased threshold)
+                    if (distance < 300) {
                         routeCache.set(cacheKey, [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]]);
+                        short++;
                         processed++;
                         return;
                     }
                     
-                    // Fetch from OSRM
-                    try {
-                        const url = `https://router.project-osrm.org/route/v1/driving/${edge.lon_a},${edge.lat_a};${edge.lon_b},${edge.lat_b}?overview=full&geometries=geojson`;
-                        const response = await fetch(url);
-                        const data = await response.json();
-                        
-                        if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
-                            const coords = data.routes[0].geometry.coordinates;
-                            const latLngs = coords.map(c => [c[1], c[0]]);
-                            routeCache.set(cacheKey, latLngs);
-                        } else {
-                            // Fallback to straight line
-                            routeCache.set(cacheKey, [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]]);
-                        }
-                    } catch (error) {
+                    // Fetch from OSRM with retry
+                    const latLngs = await fetchOSRMRoute(edge.lon_a, edge.lat_a, edge.lon_b, edge.lat_b);
+                    
+                    if (latLngs) {
+                        routeCache.set(cacheKey, latLngs);
+                        osrmSuccess++;
+                    } else {
                         // Fallback to straight line
                         routeCache.set(cacheKey, [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]]);
+                        osrmFailed++;
                     }
                     processed++;
                 }));
@@ -826,7 +859,8 @@
                 }
             }
             
-            console.log(`Pre-loaded ${routeCache.size} route geometries`);
+            console.log(`Pre-load complete: ${routeCache.size} total routes`);
+            console.log(`- Cached: ${cached}, Short: ${short}, OSRM Success: ${osrmSuccess}, OSRM Failed: ${osrmFailed}`);
             loadingText.textContent = 'Drawing network...';
         }
         
