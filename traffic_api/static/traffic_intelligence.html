@@ -515,7 +515,6 @@
         // Configuration
         const API_BASE = window.location.origin;
         const HCMC_CENTER = [10.8231, 106.6297];
-        const USE_ROAD_GEOMETRY = true;  // Use OSRM for real road paths
         
         // Global variables
         let map;
@@ -526,7 +525,7 @@
         let currentMode = 'view';
         let routePoints = { start: null, end: null };
         let nodeIndex = new Map();  // For quick node lookup
-        let routeCache = new Map();  // Cache OSRM routes
+        let routeGeometries = {};  // Pre-loaded route geometries from cache
         
         // Update date/time display
         function updateDateTime() {
@@ -694,10 +693,33 @@
         }
         
         // Load traffic data
+        async function loadRouteGeometries() {
+            /**Load pre-computed route geometries from cache.*/
+            try {
+                const response = await fetch(`${API_BASE}/api/route-geometries`);
+                if (!response.ok) {
+                    console.warn('Route geometries not found, will use straight lines');
+                    return {};
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error loading route geometries:', error);
+                return {};
+            }
+        }
+        
         async function loadTrafficData() {
             try {
                 document.getElementById('loadingOverlay').style.display = 'flex';
+                document.querySelector('.loading-text').textContent = 'Loading route geometries...';
                 
+                // Load route geometries first
+                routeGeometries = await loadRouteGeometries();
+                console.log(`Loaded ${Object.keys(routeGeometries).length} route geometries from cache`);
+                
+                document.querySelector('.loading-text').textContent = 'Loading traffic data...';
+                
+                // Fetch traffic data
                 const response = await fetch(`${API_BASE}/api/traffic/current`);
                 if (!response.ok) throw new Error('Failed to fetch traffic data');
                 
@@ -708,9 +730,6 @@
                 
                 // Update stats
                 updateStats(trafficData);
-                
-                // Pre-load all route geometries
-                await preloadRouteGeometry(trafficData.edges);
                 
                 // Draw traffic network
                 drawTrafficNetwork(trafficData.edges);
@@ -766,103 +785,7 @@
         }
         
         // Fetch route from OSRM with timeout and retry
-        async function fetchOSRMRoute(lonA, latA, lonB, latB, retries = 2) {
-            const timeout = 5000; // 5 second timeout
-            
-            for (let attempt = 0; attempt < retries; attempt++) {
-                try {
-                    const url = `https://router.project-osrm.org/route/v1/driving/${lonA},${latA};${lonB},${latB}?overview=full&geometries=geojson`;
-                    
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), timeout);
-                    
-                    const response = await fetch(url, { signal: controller.signal });
-                    clearTimeout(timeoutId);
-                    
-                    const data = await response.json();
-                    
-                    if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
-                        const coords = data.routes[0].geometry.coordinates;
-                        return coords.map(c => [c[1], c[0]]);
-                    }
-                    
-                    return null;
-                } catch (error) {
-                    if (attempt < retries - 1) {
-                        // Wait before retry (exponential backoff)
-                        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
-                        continue;
-                    }
-                    return null;
-                }
-            }
-            return null;
-        }
-        
-        // Pre-load all route geometries from OSRM
-        async function preloadRouteGeometry(edges) {
-            const loadingText = document.querySelector('.loading-text');
-            loadingText.textContent = 'Pre-loading route geometries...';
-            
-            // Process in smaller batches with longer delays
-            const batchSize = 5;  // Reduced from 10
-            const batchDelay = 1000;  // Increased to 1 second
-            let processed = 0;
-            let cached = 0;
-            let short = 0;
-            let osrmSuccess = 0;
-            let osrmFailed = 0;
-            
-            for (let i = 0; i < edges.length; i += batchSize) {
-                const batch = edges.slice(i, i + batchSize);
-                const progress = Math.round((i / edges.length) * 100);
-                loadingText.textContent = `Pre-loading routes... ${progress}% (${processed}/${edges.length}) - Success: ${osrmSuccess}, Failed: ${osrmFailed}`;
-                
-                await Promise.all(batch.map(async (edge) => {
-                    const cacheKey = `${edge.lat_a.toFixed(5)},${edge.lon_a.toFixed(5)}-${edge.lat_b.toFixed(5)},${edge.lon_b.toFixed(5)}`;
-                    
-                    // Skip if already cached
-                    if (routeCache.has(cacheKey)) {
-                        cached++;
-                        processed++;
-                        return;
-                    }
-                    
-                    // Calculate distance
-                    const distance = map.distance([edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]);
-                    
-                    // Short edges: use straight line (increased threshold)
-                    if (distance < 300) {
-                        routeCache.set(cacheKey, [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]]);
-                        short++;
-                        processed++;
-                        return;
-                    }
-                    
-                    // Fetch from OSRM with retry
-                    const latLngs = await fetchOSRMRoute(edge.lon_a, edge.lat_a, edge.lon_b, edge.lat_b);
-                    
-                    if (latLngs) {
-                        routeCache.set(cacheKey, latLngs);
-                        osrmSuccess++;
-                    } else {
-                        // Fallback to straight line
-                        routeCache.set(cacheKey, [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]]);
-                        osrmFailed++;
-                    }
-                    processed++;
-                }));
-                
-                // Delay between batches
-                if (i + batchSize < edges.length) {
-                    await new Promise(resolve => setTimeout(resolve, batchDelay));
-                }
-            }
-            
-            console.log(`Pre-load complete: ${routeCache.size} total routes`);
-            console.log(`- Cached: ${cached}, Short: ${short}, OSRM Success: ${osrmSuccess}, OSRM Failed: ${osrmFailed}`);
-            loadingText.textContent = 'Drawing network...';
-        }
+        // OSRM functions removed - now using pre-computed Google Maps routes
         
         // Update statistics
         function updateStats(data) {
@@ -887,8 +810,8 @@
                 const color = getSpeedColor(edge.speed_kmh);
                 const cacheKey = `${edge.lat_a.toFixed(5)},${edge.lon_a.toFixed(5)}-${edge.lat_b.toFixed(5)},${edge.lon_b.toFixed(5)}`;
                 
-                // Get geometry from cache (should always exist after pre-load)
-                const latLngs = routeCache.get(cacheKey) || [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]];
+                // Get geometry from pre-loaded Google Maps cache
+                const latLngs = routeGeometries[cacheKey] || [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]];
                 
                 L.polyline(latLngs, {
                     color: color,
@@ -904,17 +827,9 @@
             console.log(`Drew ${edges.length} edges from cached geometries`);
         }
         
-        // Statistics for debugging
-        let edgeStats = {
-            total: 0,
-            cached: 0,
-            short: 0,
-            osrm: 0,
-            failed: 0
-        };
-        
-        // Draw single edge with OSRM routing
-        async function drawSingleEdge(edge) {
+        // Outdated OSRM code removed - using Google Maps cache
+        // (Keeping function signature for compatibility)
+        async function drawSingleEdge_DEPRECATED(edge) {
             edgeStats.total++;
             const color = getSpeedColor(edge.speed_kmh);
             const cacheKey = `${edge.lat_a.toFixed(5)},${edge.lon_a.toFixed(5)}-${edge.lat_b.toFixed(5)},${edge.lon_b.toFixed(5)}`;
@@ -1207,8 +1122,8 @@
                 // Create cache key
                 const cacheKey = `${nodeA.lat.toFixed(5)},${nodeA.lon.toFixed(5)}-${nodeB.lat.toFixed(5)},${nodeB.lon.toFixed(5)}`;
                 
-                // Get from cache (should exist from pre-load)
-                const routeCoords = routeCache.get(cacheKey) || [[nodeA.lat, nodeA.lon], [nodeB.lat, nodeB.lon]];
+                // Get from pre-loaded Google Maps cache
+                const routeCoords = routeGeometries[cacheKey] || [[nodeA.lat, nodeA.lon], [nodeB.lat, nodeB.lon]];
                 
                 // Draw segment
                 L.polyline(routeCoords, {

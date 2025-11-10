@@ -113,6 +113,20 @@ async def health_check():
     )
 
 
+@app.get("/api/route-geometries")
+async def get_route_geometries():
+    """Get pre-computed route geometries."""
+    geometries_file = Path(__file__).parent.parent / "cache" / "route_geometries.json"
+    
+    if not geometries_file.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="Route geometries not found. Run scripts/data/fetch_route_geometries.py first"
+        )
+    
+    return FileResponse(geometries_file, media_type="application/json")
+
+
 @app.get("/nodes", response_model=list[NodeInfo])
 async def get_nodes():
     """Get all traffic nodes."""
