@@ -709,6 +709,9 @@
                 // Update stats
                 updateStats(trafficData);
                 
+                // Pre-load all route geometries
+                await preloadRouteGeometry(trafficData.edges);
+                
                 // Draw traffic network
                 drawTrafficNetwork(trafficData.edges);
                 
@@ -762,6 +765,71 @@
             });
         }
         
+        // Pre-load all route geometries from OSRM
+        async function preloadRouteGeometry(edges) {
+            const loadingText = document.querySelector('.loading-text');
+            loadingText.textContent = 'Pre-loading route geometries...';
+            
+            // Process in batches to avoid rate limiting
+            const batchSize = 10;
+            const batchDelay = 500;
+            let processed = 0;
+            
+            for (let i = 0; i < edges.length; i += batchSize) {
+                const batch = edges.slice(i, i + batchSize);
+                const progress = Math.round((i / edges.length) * 100);
+                loadingText.textContent = `Pre-loading routes... ${progress}% (${processed}/${edges.length})`;
+                
+                await Promise.all(batch.map(async (edge) => {
+                    const cacheKey = `${edge.lat_a.toFixed(5)},${edge.lon_a.toFixed(5)}-${edge.lat_b.toFixed(5)},${edge.lon_b.toFixed(5)}`;
+                    
+                    // Skip if already cached
+                    if (routeCache.has(cacheKey)) {
+                        processed++;
+                        return;
+                    }
+                    
+                    // Calculate distance
+                    const distance = map.distance([edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]);
+                    
+                    // Short edges: use straight line
+                    if (distance < 200) {
+                        routeCache.set(cacheKey, [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]]);
+                        processed++;
+                        return;
+                    }
+                    
+                    // Fetch from OSRM
+                    try {
+                        const url = `https://router.project-osrm.org/route/v1/driving/${edge.lon_a},${edge.lat_a};${edge.lon_b},${edge.lat_b}?overview=full&geometries=geojson`;
+                        const response = await fetch(url);
+                        const data = await response.json();
+                        
+                        if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
+                            const coords = data.routes[0].geometry.coordinates;
+                            const latLngs = coords.map(c => [c[1], c[0]]);
+                            routeCache.set(cacheKey, latLngs);
+                        } else {
+                            // Fallback to straight line
+                            routeCache.set(cacheKey, [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]]);
+                        }
+                    } catch (error) {
+                        // Fallback to straight line
+                        routeCache.set(cacheKey, [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]]);
+                    }
+                    processed++;
+                }));
+                
+                // Delay between batches
+                if (i + batchSize < edges.length) {
+                    await new Promise(resolve => setTimeout(resolve, batchDelay));
+                }
+            }
+            
+            console.log(`Pre-loaded ${routeCache.size} route geometries`);
+            loadingText.textContent = 'Drawing network...';
+        }
+        
         // Update statistics
         function updateStats(data) {
             const speeds = data.edges.map(e => e.speed_kmh);
@@ -775,60 +843,31 @@
             document.getElementById('congestionLevel').textContent = getCongestionLevel(parseFloat(avgSpeed));
         }
         
-        // Draw traffic network
-        async function drawTrafficNetwork(edges) {
+        // Draw traffic network (using pre-loaded geometries)
+        function drawTrafficNetwork(edges) {
             edgesLayer.clearLayers();
             markersLayer.clearLayers();
             
-            // Reset stats
-            edgeStats = {
-                total: 0,
-                cached: 0,
-                short: 0,
-                osrm: 0,
-                failed: 0
-            };
-            
-            // Draw edges with road geometry
-            if (USE_ROAD_GEOMETRY) {
-                const loadingText = document.querySelector('.loading-text');
-                loadingText.textContent = 'Loading road geometry...';
+            // Draw all edges from cache
+            edges.forEach(edge => {
+                const color = getSpeedColor(edge.speed_kmh);
+                const cacheKey = `${edge.lat_a.toFixed(5)},${edge.lon_a.toFixed(5)}-${edge.lat_b.toFixed(5)},${edge.lon_b.toFixed(5)}`;
                 
-                // Process in batches
-                const batchSize = 30;
-                for (let i = 0; i < edges.length; i += batchSize) {
-                    const batch = edges.slice(i, i + batchSize);
-                    const progress = Math.round((i / edges.length) * 100);
-                    loadingText.textContent = `Loading road geometry... ${progress}%`;
-                    
-                    await Promise.all(batch.map(edge => drawSingleEdge(edge)));
-                    
-                    if (i + batchSize < edges.length) {
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                    }
-                }
+                // Get geometry from cache (should always exist after pre-load)
+                const latLngs = routeCache.get(cacheKey) || [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]];
                 
-                // Log statistics
-                console.log('Edge Rendering Stats:', edgeStats);
-                console.log(`OSRM Success Rate: ${(edgeStats.osrm / edgeStats.total * 100).toFixed(1)}%`);
-            } else {
-                // Fast mode: straight lines
-                edges.forEach(edge => {
-                    const color = getSpeedColor(edge.speed_kmh);
-                    L.polyline(
-                        [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]],
-                        {
-                            color: color,
-                            weight: 6,
-                            opacity: 0.8,
-                            smoothFactor: 1
-                        }
-                    ).addTo(edgesLayer);
-                });
-            }
+                L.polyline(latLngs, {
+                    color: color,
+                    weight: 5,
+                    opacity: 0.7,
+                    smoothFactor: 1
+                }).addTo(edgesLayer);
+            });
             
-            // Draw node markers (after edges)
+            // Draw node markers
             drawNodeMarkers();
+            
+            console.log(`Drew ${edges.length} edges from cached geometries`);
         }
         
         // Statistics for debugging
@@ -862,15 +901,15 @@
             // Calculate distance
             const distance = map.distance([edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]);
             
-            // Short edges: use straight line
-            if (distance < 50) {
+            // Short edges: use straight line (increased threshold to reduce API calls)
+            if (distance < 200) {
                 edgeStats.short++;
                 const straightLine = [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]];
                 routeCache.set(cacheKey, straightLine);
                 L.polyline(straightLine, {
                     color: color,
-                    weight: 6,
-                    opacity: 0.8
+                    weight: 5,
+                    opacity: 0.7
                 }).addTo(edgesLayer);
                 return;
             }
@@ -928,12 +967,12 @@
                 const color = getSpeedColor(avgSpeed);
                 
                 const marker = L.circleMarker([node.lat, node.lon], {
-                    radius: 5,
+                    radius: 8,
                     fillColor: color,
-                    color: '#fff',
+                    color: '#333',
                     weight: 2,
                     opacity: 1,
-                    fillOpacity: 0.9
+                    fillOpacity: 0.85
                 });
                 
                 // Add popup
@@ -961,7 +1000,7 @@
         }
         
         // Find optimal route using A* algorithm
-        async function findOptimalRoute() {
+        function findOptimalRoute() {
             if (!routePoints.start || !routePoints.end) return;
             
             const startNode = routePoints.start;
@@ -989,8 +1028,8 @@
                 const path = aStarSearch(graph, startNode.id, endNode.id);
                 
                 if (path && path.length > 0) {
-                    // Draw route on map with OSRM routing
-                    await drawRoute(path);
+                    // Draw route on map (using cached geometries)
+                    drawRoute(path);
                     
                     // Display route info
                     displayRouteInfo(path);
@@ -1122,11 +1161,11 @@
             return null;  // No path found
         }
         
-        // Draw route on map with OSRM routing
-        async function drawRoute(path) {
+        // Draw route on map (using cached geometries)
+        function drawRoute(path) {
             routeLayer.clearLayers();
             
-            // Draw each segment with OSRM routing
+            // Draw each segment using cached geometry
             for (let i = 0; i < path.length - 1; i++) {
                 const nodeA = nodeIndex.get(path[i]);
                 const nodeB = nodeIndex.get(path[i + 1]);
@@ -1134,42 +1173,8 @@
                 // Create cache key
                 const cacheKey = `${nodeA.lat.toFixed(5)},${nodeA.lon.toFixed(5)}-${nodeB.lat.toFixed(5)},${nodeB.lon.toFixed(5)}`;
                 
-                let routeCoords;
-                
-                if (routeCache.has(cacheKey)) {
-                    // Use cached route
-                    routeCoords = routeCache.get(cacheKey);
-                } else {
-                    // Calculate distance
-                    const distance = map.distance([nodeA.lat, nodeA.lon], [nodeB.lat, nodeB.lon]);
-                    
-                    if (distance < 50) {
-                        // Short distance: use straight line
-                        routeCoords = [[nodeA.lat, nodeA.lon], [nodeB.lat, nodeB.lon]];
-                        routeCache.set(cacheKey, routeCoords);
-                    } else {
-                        // Fetch from OSRM
-                        try {
-                            const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${nodeA.lon},${nodeA.lat};${nodeB.lon},${nodeB.lat}?overview=full&geometries=geojson`;
-                            const response = await fetch(osrmUrl);
-                            const data = await response.json();
-                            
-                            if (data.code === 'Ok' && data.routes.length > 0) {
-                                // Convert [lon, lat] to [lat, lon]
-                                routeCoords = data.routes[0].geometry.coordinates.map(coord => [coord[1], coord[0]]);
-                                routeCache.set(cacheKey, routeCoords);
-                            } else {
-                                // Fallback
-                                routeCoords = [[nodeA.lat, nodeA.lon], [nodeB.lat, nodeB.lon]];
-                                routeCache.set(cacheKey, routeCoords);
-                            }
-                        } catch (error) {
-                            // Fallback on error
-                            routeCoords = [[nodeA.lat, nodeA.lon], [nodeB.lat, nodeB.lon]];
-                            routeCache.set(cacheKey, routeCoords);
-                        }
-                    }
-                }
+                // Get from cache (should exist from pre-load)
+                const routeCoords = routeCache.get(cacheKey) || [[nodeA.lat, nodeA.lon], [nodeB.lat, nodeB.lon]];
                 
                 // Draw segment
                 L.polyline(routeCoords, {
