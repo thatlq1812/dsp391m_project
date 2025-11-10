@@ -1,6 +1,7 @@
 # Maintainer Profile
 
 **Name:** THAT Le Quang
+
 - **Role:** AI & DS Major Student
 - **GitHub:** [thatlq1812]
 
@@ -16,6 +17,7 @@
 ## Completed (November 10, 2025)
 
 ### Code Cleanup
+
 - [x] Removed duplicate `stmgt.py` (556 lines) - kept `stmgt/model.py` as canonical
 - [x] Removed old `.bat` file (`run_v2_training.bat`)
 - [x] Cleaned all `__pycache__` directories and `.pyc` files
@@ -23,6 +25,7 @@
 - [x] Moved `start_api_simple.py` to `scripts/deployment/`
 
 ### Web Inference Enhancement
+
 - [x] Implemented actual edge-specific prediction in `predictor.py`
 - [x] Removed TODO placeholder at line 558
 - [x] Added proper node-to-edge mapping for predictions
@@ -36,6 +39,7 @@
 ### 1. Testing & Quality Assurance
 
 #### Add Coverage Reporting
+
 ```bash
 pip install pytest-cov
 pytest --cov=traffic_forecast --cov-report=html --cov-report=term
@@ -44,12 +48,14 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 **Target:** 80% coverage minimum
 
 **Action Items:**
+
 - [ ] Add pytest-cov to requirements.txt
 - [ ] Configure coverage in pytest.ini
 - [ ] Add coverage badge to README.md
 - [ ] Document coverage targets in CONTRIBUTING.md
 
 #### Expand Test Suite
+
 - [ ] Add performance tests for API endpoints (response time <200ms)
 - [ ] Add load testing (100 concurrent requests)
 - [ ] Add edge case tests (invalid inputs, missing data)
@@ -59,18 +65,21 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 ### 2. Configuration Management
 
 #### Centralize Configuration
+
 - [ ] Create unified `ProjectConfig` schema with Pydantic
 - [ ] Validate all configs on startup
 - [ ] Document all config fields in `docs/CONFIG_REFERENCE.md`
 - [ ] Add config validation script: `scripts/maintenance/validate_configs.py`
 
 **Files to consolidate:**
+
 - `configs/project_config.yaml`
 - `configs/train_normalized_v*.json`
 - `configs/vm_config.json`
 - `.env`
 
 #### Environment Variables
+
 - [ ] Document all env vars in `.env.example`
 - [ ] Add validation for required env vars
 - [ ] Add type hints for env var usage
@@ -78,6 +87,7 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 ### 3. API Production Readiness
 
 #### Security
+
 - [ ] Add API key authentication
 - [ ] Implement rate limiting (100 req/min per IP)
 - [ ] Add CORS whitelist configuration
@@ -85,12 +95,14 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 - [ ] Add input sanitization
 
 #### Performance
+
 - [ ] Add response caching (Redis)
 - [ ] Implement batch prediction endpoint
 - [ ] Add model warmup on startup
 - [ ] Optimize graph loading (lazy loading)
 
 #### Monitoring
+
 - [ ] Add Prometheus metrics endpoint
 - [ ] Track prediction latency histogram
 - [ ] Track error rates by endpoint
@@ -100,12 +112,14 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 ### 4. Web Interface Enhancements
 
 #### Real-time Features
+
 - [ ] Add WebSocket support for live updates
 - [ ] Implement auto-refresh every 15 minutes
 - [ ] Add "Live Mode" toggle
 - [ ] Show timestamp of last update
 
 #### Visualization
+
 - [ ] Add historical playback (timeline slider)
 - [ ] Show prediction confidence as heatmap
 - [ ] Add traffic flow animation
@@ -113,6 +127,7 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 - [ ] Add chart for speed trends
 
 #### User Experience
+
 - [ ] Add loading states for all actions
 - [ ] Add error messages with retry
 - [ ] Add tooltips for all features
@@ -126,6 +141,7 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 ### 5. Model Interpretability
 
 #### Visualization Tools
+
 - [ ] Create attention weight visualizer
 - [ ] Add feature importance analysis
 - [ ] Show GNN propagation paths
@@ -135,6 +151,7 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 **Script:** `tools/visualize_model_internals.py`
 
 #### Debugging Tools
+
 - [ ] Add prediction debugging mode
 - [ ] Show which nodes influenced prediction
 - [ ] Display temporal attention patterns
@@ -143,6 +160,7 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 ### 6. Data Quality Monitoring
 
 #### Real-time Monitoring
+
 - [ ] Track data completeness (% expected records)
 - [ ] Detect anomalies (IQR-based outlier detection)
 - [ ] Check temporal consistency (gaps, duplicates)
@@ -152,6 +170,7 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 **Script:** `scripts/monitoring/data_quality_monitor.py`
 
 #### Validation
+
 - [ ] Add data validation on collection
 - [ ] Implement schema versioning
 - [ ] Add data lineage tracking
@@ -160,18 +179,21 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 ### 7. Documentation Updates
 
 #### API Documentation
+
 - [ ] Add OpenAPI/Swagger UI
 - [ ] Document all endpoints with examples
 - [ ] Add authentication guide
 - [ ] Create API client library (Python)
 
 #### User Guides
+
 - [ ] Create video tutorial for web interface
 - [ ] Add troubleshooting FAQ
 - [ ] Document common error codes
 - [ ] Create admin guide
 
 #### Code Documentation
+
 - [ ] Add architecture diagrams
 - [ ] Document all major classes
 - [ ] Add type hints everywhere
@@ -184,6 +206,7 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 ### 8. Scaling for City-Wide Deployment
 
 #### Architecture Changes
+
 - [ ] Implement hierarchical GNN (district → city)
 - [ ] Add global pooling layer for long-range propagation
 - [ ] Increase GNN depth to 10-15 blocks
@@ -192,6 +215,7 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 **Target:** 2,000+ nodes, 5,000+ edges
 
 #### Infrastructure
+
 - [ ] Add horizontal API scaling (load balancer)
 - [ ] Implement model serving with TorchServe
 - [ ] Add database for historical predictions
@@ -200,6 +224,7 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 ### 9. Advanced Features
 
 #### Machine Learning
+
 - [ ] Implement online learning (model updates)
 - [ ] Add A/B testing framework
 - [ ] Implement model versioning
@@ -207,6 +232,7 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 - [ ] Track model drift
 
 #### Traffic Intelligence
+
 - [ ] Add incident detection
 - [ ] Implement traffic pattern discovery
 - [ ] Add anomaly alerting
@@ -214,6 +240,7 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 - [ ] Suggest optimal departure times
 
 #### User Features
+
 - [ ] Add user accounts and saved routes
 - [ ] Implement route notifications
 - [ ] Add commute time tracking
@@ -223,6 +250,7 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 ### 10. Research Extensions
 
 #### Model Improvements
+
 - [ ] Experiment with graph transformers
 - [ ] Try diffusion models for uncertainty
 - [ ] Implement attention visualization
@@ -230,6 +258,7 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 - [ ] Multi-task learning (speed + flow + density)
 
 #### Evaluation
+
 - [ ] Compare with commercial APIs (Google/Waze)
 - [ ] Conduct user studies
 - [ ] Measure real-world impact
@@ -240,6 +269,7 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 ## Technical Debt
 
 ### Code Organization
+
 - [ ] Consolidate model registry implementations
 - [ ] Clean up archive/ directory (document or remove)
 - [ ] Standardize error handling patterns
@@ -247,12 +277,14 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 - [ ] Refactor long functions (>100 lines)
 
 ### Dependencies
+
 - [ ] Audit and minimize dependencies
 - [ ] Update to latest stable versions
 - [ ] Remove TensorFlow (only use PyTorch)
 - [ ] Pin all versions in requirements.txt
 
 ### Performance
+
 - [ ] Profile slow functions
 - [ ] Optimize data loading pipeline
 - [ ] Reduce memory usage
@@ -263,18 +295,21 @@ pytest --cov=traffic_forecast --cov-report=html --cov-report=term
 ## Metrics & Success Criteria
 
 ### Code Quality
+
 - **Coverage:** 80% minimum
 - **Lint Score:** 9.0/10 (pylint)
 - **Type Coverage:** 90% (mypy)
 - **Documentation:** All public APIs documented
 
 ### Performance
+
 - **API Latency:** <200ms p95
 - **Prediction Accuracy:** MAE <3.1 km/h
 - **Model Size:** <100MB
 - **Memory Usage:** <2GB per API instance
 
 ### Reliability
+
 - **Uptime:** 99.5% (SLA)
 - **Error Rate:** <0.1%
 - **Data Quality:** >95% completeness

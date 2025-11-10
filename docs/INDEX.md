@@ -19,6 +19,8 @@ This index organizes the project documentation for fast navigation. All docs liv
 
 - **Project Overview** — `README.md` (root)
 - **Changelog** — `docs/CHANGELOG.md`
+- **🎯 Roadmap to 10/10** — `docs/ROADMAP_TO_EXCELLENCE.md` (NEW)
+- **Improvement Checklist** — `docs/IMPROVEMENT_CHECKLIST.md`
 
 ---
 
