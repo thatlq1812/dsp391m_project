@@ -780,6 +780,15 @@
             edgesLayer.clearLayers();
             markersLayer.clearLayers();
             
+            // Reset stats
+            edgeStats = {
+                total: 0,
+                cached: 0,
+                short: 0,
+                osrm: 0,
+                failed: 0
+            };
+            
             // Draw edges with road geometry
             if (USE_ROAD_GEOMETRY) {
                 const loadingText = document.querySelector('.loading-text');
@@ -798,6 +807,10 @@
                         await new Promise(resolve => setTimeout(resolve, 100));
                     }
                 }
+                
+                // Log statistics
+                console.log('Edge Rendering Stats:', edgeStats);
+                console.log(`OSRM Success Rate: ${(edgeStats.osrm / edgeStats.total * 100).toFixed(1)}%`);
             } else {
                 // Fast mode: straight lines
                 edges.forEach(edge => {
@@ -818,13 +831,24 @@
             drawNodeMarkers();
         }
         
+        // Statistics for debugging
+        let edgeStats = {
+            total: 0,
+            cached: 0,
+            short: 0,
+            osrm: 0,
+            failed: 0
+        };
+        
         // Draw single edge with OSRM routing
         async function drawSingleEdge(edge) {
+            edgeStats.total++;
             const color = getSpeedColor(edge.speed_kmh);
             const cacheKey = `${edge.lat_a.toFixed(5)},${edge.lon_a.toFixed(5)}-${edge.lat_b.toFixed(5)},${edge.lon_b.toFixed(5)}`;
             
             // Check cache
             if (routeCache.has(cacheKey)) {
+                edgeStats.cached++;
                 const latLngs = routeCache.get(cacheKey);
                 L.polyline(latLngs, {
                     color: color,
@@ -840,6 +864,7 @@
             
             // Short edges: use straight line
             if (distance < 50) {
+                edgeStats.short++;
                 const straightLine = [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]];
                 routeCache.set(cacheKey, straightLine);
                 L.polyline(straightLine, {
@@ -857,6 +882,7 @@
                 const data = await response.json();
                 
                 if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
+                    edgeStats.osrm++;
                     const coords = data.routes[0].geometry.coordinates;
                     const latLngs = coords.map(c => [c[1], c[0]]);
                     routeCache.set(cacheKey, latLngs);
@@ -868,6 +894,8 @@
                         smoothFactor: 1
                     }).addTo(edgesLayer);
                 } else {
+                    edgeStats.failed++;
+                    console.warn('OSRM routing failed:', data.code, edge);
                     // Fallback
                     const straightLine = [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]];
                     routeCache.set(cacheKey, straightLine);
@@ -879,6 +907,8 @@
                     }).addTo(edgesLayer);
                 }
             } catch (error) {
+                edgeStats.failed++;
+                console.error('OSRM fetch error:', error, edge);
                 // Fallback on error
                 const straightLine = [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]];
                 routeCache.set(cacheKey, straightLine);
@@ -1010,6 +1040,20 @@
                     weight: 1 / edge.speed_kmh
                 });
             });
+            
+            console.log(`Graph built: ${graph.size} nodes with edges`);
+            console.log(`Total nodes in index: ${nodeIndex.size}`);
+            
+            // Check for isolated nodes
+            const nodesWithoutEdges = [];
+            nodeIndex.forEach((node, id) => {
+                if (!graph.has(id) || graph.get(id).length === 0) {
+                    nodesWithoutEdges.push(id);
+                }
+            });
+            if (nodesWithoutEdges.length > 0) {
+                console.warn(`${nodesWithoutEdges.length} nodes have no edges:`, nodesWithoutEdges.slice(0, 10));
+            }
             
             return graph;
         }
