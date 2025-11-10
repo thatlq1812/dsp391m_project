@@ -440,6 +440,39 @@
         </button>
     </div>
     
+    <!-- Speed Color Legend -->
+    <div class="floating-panel" style="bottom: 20px; left: 20px; width: 220px;">
+        <h6 style="color: #667eea; margin-bottom: 12px; font-weight: 600; font-size: 13px;">
+            <i class="fas fa-palette"></i> Speed Legend
+        </h6>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 12px;">
+                <div style="width: 30px; height: 4px; background: #0066FF; border-radius: 2px;"></div>
+                <span style="color: #555;">≥ 50 km/h</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 12px;">
+                <div style="width: 30px; height: 4px; background: #00CC00; border-radius: 2px;"></div>
+                <span style="color: #555;">40-49 km/h</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 12px;">
+                <div style="width: 30px; height: 4px; background: #90EE90; border-radius: 2px;"></div>
+                <span style="color: #555;">30-39 km/h</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 12px;">
+                <div style="width: 30px; height: 4px; background: #FFD700; border-radius: 2px;"></div>
+                <span style="color: #555;">20-29 km/h</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 12px;">
+                <div style="width: 30px; height: 4px; background: #FF8800; border-radius: 2px;"></div>
+                <span style="color: #555;">10-19 km/h</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 12px;">
+                <div style="width: 30px; height: 4px; background: #FF0000; border-radius: 2px;"></div>
+                <span style="color: #555;">&lt; 10 km/h</span>
+            </div>
+        </div>
+    </div>
+    
     <!-- Route Planning Panel -->
     <div class="floating-panel route-panel" id="routePanel">
         <h6 style="color: #667eea; margin-bottom: 15px; font-weight: 600;">
@@ -692,34 +725,46 @@
             return 'Severe';
         }
         
-        // Load traffic data
-        async function loadRouteGeometries() {
-            /**Load pre-computed route geometries from cache.*/
+        // Load edge geometries
+        async function loadEdgeGeometries() {
+            /**Load edge coordinates (straight lines) from cache.*/
             try {
-                const response = await fetch(`${API_BASE}/api/route-geometries`);
+                const response = await fetch(`${API_BASE}/api/edge-geometries`);
                 if (!response.ok) {
-                    console.warn('Route geometries not found, will use straight lines');
-                    return {};
+                    console.warn('Edge geometries not found');
+                    return null;
                 }
-                return await response.json();
+                const data = await response.json();
+                console.log(`Loaded ${data.total_edges} edge geometries`);
+                
+                // Build lookup map: edge_id -> coordinates
+                const geometryMap = {};
+                data.edges.forEach(edge => {
+                    geometryMap[edge.edge_id] = edge.coordinates;
+                });
+                return geometryMap;
             } catch (error) {
-                console.error('Error loading route geometries:', error);
-                return {};
+                console.error('Error loading edge geometries:', error);
+                return null;
             }
         }
         
         async function loadTrafficData() {
             try {
                 document.getElementById('loadingOverlay').style.display = 'flex';
-                document.querySelector('.loading-text').textContent = 'Loading route geometries...';
+                document.querySelector('.loading-text').textContent = 'Loading edge geometries...';
                 
-                // Load route geometries first
-                routeGeometries = await loadRouteGeometries();
-                console.log(`Loaded ${Object.keys(routeGeometries).length} route geometries from cache`);
+                // Load edge geometries first
+                if (!routeGeometries) {
+                    routeGeometries = await loadEdgeGeometries();
+                    if (!routeGeometries) {
+                        throw new Error('Failed to load edge geometries');
+                    }
+                }
                 
-                document.querySelector('.loading-text').textContent = 'Loading traffic data...';
+                document.querySelector('.loading-text').textContent = 'Loading traffic predictions...';
                 
-                // Fetch traffic data
+                // Fetch traffic data with predictions
                 const response = await fetch(`${API_BASE}/api/traffic/current`);
                 if (!response.ok) throw new Error('Failed to fetch traffic data');
                 
@@ -731,7 +776,7 @@
                 // Update stats
                 updateStats(trafficData);
                 
-                // Draw traffic network
+                // Draw traffic network with predicted speeds
                 drawTrafficNetwork(trafficData.edges);
                 
                 // Update timestamp
@@ -800,31 +845,49 @@
             document.getElementById('congestionLevel').textContent = getCongestionLevel(parseFloat(avgSpeed));
         }
         
-        // Draw traffic network (using pre-loaded geometries)
+        // Draw traffic network (using edge geometries)
         function drawTrafficNetwork(edges) {
             edgesLayer.clearLayers();
             markersLayer.clearLayers();
             
-            // Draw all edges from cache
+            // Draw all edges with predicted speed colors
             edges.forEach(edge => {
                 const color = getSpeedColor(edge.speed_kmh);
-                const cacheKey = `${edge.lat_a.toFixed(5)},${edge.lon_a.toFixed(5)}-${edge.lat_b.toFixed(5)},${edge.lon_b.toFixed(5)}`;
                 
-                // Get geometry from pre-loaded Google Maps cache
-                const latLngs = routeGeometries[cacheKey] || [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]];
+                // Get edge_id (format: node_a_id-node_b_id)
+                const edgeId = `${edge.node_a_id}-${edge.node_b_id}`;
                 
-                L.polyline(latLngs, {
+                // Get geometry from edge coordinates cache
+                let latLngs;
+                if (routeGeometries && routeGeometries[edgeId]) {
+                    latLngs = routeGeometries[edgeId];
+                } else {
+                    // Fallback: use node coordinates directly
+                    latLngs = [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]];
+                }
+                
+                const polyline = L.polyline(latLngs, {
                     color: color,
                     weight: 5,
                     opacity: 0.7,
                     smoothFactor: 1
                 }).addTo(edgesLayer);
+                
+                // Add tooltip with edge info
+                polyline.bindTooltip(`
+                    <strong>Speed:</strong> ${edge.speed_kmh.toFixed(1)} km/h<br>
+                    <strong>Edge:</strong> ${edge.edge_id}<br>
+                    <strong>From:</strong> ${edge.node_a_id.substring(5, 25)}...<br>
+                    <strong>To:</strong> ${edge.node_b_id.substring(5, 25)}...
+                `, {
+                    sticky: true
+                });
             });
             
             // Draw node markers
             drawNodeMarkers();
             
-            console.log(`Drew ${edges.length} edges from cached geometries`);
+            console.log(`Drew ${edges.length} edges with predicted speeds`);
         }
         
         // Outdated OSRM code removed - using Google Maps cache

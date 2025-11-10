@@ -202,13 +202,27 @@ async def health_check():
 
 @app.get("/api/route-geometries")
 async def get_route_geometries():
-    """Get pre-computed route geometries."""
+    """Get pre-computed route geometries from Google Maps (optional)."""
     geometries_file = Path(__file__).parent.parent / "cache" / "route_geometries.json"
     
     if not geometries_file.exists():
         raise HTTPException(
             status_code=404,
             detail="Route geometries not found. Run scripts/data/fetch_route_geometries.py first"
+        )
+    
+    return FileResponse(geometries_file, media_type="application/json")
+
+
+@app.get("/api/edge-geometries")
+async def get_edge_geometries():
+    """Get edge coordinates extracted from training data (straight lines)."""
+    geometries_file = Path(__file__).parent.parent / "cache" / "edge_coordinates.json"
+    
+    if not geometries_file.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="Edge coordinates not found. Run scripts/data/extract_edge_coordinates.py first"
         )
     
     return FileResponse(geometries_file, media_type="application/json")
