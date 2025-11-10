@@ -860,14 +860,15 @@
             edges.forEach(edge => {
                 const color = getSpeedColor(edge.speed_kmh);
                 
-                // Use edge_id directly from API (format: node-lat-lon-node-lat-lon)
-                const edgeId = edge.edge_id;
+                // Convert edge_id format: API uses underscore, cache uses dash
+                // API format: node-10.767-106.674_node-10.772-106.679
+                // Cache format: node-10.767-106.674-node-10.772-106.679
+                const edgeId = edge.edge_id.replace('_', '-');
                 
                 // Get geometry from route geometries cache (Google Maps paths)
                 let latLngs;
                 if (routeGeometries && routeGeometries[edgeId]) {
                     latLngs = routeGeometries[edgeId];
-                    console.log(`Using route geometry for ${edgeId}: ${latLngs.length} points`);
                 } else {
                     // Fallback: use node coordinates directly (straight line)
                     latLngs = [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]];
