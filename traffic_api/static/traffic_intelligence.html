@@ -558,7 +558,7 @@
         let currentMode = 'view';
         let routePoints = { start: null, end: null };
         let nodeIndex = new Map();  // For quick node lookup
-        let routeGeometries = {};  // Pre-loaded route geometries from cache
+        let routeGeometries = null;  // Pre-loaded route geometries from cache
         
         // Update date/time display
         function updateDateTime() {
@@ -734,7 +734,10 @@
         async function loadRouteGeometries() {
             /**Load pre-computed route geometries (curved paths) from cache.*/
             try {
+                console.log('Fetching route geometries from:', `${API_BASE}/api/route-geometries`);
                 const response = await fetch(`${API_BASE}/api/route-geometries`);
+                console.log('Response status:', response.status, response.ok);
+                
                 if (!response.ok) {
                     console.warn('Route geometries not found, trying edge coordinates fallback...');
                     // Fallback to straight line edge coordinates
@@ -753,14 +756,16 @@
                 
                 // Response is the JSON object directly (not wrapped)
                 const geometries = await response.json();
+                console.log('Geometries type:', typeof geometries, 'Keys:', geometries ? Object.keys(geometries).length : 'null');
                 
                 // Validate it's an object with route data
                 if (!geometries || typeof geometries !== 'object') {
-                    console.error('Invalid route geometries format');
+                    console.error('Invalid route geometries format:', geometries);
                     return null;
                 }
                 
                 console.log(`Loaded ${Object.keys(geometries).length} route geometries from Google Maps`);
+                console.log('Sample keys:', Object.keys(geometries).slice(0, 3));
                 return geometries;
             } catch (error) {
                 console.error('Error loading route geometries:', error);
@@ -1066,6 +1071,24 @@
                 // Build adjacency graph from edges
                 const graph = buildGraph(trafficData.edges);
                 
+                // Check if nodes are in the same connected component
+                const startComponent = findComponent(graph, startNode.id);
+                const endComponent = findComponent(graph, endNode.id);
+                
+                const inSameComponent = startComponent.has(endNode.id);
+                
+                if (!inSameComponent) {
+                    document.getElementById('routeResults').innerHTML = `
+                        <div style="padding: 15px; background: #fff3cd; border-radius: 8px; margin-top: 15px; color: #856404;">
+                            <i class="fas fa-exclamation-triangle"></i> No route available: Start and end nodes are in different parts of the network.<br>
+                            <small>Start is in a component with ${startComponent.size} nodes, end is in a component with ${endComponent.size} nodes.</small>
+                        </div>
+                    `;
+                    document.getElementById('btnFindRoute').disabled = false;
+                    document.getElementById('btnFindRoute').innerHTML = '<i class="fas fa-search"></i> Find Best Route';
+                    return;
+                }
+                
                 // Run A* algorithm
                 const path = aStarSearch(graph, startNode.id, endNode.id);
                 
@@ -1094,6 +1117,27 @@
             // Reset button
             document.getElementById('btnFindRoute').disabled = false;
             document.getElementById('btnFindRoute').innerHTML = '<i class="fas fa-search"></i> Find Best Route';
+        }
+        
+        // Find connected component using BFS
+        function findComponent(graph, startId) {
+            const component = new Set();
+            const queue = [startId];
+            component.add(startId);
+            
+            while (queue.length > 0) {
+                const currentId = queue.shift();
+                const neighbors = graph.get(currentId) || [];
+                
+                neighbors.forEach(edge => {
+                    if (!component.has(edge.to)) {
+                        component.add(edge.to);
+                        queue.push(edge.to);
+                    }
+                });
+            }
+            
+            return component;
         }
         
         // Build adjacency graph

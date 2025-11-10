@@ -168,7 +168,10 @@ async def root(request: Request):
     traffic_intelligence_path = static_dir / "traffic_intelligence.html"
     
     if traffic_intelligence_path.exists():
-        return FileResponse(traffic_intelligence_path)
+        return FileResponse(
+            traffic_intelligence_path,
+            headers={"Cache-Control": "no-cache, no-store, must-revalidate"}
+        )
     else:
         # Fallback to JSON response if static files not available
         return {
