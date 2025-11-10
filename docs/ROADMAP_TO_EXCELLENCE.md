@@ -91,6 +91,7 @@ pytest --cov=traffic_forecast --cov=traffic_api \
 **Requirements:**
 
 - [x] **API Authentication** ✅
+
   - JWT-based authentication (jose library)
   - User database with password hashing (bcrypt)
   - Role-based access control (admin/user)

@@ -725,26 +725,32 @@
             return 'Severe';
         }
         
-        // Load edge geometries
-        async function loadEdgeGeometries() {
-            /**Load edge coordinates (straight lines) from cache.*/
+        // Load route geometries from Google Maps
+        async function loadRouteGeometries() {
+            /**Load pre-computed route geometries (curved paths) from cache.*/
             try {
-                const response = await fetch(`${API_BASE}/api/edge-geometries`);
+                const response = await fetch(`${API_BASE}/api/route-geometries`);
                 if (!response.ok) {
-                    console.warn('Edge geometries not found');
+                    console.warn('Route geometries not found, trying edge coordinates fallback...');
+                    // Fallback to straight line edge coordinates
+                    const edgeResponse = await fetch(`${API_BASE}/api/edge-geometries`);
+                    if (edgeResponse.ok) {
+                        const data = await edgeResponse.json();
+                        const geometryMap = {};
+                        data.edges.forEach(edge => {
+                            geometryMap[edge.edge_id] = edge.coordinates;
+                        });
+                        console.log(`Loaded ${data.total_edges} straight line edges (fallback)`);
+                        return geometryMap;
+                    }
                     return null;
                 }
-                const data = await response.json();
-                console.log(`Loaded ${data.total_edges} edge geometries`);
                 
-                // Build lookup map: edge_id -> coordinates
-                const geometryMap = {};
-                data.edges.forEach(edge => {
-                    geometryMap[edge.edge_id] = edge.coordinates;
-                });
-                return geometryMap;
+                const geometries = await response.json();
+                console.log(`Loaded ${Object.keys(geometries).length} route geometries from Google Maps`);
+                return geometries;
             } catch (error) {
-                console.error('Error loading edge geometries:', error);
+                console.error('Error loading route geometries:', error);
                 return null;
             }
         }
@@ -752,13 +758,13 @@
         async function loadTrafficData() {
             try {
                 document.getElementById('loadingOverlay').style.display = 'flex';
-                document.querySelector('.loading-text').textContent = 'Loading edge geometries...';
+                document.querySelector('.loading-text').textContent = 'Loading route geometries...';
                 
-                // Load edge geometries first
+                // Load route geometries first (from Google Maps)
                 if (!routeGeometries) {
-                    routeGeometries = await loadEdgeGeometries();
+                    routeGeometries = await loadRouteGeometries();
                     if (!routeGeometries) {
-                        throw new Error('Failed to load edge geometries');
+                        throw new Error('Failed to load route geometries');
                     }
                 }
                 

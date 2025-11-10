@@ -35,16 +35,16 @@ if not GOOGLE_API_KEY:
 
 # Paths
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-TOPOLOGY_FILE = PROJECT_ROOT / 'cache' / 'overpass_topology.json'
+EDGE_COORDS_FILE = PROJECT_ROOT / 'cache' / 'edge_coordinates.json'
 OUTPUT_FILE = PROJECT_ROOT / 'cache' / 'route_geometries.json'
 
 
-def load_topology() -> Dict:
-    """Load topology data with edges."""
-    if not TOPOLOGY_FILE.exists():
-        raise FileNotFoundError(f"Topology file not found: {TOPOLOGY_FILE}")
+def load_edge_coordinates() -> Dict:
+    """Load edge coordinates data."""
+    if not EDGE_COORDS_FILE.exists():
+        raise FileNotFoundError(f"Edge coordinates file not found: {EDGE_COORDS_FILE}")
     
-    with open(TOPOLOGY_FILE, 'r', encoding='utf-8') as f:
+    with open(EDGE_COORDS_FILE, 'r', encoding='utf-8') as f:
         return json.load(f)
 
 
@@ -244,17 +244,36 @@ def main():
     try:
         logger.info("Starting route geometry fetch...")
         
-        # Load topology
-        topology = load_topology()
-        logger.info(f"Loaded topology with {len(topology.get('edges', []))} edges")
+        # Load edge coordinates
+        edge_data = load_edge_coordinates()
+        edges = edge_data.get('edges', [])
+        logger.info(f"Loaded {len(edges)} edges from edge_coordinates.json")
         
-        # Process edges
-        geometries = process_edges(topology)
+        # Process edges (convert format)
+        geometries = {}
+        for edge in edges:
+            coords = edge['coordinates']  # [[lat_a, lon_a], [lat_b, lon_b]]
+            origin = tuple(coords[0])
+            destination = tuple(coords[1])
+            
+            logger.info(f"Fetching route for {edge['edge_id']}...")
+            route_coords = fetch_directions(origin, destination)
+            
+            if route_coords:
+                geometries[edge['edge_id']] = route_coords
+                logger.info(f"  ✓ Got {len(route_coords)} points")
+            else:
+                # Fallback to straight line
+                geometries[edge['edge_id']] = coords
+                logger.warning(f"  ✗ Failed, using straight line")
+            
+            # Rate limiting
+            time.sleep(0.1)  # 10 requests/second max
         
         # Save results
         save_geometries(geometries)
         
-        logger.info("Done!")
+        logger.info(f"Done! Saved {len(geometries)} route geometries")
         
     except Exception as e:
         logger.error(f"Error: {e}", exc_info=True)
