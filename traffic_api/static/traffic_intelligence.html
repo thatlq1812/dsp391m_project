@@ -856,8 +856,13 @@
             edgesLayer.clearLayers();
             markersLayer.clearLayers();
             
+            console.log(`Drawing ${edges.length} edges. RouteGeometries loaded: ${routeGeometries ? Object.keys(routeGeometries).length : 'NO'}`);
+            
+            let usedGeometry = 0;
+            let usedStraight = 0;
+            
             // Draw all edges with predicted speed colors
-            edges.forEach(edge => {
+            edges.forEach((edge, idx) => {
                 const color = getSpeedColor(edge.speed_kmh);
                 
                 // Convert edge_id format: API uses underscore, cache uses dash
@@ -869,10 +874,13 @@
                 let latLngs;
                 if (routeGeometries && routeGeometries[edgeId]) {
                     latLngs = routeGeometries[edgeId];
+                    usedGeometry++;
+                    if (idx === 0) console.log(`Sample geometry for ${edgeId}: ${latLngs.length} points`, latLngs.slice(0, 3));
                 } else {
                     // Fallback: use node coordinates directly (straight line)
                     latLngs = [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]];
-                    console.warn(`No route geometry found for ${edgeId}, using straight line`);
+                    usedStraight++;
+                    if (idx === 0) console.log(`First edge ${edgeId} - no geometry found in cache`);
                 }
                 
                 const polyline = L.polyline(latLngs, {
@@ -896,7 +904,7 @@
             // Draw node markers
             drawNodeMarkers();
             
-            console.log(`Drew ${edges.length} edges with predicted speeds`);
+            console.log(`Drew ${edges.length} edges: ${usedGeometry} with route geometries, ${usedStraight} with straight lines`);
         }
         
         // Outdated OSRM code removed - using Google Maps cache
