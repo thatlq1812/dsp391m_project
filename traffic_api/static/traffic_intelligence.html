@@ -1071,11 +1071,25 @@
                 // Build adjacency graph from edges
                 const graph = buildGraph(trafficData.edges);
                 
+                console.log('Route planning:', {
+                    start: startNode.id,
+                    end: endNode.id,
+                    graphSize: graph.size,
+                    startHasEdges: graph.has(startNode.id) ? graph.get(startNode.id).length : 0,
+                    endHasEdges: graph.has(endNode.id) ? graph.get(endNode.id).length : 0
+                });
+                
                 // Check if nodes are in the same connected component
                 const startComponent = findComponent(graph, startNode.id);
                 const endComponent = findComponent(graph, endNode.id);
                 
                 const inSameComponent = startComponent.has(endNode.id);
+                
+                console.log('Connectivity check:', {
+                    startComponentSize: startComponent.size,
+                    endComponentSize: endComponent.size,
+                    inSameComponent: inSameComponent
+                });
                 
                 if (!inSameComponent) {
                     document.getElementById('routeResults').innerHTML = `
@@ -1089,8 +1103,10 @@
                     return;
                 }
                 
-                // Run A* algorithm
-                const path = aStarSearch(graph, startNode.id, endNode.id);
+                // Run Dijkstra algorithm (more reliable than A*)
+                console.log('Running Dijkstra search...');
+                const path = dijkstraSearch(graph, startNode.id, endNode.id);
+                console.log('Dijkstra result:', path ? `Found path with ${path.length} nodes` : 'No path found');
                 
                 if (path && path.length > 0) {
                     // Draw route on map (using cached geometries)
@@ -1183,16 +1199,82 @@
             return graph;
         }
         
-        // A* search algorithm
+        // Dijkstra's algorithm - reliable shortest path
+        function dijkstraSearch(graph, startId, endId) {
+            const distances = new Map();
+            const previous = new Map();
+            const unvisited = new Set();
+            
+            // Initialize
+            graph.forEach((_, nodeId) => {
+                distances.set(nodeId, Infinity);
+                unvisited.add(nodeId);
+            });
+            distances.set(startId, 0);
+            
+            console.log(`Dijkstra: start=${startId.substring(0, 30)}, end=${endId.substring(0, 30)}, nodes=${unvisited.size}`);
+            
+            while (unvisited.size > 0) {
+                // Find unvisited node with minimum distance
+                let currentNode = null;
+                let minDistance = Infinity;
+                unvisited.forEach(nodeId => {
+                    const dist = distances.get(nodeId);
+                    if (dist < minDistance) {
+                        minDistance = dist;
+                        currentNode = nodeId;
+                    }
+                });
+                
+                if (!currentNode || minDistance === Infinity) {
+                    console.error('Dijkstra: No more reachable nodes');
+                    break;
+                }
+                
+                if (currentNode === endId) {
+                    // Reconstruct path
+                    const path = [];
+                    let current = endId;
+                    while (current) {
+                        path.unshift(current);
+                        current = previous.get(current);
+                    }
+                    console.log(`Dijkstra: Found path with ${path.length} nodes, distance=${distances.get(endId).toFixed(4)}`);
+                    return path;
+                }
+                
+                unvisited.delete(currentNode);
+                
+                const neighbors = graph.get(currentNode) || [];
+                neighbors.forEach(neighbor => {
+                    if (unvisited.has(neighbor.to)) {
+                        const newDistance = distances.get(currentNode) + neighbor.weight;
+                        if (newDistance < distances.get(neighbor.to)) {
+                            distances.set(neighbor.to, newDistance);
+                            previous.set(neighbor.to, currentNode);
+                        }
+                    }
+                });
+            }
+            
+            console.error('Dijkstra: No path found');
+            return null;
+        }
+        
+        // A* search algorithm (backup, kept for reference)
         function aStarSearch(graph, startId, endId) {
             const startNode = nodeIndex.get(startId);
             const endNode = nodeIndex.get(endId);
             
-            if (!startNode || !endNode) return null;
+            if (!startNode || !endNode) {
+                console.error('Start or end node not found in index');
+                return null;
+            }
             
             // Heuristic: Euclidean distance
             const heuristic = (nodeId) => {
                 const node = nodeIndex.get(nodeId);
+                if (!node) return Infinity;
                 return Math.sqrt(
                     Math.pow(node.lat - endNode.lat, 2) + 
                     Math.pow(node.lon - endNode.lon, 2)
@@ -1207,7 +1289,12 @@
             gScore.set(startId, 0);
             fScore.set(startId, heuristic(startId));
             
-            while (openSet.size > 0) {
+            let iterations = 0;
+            const maxIterations = 1000;
+            
+            while (openSet.size > 0 && iterations < maxIterations) {
+                iterations++;
+                
                 // Get node with lowest fScore
                 let current = null;
                 let lowestF = Infinity;
@@ -1219,6 +1306,11 @@
                     }
                 });
                 
+                if (!current) {
+                    console.error('No current node selected from openSet');
+                    break;
+                }
+                
                 if (current === endId) {
                     // Reconstruct path
                     const path = [current];
@@ -1226,12 +1318,18 @@
                         current = cameFrom.get(current);
                         path.unshift(current);
                     }
+                    console.log(`A* found path in ${iterations} iterations`);
                     return path;
                 }
                 
                 openSet.delete(current);
                 
                 const neighbors = graph.get(current) || [];
+                
+                if (iterations <= 5) {
+                    console.log(`Iteration ${iterations}: current=${current.substring(0, 30)}..., neighbors=${neighbors.length}, openSet=${openSet.size}`);
+                }
+                
                 neighbors.forEach(neighbor => {
                     const tentativeG = (gScore.get(current) || Infinity) + neighbor.weight;
                     
@@ -1244,6 +1342,7 @@
                 });
             }
             
+            console.error(`A* failed after ${iterations} iterations, openSet size: ${openSet.size}`);
             return null;  // No path found
         }
         
@@ -1251,19 +1350,29 @@
         function drawRoute(path) {
             routeLayer.clearLayers();
             
+            const allRouteCoords = [];
+            
             // Draw each segment using cached geometry
             for (let i = 0; i < path.length - 1; i++) {
                 const nodeA = nodeIndex.get(path[i]);
                 const nodeB = nodeIndex.get(path[i + 1]);
                 
-                // Create cache key
-                const cacheKey = `${nodeA.lat.toFixed(5)},${nodeA.lon.toFixed(5)}-${nodeB.lat.toFixed(5)},${nodeB.lon.toFixed(5)}`;
+                // Try to find route geometry using edge_id format
+                const edgeId1 = `${path[i]}-${path[i + 1]}`;
+                const edgeId2 = `${path[i + 1]}-${path[i]}`;
                 
-                // Get from pre-loaded Google Maps cache
-                const routeCoords = routeGeometries[cacheKey] || [[nodeA.lat, nodeA.lon], [nodeB.lat, nodeB.lon]];
+                let segmentCoords = routeGeometries[edgeId1] || routeGeometries[edgeId2];
+                
+                if (!segmentCoords) {
+                    // Fallback to straight line
+                    segmentCoords = [[nodeA.lat, nodeA.lon], [nodeB.lat, nodeB.lon]];
+                }
+                
+                // Collect all coordinates for bounds
+                allRouteCoords.push(...segmentCoords);
                 
                 // Draw segment
-                L.polyline(routeCoords, {
+                L.polyline(segmentCoords, {
                     color: '#667eea',
                     weight: 8,
                     opacity: 0.9,
@@ -1292,7 +1401,9 @@
             }).addTo(routeLayer);
             
             // Fit map to route
-            map.fitBounds(L.latLngBounds(routeCoords), { padding: [50, 50] });
+            if (allRouteCoords.length > 0) {
+                map.fitBounds(L.latLngBounds(allRouteCoords), { padding: [50, 50] });
+            }
         }
         
         // Display route information
