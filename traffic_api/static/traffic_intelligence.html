@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STMGT Traffic Intelligence - Ho Chi Minh City</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1001;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .mode-toggle {
+            display: flex;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 4px;
+        }
+        
+        .mode-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: white;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn.active {
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .mode-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .mode-btn.active:hover {
+            background: white;
+        }
+        
+        /* Main Container */
+        #map {
+            height: calc(100vh - 60px);
+            width: 100%;
+        }
+        
+        /* Floating Panels */
+        .floating-panel {
+            position: absolute;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 1000;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+        
+        .stats-panel {
+            top: 80px;
+            left: 20px;
+            width: 280px;
+            padding: 20px;
+        }
+        
+        .route-panel {
+            top: 80px;
+            right: 20px;
+            width: 350px;
+            padding: 20px;
+            display: none;
+        }
+        
+        .route-panel.active {
+            display: block;
+        }
+        
+        .legend-panel {
+            bottom: 20px;
+            left: 20px;
+            padding: 15px;
+        }
+        
+        /* Stats Grid */
+        .stat-item {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        
+        /* Route Form */
+        .route-input {
+            margin-bottom: 15px;
+        }
+        
+        .route-input label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .route-input input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        
+        .route-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn-find-route {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn-find-route:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-find-route:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Route Results */
+        .route-result {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .route-result:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .route-result.selected {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .route-metric {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+        
+        .metric-label {
+            color: #6c757d;
+        }
+        
+        .metric-value {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        /* Legend */
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .legend-color {
+            width: 40px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .legend-label {
+            font-size: 12px;
+            color: #495057;
+            flex: 1;
+        }
+        
+        .legend-speed {
+            font-size: 11px;
+            color: #6c757d;
+            font-weight: 600;
+        }
+        
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            margin-top: 15px;
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        /* Marker Clusters */
+        .node-marker {
+            background: white;
+            border: 3px solid;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .node-marker:hover {
+            transform: scale(1.3);
+            z-index: 1000;
+        }
+        
+        /* Custom Popup */
+        .leaflet-popup-content-wrapper {
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .popup-content {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 5px;
+        }
+        
+        .popup-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .popup-metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dashed #e9ecef;
+            font-size: 12px;
+        }
+        
+        .popup-metric:last-child {
+            border-bottom: none;
+        }
+        
+        .popup-label {
+            color: #6c757d;
+        }
+        
+        .popup-value {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        /* Helper text */
+        .helper-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        /* Scrollbar */
+        .floating-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .floating-panel::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .floating-panel::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>
+            <i class="fas fa-traffic-light"></i>
+            STMGT Traffic Intelligence
+        </h1>
+        <div class="header-controls">
+            <div class="mode-toggle">
+                <button class="mode-btn active" onclick="setMode('view')" id="btnViewMode">
+                    <i class="fas fa-map"></i> Traffic View
+                </button>
+                <button class="mode-btn" onclick="setMode('route')" id="btnRouteMode">
+                    <i class="fas fa-route"></i> Route Planning
+                </button>
+            </div>
+            <span id="lastUpdate" style="font-size: 13px; opacity: 0.9;">
+                <i class="fas fa-clock"></i> Loading...
+            </span>
+        </div>
+    </div>
+    
+    <!-- Map -->
+    <div id="map">
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <div class="loading-text">Loading traffic network...</div>
+        </div>
+    </div>
+    
+    <!-- Stats Panel -->
+    <div class="floating-panel stats-panel">
+        <h6 style="color: #667eea; margin-bottom: 15px; font-weight: 600;">
+            <i class="fas fa-chart-line"></i> Network Statistics
+        </h6>
+        <div class="stat-item">
+            <div class="stat-value" id="totalNodes">--</div>
+            <div class="stat-label">Traffic Nodes</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="totalEdges">--</div>
+            <div class="stat-label">Road Segments</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="avgSpeed">--</div>
+            <div class="stat-label">Avg Speed (km/h)</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="congestionLevel">--</div>
+            <div class="stat-label">Congestion Level</div>
+        </div>
+        <button class="btn-find-route" onclick="loadTrafficData()" style="margin-top: 15px;">
+            <i class="fas fa-sync-alt"></i> Refresh Data
+        </button>
+    </div>
+    
+    <!-- Route Planning Panel -->
+    <div class="floating-panel route-panel" id="routePanel">
+        <h6 style="color: #667eea; margin-bottom: 15px; font-weight: 600;">
+            <i class="fas fa-route"></i> Plan Your Route
+        </h6>
+        
+        <div class="route-input">
+            <label><i class="fas fa-location-dot"></i> Start Point</label>
+            <input type="text" id="startInput" placeholder="Click on map or enter location" readonly>
+            <div style="font-size: 11px; color: #6c757d; margin-top: 3px;" id="startCoords"></div>
+        </div>
+        
+        <div class="route-input">
+            <label><i class="fas fa-flag-checkered"></i> Destination</label>
+            <input type="text" id="endInput" placeholder="Click on map or enter location" readonly>
+            <div style="font-size: 11px; color: #6c757d; margin-top: 3px;" id="endCoords"></div>
+        </div>
+        
+        <button class="btn-find-route" onclick="findOptimalRoute()" id="btnFindRoute" disabled>
+            <i class="fas fa-search"></i> Find Best Route
+        </button>
+        
+        <div class="helper-text">
+            <i class="fas fa-info-circle"></i> Click on the map to select start and end points. 
+            The system will calculate the fastest route based on current traffic conditions.
+        </div>
+        
+        <div id="routeResults"></div>
+    </div>
+    
+    <!-- Legend Panel -->
+    <div class="floating-panel legend-panel">
+        <h6 style="color: #667eea; margin-bottom: 10px; font-size: 13px; font-weight: 600;">
+            <i class="fas fa-palette"></i> Traffic Speed
+        </h6>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #0066FF;"></div>
+            <span class="legend-label">Very Smooth</span>
+            <span class="legend-speed">50+ km/h</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #00CC00;"></div>
+            <span class="legend-label">Smooth</span>
+            <span class="legend-speed">40-50</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #90EE90;"></div>
+            <span class="legend-label">Normal</span>
+            <span class="legend-speed">30-40</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #FFD700;"></div>
+            <span class="legend-label">Slow</span>
+            <span class="legend-speed">20-30</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #FF8800;"></div>
+            <span class="legend-label">Congested</span>
+            <span class="legend-speed">10-20</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #FF0000;"></div>
+            <span class="legend-label">Heavy Traffic</span>
+            <span class="legend-speed">&lt;10</span>
+        </div>
+    </div>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Main Application Script -->
+    <script>
+        // Configuration
+        const API_BASE = window.location.origin;
+        const HCMC_CENTER = [10.8231, 106.6297];
+        
+        // Global variables
+        let map;
+        let edgesLayer;
+        let markersLayer;
+        let routeLayer;
+        let trafficData = null;
+        let currentMode = 'view';
+        let routePoints = { start: null, end: null };
+        let nodeIndex = new Map();  // For quick node lookup
+        
+        // Initialize map
+        function initMap() {
+            map = L.map('map', {
+                center: HCMC_CENTER,
+                zoom: 13,
+                zoomControl: true
+            });
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+            
+            // Initialize layers
+            edgesLayer = L.layerGroup().addTo(map);
+            markersLayer = L.layerGroup().addTo(map);
+            routeLayer = L.layerGroup().addTo(map);
+            
+            // Map click handler for route planning
+            map.on('click', onMapClick);
+            
+            // Load initial data
+            loadTrafficData();
+        }
+        
+        // Switch between view and route modes
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // Update button states
+            document.getElementById('btnViewMode').classList.toggle('active', mode === 'view');
+            document.getElementById('btnRouteMode').classList.toggle('active', mode === 'route');
+            
+            // Show/hide panels
+            document.getElementById('routePanel').classList.toggle('active', mode === 'route');
+            
+            // Clear route when switching to view mode
+            if (mode === 'view') {
+                clearRoute();
+            }
+        }
+        
+        // Handle map clicks for route planning
+        function onMapClick(e) {
+            if (currentMode !== 'route') return;
+            
+            const lat = e.latlng.lat;
+            const lon = e.latlng.lng;
+            
+            // Find nearest node
+            const nearestNode = findNearestNode(lat, lon);
+            if (!nearestNode) return;
+            
+            // Set start or end point
+            if (!routePoints.start) {
+                routePoints.start = nearestNode;
+                document.getElementById('startInput').value = `Node ${nearestNode.id.substring(0, 20)}...`;
+                document.getElementById('startCoords').textContent = `${nearestNode.lat.toFixed(5)}, ${nearestNode.lon.toFixed(5)}`;
+                
+                // Add marker
+                L.marker([nearestNode.lat, nearestNode.lon], {
+                    icon: L.divIcon({
+                        className: 'start-marker',
+                        html: '<div style="background: #00CC00; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"><i class="fas fa-location-dot"></i></div>',
+                        iconSize: [30, 30]
+                    })
+                }).addTo(routeLayer);
+                
+            } else if (!routePoints.end) {
+                routePoints.end = nearestNode;
+                document.getElementById('endInput').value = `Node ${nearestNode.id.substring(0, 20)}...`;
+                document.getElementById('endCoords').textContent = `${nearestNode.lat.toFixed(5)}, ${nearestNode.lon.toFixed(5)}`;
+                
+                // Add marker
+                L.marker([nearestNode.lat, nearestNode.lon], {
+                    icon: L.divIcon({
+                        className: 'end-marker',
+                        html: '<div style="background: #FF0000; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"><i class="fas fa-flag-checkered"></i></div>',
+                        iconSize: [30, 30]
+                    })
+                }).addTo(routeLayer);
+                
+                // Enable find route button
+                document.getElementById('btnFindRoute').disabled = false;
+            } else {
+                // Reset
+                clearRoute();
+                onMapClick(e);  // Recursive call to set start
+            }
+        }
+        
+        // Find nearest node to clicked location
+        function findNearestNode(lat, lon) {
+            if (!trafficData || !trafficData.edges) return null;
+            
+            let nearest = null;
+            let minDist = Infinity;
+            
+            nodeIndex.forEach(node => {
+                const dist = Math.sqrt(
+                    Math.pow(node.lat - lat, 2) + 
+                    Math.pow(node.lon - lon, 2)
+                );
+                if (dist < minDist) {
+                    minDist = dist;
+                    nearest = node;
+                }
+            });
+            
+            return nearest;
+        }
+        
+        // Clear route
+        function clearRoute() {
+            routePoints = { start: null, end: null };
+            document.getElementById('startInput').value = '';
+            document.getElementById('endInput').value = '';
+            document.getElementById('startCoords').textContent = '';
+            document.getElementById('endCoords').textContent = '';
+            document.getElementById('btnFindRoute').disabled = true;
+            document.getElementById('routeResults').innerHTML = '';
+            routeLayer.clearLayers();
+        }
+        
+        // Get color based on speed
+        function getSpeedColor(speed) {
+            if (speed >= 50) return '#0066FF';
+            if (speed >= 40) return '#00CC00';
+            if (speed >= 30) return '#90EE90';
+            if (speed >= 20) return '#FFD700';
+            if (speed >= 10) return '#FF8800';
+            return '#FF0000';
+        }
+        
+        // Get congestion level
+        function getCongestionLevel(avgSpeed) {
+            if (avgSpeed >= 40) return 'Low';
+            if (avgSpeed >= 25) return 'Moderate';
+            if (avgSpeed >= 15) return 'High';
+            return 'Severe';
+        }
+        
+        // Load traffic data
+        async function loadTrafficData() {
+            try {
+                document.getElementById('loadingOverlay').style.display = 'flex';
+                
+                const response = await fetch(`${API_BASE}/api/traffic/current`);
+                if (!response.ok) throw new Error('Failed to fetch traffic data');
+                
+                trafficData = await response.json();
+                
+                // Build node index
+                buildNodeIndex(trafficData.edges);
+                
+                // Update stats
+                updateStats(trafficData);
+                
+                // Draw traffic network
+                drawTrafficNetwork(trafficData.edges);
+                
+                // Update timestamp
+                const updateTime = new Date(trafficData.timestamp);
+                document.getElementById('lastUpdate').innerHTML = 
+                    `<i class="fas fa-clock"></i> ${updateTime.toLocaleTimeString()}`;
+                
+                document.getElementById('loadingOverlay').style.display = 'none';
+            } catch (error) {
+                console.error('Error loading traffic data:', error);
+                document.querySelector('.loading-text').textContent = 'Error loading data. Please refresh.';
+                document.querySelector('.loading-text').style.color = '#dc3545';
+            }
+        }
+        
+        // Build node index for quick lookup
+        function buildNodeIndex(edges) {
+            nodeIndex.clear();
+            
+            edges.forEach(edge => {
+                // Add node A
+                if (!nodeIndex.has(edge.node_a_id)) {
+                    nodeIndex.set(edge.node_a_id, {
+                        id: edge.node_a_id,
+                        lat: edge.lat_a,
+                        lon: edge.lon_a,
+                        speeds: [edge.speed_kmh],
+                        edges: [edge.edge_id]
+                    });
+                } else {
+                    const node = nodeIndex.get(edge.node_a_id);
+                    node.speeds.push(edge.speed_kmh);
+                    node.edges.push(edge.edge_id);
+                }
+                
+                // Add node B
+                if (!nodeIndex.has(edge.node_b_id)) {
+                    nodeIndex.set(edge.node_b_id, {
+                        id: edge.node_b_id,
+                        lat: edge.lat_b,
+                        lon: edge.lon_b,
+                        speeds: [edge.speed_kmh],
+                        edges: [edge.edge_id]
+                    });
+                } else {
+                    const node = nodeIndex.get(edge.node_b_id);
+                    node.speeds.push(edge.speed_kmh);
+                    node.edges.push(edge.edge_id);
+                }
+            });
+        }
+        
+        // Update statistics
+        function updateStats(data) {
+            const speeds = data.edges.map(e => e.speed_kmh);
+            const avgSpeed = speeds.length > 0 
+                ? (speeds.reduce((a, b) => a + b, 0) / speeds.length).toFixed(1)
+                : 0;
+            
+            document.getElementById('totalNodes').textContent = nodeIndex.size;
+            document.getElementById('totalEdges').textContent = data.total_edges;
+            document.getElementById('avgSpeed').textContent = avgSpeed;
+            document.getElementById('congestionLevel').textContent = getCongestionLevel(parseFloat(avgSpeed));
+        }
+        
+        // Draw traffic network
+        function drawTrafficNetwork(edges) {
+            edgesLayer.clearLayers();
+            markersLayer.clearLayers();
+            
+            // Draw all edges as straight lines (for performance)
+            edges.forEach(edge => {
+                const color = getSpeedColor(edge.speed_kmh);
+                
+                L.polyline(
+                    [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]],
+                    {
+                        color: color,
+                        weight: 6,
+                        opacity: 0.8,
+                        smoothFactor: 1
+                    }
+                ).addTo(edgesLayer);
+            });
+            
+            // Draw node markers
+            nodeIndex.forEach(node => {
+                const avgSpeed = node.speeds.reduce((a, b) => a + b, 0) / node.speeds.length;
+                const color = getSpeedColor(avgSpeed);
+                
+                const marker = L.circleMarker([node.lat, node.lon], {
+                    radius: 5,
+                    fillColor: color,
+                    color: '#fff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.9
+                });
+                
+                // Add popup
+                const popupContent = `
+                    <div class="popup-content">
+                        <div class="popup-title">Traffic Node</div>
+                        <div class="popup-metric">
+                            <span class="popup-label">Location:</span>
+                            <span class="popup-value">${node.lat.toFixed(5)}, ${node.lon.toFixed(5)}</span>
+                        </div>
+                        <div class="popup-metric">
+                            <span class="popup-label">Avg Speed:</span>
+                            <span class="popup-value" style="color: ${color};">${avgSpeed.toFixed(1)} km/h</span>
+                        </div>
+                        <div class="popup-metric">
+                            <span class="popup-label">Connections:</span>
+                            <span class="popup-value">${node.edges.length} edges</span>
+                        </div>
+                    </div>
+                `;
+                
+                marker.bindPopup(popupContent);
+                marker.addTo(markersLayer);
+            });
+        }
+        
+        // Find optimal route using A* algorithm
+        async function findOptimalRoute() {
+            if (!routePoints.start || !routePoints.end) return;
+            
+            const startNode = routePoints.start;
+            const endNode = routePoints.end;
+            
+            // Show loading
+            document.getElementById('btnFindRoute').disabled = true;
+            document.getElementById('btnFindRoute').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calculating...';
+            
+            try {
+                // Build adjacency graph from edges
+                const graph = buildGraph(trafficData.edges);
+                
+                // Run A* algorithm
+                const path = aStarSearch(graph, startNode.id, endNode.id);
+                
+                if (path && path.length > 0) {
+                    // Draw route on map
+                    drawRoute(path);
+                    
+                    // Display route info
+                    displayRouteInfo(path);
+                } else {
+                    document.getElementById('routeResults').innerHTML = `
+                        <div style="padding: 15px; background: #fff3cd; border-radius: 8px; margin-top: 15px; color: #856404;">
+                            <i class="fas fa-exclamation-triangle"></i> No route found between selected points.
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error finding route:', error);
+                document.getElementById('routeResults').innerHTML = `
+                    <div style="padding: 15px; background: #f8d7da; border-radius: 8px; margin-top: 15px; color: #721c24;">
+                        <i class="fas fa-times-circle"></i> Error calculating route. Please try again.
+                    </div>
+                `;
+            }
+            
+            // Reset button
+            document.getElementById('btnFindRoute').disabled = false;
+            document.getElementById('btnFindRoute').innerHTML = '<i class="fas fa-search"></i> Find Best Route';
+        }
+        
+        // Build adjacency graph
+        function buildGraph(edges) {
+            const graph = new Map();
+            
+            edges.forEach(edge => {
+                // Add edge A -> B
+                if (!graph.has(edge.node_a_id)) {
+                    graph.set(edge.node_a_id, []);
+                }
+                graph.get(edge.node_a_id).push({
+                    to: edge.node_b_id,
+                    speed: edge.speed_kmh,
+                    weight: 1 / edge.speed_kmh  // Lower speed = higher weight
+                });
+                
+                // Add edge B -> A (bidirectional)
+                if (!graph.has(edge.node_b_id)) {
+                    graph.set(edge.node_b_id, []);
+                }
+                graph.get(edge.node_b_id).push({
+                    to: edge.node_a_id,
+                    speed: edge.speed_kmh,
+                    weight: 1 / edge.speed_kmh
+                });
+            });
+            
+            return graph;
+        }
+        
+        // A* search algorithm
+        function aStarSearch(graph, startId, endId) {
+            const startNode = nodeIndex.get(startId);
+            const endNode = nodeIndex.get(endId);
+            
+            if (!startNode || !endNode) return null;
+            
+            // Heuristic: Euclidean distance
+            const heuristic = (nodeId) => {
+                const node = nodeIndex.get(nodeId);
+                return Math.sqrt(
+                    Math.pow(node.lat - endNode.lat, 2) + 
+                    Math.pow(node.lon - endNode.lon, 2)
+                );
+            };
+            
+            const openSet = new Set([startId]);
+            const cameFrom = new Map();
+            const gScore = new Map();
+            const fScore = new Map();
+            
+            gScore.set(startId, 0);
+            fScore.set(startId, heuristic(startId));
+            
+            while (openSet.size > 0) {
+                // Get node with lowest fScore
+                let current = null;
+                let lowestF = Infinity;
+                openSet.forEach(nodeId => {
+                    const f = fScore.get(nodeId) || Infinity;
+                    if (f < lowestF) {
+                        lowestF = f;
+                        current = nodeId;
+                    }
+                });
+                
+                if (current === endId) {
+                    // Reconstruct path
+                    const path = [current];
+                    while (cameFrom.has(current)) {
+                        current = cameFrom.get(current);
+                        path.unshift(current);
+                    }
+                    return path;
+                }
+                
+                openSet.delete(current);
+                
+                const neighbors = graph.get(current) || [];
+                neighbors.forEach(neighbor => {
+                    const tentativeG = (gScore.get(current) || Infinity) + neighbor.weight;
+                    
+                    if (tentativeG < (gScore.get(neighbor.to) || Infinity)) {
+                        cameFrom.set(neighbor.to, current);
+                        gScore.set(neighbor.to, tentativeG);
+                        fScore.set(neighbor.to, tentativeG + heuristic(neighbor.to));
+                        openSet.add(neighbor.to);
+                    }
+                });
+            }
+            
+            return null;  // No path found
+        }
+        
+        // Draw route on map
+        function drawRoute(path) {
+            routeLayer.clearLayers();
+            
+            // Reconstruct route coordinates
+            const routeCoords = path.map(nodeId => {
+                const node = nodeIndex.get(nodeId);
+                return [node.lat, node.lon];
+            });
+            
+            // Draw route line
+            L.polyline(routeCoords, {
+                color: '#667eea',
+                weight: 8,
+                opacity: 0.9,
+                dashArray: '10, 5',
+                lineJoin: 'round'
+            }).addTo(routeLayer);
+            
+            // Add start marker
+            const startNode = nodeIndex.get(path[0]);
+            L.marker([startNode.lat, startNode.lon], {
+                icon: L.divIcon({
+                    className: 'start-marker',
+                    html: '<div style="background: #00CC00; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"><i class="fas fa-location-dot"></i></div>',
+                    iconSize: [30, 30]
+                })
+            }).addTo(routeLayer);
+            
+            // Add end marker
+            const endNode = nodeIndex.get(path[path.length - 1]);
+            L.marker([endNode.lat, endNode.lon], {
+                icon: L.divIcon({
+                    className: 'end-marker',
+                    html: '<div style="background: #FF0000; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"><i class="fas fa-flag-checkered"></i></div>',
+                    iconSize: [30, 30]
+                })
+            }).addTo(routeLayer);
+            
+            // Fit map to route
+            map.fitBounds(L.latLngBounds(routeCoords), { padding: [50, 50] });
+        }
+        
+        // Display route information
+        function displayRouteInfo(path) {
+            // Calculate route metrics
+            let totalDistance = 0;
+            let totalTime = 0;
+            let avgSpeed = 0;
+            
+            for (let i = 0; i < path.length - 1; i++) {
+                const nodeA = nodeIndex.get(path[i]);
+                const nodeB = nodeIndex.get(path[i + 1]);
+                
+                // Find edge between nodes
+                const edge = trafficData.edges.find(e => 
+                    (e.node_a_id === path[i] && e.node_b_id === path[i + 1]) ||
+                    (e.node_a_id === path[i + 1] && e.node_b_id === path[i])
+                );
+                
+                if (edge) {
+                    const distance = map.distance([nodeA.lat, nodeA.lon], [nodeB.lat, nodeB.lon]) / 1000; // km
+                    const time = distance / edge.speed_kmh; // hours
+                    
+                    totalDistance += distance;
+                    totalTime += time;
+                    avgSpeed += edge.speed_kmh;
+                }
+            }
+            
+            avgSpeed /= (path.length - 1);
+            
+            const html = `
+                <div class="route-result selected">
+                    <h6 style="color: #667eea; margin-bottom: 10px;">
+                        <i class="fas fa-check-circle"></i> Optimal Route Found
+                    </h6>
+                    <div class="route-metric">
+                        <span class="metric-label"><i class="fas fa-road"></i> Distance:</span>
+                        <span class="metric-value">${totalDistance.toFixed(2)} km</span>
+                    </div>
+                    <div class="route-metric">
+                        <span class="metric-label"><i class="fas fa-clock"></i> Est. Time:</span>
+                        <span class="metric-value">${(totalTime * 60).toFixed(0)} min</span>
+                    </div>
+                    <div class="route-metric">
+                        <span class="metric-label"><i class="fas fa-gauge-high"></i> Avg Speed:</span>
+                        <span class="metric-value" style="color: ${getSpeedColor(avgSpeed)};">${avgSpeed.toFixed(1)} km/h</span>
+                    </div>
+                    <div class="route-metric">
+                        <span class="metric-label"><i class="fas fa-map-signs"></i> Segments:</span>
+                        <span class="metric-value">${path.length - 1}</span>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('routeResults').innerHTML = html;
+        }
+        
+        // Auto-refresh every 5 minutes
+        setInterval(loadTrafficData, 5 * 60 * 1000);
+        
+        // Initialize on load
+        window.onload = initMap;
+    </script>
+</body>
+</html>
