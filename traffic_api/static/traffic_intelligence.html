@@ -860,16 +860,18 @@
             edges.forEach(edge => {
                 const color = getSpeedColor(edge.speed_kmh);
                 
-                // Get edge_id (format: node_a_id-node_b_id)
-                const edgeId = `${edge.node_a_id}-${edge.node_b_id}`;
+                // Use edge_id directly from API (format: node-lat-lon-node-lat-lon)
+                const edgeId = edge.edge_id;
                 
-                // Get geometry from edge coordinates cache
+                // Get geometry from route geometries cache (Google Maps paths)
                 let latLngs;
                 if (routeGeometries && routeGeometries[edgeId]) {
                     latLngs = routeGeometries[edgeId];
+                    console.log(`Using route geometry for ${edgeId}: ${latLngs.length} points`);
                 } else {
-                    // Fallback: use node coordinates directly
+                    // Fallback: use node coordinates directly (straight line)
                     latLngs = [[edge.lat_a, edge.lon_a], [edge.lat_b, edge.lon_b]];
+                    console.warn(`No route geometry found for ${edgeId}, using straight line`);
                 }
                 
                 const polyline = L.polyline(latLngs, {
