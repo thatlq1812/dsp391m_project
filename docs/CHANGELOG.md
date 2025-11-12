@@ -195,12 +195,14 @@ For each model, checked:
 **Evidence from Code Review:**
 
 1. **Normalization (Lines 193-235):**
+
    - ❌ `scaler.fit_transform(pv.values)` - fits on ENTIRE dataset
    - ❌ Saves pre-normalized data to `traffic_tensor_data.npz`
    - ❌ THEN splits into train/val/test (lines 409-417)
    - Impact: Scaler knows test set statistics → unfair advantage
 
 2. **Evaluation (Lines 895-934):**
+
    - ✅ Uses `scaler.inverse_transform()` correctly
    - ✅ Computes metrics on denormalized values
    - ✅ MAE 1.691 km/h IS in real km/h (not normalized)
@@ -212,6 +214,7 @@ For each model, checked:
    - Estimated true performance: ~2.2-2.8 km/h (after fixing leakage)
 
 **Rating Breakdown: 2.9/5 ⭐**
+
 - Code Quality: 5/5 (excellent PyTorch implementation)
 - Architecture: 5/5 (faithful ASTGCN with attention)
 - Data Engineering: 1/5 (critical leakage)
@@ -222,18 +225,19 @@ For each model, checked:
 
 **Comparison: datdtq vs hunglm**
 
-| Aspect | datdtq's ASTGCN | hunglm's GraphWaveNet |
-|--------|----------------|---------------------|
-| Issue | Data leakage | Metrics confusion |
-| Metrics Calculation | ✅ Correct | ❌ Incorrect |
-| Impact | +10-50% inflation | ~100x misreporting |
-| Severity | ⚠️ Moderate (fixable) | ❌ Severe |
-| Reported MAE | 1.691 km/h (leaked) | 0.91 km/h (confusion) |
-| True MAE | ~2.2-2.8 km/h (est.) | Unknown |
+| Aspect              | datdtq's ASTGCN       | hunglm's GraphWaveNet |
+| ------------------- | --------------------- | --------------------- |
+| Issue               | Data leakage          | Metrics confusion     |
+| Metrics Calculation | ✅ Correct            | ❌ Incorrect          |
+| Impact              | +10-50% inflation     | ~100x misreporting    |
+| Severity            | ⚠️ Moderate (fixable) | ❌ Severe             |
+| Reported MAE        | 1.691 km/h (leaked)   | 0.91 km/h (confusion) |
+| True MAE            | ~2.2-2.8 km/h (est.)  | Unknown               |
 
 **Winner:** datdtq (at least metrics are real km/h, even if inflated)
 
 **How to Fix:**
+
 1. Split raw data FIRST (chronologically)
 2. Fit scaler ONLY on train split
 3. Transform val/test with train scaler
@@ -242,13 +246,16 @@ For each model, checked:
 **Expected after fix:** MAE 2.2-2.8 km/h (still excellent, more realistic)
 
 **Files Created:**
+
 - `docs/DATDTQ_ASTGCN_VERIFICATION.md` (comprehensive analysis, ~500 lines)
 - Evidence: Notebook code review, leakage flow analysis, impact estimation
 
 **Recommendation for Final Report:**
+
 > "A team member's ASTGCN implementation achieved MAE 1.691 km/h, however data leakage was later discovered (scaler fitted on entire dataset). Estimated true performance: ~2.2-2.8 km/h, which would still be competitive with STMGT (3.08 km/h) if retrained properly. This is a common mistake in ML pipelines - the key is learning from it."
 
 **Lessons Learned:**
+
 1. ❌ NEVER fit scaler on entire dataset - split first!
 2. ❌ NEVER save pre-normalized full dataset
 3. ✅ DO compare with baselines to catch unrealistic performance
