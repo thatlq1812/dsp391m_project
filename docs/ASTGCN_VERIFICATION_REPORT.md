@@ -255,7 +255,7 @@ Despite the leakage issue, the implementation has strong points:
 
 ## 🎯 VERDICT
 
-**Status:** ⚠️ **MIXED RESULTS**
+**Status:** ❌ **REJECTED - INVALID METHODOLOGY**
 
 ### Rating Breakdown:
 
@@ -263,37 +263,51 @@ Despite the leakage issue, the implementation has strong points:
 |----------|-------|---------------|
 | **Code Quality** | 5/5 | Excellent PyTorch implementation |
 | **Architecture** | 5/5 | Faithful ASTGCN, proper attention mechanisms |
-| **Data Engineering** | 1/5 | **Critical data leakage** |
-| **Evaluation** | 4/5 | Correct denormalization, but on leaked data |
-| **Scientific Rigor** | 1/5 | No baselines, no sanity checks, unrealistic claims |
-| **Documentation** | 2/5 | Lacks critical awareness of leakage |
-| **Performance Claims** | 2/5 | **Inflated by leakage** |
+| **Data Engineering** | 0/5 | **DATA CONTAMINATION + Data leakage** |
+| **Evaluation** | 0/5 | Invalid dataset, cannot verify |
+| **Scientific Rigor** | 0/5 | **Fundamentally flawed methodology** |
+| **Documentation** | 2/5 | Lacks critical awareness |
+| **Performance Claims** | 0/5 | **Meaningless - wrong dataset** |
 
-**Overall: 2.9/5 ⭐** (Good code, critical methodology flaw)
+**Overall: 1.7/5 ⭐** (Good code, terrible science)
+
+### CRITICAL ISSUE: Data Contamination
+
+**Discovered:** datdtq "merged multiple data sources" (merge_3.csv) instead of using project data
+
+**Problems:**
+1. ❌ **Different Dataset:** merge_3.csv ≠ project's all_runs_combined.parquet
+2. ❌ **Data Contamination:** Mixed sources = invalid distribution
+3. ❌ **Cannot Compare:** Performance on merged data ≠ performance on real traffic
+4. ❌ **Data Leakage:** Scaler fitted on all merged data
+5. ❌ **Overfitting:** Model learns quirks of merged dataset, not traffic patterns
+
+**Impact:**
+- MAE 1.691 km/h is **meaningless** for real traffic prediction
+- Performance **cannot be compared** with project models (STMGT, LSTM)
+- Results are **scientifically invalid**
 
 ---
 
-## 📝 COMPARISON: datdtq vs hunglm
+## 📝 COMPARISON: datdtq vs hunglm vs Project
 
-### Similarities:
+### Three-Way Comparison:
 
-- ✅ Both have excellent code quality
-- ✅ Both implement graph-based architectures correctly
-- ❌ Both have performance reporting issues
+| Aspect | datdtq's ASTGCN | hunglm's GraphWaveNet | Project (STMGT) |
+|--------|----------------|---------------------|-----------------|
+| **Dataset** | ❌ merge_3.csv (unknown sources) | ✅ Project data | ✅ Project data |
+| **Issue Type** | ❌ Data contamination + leakage | ⚠️ Metrics confusion | ✅ None |
+| **Metrics Calculation** | ✅ Correct (denormalized) | ❌ Incorrect (normalized) | ✅ Correct |
+| **Performance** | 1.691 km/h (invalid) | 0.91 km/h (confusion) | 3.08 km/h (valid) |
+| **Comparable?** | ❌ NO (different dataset) | ⚠️ Can't verify | ✅ YES (baseline) |
+| **Severity** | ❌ **FATAL** (wrong problem) | ❌ Severe (can't verify) | ✅ Valid |
+| **Usable?** | ❌ NO | ❌ NO | ✅ YES |
 
-### Differences:
+### Ranking:
 
-| Aspect | datdtq's ASTGCN | hunglm's GraphWaveNet |
-|--------|----------------|---------------------|
-| **Issue Type** | Data leakage | Metrics confusion |
-| **Metrics Calculation** | ✅ Correct (denormalized) | ❌ Incorrect (normalized reported as km/h) |
-| **Impact** | Performance inflated 10-50% | Performance misreported by ~100x |
-| **Severity** | ⚠️ Moderate (fixable) | ❌ Severe (unfixable without retrain) |
-| **Trustworthiness** | Can estimate true performance | Cannot verify claimed performance |
-| **Reported MAE** | 1.691 km/h (leaked) | 0.91 km/h (confusion) |
-| **Estimated True MAE** | ~2.2-2.8 km/h | Unknown (no artifacts) |
-
-**Winner:** datdtq's ASTGCN (at least the metrics are real km/h, even if inflated)
+🥇 **Project (STMGT)**: Valid, trustworthy, proper methodology  
+🥈 **hunglm**: Good code, but metrics confusion prevents verification  
+🥉 **datdtq**: Good code, but **fundamentally invalid** (wrong dataset + contamination)
 
 ---
 
