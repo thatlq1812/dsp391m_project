@@ -1,0 +1,11 @@
+{
+  "config": {
+    "window_length": 6,
+    "gcn_units": 64,
+    "dropout_rate": 0.2,
+    "learning_rate": 0.001
+  },
+  "scaler_mean": 18.044727913216786,
+  "scaler_std": 6.90462136839093,
+  "num_nodes": 144
+}

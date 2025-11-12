@@ -1,0 +1,158 @@
+\section{Exploratory Data Analysis}
+
+\subsection{Speed Distribution Analysis}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig05_eda_speed_hist.png}
+\caption{Traffic Speed Distribution with Fitted Gaussian Mixture Components showing three distinct modes: congested (13 km/h), moderate (22 km/h), and free-flow (35 km/h).}
+\label{fig:eda_speed_hist}
+\end{figure}
+
+We analyzed the distribution of traffic speeds across 205,920 samples collected over 29 days in Ho Chi Minh City. The distribution exhibited clear multi-modality, as shown in Figure~\ref{fig:eda_speed_hist}, with the following statistical properties:
+
+\begin{itemize}
+    \item \textbf{Mean:} 19.8 km/h
+    \item \textbf{Median:} 18.5 km/h
+    \item \textbf{Standard Deviation:} 6.4 km/h
+    \item \textbf{Range:} 8.2--52.8 km/h
+\end{itemize}
+
+\textbf{Multi-Modal Components:} Gaussian Mixture Model (GMM) fitting revealed three distinct traffic regimes:
+
+\begin{itemize}
+    \item \textbf{Mode 1 (Congested):} Peak at $\approx 13$ km/h, comprising 35\% of observations
+    \item \textbf{Mode 2 (Moderate):} Peak at $\approx 22$ km/h, comprising 45\% of observations
+    \item \textbf{Mode 3 (Free-flow):} Peak at $\approx 35$ km/h, comprising 20\% of observations
+\end{itemize}
+
+The clear separation between traffic modes provides strong empirical evidence for our choice of GMM-based uncertainty quantification in the STMGT model. The multi-modal nature suggests that a single point estimate is insufficient to capture the full distributional complexity of traffic speed predictions.
+
+\subsection{Temporal Patterns}
+
+\subsubsection{Hour-of-Day Analysis}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig06_hourly_pattern.png}
+\caption{Average Traffic Speed by Hour of Day with 95\% confidence intervals. Morning rush (7--9 AM) and evening rush (5--7 PM) show lowest speeds.}
+\label{fig:hourly_pattern}
+\end{figure}
+
+Analysis of hourly speed patterns revealed strong diurnal cycles consistent with typical urban traffic behavior:
+
+\begin{itemize}
+    \item \textbf{Morning rush (7--9 AM):} Lowest speeds at $12.5 \pm 2.1$ km/h
+    \item \textbf{Midday (11 AM--2 PM):} Moderate recovery to $22.3 \pm 3.4$ km/h
+    \item \textbf{Evening rush (5--7 PM):} Severe congestion at $11.8 \pm 1.9$ km/h
+    \item \textbf{Late evening (9 PM--12 AM):} Free-flow conditions at $28.5 \pm 4.2$ km/h
+    \item \textbf{Early morning (2--6 AM):} Minimal traffic at $35.2 \pm 5.8$ km/h
+\end{itemize}
+
+The consistent bimodal rush hour pattern (morning and evening peaks) validates the importance of time-of-day encoding as a critical feature for traffic forecasting. The 95\% confidence intervals show relatively tight bounds during rush hours, suggesting predictable congestion patterns, but wider bounds during off-peak hours due to more variable traffic conditions.
+
+\subsubsection{Day-of-Week Analysis}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig07_weekly_pattern.png}
+\caption{Speed Distribution by Day of Week (Box Plot) showing higher speeds on weekends compared to consistent weekday patterns.}
+\label{fig:weekly_pattern}
+\end{figure}
+
+Weekly patterns exhibited systematic differences between weekdays and weekends:
+
+\begin{itemize}
+    \item \textbf{Weekdays (Monday--Friday):} Consistent median speed $\approx 18$ km/h with tight interquartile range (IQR)
+    \item \textbf{Saturdays:} Slightly elevated median $\approx 21$ km/h with wider variance
+    \item \textbf{Sundays:} Highest median $\approx 24$ km/h, reflecting leisure traffic patterns
+\end{itemize}
+
+The clear separation between weekday and weekend distributions justifies the inclusion of day-of-week as a categorical feature in the model. Weekday traffic shows more consistent patterns due to regular commuter behavior, while weekends exhibit higher variance from diverse leisure activities.
+
+\subsection{Spatial Correlation Analysis}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig08_spatial_corr.png}
+\caption{Spatial Correlation Heatmap (62$\times$62) showing pairwise correlations between node speeds. Block-diagonal structure indicates within-district correlations are stronger than cross-district.}
+\label{fig:spatial_corr}
+\end{figure}
+
+We computed pairwise Pearson correlation coefficients between all 62 nodes to quantify spatial dependencies in traffic speeds. The correlation structure revealed clear distance-dependent patterns:
+
+\begin{itemize}
+    \item \textbf{Adjacent nodes (1-hop):} High correlation, $\rho = 0.72$--$0.88$
+    \item \textbf{2-hop neighbors:} Moderate correlation, $\rho = 0.45$--$0.65$
+    \item \textbf{Distant nodes ($>5$ hops):} Low correlation, $\rho < 0.25$
+    \item \textbf{Cross-district:} Weak correlation, $\rho = 0.15$--$0.30$
+\end{itemize}
+
+\textbf{Interpretation:} The decay of correlation with graph distance provides strong empirical justification for Graph Neural Network (GNN) architectures. Adjacent roads influence each other through shared traffic flow, while distant locations are largely independent. This spatial dependency structure suggests that 2--3 layers of graph convolution should be sufficient for effective message passing, as correlations become negligible beyond 3 hops.
+
+The spatial correlation heatmap (Figure~8) shows block-diagonal structure corresponding to district boundaries, indicating that traffic patterns are more strongly correlated within districts than across district boundaries. This suggests potential for hierarchical graph modeling in future work.
+
+\subsection{Weather Impact Analysis}
+
+\subsubsection{Temperature Impact}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig09_temp_speed.png}
+\caption{Traffic Speed vs Temperature scatter plot with regression line showing weak negative correlation ($\rho = -0.18$) in HCMC's narrow tropical temperature range.}
+\label{fig:temp_speed}
+\end{figure}
+
+Linear correlation analysis between temperature and traffic speed revealed:
+
+\begin{itemize}
+    \item \textbf{Correlation:} $\rho = -0.18$ (weak negative, not statistically significant at $\alpha = 0.05$)
+    \item \textbf{Temperature range:} 24--32°C (narrow range typical of HCMC's tropical climate)
+\end{itemize}
+
+\textbf{Interpretation:} Temperature shows minimal direct impact on traffic speed within HCMC's narrow tropical temperature range. However, extreme heat days ($>30$°C) may indirectly affect traffic through increased air conditioning load and driver discomfort, though this effect is too subtle to detect with simple linear correlation.
+
+\subsubsection{Precipitation Impact}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig10_weather_box.png}
+\caption{Speed Distribution by Weather Condition showing significant impact of precipitation. Heavy rain causes 32\% speed reduction compared to clear conditions.}
+\label{fig:weather_box}
+\end{figure}
+
+Precipitation showed the strongest weather impact on traffic speeds. Stratifying by weather condition revealed:
+
+\begin{table}[h]
+\centering
+\caption{Traffic Speed by Weather Condition}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Condition} & \textbf{Mean Speed} & \textbf{Reduction} & \textbf{Samples} \\
+\midrule
+Clear & 21.8 km/h & Baseline & 1,850 \\
+Light Rain ($<5$ mm) & 18.2 km/h & $-16.5\%$ & 520 \\
+Heavy Rain ($>5$ mm) & 14.9 km/h & $-31.7\%$ & 92 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Heavy rainfall causes a dramatic 32\% reduction in average traffic speed compared to clear conditions. This non-linear impact (light rain causes 17\% reduction, heavy rain causes 32\% reduction) suggests a threshold effect where moderate precipitation degrades visibility and road friction, while heavy rain triggers more cautious driving behavior and potential flooding.
+
+\textbf{Validation of Model Design:} These findings validate our decision to include weather cross-attention in the STMGT architecture. The context-dependent nature of weather effects (strong impact during rain, minimal impact otherwise) is well-suited to attention mechanisms that can dynamically weight weather information based on current conditions.
+
+\subsection{Key Findings}
+
+The exploratory data analysis yielded four critical insights that informed our model design:
+
+\begin{enumerate}
+    \item \textbf{Multi-modal Distribution:} Clear evidence of three traffic regimes (congested, moderate, free-flow) strongly motivates Gaussian Mixture Model (GMM) for uncertainty quantification rather than simple point estimates.
+    
+    \item \textbf{Strong Temporal Patterns:} Consistent rush hour effects across all weekdays demonstrate the importance of temporal modeling with transformer-based architectures capable of capturing long-range temporal dependencies.
+    
+    \item \textbf{Spatial Dependencies:} High correlation between adjacent roads ($\rho \approx 0.8$) validates Graph Neural Network approach. The correlation decay pattern (dropping below 0.3 after 3 hops) informs the choice of 2--3 GNN layers.
+    
+    \item \textbf{Weather Impact:} Precipitation causes significant speed reduction (15--30\%) with non-linear threshold effects. This motivates the weather cross-attention mechanism in STMGT to capture context-dependent weather impacts.
+\end{enumerate}
+
+These findings directly influenced the architectural choices in our proposed STMGT model, including parallel spatial-temporal processing, weather cross-attention, and mixture density output layers.

@@ -1,0 +1,41 @@
+{
+  "model": "LSTM-Baseline",
+  "timestamp": "20251109_131618",
+  "config": {
+    "sequence_length": 12,
+    "lstm_units": [
+      128,
+      64
+    ],
+    "dropout": 0.2,
+    "learning_rate": 0.001,
+    "epochs": 100,
+    "batch_size": 32
+  },
+  "dataset": {
+    "path": "data\\processed\\all_runs_combined.parquet",
+    "n_train": 6624,
+    "n_val": 1296,
+    "n_test": 1584
+  },
+  "results": {
+    "train": {
+      "mae": 18.433075670150824,
+      "rmse": 19.69463539529744,
+      "r2": -7.063940981674321,
+      "mape": 99.99999993780196
+    },
+    "val": {
+      "mae": 17.012776683825404,
+      "rmse": 17.923351843379393,
+      "r2": -9.098291088027082,
+      "mape": 99.99999993523029
+    },
+    "test": {
+      "mae": 4.4246860052787484,
+      "rmse": 6.078435286354113,
+      "r2": 0.18483922474883252,
+      "mape": 20.615799312431253
+    }
+  }
+}

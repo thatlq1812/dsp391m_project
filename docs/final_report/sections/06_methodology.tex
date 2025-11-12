@@ -1,0 +1,253 @@
+\section{Methodology}
+
+\subsection{Model Selection Rationale}
+
+\subsubsection{Why Graph Neural Networks?}
+
+Traffic forecasting involves predicting speeds on a road network, which naturally forms a graph-structured dataset:
+
+\begin{itemize}
+    \item \textbf{Nodes:} Intersections (62 nodes in our HCMC dataset)
+    \item \textbf{Edges:} Road segments connecting intersections (144 directed edges)
+    \item \textbf{Node features:} Traffic speed, weather conditions, temporal features
+\end{itemize}
+
+Graph Neural Networks (GNNs) provide a principled approach to modeling spatial dependencies through \textit{message passing}, where each node aggregates information from its neighbors via graph convolution operations~\cite{kipf2017gcn}. This is fundamentally different from grid-based CNNs, which assume regular Euclidean structure, or RNNs, which ignore spatial structure entirely.
+
+\subsubsection{Why Spatio-Temporal Architecture?}
+
+Traffic exhibits dual characteristics requiring specialized modeling:
+
+\begin{itemize}
+    \item \textbf{Spatial dependencies:} Speed on adjacent roads influences each other through shared traffic flow (correlation $\rho \approx 0.8$ for adjacent nodes, as shown in Section~V)
+    \item \textbf{Temporal dynamics:} Traffic patterns evolve over time with strong diurnal cycles (rush hours, weekends)
+\end{itemize}
+
+Traditional approaches model these dimensions sequentially (e.g., graph convolution followed by RNN), but recent work has shown that parallel processing of spatial and temporal dimensions improves performance by 5--12\%~\cite{guo2019astgcn,li2020mtgnn}. Our STMGT architecture adopts this parallel design paradigm.
+
+\subsubsection{Why STMGT Over Baseline Models?}
+
+Table~\ref{tab:model_comparison} compares STMGT against baseline approaches across key capabilities:
+
+\begin{table}[h]
+\centering
+\caption{Comparison of Model Capabilities}
+\label{tab:model_comparison}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Spatial} & \textbf{Temporal} & \textbf{Weather} & \textbf{Uncertainty} \\
+\midrule
+LSTM & \xmark & \cmark (RNN) & \cmark (concat) & \xmark \\
+GCN & \cmark (GCN) & \xmark & \cmark (concat) & \xmark \\
+GraphWaveNet & \cmark (adaptive) & \cmark (TCN) & \xmark & \xmark \\
+ASTGCN & \cmark (attn) & \cmark (attn) & \xmark & \xmark \\
+\textbf{STMGT} & \cmark (GATv2) & \cmark (Transf.) & \cmark (cross-attn) & \cmark (GMM) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Key Advantages of STMGT:}
+
+\begin{enumerate}
+    \item \textbf{Parallel ST Processing:} Independent spatial and temporal branches (5--12\% improvement over sequential architectures~\cite{guo2019astgcn,li2020mtgnn})
+    \item \textbf{Weather Cross-Attention:} Context-dependent weather effects (rain impact varies by location and time~\cite{vaswani2017attention})
+    \item \textbf{Gaussian Mixture Output:} Probabilistic predictions with calibrated uncertainty quantification~\cite{bishop1994mixture,liu2023uncertain})
+    \item \textbf{Adaptive Graph Learning:} GATv2~\cite{brody2022gatv2} dynamically learns neighbor importance rather than using fixed adjacency
+\end{enumerate}
+
+\subsection{Data Splitting Strategy}
+
+\subsubsection{Temporal Split (No Shuffling)}
+
+Time series data exhibits strong temporal autocorrelation, making the choice of splitting strategy critical. We employed a strict temporal split:
+
+\begin{itemize}
+    \item \textbf{Training:} 70\% (144,144 samples) -- October 1--21, 2025
+    \item \textbf{Validation:} 15\% (30,888 samples) -- October 22--25, 2025
+    \item \textbf{Test:} 15\% (30,888 samples) -- October 26--29, 2025
+\end{itemize}
+
+\textbf{Rationale:} Random shuffling of time series data causes \textbf{data leakage} -- the model would train on future data to predict the past, artificially inflating performance metrics. Temporal splitting ensures the model only has access to historical data during training, exactly simulating real-world deployment where predictions must be made without knowledge of future observations.
+
+The Python implementation enforces chronological ordering:
+
+\begin{verbatim}
+# Chronological split (no shuffling)
+n_samples = 205920
+train_idx = int(0.70 * n_samples)
+val_idx = train_idx + int(0.15 * n_samples)
+
+train_data = data[:train_idx]
+val_data = data[train_idx:val_idx]
+test_data = data[val_idx:]
+\end{verbatim}
+
+\subsubsection{Validation Strategy}
+
+We used a single holdout validation set rather than k-fold cross-validation. Traditional k-fold CV requires shuffling, which violates temporal ordering. While sliding window cross-validation exists for time series, it is computationally expensive and was deemed unnecessary for our 29-day dataset.
+
+\textbf{Early Stopping:} We monitored validation MAE every epoch with patience of 10 epochs. Training stopped when validation performance did not improve for 10 consecutive epochs, and the model weights from the best epoch were restored.
+
+\subsection{Feature Engineering and Selection}
+
+\subsubsection{Graph Features}
+
+Each node in the road network was characterized by a feature vector at each timestep:
+
+\textbf{Node Features:} $\mathbf{x}_i^{(t)} \in \mathbb{R}^4$ for node $i$ at time $t$:
+\begin{itemize}
+    \item Speed: Historical traffic speed (Z-score normalized)
+    \item Temperature: Ambient temperature (Z-score normalized)
+    \item Wind speed: Wind conditions (Min-Max normalized to $[0,1]$)
+    \item Precipitation: Rainfall intensity (Log + Z-score normalized)
+\end{itemize}
+
+\textbf{Edge Features:} Initially, only graph structure (adjacency matrix) was used. Edge attributes such as road type, number of lanes, and speed limits were not available in our current dataset but could be incorporated in future work.
+
+\textbf{Graph Structure:} The road network topology was encoded as a directed graph $\mathcal{G} = (\mathcal{V}, \mathcal{E})$ with $|\mathcal{V}| = 62$ nodes and $|\mathcal{E}| = 144$ edges. The graph was represented in PyTorch Geometric's COO format:
+
+\begin{verbatim}
+edge_index = torch.tensor(
+    [[src_nodes], [dst_nodes]], 
+    dtype=torch.long
+)  # Shape: [2, 144]
+\end{verbatim}
+
+\subsubsection{Temporal Features}
+
+\textbf{Cyclical Encoding for Hour-of-Day:} Linear encoding of hour fails to capture the cyclical nature of time (hour 23 is close to hour 0). We used sinusoidal encoding:
+
+\begin{equation}
+h_{\sin} = \sin\left(\frac{2\pi \cdot h}{24}\right), \quad h_{\cos} = \cos\left(\frac{2\pi \cdot h}{24}\right)
+\end{equation}
+
+where $h \in \{0, 1, \ldots, 23\}$ is the hour of day.
+
+\textbf{Day-of-Week Embedding:} Represented as either one-hot encoding (7-dimensional vector) or learned embedding (7 $\to$ 16 dimensions).
+
+\textbf{Rush Hour Binary Feature:} Binary indicator for morning (7--9 AM) and evening (5--7 PM) rush hours:
+
+\begin{equation}
+\text{is\_rush} = \mathbb{1}_{(h \in [7,9] \cup [17,19])}
+\end{equation}
+
+\subsubsection{Weather Features}
+
+All weather features were normalized using statistics from the training set only:
+
+\begin{align}
+T_{\text{norm}} &= \frac{T - \mu_T}{\sigma_T} \\
+W_{\text{norm}} &= \frac{W - \mu_W}{\sigma_W} \\
+P_{\text{norm}} &= \frac{P - \mu_P}{\sigma_P}
+\end{align}
+
+where $T$, $W$, $P$ denote temperature, wind speed, and precipitation respectively. For cross-attention, weather features were projected to the model's hidden dimension (96):
+
+\begin{equation}
+\mathbf{w}_{\text{enc}} = \text{MLP}([T_{\text{norm}}, W_{\text{norm}}, P_{\text{norm}}]) \in \mathbb{R}^{96}
+\end{equation}
+
+\subsubsection{Feature Selection Rationale}
+
+Table~\ref{tab:feature_selection} summarizes the features included in our model:
+
+\begin{table}[h]
+\centering
+\caption{Feature Selection and Rationale}
+\label{tab:feature_selection}
+\begin{tabular}{lcp{6cm}}
+\toprule
+\textbf{Feature} & \textbf{Included?} & \textbf{Rationale} \\
+\midrule
+Speed (historical) & \cmark & Primary signal, strong autocorrelation ($\rho > 0.7$) \\
+Temperature & \cmark & Extreme heat reduces speed (5--8\% impact) \\
+Wind speed & \cmark & Correlates with rain events \\
+Precipitation & \cmark & Strong impact (15--30\% speed reduction) \\
+Hour-of-day & \cmark & Rush hour patterns critical (see EDA) \\
+Day-of-week & \cmark & Weekday vs weekend differences \\
+Road type & \xmark & Not available in current dataset \\
+Accidents & \xmark & No reliable real-time data source \\
+Events & \xmark & Requires event calendar (future work) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Sequence Representation}
+
+\subsubsection{Input Sequence}
+
+The input to STMGT is a tensor $\mathbf{X} \in \mathbb{R}^{B \times T_{\text{in}} \times N \times F}$ where:
+
+\begin{itemize}
+    \item $B$: Batch size (typically 32)
+    \item $T_{\text{in}} = 12$: Historical window (3 hours at 15-min intervals)
+    \item $N = 62$: Number of nodes
+    \item $F = 4$: Feature dimension (speed, temperature, wind, precipitation)
+\end{itemize}
+
+Each sequence captures 3 hours of historical traffic and weather data across the entire road network.
+
+\subsubsection{Output Sequence}
+
+The output is a Gaussian Mixture Model with 5 components for each node at each future timestep. The model predicts:
+
+\begin{equation}
+\mathbf{Y} \in \mathbb{R}^{B \times T_{\text{out}} \times N \times 15}
+\end{equation}
+
+where $T_{\text{out}} = 12$ (3-hour forecast) and 15 parameters represent 5 Gaussian components: $\{\mu_1, \sigma_1, \pi_1, \ldots, \mu_5, \sigma_5, \pi_5\}$ for each node.
+
+\textbf{Point Prediction:} The expected speed is the mixture mean:
+
+\begin{equation}
+\hat{v} = \sum_{k=1}^{5} \pi_k \mu_k
+\end{equation}
+
+\textbf{Uncertainty Quantification:} Confidence intervals are derived from the mixture distribution:
+
+\begin{align}
+\text{Lower bound (10\%)} &= F^{-1}_{\text{GMM}}(0.10) \\
+\text{Upper bound (90\%)} &= F^{-1}_{\text{GMM}}(0.90)
+\end{align}
+
+where $F_{\text{GMM}}$ is the cumulative distribution function of the Gaussian mixture.
+
+\subsection{Model Architecture Overview}
+
+The STMGT architecture consists of five main components operating in sequence:
+
+\begin{enumerate}
+    \item \textbf{Parallel Spatial-Temporal Processing:}
+    \begin{itemize}
+        \item Spatial branch: GATv2~\cite{brody2022gatv2} with 4 attention heads for graph convolution
+        \item Temporal branch: Transformer~\cite{vaswani2017attention} with self-attention over time
+        \item Both branches operate independently on input $\mathbf{X}$
+    \end{itemize}
+    
+    \item \textbf{Gated Fusion:} Learnable combination of spatial and temporal features:
+    \begin{equation}
+        \alpha = \sigma(\text{MLP}([\mathbf{h}_{\text{spatial}} \| \mathbf{h}_{\text{temporal}}]))
+    \end{equation}
+    \begin{equation}
+        \mathbf{h}_{\text{fused}} = \alpha \odot \mathbf{h}_{\text{spatial}} + (1-\alpha) \odot \mathbf{h}_{\text{temporal}}
+    \end{equation}
+    
+    \item \textbf{Weather Cross-Attention:} Query vectors from fused features attend to weather encoding:
+    \begin{equation}
+        \mathbf{h}_{\text{context}} = \text{Attention}(\mathbf{Q} = \mathbf{h}_{\text{fused}}, \mathbf{K} = \mathbf{w}_{\text{enc}}, \mathbf{V} = \mathbf{w}_{\text{enc}})
+    \end{equation}
+    
+    \item \textbf{Gaussian Mixture Head:} Projects context features to mixture parameters:
+    \begin{align}
+        [\mu_1, \ldots, \mu_5] &= \text{Linear}_{\mu}(\mathbf{h}_{\text{context}}) \\
+        [\sigma_1, \ldots, \sigma_5] &= \exp(\text{Linear}_{\sigma}(\mathbf{h}_{\text{context}})) \\
+        [\pi_1, \ldots, \pi_5] &= \text{Softmax}(\text{Linear}_{\pi}(\mathbf{h}_{\text{context}}))
+    \end{align}
+    
+    \item \textbf{Loss Function:} Negative log-likelihood of Gaussian mixture:
+    \begin{equation}
+        \mathcal{L} = -\frac{1}{N} \sum_{i=1}^{N} \log\left(\sum_{k=1}^{5} \pi_k \mathcal{N}(y_i | \mu_k, \sigma_k^2)\right)
+    \end{equation}
+\end{enumerate}
+
+This architecture enables STMGT to capture complex spatio-temporal dependencies while quantifying prediction uncertainty through probabilistic outputs.

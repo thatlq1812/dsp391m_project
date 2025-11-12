@@ -102,12 +102,13 @@ class LSTMWrapper(ModelWrapper):
         feature_cols = [speed_col]
         
         # Add time features if available
-        if 'hour' not in data.columns and 'timestamp' in data.columns:
-            data = data.copy()
-            data['hour'] = pd.to_datetime(data['timestamp']).dt.hour
-            data['day_of_week'] = pd.to_datetime(data['timestamp']).dt.dayofweek
-            data['hour_sin'] = np.sin(2 * np.pi * data['hour'] / 24)
-            data['hour_cos'] = np.cos(2 * np.pi * data['hour'] / 24)
+        if 'timestamp' in data.columns:
+            if 'hour_sin' not in data.columns:
+                data = data.copy()
+                data['hour'] = pd.to_datetime(data['timestamp']).dt.hour
+                data['day_of_week'] = pd.to_datetime(data['timestamp']).dt.dayofweek
+                data['hour_sin'] = np.sin(2 * np.pi * data['hour'] / 24)
+                data['hour_cos'] = np.cos(2 * np.pi * data['hour'] / 24)
             feature_cols.extend(['hour_sin', 'hour_cos', 'day_of_week'])
         
         # Handle missing columns
@@ -181,15 +182,16 @@ class LSTMWrapper(ModelWrapper):
         # Prepare features
         feature_cols = [speed_col]
         
-        # Add temporal features
-        for df in [train_data, val_data]:
-            if 'hour' not in df.columns and 'timestamp' in df.columns:
-                df['hour'] = pd.to_datetime(df['timestamp']).dt.hour
-                df['day_of_week'] = pd.to_datetime(df['timestamp']).dt.dayofweek
-                df['hour_sin'] = np.sin(2 * np.pi * df['hour'] / 24)
-                df['hour_cos'] = np.cos(2 * np.pi * df['hour'] / 24)
-        
-        feature_cols.extend(['hour_sin', 'hour_cos', 'day_of_week'])
+        # Add temporal features if timestamp is available
+        if 'timestamp' in train_data.columns:
+            for df in [train_data, val_data]:
+                if 'hour_sin' not in df.columns:
+                    df['hour'] = pd.to_datetime(df['timestamp']).dt.hour
+                    df['day_of_week'] = pd.to_datetime(df['timestamp']).dt.dayofweek
+                    df['hour_sin'] = np.sin(2 * np.pi * df['hour'] / 24)
+                    df['hour_cos'] = np.cos(2 * np.pi * df['hour'] / 24)
+            
+            feature_cols.extend(['hour_sin', 'hour_cos', 'day_of_week'])
         
         # Extract features and target
         X_train = train_data[feature_cols]

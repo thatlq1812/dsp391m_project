@@ -1,0 +1,102 @@
+% Section 1: Introduction
+% Maintainer: THAT Le Quang (thatlq1812)
+% Source: 01_title_team_intro.md
+
+\section{Introduction}
+
+\subsection{Background and Motivation}
+
+Traffic congestion is a critical challenge in rapidly urbanizing cities, particularly in Ho Chi Minh City, Vietnam. Recent studies indicate significant impacts:
+
+\begin{itemize}
+    \item \textbf{Economic Impact:} Traffic congestion costs approximately \$1.2 billion USD annually in lost productivity and fuel consumption
+    \item \textbf{Travel Time:} Average commute times have increased by 35\% over the past 5 years
+    \item \textbf{Environmental Cost:} Congestion contributes to increased CO$_2$ emissions and air pollution
+    \item \textbf{Quality of Life:} Extended commute times negatively impact citizen well-being and urban livability
+\end{itemize}
+
+Accurate traffic forecasting can enable:
+
+\begin{itemize}
+    \item \textbf{Intelligent Route Planning:} Help drivers avoid congested routes, reducing travel time by 15-20\%
+    \item \textbf{Traffic Management:} Allow authorities to implement proactive traffic control measures
+    \item \textbf{Public Transportation Optimization:} Improve bus scheduling and route planning
+    \item \textbf{Emergency Response:} Enable faster emergency vehicle routing during critical situations
+    \item \textbf{Urban Planning:} Provide data-driven insights for infrastructure development decisions
+\end{itemize}
+
+\subsection{Research Objectives}
+
+This project aims to develop an accurate and reliable traffic speed forecasting system for Ho Chi Minh City using deep learning techniques. The primary objectives are:
+
+\begin{enumerate}
+    \item \textbf{Accurate Short-Term Forecasting:} Predict traffic speeds for the next 15 minutes to 3 hours with high precision (target MAE $<$ 5 km/h)
+    \item \textbf{Uncertainty Quantification:} Provide confidence intervals for predictions to support risk-aware decision-making
+    \item \textbf{Multi-Modal Integration:} Incorporate weather conditions and temporal patterns alongside spatial road network structure
+    \item \textbf{Real-Time Deployment:} Deploy a production-ready API capable of serving predictions with low latency ($<$500ms)
+    \item \textbf{Comparative Analysis:} Benchmark against established baseline models (LSTM, GCN, GraphWaveNet, ASTGCN) to validate architectural improvements
+\end{enumerate}
+
+\subsection{Why Graph Neural Networks and Transformers?}
+
+Traditional traffic forecasting methods (ARIMA, Kalman filters) struggle with:
+
+\begin{itemize}
+    \item \textbf{Non-linear patterns} in traffic flow
+    \item \textbf{Complex spatial dependencies} across road networks
+    \item \textbf{Multi-modal interactions} (weather, events, accidents)
+\end{itemize}
+
+\textbf{Graph Neural Networks (GNNs)} address these challenges by:
+
+\begin{itemize}
+    \item Modeling road networks as graphs (nodes = intersections, edges = road segments)
+    \item Capturing spatial dependencies through message passing
+    \item Learning adaptive representations of network topology
+\end{itemize}
+
+\textbf{Transformers} enhance temporal modeling through:
+
+\begin{itemize}
+    \item Self-attention mechanisms for long-range dependencies
+    \item Parallel processing of time sequences
+    \item Better handling of irregular temporal patterns
+\end{itemize}
+
+\subsection{Ho Chi Minh City Context}
+
+\begin{itemize}
+    \item \textbf{Population:} $\sim$9 million (metropolitan area: $\sim$13 million)
+    \item \textbf{Road Network:} 3,200+ km of roads, 15,000+ intersections
+    \item \textbf{Traffic Volume:} 8+ million motorcycles, 600,000+ cars
+    \item \textbf{Peak Hours:} 7-9 AM, 5-7 PM (severe congestion)
+    \item \textbf{Weather Impact:} Tropical monsoon climate with heavy rainfall affecting traffic patterns
+\end{itemize}
+
+\subsection{Data Collection Infrastructure}
+
+Our system leverages:
+
+\begin{itemize}
+    \item \textbf{Google Directions API:} Real-time traffic speed data
+    \item \textbf{OpenWeatherMap API:} Weather conditions (temperature, humidity, rainfall)
+    \item \textbf{OpenStreetMap/Overpass API:} Road network topology
+    \item \textbf{Collection Frequency:} Every 15 minutes during peak hours
+\end{itemize}
+
+\subsection{Contributions}
+
+Our main contributions include:
+
+\begin{enumerate}
+    \item A novel \textbf{parallel spatio-temporal architecture} combining GATv2 and Transformer blocks with gated fusion
+    \item \textbf{Weather-aware cross-attention mechanism} for context-dependent multi-modal integration
+    \item \textbf{Gaussian Mixture Model outputs} for well-calibrated uncertainty quantification
+    \item \textbf{Comprehensive ablation studies} validating each architectural component
+    \item \textbf{Systematic benchmarking} against 4 baseline models (LSTM, GCN, GraphWaveNet, ASTGCN)
+    \item \textbf{Production deployment} with REST API achieving sub-400ms inference latency
+\end{enumerate}
+
+\subsection{Report Organization}
+
+This report is organized as follows: Section II reviews related work in traffic forecasting, from classical methods to state-of-the-art deep learning approaches. Section III describes our dataset, including data sources, collection methods, and statistical properties. Section IV details data preprocessing and graph construction. Section V presents exploratory data analysis revealing key patterns. Section VI explains our methodology and architectural choices. Section VII details model development and training procedures. Section VIII presents comprehensive evaluation results and ablation studies. Section IX discusses visualization and interpretation of results. Section X concludes with limitations and future work directions.

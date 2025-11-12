@@ -1,0 +1,190 @@
+# Maintainer Profile
+
+**Name:** THAT Le Quang
+
+- **Role:** AI & DS Major Student
+- **GitHub:** [thatlq1812]
+
+---
+
+# STMGT Traffic Forecasting Project
+
+**Spatio-Temporal Multi-Graph Transformer for traffic speed forecasting in Ho Chi Minh City.**
+
+The repository now reflects Phase 1 completion: dataset validation is enforced across collection, augmentation, and training flows; registry configuration is schema-validated via Pydantic; and the Streamlit dashboard wiring targets the new helper utilities. See the documentation index at `docs/INDEX.md` and the consolidated research at `docs/STMGT_RESEARCH_CONSOLIDATED.md`.
+
+---
+
+## Quick Start
+
+### 1. Environment
+
+```bash
+conda env create -f environment.yml
+conda activate dsp
+pip install -e .
+```
+
+All scripts assume the Conda environment name `dsp` recorded in `.env`.
+
+### 2. CLI Tool (NEW - Replaces Dashboard)
+
+**Simple, fast command-line interface for all operations:**
+
+```bash
+# For Git Bash on Windows - use wrapper script
+cd /d/UNI/DSP391m/project
+./stmgt.sh --help
+
+# Common commands
+./stmgt.sh model list              # List all models
+./stmgt.sh api start               # Start API server
+./stmgt.sh data info               # Show dataset info
+./stmgt.sh train status            # Training status
+
+# Add to PATH (optional)
+export PATH="$PATH:/d/UNI/DSP391m/project"
+stmgt --help
+```
+
+**Full documentation:** `docs/guides/CLI_USER_GUIDE.md`
+
+### 3. Web Interface
+
+**Interactive traffic visualization and route planning:**
+
+```bash
+# Start API server first
+./stmgt.sh api start
+
+# Open in browser
+# http://localhost:8000/route_planner.html
+```
+
+Features:
+
+- Real-time traffic visualization with gradient colors
+- Route planning with 3 algorithms (fastest/shortest/balanced)
+- Interactive map with Leaflet.js
+
+### 4. Training via CLI
+
+```bash
+conda run -n dsp --no-capture-output python scripts/training/train_stmgt.py --config configs/training_config.json
+```
+
+The trainer loads configuration through `traffic_forecast/core/config_loader.py` and validates datasets with `traffic_forecast/data/validators.py` before any run begins.
+
+### 4. Analytical Reports
+
+```bash
+conda run -n dsp python scripts/analysis/analyze_augmentation_strategy.py --dataset data/processed/all_runs_combined.parquet
+conda run -n dsp python scripts/analysis/analyze_data_distribution.py --dataset data/processed/all_runs_combined.parquet
+```
+
+These scripts now share CLI patterns, automatic data-root resolution, and dataset validation hooks.
+
+---
+
+## Current Performance (Nov 10, 2025) - V3 Production
+
+**STMGT V3** is the current production model, achieved through systematic capacity exploration and training refinement:
+
+- **Test MAE:** 3.0468 km/h (1.1% better than V1)
+- **Test RMSE:** 4.5198 km/h
+- **R² Score:** 0.8161
+- **MAPE:** 18.89%
+- **Coverage@80:** 86.0% (excellent calibration)
+- **Model Capacity:** 680K parameters (proven optimal)
+
+**Key Achievements:**
+
+- 5 capacity experiments confirmed 680K params optimal (U-shaped curve)
+- Training improvements (dropout, LR, regularization) beat baseline without architectural changes
+- Best-in-class uncertainty quantification (86% coverage)
+- Production-ready with comprehensive testing
+
+**Model artifacts:** `outputs/stmgt_v2_20251110_123931/`  
+**Documentation:** `docs/V3_DESIGN_RATIONALE.md`, `docs/CHANGELOG.md`
+
+---
+
+## Project Structure
+
+```
+project/
+├── dashboard/
+│   ├── Dashboard.py
+│   └── pages/            # Streamlit V4 page suite (registry, training, inference)
+├── traffic_forecast/
+│   ├── core/             # Config loader, registry validation, logging helpers
+│   ├── data/             # Dataset definitions and validators
+│   ├── models/           # STMGT architecture and components
+│   └── utils/            # Shared utilities
+├── scripts/
+│   ├── analysis/         # CLI-first analytics (augmentation, distribution reports)
+│   ├── data/             # Collection, augmentation, and maintenance tasks
+│   ├── monitoring/       # Dashboard and training telemetry
+│   └── training/         # Training entrypoints
+├── configs/              # Environment, registry, and training configuration
+├── data/                 # Raw and processed datasets (validated at runtime)
+├── docs/                 # Project documentation (see below)
+├── outputs/              # Training artifacts and evaluation plots
+└── models/training_runs/ # Legacy training archives
+```
+
+---
+
+## Documentation Map
+
+Documentation lives in `docs/` (all files include Maintainer metadata):
+
+**Core Documentation:**
+
+- `docs/CHANGELOG.md` – Project-level change log with full history
+- `docs/INDEX.md` – Canonical index of all documentation (reorganized Nov 2025)
+- `docs/STMGT_ARCHITECTURE.md` – Model architecture and design decisions
+- `docs/STMGT_DATA_IO.md` – Data schemas and I/O specifications
+- `docs/STMGT_RESEARCH_CONSOLIDATED.md` – Merged research findings (Claude, Gemini, OpenAI)
+
+**Guides (`docs/guides/`):**
+
+- `docs/guides/README_SETUP.md` – Environment setup and installation
+- `docs/guides/WORKFLOW.md` – Development workflow and operations
+- `docs/guides/PROCESSED_DATA_PIPELINE.md` – Data collection and processing pipeline
+
+**Quality Audits (`docs/audits/`):**
+
+- `docs/audits/PROJECT_TRANSPARENCY_AUDIT.md` – Comprehensive project evaluation (8.7/10)
+- `docs/audits/GRAPHWAVENET_TRANSPARENCY_AUDIT.md` – Baseline model analysis
+
+**Dashboard:**
+
+- `docs/DASHBOARD_V4_QUICKSTART.md` – Dashboard quick start guide
+- `docs/DASHBOARD_V4_REFERENCE.md` – Complete dashboard reference
+
+**Phase Instructions (`docs/instructions/`):**
+
+- Phase 1-4 implementation guides and task lists
+
+**Archived Content:**
+
+- `archive/README.md` – Experimental code, old training runs, retention policy
+
+---
+
+## Contributing and Testing
+
+- Format and lint using the standard tools specified in `pyproject.toml`.
+- Run targeted tests with `conda run -n dsp pytest tests/test_stmgt_utils.py` after modifying core utilities.
+- Record notable changes in `docs/CHANGELOG.md` and update relevant workflow or quickstart guides.
+
+---
+
+## Support
+
+For issues or feature requests please open a GitHub issue on [thatlq1812/dsp391m_project](https://github.com/thatlq1812/dsp391m_project).
+
+---
+
+_Detailed documentation and run logs are maintained in the `docs/` and `outputs/` directories._

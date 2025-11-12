@@ -1,0 +1,16 @@
+Training Configuration for Fair Model Comparison
+================================================
+
+Dataset: data/processed/all_runs_extreme_augmented.parquet
+Epochs: 100
+Batch Size: 32
+Split: 70% train / 15% val / 15% test
+
+Models:
+1. STMGT V3 - Multi-modal spatial-temporal with Gaussian mixture
+2. LSTM Baseline - Temporal only (no spatial information)
+3. GraphWaveNet - Adaptive graph learning + dilated convolutions
+4. ASTGCN - Attention-based spatial-temporal GCN
+
+Timestamp: 20251112_112504
+================================================

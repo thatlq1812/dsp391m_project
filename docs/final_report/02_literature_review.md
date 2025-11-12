@@ -19,7 +19,7 @@ This section reviews existing approaches to traffic forecasting, from classical 
 
 ### 4.1.1 Statistical Approaches
 
-**ARIMA (AutoRegressive Integrated Moving Average)**
+**ARIMA (AutoRegressive Integrated Moving Average)** [15]
 
 - **Strengths:** Simple, interpretable, works for short-term univariate forecasting
 - **Limitations:** Cannot model spatial dependencies, fails with non-linear patterns, requires stationary data
@@ -49,7 +49,7 @@ This section reviews existing approaches to traffic forecasting, from classical 
 
 ### 4.2.1 Recurrent Neural Networks
 
-**LSTM (Long Short-Term Memory)**
+**LSTM (Long Short-Term Memory)** [1]
 
 - **Architecture:** Gated RNN with memory cells for long-term dependencies
 - **Traffic Applications:** Duan et al. (2016), Ma et al. (2015)
@@ -83,33 +83,33 @@ This section reviews existing approaches to traffic forecasting, from classical 
 
 ### 4.3.1 Spatial Graph Convolution
 
-**Graph Convolutional Networks (GCN) - Kipf & Welling (2017)**
+**Graph Convolutional Networks (GCN)** [5]
 
-- **Key Idea:** Generalize convolution to graph-structured data
+- **Key Idea:** Generalize convolution to graph-structured data (Kipf & Welling, 2017)
 - **Message Passing:** `h'_v = σ(Σ_{u∈N(v)} W · h_u / √(deg(u)·deg(v)))`
 - **Limitations:**
   - No temporal modeling
   - Fixed graph structure
   - Over-smoothing with many layers
 
-**ChebNet - Defferrard et al. (2016)**
+**ChebNet** [4]
 
-- Uses Chebyshev polynomials for efficient spectral graph convolution
+- Uses Chebyshev polynomials for efficient spectral graph convolution (Defferrard et al., 2016)
 - **Complexity:** O(K·|E|) where K is filter order
 - **Advantage:** Localized filters, efficient computation
 
 ### 4.3.2 Graph Attention Networks
 
-**GAT - Veličković et al. (2018)**
+**Graph Attention Networks (GAT)** [6]
 
-- **Key Innovation:** Learns attention weights for neighbors
+- **Key Innovation:** Learns attention weights for neighbors (Veličković et al., 2018)
 - **Formula:** `α_{ij} = softmax(LeakyReLU(a^T [Wh_i || Wh_j]))`
 - **Advantage:** Adaptive neighbor importance, handles varying graph structures
 - **Limitation:** O(N²) memory for full graph
 
-**GATv2 - Brody et al. (2022)**
+**GATv2** [7]
 
-- Fixes expressiveness limitation of original GAT
+- Fixes expressiveness limitation of original GAT (Brody et al., 2022)
 - **More dynamic attention:** `α_{ij} = softmax(a^T LeakyReLU(W[h_i || h_j]))`
 - **Our Choice:** Used in STMGT for spatial modeling
 
@@ -117,13 +117,13 @@ This section reviews existing approaches to traffic forecasting, from classical 
 
 ## 4.4 Spatio-Temporal Graph Models (SOTA)
 
-### 4.4.1 STGCN (2018) - First ST-GCN
+### 4.4.1 STGCN (2018) - First ST-GCN [11]
 
 **Reference:** Yu et al., IJCAI 2018
 
 **Architecture:**
 
-- **Spatial:** ChebNet graph convolution
+- **Spatial:** ChebNet [4] graph convolution
 - **Temporal:** 1D CNN (temporal convolution)
 - **Structure:** ST-Block = (Time-Conv → Graph-Conv → Time-Conv)
 
@@ -140,7 +140,7 @@ This section reviews existing approaches to traffic forecasting, from classical 
 - No attention mechanism
 - No weather/external factors
 
-### 4.4.2 Graph WaveNet (2019) - Adaptive Graph Learning
+### 4.4.2 Graph WaveNet (2019) - Adaptive Graph Learning [13]
 
 **Reference:** Wu et al., IJCAI 2019
 
@@ -166,7 +166,7 @@ This section reviews existing approaches to traffic forecasting, from classical 
 - R²: 0.71
 - **Analysis:** Strong baseline, but lacks weather integration
 
-### 4.4.3 MTGNN (2020) - Multi-Faceted Graph Learning
+### 4.4.3 MTGNN (2020) - Multi-Faceted Graph Learning [14]
 
 **Reference:** Wu et al., KDD 2020
 
@@ -182,7 +182,7 @@ This section reviews existing approaches to traffic forecasting, from classical 
 - MAPE: 6.85%
 - **R² (estimated):** 0.82
 
-### 4.4.4 ASTGCN (2019) - Spatial-Temporal Attention
+### 4.4.4 ASTGCN (2019) - Spatial-Temporal Attention [12]
 
 **Reference:** Guo et al., AAAI 2019
 
@@ -251,9 +251,9 @@ This section reviews existing approaches to traffic forecasting, from classical 
 
 ### 4.5.3 Gaussian Mixture Models
 
-**Mixture Density Networks (Bishop, 1994)**
+**Mixture Density Networks** [2]
 
-- Output parameters of K Gaussian components
+- Output parameters of K Gaussian components (Bishop, 1994)
 - **Application:** Traffic speeds exhibit multi-modal distributions
   - **Free-flow:** ~40-50 km/h
   - **Moderate:** ~20-30 km/h
@@ -262,7 +262,7 @@ This section reviews existing approaches to traffic forecasting, from classical 
 **Our Choice:** K=5 Gaussian components
 
 - Captures traffic state transitions
-- CRPS loss for proper scoring
+- CRPS loss [3] for proper scoring
 
 ---
 
@@ -287,15 +287,15 @@ This section reviews existing approaches to traffic forecasting, from classical 
 
 ### 4.6.2 Attention Mechanisms
 
-**Transformers (Vaswani et al., 2017)**
+**Transformers** [8]
 
-- **Self-Attention:** `Attention(Q,K,V) = softmax(QK^T/√d_k)V`
+- **Self-Attention:** `Attention(Q,K,V) = softmax(QK^T/√d_k)V` (Vaswani et al., 2017)
 - **Multi-Head:** Multiple attention patterns in parallel
 - **Positional Encoding:** Sin/cos or learnable embeddings
 
 **Application to Traffic:**
 
-- Temporal self-attention for historical sequences
+- Temporal self-attention for historical sequences [9]
 - Cross-attention for weather conditioning
 - **Challenge:** O(T²) complexity for long sequences
 

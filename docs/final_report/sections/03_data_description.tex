@@ -1,0 +1,261 @@
+% Section 3: Data Description  
+% Maintainer: THAT Le Quang (thatlq1812)
+% Source: 03_data_description.md
+
+\section{Data Description}
+
+\subsection{Data Sources}
+
+\subsubsection{Google Directions API}
+
+\textbf{Purpose:} Real-time and historical traffic speed data
+
+\textbf{Coverage:} 62 intersections, 144 road segments in Ho Chi Minh City
+
+\textbf{Collection:}
+\begin{itemize}
+    \item \textbf{Frequency:} Every 15 minutes during peak hours (7-9 AM, 5-7 PM)
+    \item \textbf{Period:} October 2025 - Present
+    \item \textbf{Endpoint:} \url{https://maps.googleapis.com/maps/api/directions/json}
+    \item \textbf{Rate Limiting:} 120 requests/minute (handled by RateLimiter class)
+\end{itemize}
+
+\textbf{Speed Calculation:}
+
+\begin{equation}
+\text{speed}_{\text{kmh}} = \frac{\text{distance}_{\text{meters}}}{\text{duration}_{\text{seconds}}} \times 3.6
+\end{equation}
+
+\begin{equation}
+\text{current\_speed} = \frac{\text{distance}_{\text{meters}}}{\text{duration\_in\_traffic}_{\text{seconds}}} \times 3.6
+\end{equation}
+
+\subsubsection{OpenWeatherMap API}
+
+\textbf{Purpose:} Contextual weather conditions affecting traffic
+
+\textbf{Features Collected:}
+\begin{itemize}
+    \item Temperature (°C)
+    \item Wind speed (km/h)
+    \item Precipitation (mm)
+    \item Humidity (\%)
+    \item Weather condition (clear, rain, heavy rain)
+\end{itemize}
+
+\textbf{Temporal Resolution:} Hourly updates
+
+\subsubsection{OpenStreetMap / Overpass API}
+
+\textbf{Purpose:} Static road network structure
+
+\textbf{Data Retrieved:}
+\begin{itemize}
+    \item Node coordinates (latitude, longitude)
+    \item Edge connections (road segments)
+    \item Road attributes (type, lanes, speed limit)
+\end{itemize}
+
+\textbf{Storage:} Cached in \texttt{cache/overpass\_topology.json}
+
+\textbf{Graph Structure:}
+\begin{itemize}
+    \item \textbf{num\_nodes:} 62 (Intersections)
+    \item \textbf{num\_edges:} 144 (Road segments, bidirectional)
+    \item \textbf{node\_features:} 4 [speed, weather\_temp, weather\_wind, weather\_precip]
+    \item \textbf{edge\_features:} 0 (Not used in current version)
+\end{itemize}
+
+\subsection{Dataset Statistics}
+
+\textbf{File:} \texttt{data/processed/all\_runs\_extreme\_augmented.parquet}
+
+\begin{table}[h]
+\centering
+\caption{Processed Dataset Statistics}
+\label{tab:dataset_stats}
+\begin{tabular}{ll}
+\toprule
+\textbf{Attribute} & \textbf{Value} \\
+\midrule
+File Size & 2.9 MB (compressed Parquet) \\
+Total Records & \textbf{205,920 records} \\
+Unique Runs & 1,430 collection runs \\
+Date Range & Oct 3 - Nov 2, 2025 (29 days) \\
+Collection Hours & 7-9 AM, 5-7 PM (peak traffic) \\
+Temporal Resolution & 15 minutes \\
+Spatial Coverage & 62 intersections, 144 segments \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Data Distribution}
+
+\subsubsection{Speed Distribution}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig01_speed_distribution.png}
+\caption{Traffic Speed Distribution showing multi-modal characteristics with three distinct regimes: congested ($<15$ km/h), moderate (15--30 km/h), and free-flow ($>30$ km/h).}
+\label{fig:speed_distribution}
+\end{figure}
+
+\textbf{Statistics:}
+\begin{itemize}
+    \item \textbf{Mean:} 19.8 km/h
+    \item \textbf{Median:} 18.5 km/h
+    \item \textbf{Standard Deviation:} 6.4 km/h
+    \item \textbf{Range:} 8.2 - 52.8 km/h
+\end{itemize}
+
+\textbf{Multi-Modal Components:}
+\begin{itemize}
+    \item \textbf{Mode 1 (Congested):} Peak at $\sim$13 km/h (35\% of data)
+    \item \textbf{Mode 2 (Moderate):} Peak at $\sim$22 km/h (45\% of data)
+    \item \textbf{Mode 3 (Free-flow):} Peak at $\sim$35 km/h (20\% of data)
+\end{itemize}
+
+\textbf{Interpretation:} Clear evidence supporting Gaussian Mixture Model (GMM) approach for uncertainty quantification. The multi-modal distribution reflects different traffic regimes observed in HCMC.
+
+\subsubsection{Weather Distribution}
+
+\textbf{Temperature:}
+\begin{itemize}
+    \item Range: 24-32°C (tropical climate)
+    \item Mean: 27.5°C, Std: 2.1°C
+    \item Distribution: Nearly Gaussian
+\end{itemize}
+
+\textbf{Precipitation:}
+\begin{itemize}
+    \item Range: 0-15 mm/h
+    \item Skewed distribution (most days clear)
+    \item 72\% of samples: no rain
+    \item 20\% of samples: light rain ($<$5mm)
+    \item 8\% of samples: heavy rain ($>$5mm)
+\end{itemize}
+
+\textbf{Wind Speed:}
+\begin{itemize}
+    \item Range: 0-8.5 m/s
+    \item Mean: 3.2 m/s
+    \item Relatively stable
+\end{itemize}
+
+\subsection{Temporal Coverage}
+
+\begin{table}[h]
+\centering
+\caption{Data Collection Temporal Distribution}
+\label{tab:temporal_coverage}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Time Period} & \textbf{Hours} & \textbf{Samples} \\
+\midrule
+Morning Rush & 7-9 AM & 52,480 \\
+Evening Rush & 5-7 PM & 52,480 \\
+Off-Peak & Not collected & 0 \\
+Weekend & Partial & 15,360 \\
+Weekday & Full & 85,600 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Limitation:} Peak hours only (7-9 AM, 5-7 PM). No off-peak or late-night coverage, which limits model applicability to 24/7 forecasting.
+
+\subsection{Spatial Coverage}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig02_network_topology.png}
+\caption{Road Network Topology: 62 intersections (nodes) and 144 directed road segments (edges) across HCMC's central districts. Node size represents degree centrality.}
+\label{fig:network_topology}
+\end{figure}
+
+\textbf{Districts Covered:}
+\begin{itemize}
+    \item District 1 (Central Business District): 18 nodes
+    \item District 3 (Urban Core): 12 nodes
+    \item District 4 (River Area): 8 nodes
+    \item District 5 (Chinatown): 9 nodes
+    \item District 10 (Western): 7 nodes
+    \item Binh Thanh (Eastern): 5 nodes
+    \item Phu Nhuan (Northern): 3 nodes
+\end{itemize}
+
+\textbf{Road Types:}
+\begin{itemize}
+    \item Primary roads (highways): 35\%
+    \item Secondary roads (main streets): 45\%
+    \item Tertiary roads (arterials): 20\%
+\end{itemize}
+
+\subsection{Data Quality Assessment}
+
+\subsubsection{Missing Data}
+
+\begin{table}[h]
+\centering
+\caption{Missing Data Analysis}
+\label{tab:missing_data}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Feature} & \textbf{Missing \%} & \textbf{Handling} \\
+\midrule
+Speed & 2.3\% & Drop rows \\
+Temperature & 0.5\% & Forward fill \\
+Precipitation & 0.8\% & Forward fill \\
+Wind Speed & 0.6\% & Forward fill \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Outliers}
+
+\textbf{Speed Outliers:}
+\begin{itemize}
+    \item Values $<$ 0 km/h: 5 samples (API errors) $\rightarrow$ Removed
+    \item Values $>$ 120 km/h: 12 samples (unrealistic) $\rightarrow$ Removed
+    \item Total removed: 17 samples (0.008\%)
+\end{itemize}
+
+\textbf{Weather Outliers:}
+\begin{itemize}
+    \item Temperature $<$ 15°C or $>$ 45°C: Flagged (none found)
+    \item Precipitation $>$ 50 mm/h: 2 samples $\rightarrow$ Verified as extreme rain events, kept
+\end{itemize}
+
+\subsection{Dataset Splits}
+
+\textbf{Temporal Split (No Shuffling):}
+
+\begin{table}[h]
+\centering
+\caption{Train/Validation/Test Split}
+\label{tab:data_splits}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Split} & \textbf{Samples} & \textbf{Percentage} & \textbf{Date Range} \\
+\midrule
+Training & 11,430 & 70\% & Oct 3-24 \\
+Validation & 2,449 & 15\% & Oct 25-29 \\
+Test & 2,449 & 15\% & Oct 30 - Nov 2 \\
+\midrule
+\textbf{Total} & \textbf{16,328} & \textbf{100\%} & \textbf{29 days} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Rationale:} Temporal split prevents data leakage. Traffic data has strong autocorrelation, so shuffled split would allow training on future data to predict past (unrealistic).
+
+\subsection{Data Augmentation}
+
+To address limited dataset size (16K samples), we applied:
+
+\begin{enumerate}
+    \item \textbf{Time Shifting:} $\pm$1-2 timesteps (mild temporal perturbation)
+    \item \textbf{Gaussian Noise:} Added to speeds ($\sigma = 0.5$ km/h)
+    \item \textbf{Weather Masking:} Randomly mask weather features (10\% probability)
+\end{enumerate}
+
+\textbf{Impact:} Training set effectively expanded from 11,430 to $\sim$17,000 samples. Validation/test sets not augmented (only evaluate on real data).

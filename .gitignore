@@ -76,12 +76,12 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
+.pytest_cache/
 nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
-.pytest_cache/
 
 # Docs / Sphinx / LaTeX / PDF / logs
 !README.md
@@ -172,7 +172,10 @@ models/*.bin
 models/*.pth
 models/*.onnx
 
-outputs*
+# Project-specific: outputs (ignore all training runs)
+outputs/stmgt_v2_*/
+outputs/*/checkpoints/
+outputs/*/tensorboard/
 
 # Test fixtures (keep versioned)
 !tests/fixtures/*.json
@@ -185,3 +188,8 @@ outputs*
 # Ref repo
 temps/*
 temps/*
+
+# Google Drive included
+.tmp.drivedownload/
+.tmp.driveupload/
+desktop.ini

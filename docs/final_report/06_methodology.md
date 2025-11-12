@@ -29,20 +29,20 @@
 
 ### 8.1.3 Why STMGT Over Baselines?
 
-| Model        | Spatial        | Temporal         | Weather         | Uncertainty |
-| ------------ | -------------- | ---------------- | --------------- | ----------- |
-| LSTM         | ❌             | ✅ (RNN)         | ✅ (concat)     | ❌          |
-| GCN          | ✅ (GCN)       | ❌               | ✅ (concat)     | ❌          |
-| GraphWaveNet | ✅ (adaptive)  | ✅ (TCN)         | ❌              | ❌          |
-| ASTGCN       | ✅ (attention) | ✅ (attention)   | ❌              | ❌          |
-| **STMGT**    | ✅ (GATv2)     | ✅ (Transformer) | ✅ (cross-attn) | ✅ (GMM)    |
+| Model        | Spatial        | Temporal             | Weather             | Uncertainty  |
+| ------------ | -------------- | -------------------- | ------------------- | ------------ |
+| LSTM         | ❌             | ✅ (RNN)             | ✅ (concat)         | ❌           |
+| GCN          | ✅ (GCN)       | ❌                   | ✅ (concat)         | ❌           |
+| GraphWaveNet | ✅ (adaptive)  | ✅ (TCN)             | ❌                  | ❌           |
+| ASTGCN       | ✅ (attention) | ✅ (attention)       | ❌                  | ❌           |
+| **STMGT**    | ✅ (GATv2) [7] | ✅ (Transformer) [8] | ✅ (cross-attn) [8] | ✅ (GMM) [2] |
 
 **Key Advantages:**
 
-1. **Parallel ST Processing:** 5-12% improvement over sequential
-2. **Weather Cross-Attention:** Context-dependent weather effects
-3. **Gaussian Mixture:** Probabilistic predictions with calibrated uncertainty
-4. **Adaptive Graph:** GATv2 learns neighbor importance
+1. **Parallel ST Processing:** 5-12% improvement over sequential [11, 13]
+2. **Weather Cross-Attention:** Context-dependent weather effects [8]
+3. **Gaussian Mixture:** Probabilistic predictions with calibrated uncertainty [2, 3]
+4. **Adaptive Graph:** GATv2 [7] learns neighbor importance dynamically
 
 ---
 

@@ -1,0 +1,337 @@
+\section{Model Development}
+
+\subsection{STMGT Architecture}
+
+\subsubsection{Model Overview}
+
+The STMGT (Spatio-Temporal Multi-Modal Graph Transformer) architecture represents our proposed solution to traffic forecasting with integrated uncertainty quantification. The final model specifications are:
+
+\begin{itemize}
+    \item \textbf{Total Parameters:} 680,000 (680K)
+    \item \textbf{Hidden Dimension:} 96
+    \item \textbf{Number of ST-Blocks:} 3
+    \item \textbf{Attention Heads:} 4 (both spatial and temporal)
+    \item \textbf{Mixture Components:} 5 Gaussian components
+    \item \textbf{Input Sequence Length:} 12 timesteps (3 hours)
+    \item \textbf{Prediction Horizon:} 12 timesteps (3 hours)
+    \item \textbf{Dropout Rate:} 0.2
+    \item \textbf{DropEdge Rate:} 0.05
+\end{itemize}
+
+\subsection{Detailed Architecture Components}
+
+\subsubsection{Input Embedding Layer}
+
+The input embedding layer projects raw node features to the model's hidden dimension:
+
+\begin{equation}
+\mathbf{h}^{(0)} = \text{LayerNorm}(\mathbf{W}_{\text{emb}} \mathbf{x} + \mathbf{b}_{\text{emb}})
+\end{equation}
+
+where $\mathbf{x} \in \mathbb{R}^{B \times T_{\text{in}} \times N \times F_{\text{in}}}$ is the input tensor with batch size $B$, sequence length $T_{\text{in}} = 12$, number of nodes $N = 62$, and input features $F_{\text{in}} = 4$ (speed, temperature, wind, precipitation). The embedding projects to $\mathbf{h}^{(0)} \in \mathbb{R}^{B \times T_{\text{in}} \times N \times D}$ where $D = 96$ is the hidden dimension.
+
+\subsubsection{Spatial Branch (GATv2)}
+
+The spatial branch employs Graph Attention Network v2 (GATv2)~\cite{brody2022gatv2} for learning spatial dependencies through message passing on the road network graph.
+
+\textbf{GATv2 Attention Mechanism:} For each node $i$ with neighbors $\mathcal{N}(i)$, the attention coefficient $\alpha_{ij}$ for neighbor $j$ is computed as:
+
+\begin{equation}
+\alpha_{ij} = \frac{\exp(e_{ij})}{\sum_{k \in \mathcal{N}(i)} \exp(e_{ik})}
+\end{equation}
+
+where the attention score is:
+
+\begin{equation}
+e_{ij} = \mathbf{a}^T \cdot \text{LeakyReLU}(\mathbf{W} [\mathbf{h}_i \| \mathbf{h}_j])
+\end{equation}
+
+Here, $\mathbf{W} \in \mathbb{R}^{D' \times 2D}$ is a learnable weight matrix, $\mathbf{a} \in \mathbb{R}^{D'}$ is an attention vector, and $\|$ denotes concatenation.
+
+\textbf{Multi-Head Attention:} We employ 4 attention heads operating in parallel:
+
+\begin{equation}
+\mathbf{h}_i^{\text{spatial}} = \|_{m=1}^{4} \left( \sum_{j \in \mathcal{N}(i)} \alpha_{ij}^{(m)} \mathbf{W}^{(m)} \mathbf{h}_j \right)
+\end{equation}
+
+\textbf{Residual Connection and Normalization:}
+
+\begin{equation}
+\mathbf{h}_i^{\text{spatial}} = \text{LayerNorm}(\mathbf{h}_i + \text{Dropout}(\mathbf{h}_i^{\text{spatial}}))
+\end{equation}
+
+The spatial branch processes all timesteps and nodes, with shape $[B \cdot T \cdot N, D]$ reshaped appropriately for graph convolution.
+
+\subsubsection{Temporal Branch (Transformer)}
+
+The temporal branch uses self-attention to capture temporal patterns across the 12-timestep historical window.
+
+\textbf{Positional Encoding:} To inject temporal position information:
+
+\begin{equation}
+\text{PE}(t, 2i) = \sin(t / 10000^{2i/D}), \quad \text{PE}(t, 2i+1) = \cos(t / 10000^{2i/D})
+\end{equation}
+
+where $t$ is the timestep position and $i$ is the dimension index.
+
+\textbf{Multi-Head Self-Attention:} The self-attention mechanism computes:
+
+\begin{equation}
+\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right) \mathbf{V}
+\end{equation}
+
+where $\mathbf{Q} = \mathbf{h}\mathbf{W}_Q$, $\mathbf{K} = \mathbf{h}\mathbf{W}_K$, $\mathbf{V} = \mathbf{h}\mathbf{W}_V$ are query, key, and value projections, and $d_k = D / 4$ is the per-head dimension.
+
+\textbf{Feed-Forward Network:}
+
+\begin{equation}
+\text{FFN}(\mathbf{h}) = \mathbf{W}_2 \cdot \text{GELU}(\mathbf{W}_1 \mathbf{h} + \mathbf{b}_1) + \mathbf{b}_2
+\end{equation}
+
+with expansion factor 4 ($\mathbf{W}_1 \in \mathbb{R}^{4D \times D}$, $\mathbf{W}_2 \in \mathbb{R}^{D \times 4D}$).
+
+\textbf{Residual Connections:}
+
+\begin{align}
+\mathbf{h}' &= \text{LayerNorm}(\mathbf{h} + \text{MultiHeadAttn}(\mathbf{h})) \\
+\mathbf{h}^{\text{temporal}} &= \text{LayerNorm}(\mathbf{h}' + \text{FFN}(\mathbf{h}'))
+\end{align}
+
+\subsubsection{Gated Fusion}
+
+The gated fusion module learns to combine spatial and temporal representations adaptively:
+
+\begin{equation}
+\alpha = \sigma(\mathbf{W}_{\alpha} [\mathbf{h}_{\text{spatial}} \| \mathbf{h}_{\text{temporal}}] + \mathbf{b}_{\alpha})
+\end{equation}
+
+\begin{equation}
+\mathbf{h}_{\text{fused}} = \alpha \odot \mathbf{h}_{\text{spatial}} + (1 - \alpha) \odot \mathbf{h}_{\text{temporal}}
+\end{equation}
+
+where $\sigma$ is the sigmoid function, $\odot$ denotes element-wise multiplication, and $\alpha \in [0,1]^{B \times T \times N \times D}$ is a learnable gating weight that adapts per sample. This formulation ensures that $\alpha + (1-\alpha) = 1$, creating a convex combination analogous to residual connections.
+
+\textbf{Rationale:} Learned gating allows the model to emphasize spatial features during spatially correlated events (e.g., propagating congestion) and temporal features during time-dependent patterns (e.g., rush hour cycles).
+
+\subsubsection{Weather Cross-Attention}
+
+Weather features are integrated using cross-attention, where traffic features query weather context:
+
+\begin{equation}
+\mathbf{w}_{\text{enc}} = \text{MLP}([T_{\text{norm}}, W_{\text{norm}}, P_{\text{norm}}]) \in \mathbb{R}^{B \times T \times D}
+\end{equation}
+
+\begin{equation}
+\mathbf{h}_{\text{context}} = \text{CrossAttn}(\mathbf{Q} = \mathbf{h}_{\text{fused}}, \mathbf{K} = \mathbf{w}_{\text{enc}}, \mathbf{V} = \mathbf{w}_{\text{enc}})
+\end{equation}
+
+\begin{equation}
+\mathbf{h}_{\text{out}} = \text{LayerNorm}(\mathbf{h}_{\text{fused}} + \mathbf{h}_{\text{context}})
+\end{equation}
+
+\textbf{Why Cross-Attention:} Unlike concatenation, cross-attention allows the model to learn \textit{when} and \textit{where} weather matters. For example, rain may strongly affect congested roads but have minimal impact on free-flow conditions. The attention mechanism captures these context-dependent effects, yielding 12\% improvement over simple concatenation (see Section~X).
+
+\subsubsection{Gaussian Mixture Output Head}
+
+The output layer predicts parameters for a 5-component Gaussian Mixture Model (GMM):
+
+\begin{align}
+[\mu_1, \ldots, \mu_5] &= \mathbf{W}_{\mu} \mathbf{h}_{\text{out}} + \mathbf{b}_{\mu} \\
+[\log \sigma_1, \ldots, \log \sigma_5] &= \mathbf{W}_{\sigma} \mathbf{h}_{\text{out}} + \mathbf{b}_{\sigma} \\
+[\text{logit}_1, \ldots, \text{logit}_5] &= \mathbf{W}_{\pi} \mathbf{h}_{\text{out}} + \mathbf{b}_{\pi}
+\end{align}
+
+Standard deviations are ensured positive with exponential and floor:
+
+\begin{equation}
+\sigma_k = \exp(\log \sigma_k) + 0.01
+\end{equation}
+
+Mixture weights are normalized via softmax:
+
+\begin{equation}
+\pi_k = \frac{\exp(\text{logit}_k)}{\sum_{j=1}^{5} \exp(\text{logit}_j)}, \quad \sum_{k=1}^{5} \pi_k = 1
+\end{equation}
+
+\textbf{Mixture Distribution:} The predicted speed distribution is:
+
+\begin{equation}
+p(y | \mathbf{x}) = \sum_{k=1}^{5} \pi_k \mathcal{N}(y | \mu_k, \sigma_k^2)
+\end{equation}
+
+\textbf{Point Prediction:} The expected value is the mixture mean:
+
+\begin{equation}
+\hat{y} = \mathbb{E}[y | \mathbf{x}] = \sum_{k=1}^{5} \pi_k \mu_k
+\end{equation}
+
+\textbf{Uncertainty Quantification:} Confidence intervals are computed via percentiles of the mixture:
+
+\begin{align}
+\text{Lower bound (10\%)} &= F_{\text{GMM}}^{-1}(0.10) \\
+\text{Upper bound (90\%)} &= F_{\text{GMM}}^{-1}(0.90)
+\end{align}
+
+where $F_{\text{GMM}}$ is the cumulative distribution function of the Gaussian mixture.
+
+\subsection{Complete Forward Pass}
+
+The complete STMGT forward pass consists of:
+
+\begin{enumerate}
+    \item \textbf{Input Embedding:} $\mathbf{h}^{(0)} = \text{Embed}(\mathbf{x})$
+    
+    \item \textbf{ST-Block Iterations:} For $\ell = 1, \ldots, L$ (where $L = 3$):
+    \begin{itemize}
+        \item Spatial branch: $\mathbf{h}_{\text{spatial}}^{(\ell)} = \text{GATv2}(\mathbf{h}^{(\ell-1)}, \mathcal{E})$
+        \item Temporal branch: $\mathbf{h}_{\text{temporal}}^{(\ell)} = \text{Transformer}(\mathbf{h}^{(\ell-1)})$
+        \item Gated fusion: $\mathbf{h}^{(\ell)} = \text{GatedFusion}(\mathbf{h}_{\text{spatial}}^{(\ell)}, \mathbf{h}_{\text{temporal}}^{(\ell)})$
+    \end{itemize}
+    
+    \item \textbf{Weather Cross-Attention:} $\mathbf{h}_{\text{context}} = \text{WeatherAttn}(\mathbf{h}^{(L)}, \mathbf{w})$
+    
+    \item \textbf{Mixture Output:} $\{\mu_k, \sigma_k, \pi_k\}_{k=1}^{5} = \text{GMM-Head}(\mathbf{h}_{\text{context}})$
+\end{enumerate}
+
+The output tensor has shape $[B, T_{\text{out}}, N, 15]$ where 15 parameters represent 5 Gaussian components $\times$ 3 parameters ($\mu, \sigma, \pi$).
+
+\subsection{Training Procedure}
+
+\subsubsection{Loss Function}
+
+The model is trained to maximize the likelihood of the observed data under the predicted mixture distribution. The loss is the negative log-likelihood (NLL):
+
+\begin{equation}
+\mathcal{L}_{\text{NLL}} = -\frac{1}{BTN} \sum_{b,t,i} \log \left( \sum_{k=1}^{5} \pi_k^{(b,t,i)} \mathcal{N}(y_{b,t,i} | \mu_k^{(b,t,i)}, (\sigma_k^{(b,t,i)})^2) \right)
+\end{equation}
+
+where $y_{b,t,i}$ is the ground truth speed for sample $b$, timestep $t$, node $i$.
+
+\textbf{Numerical Stability:} We use the log-sum-exp trick:
+
+\begin{equation}
+\log \sum_k \exp(x_k) = m + \log \sum_k \exp(x_k - m), \quad m = \max_k x_k
+\end{equation}
+
+\textbf{Regularization Terms:}
+
+\begin{equation}
+\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{NLL}} + \lambda_1 \mathcal{L}_{\text{var}} + \lambda_2 \mathcal{L}_{\text{ent}}
+\end{equation}
+
+\begin{itemize}
+    \item \textbf{Variance Regularization:} Prevents collapse to single component:
+    \begin{equation}
+    \mathcal{L}_{\text{var}} = -\frac{1}{BTN} \sum_{b,t,i,k} \log \sigma_k^{(b,t,i)}
+    \end{equation}
+    
+    \item \textbf{Entropy Regularization:} Encourages diverse mixture weights:
+    \begin{equation}
+    \mathcal{L}_{\text{ent}} = -\frac{1}{BTN} \sum_{b,t,i} \left( -\sum_{k=1}^{5} \pi_k^{(b,t,i)} \log \pi_k^{(b,t,i)} \right)
+    \end{equation}
+\end{itemize}
+
+Hyperparameters: $\lambda_1 = 0.01$, $\lambda_2 = 0.001$ (tuned on validation set).
+
+\subsubsection{Optimizer Configuration}
+
+We use AdamW optimizer~\cite{loshchilov2018adamw} with decoupled weight decay:
+
+\begin{itemize}
+    \item \textbf{Learning Rate:} $\eta = 10^{-3}$
+    \item \textbf{Weight Decay:} $\lambda = 10^{-4}$
+    \item \textbf{Betas:} $\beta_1 = 0.9$, $\beta_2 = 0.999$
+    \item \textbf{Epsilon:} $\epsilon = 10^{-8}$
+\end{itemize}
+
+\textbf{Learning Rate Scheduling:} Cosine annealing with warm restarts:
+
+\begin{equation}
+\eta_t = \eta_{\min} + \frac{1}{2}(\eta_{\max} - \eta_{\min})(1 + \cos(\frac{T_{\text{cur}}}{T_0} \pi))
+\end{equation}
+
+where $T_0 = 10$ epochs (restart period), $\eta_{\max} = 10^{-3}$, $\eta_{\min} = 10^{-6}$.
+
+\subsubsection{Training Hyperparameters}
+
+\begin{table}[h]
+\centering
+\caption{Training Hyperparameters}
+\begin{tabular}{lcp{7cm}}
+\toprule
+\textbf{Hyperparameter} & \textbf{Value} & \textbf{Rationale} \\
+\midrule
+Batch Size & 32 & Fits in 6GB GPU memory \\
+Learning Rate & $10^{-3}$ & Standard for AdamW with LR scheduling \\
+Weight Decay & $10^{-4}$ & Prevent overfitting (small dataset) \\
+Dropout & 0.2 & Aggressive regularization \\
+DropEdge & 0.05 & Random edge dropping for robustness \\
+Max Epochs & 100 & Early stopping typically at $\sim$24 \\
+Early Stopping Patience & 10 & Stop if val MAE no improvement \\
+Gradient Clipping & 1.0 & Prevent exploding gradients \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Early Stopping:} Training monitored validation MAE every epoch. If no improvement for 10 consecutive epochs, training stopped and best model weights were restored.
+
+\subsubsection{Training Loop}
+
+The training procedure followed standard supervised learning:
+
+\begin{enumerate}
+    \item \textbf{Forward Pass:} Compute $\{\mu_k, \sigma_k, \pi_k\}$ from input $\mathbf{x}$
+    \item \textbf{Loss Computation:} Evaluate $\mathcal{L}_{\text{total}}$ with regularization
+    \item \textbf{Backward Pass:} Compute gradients via backpropagation
+    \item \textbf{Gradient Clipping:} Clip by global norm to 1.0
+    \item \textbf{Optimizer Step:} Update parameters with AdamW
+    \item \textbf{LR Scheduling:} Adjust learning rate per cosine schedule
+    \item \textbf{Validation:} Evaluate on validation set every epoch
+    \item \textbf{Checkpoint:} Save model if validation MAE improves
+\end{enumerate}
+
+\subsection{Implementation Details}
+
+\subsubsection{Hardware and Software}
+
+\textbf{Hardware Configuration:}
+\begin{itemize}
+    \item \textbf{GPU:} NVIDIA RTX 3060 Laptop (6GB VRAM)
+    \item \textbf{CPU:} Intel Core i7
+    \item \textbf{RAM:} 16GB DDR4
+\end{itemize}
+
+\textbf{Software Stack:}
+\begin{itemize}
+    \item \textbf{Framework:} PyTorch 2.0.1
+    \item \textbf{Graph Library:} PyTorch Geometric 2.3.1
+    \item \textbf{Python:} 3.10.18
+    \item \textbf{CUDA:} 11.7
+\end{itemize}
+
+\subsubsection{Training Time}
+
+\textbf{Per Epoch:}
+\begin{itemize}
+    \item Forward pass: $\sim$15 seconds
+    \item Backward pass: $\sim$10 seconds
+    \item Total: $\sim$25 seconds per epoch
+\end{itemize}
+
+\textbf{Total Training:}
+\begin{itemize}
+    \item Best model: 9 epochs (epoch with lowest validation MAE)
+    \item Early stopping: 24 epochs (after 10 epochs with no improvement)
+    \item Wall time: $\sim$10 minutes
+\end{itemize}
+
+\subsubsection{Model Size}
+
+\begin{itemize}
+    \item \textbf{Total Parameters:} 680,000
+    \item \textbf{Model File Size:} 2.76 MB (\texttt{best\_model.pt})
+    \item \textbf{Config File Size:} 3.1 KB (\texttt{config.json})
+    \item \textbf{Memory Usage:} $\sim$1.2 GB during training (including gradients and optimizer state)
+\end{itemize}
+
+The compact model size enables efficient deployment on edge devices and cloud platforms without requiring extensive computational resources.

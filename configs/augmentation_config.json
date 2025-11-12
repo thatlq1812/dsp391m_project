@@ -1,16 +1,49 @@
 {
-  "basic": {
-    "noise_std_speed": 2.0,
-    "noise_std_weather": 0.1,
-    "interpolation_steps": 2,
-    "gmm_samples_per_run": 10,
-    "target_multiplier": 20
+  "version": "2.0",
+  "description": "Safe augmentation configuration for SafeTrafficAugmentor. Uses train-only statistics to prevent data leakage.",
+  "updated": "2025-11-12",
+  "random_seed": 42,
+  "default": {
+    "noise_copies": 3,
+    "noise_level": 0.05,
+    "weather_scenarios": 5,
+    "jitter_copies": 2,
+    "jitter_max_minutes": 15,
+    "include_original": true
   },
-  "extreme": {
-    "noise_std_speed": 3.0,
-    "noise_std_weather": 0.2,
-    "interpolation_steps": 3,
-    "gmm_samples_per_run": 20,
-    "target_multiplier": 50
+  "light": {
+    "description": "Light augmentation for quick experiments",
+    "noise_copies": 2,
+    "noise_level": 0.03,
+    "weather_scenarios": 3,
+    "jitter_copies": 1,
+    "jitter_max_minutes": 10,
+    "include_original": true
+  },
+  "moderate": {
+    "description": "Moderate augmentation (recommended for most cases)",
+    "noise_copies": 3,
+    "noise_level": 0.05,
+    "weather_scenarios": 5,
+    "jitter_copies": 2,
+    "jitter_max_minutes": 15,
+    "include_original": true
+  },
+  "aggressive": {
+    "description": "Aggressive augmentation for maximum data diversity",
+    "noise_copies": 5,
+    "noise_level": 0.08,
+    "weather_scenarios": 8,
+    "jitter_copies": 3,
+    "jitter_max_minutes": 20,
+    "include_original": true
+  },
+  "usage": {
+    "example": "augmentor = SafeTrafficAugmentor(train_df); augmented = augmentor.augment_all(**config['moderate'])",
+    "note": "All methods use TRAIN-ONLY statistics to prevent data leakage"
+  },
+  "deprecated": {
+    "note": "Old augmentation methods (augment_extreme.py, augment_data_advanced.py) are deprecated due to data leakage",
+    "see": "scripts/data/archive/DEPRECATION_NOTICE.md"
   }
 }

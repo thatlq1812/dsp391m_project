@@ -1,0 +1,10 @@
+{
+  "sequence_length": 12,
+  "lstm_units": [
+    128,
+    64
+  ],
+  "dropout_rate": 0.2,
+  "learning_rate": 0.001,
+  "model_name": "LSTM-Baseline"
+}

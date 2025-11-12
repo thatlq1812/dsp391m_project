@@ -1,0 +1,166 @@
+\section{Data Cleaning \& Preprocessing}
+
+\subsection{Data Cleaning Steps}
+
+\subsubsection{Outlier Detection and Removal}
+
+The raw data collected from Google Directions API and OpenWeatherMap required systematic cleaning to ensure quality. Our outlier detection strategy involved:
+
+\begin{itemize}
+    \item \textbf{Speed outliers:} Removed samples where speed $< 0$ km/h or $> 120$ km/h (physically implausible values)
+    \item \textbf{Weather outliers:} Flagged temperature readings $< 15$°C or $> 45$°C as anomalies (outside HCMC's tropical climate range)
+    \item \textbf{Missing data:} Applied forward-fill for weather features (temporal continuity assumption), dropped samples with missing speed values (primary target variable)
+\end{itemize}
+
+Out of the initial 206,450 raw samples, 530 samples (0.26\%) were removed due to outliers or missing critical data, resulting in 205,920 clean samples.
+
+\subsubsection{Normalization}
+
+Proper normalization is critical for neural network training stability and convergence. We employed different normalization strategies for different feature types:
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig04_normalization.png}
+\caption{Normalization Effects: Before/After comparison showing raw vs Z-score normalized speed distribution with improved statistical properties for neural network training.}
+\label{fig:normalization}
+\end{figure}
+
+\textbf{Speed Normalization (Z-score):} All speed values were normalized using Z-score standardization computed exclusively from the training set to prevent data leakage:
+
+\begin{equation}
+    v_{\text{norm}} = \frac{v - \mu_{\text{train}}}{\sigma_{\text{train}}}
+\end{equation}
+
+where $\mu_{\text{train}} = 19.83$ km/h and $\sigma_{\text{train}} = 6.42$ km/h. The normalized speed range was approximately $[-1.75, 5.12]$, spanning from 2 standard deviations below the mean to 5 standard deviations above.
+
+\textbf{Weather Normalization:} Weather features required specialized normalization due to their distinct distributions:
+
+\begin{itemize}
+    \item \textbf{Temperature (Z-score):} $T_{\text{norm}} = (T - 27.49) / 2.15$ where $\mu_{\text{train}} = 27.49$°C, $\sigma_{\text{train}} = 2.15$°C
+    \item \textbf{Precipitation (Log + Z-score):} Applied log transformation to handle skewed distribution:
+    \begin{equation}
+        P_{\text{norm}} = \frac{\log(P + 1) - 0.82}{1.15}
+    \end{equation}
+    where the $+1$ offset handles zero precipitation values
+    \item \textbf{Wind Speed (Min-Max):} Normalized to $[0, 1]$ range:
+    \begin{equation}
+        W_{\text{norm}} = \frac{W - W_{\min}}{W_{\max} - W_{\min}} = \frac{W - 0.0}{8.5}
+    \end{equation}
+\end{itemize}
+
+All normalization statistics were stored in \texttt{data/processed/normalization\_stats.json} and applied consistently across train/validation/test splits. Inverse transforms were used to convert model predictions back to original scale for evaluation.
+
+\subsection{Graph Construction}
+
+\subsubsection{Network Topology Extraction}
+
+The road network topology was extracted from OpenStreetMap (OSM) using the Overpass API. The query targeted Ho Chi Minh City's central districts (Districts 1, 3, 4, 5, 10, Binh Thanh, and Phu Nhuan) with focus on major arterial roads:
+
+\begin{itemize}
+    \item \textbf{Highway types:} Primary, secondary, and tertiary roads
+    \item \textbf{Query format:} Bounding box query via Overpass API
+    \item \textbf{Export format:} JSON with node coordinates and edge connectivity
+\end{itemize}
+
+The processing pipeline consisted of:
+
+\begin{enumerate}
+    \item Extract intersection nodes from OSM data (62 unique intersections)
+    \item Map road segments to directed edges (144 edges)
+    \item Compute edge attributes including distance and road type
+    \item Build adjacency matrix for GNN processing
+\end{enumerate}
+
+\subsubsection{Adjacency Matrix}
+
+The graph structure was encoded as a binary adjacency matrix $A \in \{0,1\}^{62 \times 62}$ where $A_{ij} = 1$ indicates a directed edge from node $i$ to node $j$. Key properties:
+
+\begin{itemize}
+    \item \textbf{Shape:} $62 \times 62$ binary matrix
+    \item \textbf{Density:} 3.75\% (144 edges out of $62^2 = 3844$ possible connections)
+    \item \textbf{Average degree:} 4.65 neighbors per node
+    \item \textbf{Storage:} Compressed Sparse Row (CSR) format in \texttt{cache/adjacency\_matrix.npy}
+\end{itemize}
+
+\textbf{Edge Features:} Each edge was characterized by:
+\begin{itemize}
+    \item \textbf{Distance:} Range 0.5--3.2 km, mean 1.12 km
+    \item \textbf{Road type:} Categorical (primary/secondary/tertiary)
+    \item \textbf{Bidirectionality:} 72 bidirectional road pairs (144 total directed edges)
+\end{itemize}
+
+\subsubsection{Graph Properties}
+
+Statistical analysis of the road network graph revealed:
+
+\begin{itemize}
+    \item \textbf{Diameter:} 12 hops (longest shortest path between any two nodes)
+    \item \textbf{Average path length:} 5.2 hops
+    \item \textbf{Clustering coefficient:} 0.42 (moderate local clustering)
+    \item \textbf{Connectivity:} Single connected component (all nodes reachable)
+\end{itemize}
+
+These properties confirm the graph structure is appropriate for GNN-based spatial modeling with 2--3 layer graph convolutions sufficient to capture multi-hop dependencies.
+
+\subsection{Sequence Creation}
+
+Traffic forecasting requires temporal context, which we captured using a sliding window approach:
+
+\begin{itemize}
+    \item \textbf{Sequence length (seq\_len):} 12 timesteps (3 hours of historical data at 15-minute intervals)
+    \item \textbf{Prediction horizon (pred\_len):} 12 timesteps (3 hours future forecast)
+    \item \textbf{Stride:} 1 timestep (overlapping windows for maximum data utilization)
+\end{itemize}
+
+Each sequence consists of input features $X \in \mathbb{R}^{12 \times 62 \times 4}$ (12 timesteps, 62 nodes, 4 features) and target values $Y \in \mathbb{R}^{12 \times 62}$ (predicted speeds).
+
+\subsection{Data Augmentation}
+
+Given the relatively small dataset (29 days), we employed aggressive data augmentation to improve model generalization:
+
+\begin{itemize}
+    \item \textbf{Time jitter:} Random shift of $\pm 1$ timestep
+    \item \textbf{Node masking:} Randomly drop 10\% of nodes to encourage robustness
+    \item \textbf{Configuration:} Detailed parameters in \texttt{configs/augmentation\_config.json}
+\end{itemize}
+
+Augmentation was applied only to the training set to prevent validation/test data leakage.
+
+\subsection{Train/Val/Test Split}
+
+We employed a temporal split strategy to simulate realistic deployment conditions:
+
+\begin{itemize}
+    \item \textbf{Training:} 70\% (144,144 samples) -- October 1--21, 2025
+    \item \textbf{Validation:} 15\% (30,888 samples) -- October 22--25, 2025
+    \item \textbf{Test:} 15\% (30,888 samples) -- October 26--29, 2025
+    \item \textbf{Total:} 205,920 sequences from 29 days
+\end{itemize}
+
+\textbf{Critical Design Decision:} We used chronological splitting without shuffling to prevent \textbf{data leakage}. Time series data exhibits strong temporal autocorrelation; randomly shuffling would allow the model to train on future data to predict the past, artificially inflating performance metrics. Temporal splitting ensures the model only sees past data during training, simulating real-world deployment where predictions must be made without future knowledge.
+
+\textbf{Validation Strategy:} We used a single holdout validation set rather than k-fold cross-validation. Traditional k-fold CV requires shuffling, which violates temporal ordering. While sliding window cross-validation exists for time series, it is computationally expensive and was deemed unnecessary for our 29-day dataset where a single 4-day test set provides sufficient evaluation.
+
+\subsection{Preprocessing Pipeline}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig03_preprocessing_flow.png}
+\caption{Data Preprocessing Pipeline showing eight sequential stages from raw data collection to PyTorch-ready dataset.}
+\label{fig:preprocessing_flow}
+\end{figure}
+
+The complete preprocessing pipeline consisted of eight sequential stages:
+
+\begin{enumerate}
+    \item \textbf{Raw Data Collection:} API queries to Google Directions and OpenWeatherMap
+    \item \textbf{Data Cleaning:} Outlier removal and missing data handling
+    \item \textbf{Normalization:} Z-score for speed/weather, log transform for precipitation
+    \item \textbf{Graph Construction:} Adjacency matrix from OSM topology
+    \item \textbf{Sequence Creation:} Sliding window with seq\_len=12, stride=1
+    \item \textbf{Augmentation:} Time jitter and node masking (training set only)
+    \item \textbf{Train/Val/Test Split:} Temporal 70/15/15 split
+    \item \textbf{PyTorch Dataset:} Batching and GPU memory transfer
+\end{enumerate}
+
+The final preprocessed dataset was saved as \texttt{data/processed/all\_runs\_extreme\_augmented.parquet} containing 205,920 sequences ready for model training.

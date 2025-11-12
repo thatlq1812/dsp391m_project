@@ -18,8 +18,11 @@ This directory contains training configuration files for the STMGT traffic forec
 | File                           | Status         | Params | MAE        | Description                                          |
 | ------------------------------ | -------------- | ------ | ---------- | ---------------------------------------------------- |
 | **`train_normalized_v3.json`** | **PRODUCTION** | 680K   | **3.0468** | Current baseline, 1.1% better than V1, best coverage |
-| `train_normalized_v1.json`     | ARCHIVED       | 680K   | 3.08       | Previous baseline, optimal capacity proven           |
-| `train_normalized_v2.json`     | REJECTED       | 1.15M  | 3.22       | Capacity too large, severe overfit                   |
+
+**Archived Configs** (see `configs/archive/`):
+
+- `train_normalized_v1.json` - Previous baseline (MAE 3.08)
+- `train_normalized_v2.json` - Capacity experiment (rejected, overfits)
 
 ### Capacity Experiments (CONCLUDED)
 
@@ -707,16 +710,91 @@ python scripts/training/train_stmgt.py --config configs/train_v1_ablation_no_wea
 
 ---
 
-## References
+## Data Augmentation Configuration
 
-- **V1 Production Config:** `configs/train_normalized_v1.json`
-- **V2 Experiment Analysis:** `docs/V2_EXPERIMENT_ANALYSIS.md`
-- Model architecture: `traffic_forecast/models/stmgt_v2.py`
-- Training script: `scripts/training/train_stmgt.py`
-- Data pipeline: `traffic_forecast/data/datamodule.py`
-- Documentation: `docs/STMGT_ARCHITECTURE.md`
+### Safe Augmentation (NEW - 2025-11-12)
+
+**File:** `augmentation_config.json`
+
+Data augmentation now uses **leak-free methods** that only use training data statistics.
+
+**Available Presets:**
+
+```json
+{
+  "light": {
+    "noise_copies": 2,
+    "weather_scenarios": 3,
+    "jitter_copies": 1
+  },
+  "moderate": {
+    // Recommended
+    "noise_copies": 3,
+    "weather_scenarios": 5,
+    "jitter_copies": 2
+  },
+  "aggressive": {
+    "noise_copies": 5,
+    "weather_scenarios": 8,
+    "jitter_copies": 3
+  }
+}
+```
+
+**Usage in Training Script:**
+
+```python
+from traffic_forecast.data.augmentation_safe import SafeTrafficAugmentor
+import json
+
+# Load config
+with open('configs/augmentation_config.json') as f:
+    aug_config = json.load(f)
+
+# After temporal split
+train_data, val_data, test_data = split_temporal(df)
+
+# Augment training data only
+augmentor = SafeTrafficAugmentor(train_data)
+train_augmented = augmentor.augment_all(**aug_config['moderate'])
+
+# Train with augmented data (val/test unchanged)
+```
+
+**Key Changes from Old Augmentation:**
+
+| Aspect         | Old (Deprecated)                | New (Safe)             |
+| -------------- | ------------------------------- | ---------------------- |
+| **Statistics** | From entire dataset             | **Train-only**         |
+| **Methods**    | Interpolation, extrapolation    | Noise, weather, jitter |
+| **When**       | Pre-training (all data)         | **After split**        |
+| **Leakage**    | Yes (test patterns)             | **No**                 |
+| **Files**      | `augment_extreme.py` (archived) | `augmentation_safe.py` |
+
+**Deprecated Files:**
+
+Old augmentation scripts moved to `scripts/data/archive/`:
+
+- `augment_extreme.py` - Data leakage via global statistics
+- `augment_data_advanced.py` - Data leakage via test patterns
+
+See `scripts/data/archive/DEPRECATION_NOTICE.md` for details.
 
 ---
 
-**Last Updated:** November 10, 2025  
+## References
+
+- **Current Production Config:** `configs/train_normalized_v3.json`
+- **Augmentation Config:** `configs/augmentation_config.json`
+- **Archived Configs:** `configs/archive/` (v1, v2)
+- **Data Leakage Fix:** `docs/fix/data_leakage_fix.md`
+- **Safe Augmentation Guide:** `docs/guides/safe_augmentation_guide.md`
+- **Weather Data Explained:** `docs/guides/weather_data_explained.md`
+- Model architecture: `traffic_forecast/models/stmgt/model.py`
+- Training script: `scripts/training/train_stmgt.py`
+- Data pipeline: `traffic_forecast/data/stmgt_dataset.py`
+
+---
+
+**Last Updated:** November 12, 2025  
 **Maintainer:** THAT Le Quang

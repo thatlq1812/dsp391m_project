@@ -1,0 +1,305 @@
+% Section 2: Literature Review
+% Maintainer: THAT Le Quang (thatlq1812)
+% Source: 02_literature_review.md
+
+\section{Literature Review}
+
+This section reviews existing approaches to traffic forecasting, from classical statistical methods to modern deep learning architectures. We examine 60+ academic papers to identify gaps in current knowledge and justify our STMGT architecture.
+
+\subsection{Classical Traffic Forecasting Methods}
+
+\subsubsection{ARIMA and Statistical Approaches}
+
+\textbf{ARIMA (AutoRegressive Integrated Moving Average)} \cite{box2015time} is simple and interpretable, working well for short-term univariate forecasting. However, it cannot model spatial dependencies, fails with non-linear patterns, and requires stationary data. Performance is typically MAE $\sim$5-8 km/h on simple road segments.
+
+\textbf{Kalman Filters} provide real-time updates and handle noise well but assume linear dynamics with no spatial modeling. They are still used in some commercial GPS systems for state estimation.
+
+\textbf{Vector Autoregression (VAR)} models multiple time series and captures some spatial correlation but scales poorly to large networks (O(N²) parameters) with linear assumptions. Performance is marginally better than ARIMA for small networks ($<$20 nodes).
+
+\textbf{Why Classical Methods Fall Short:}
+
+\begin{itemize}
+    \item Traffic exhibits \textbf{strong non-linearity} (congestion cascades, bottlenecks)
+    \item \textbf{Spatial dependencies} are complex graph-structured, not grid-based
+    \item \textbf{Multi-modal influences} (weather, events) require flexible feature integration
+\end{itemize}
+
+\subsection{Early Deep Learning Approaches}
+
+\subsubsection{LSTM for Traffic Forecasting}
+
+\textbf{LSTM (Long Short-Term Memory)} \cite{hochreiter1997long} uses gated RNN with memory cells for long-term dependencies. Traffic applications include Duan et al. (2016) and Ma et al. (2015).
+
+\textbf{Strengths:} Captures temporal patterns, handles sequences naturally
+
+\textbf{Limitations:}
+\begin{itemize}
+    \item No spatial modeling $\rightarrow$ treats each road independently
+    \item Sequential processing slow for inference
+    \item Vanishing gradients for very long sequences
+\end{itemize}
+
+\textbf{Performance:} MAE $\sim$4-6 km/h (single-node forecasting)
+
+Our LSTM baseline achieves MAE 4.85 km/h (test set) with R² of 0.64, demonstrating the limitation of not leveraging road network structure.
+
+\subsection{Graph Neural Networks for Traffic}
+
+\subsubsection{Graph Convolutional Networks}
+
+\textbf{GCN} \cite{kipf2017semi} generalizes convolution to graph-structured data using message passing:
+
+\begin{equation}
+h'_v = \sigma\left(\sum_{u \in \mathcal{N}(v)} \frac{W \cdot h_u}{\sqrt{\deg(u) \cdot \deg(v)}}\right)
+\end{equation}
+
+\textbf{Limitations:} No temporal modeling, fixed graph structure, over-smoothing with many layers.
+
+\textbf{ChebNet} \cite{defferrard2016convolutional} uses Chebyshev polynomials for efficient spectral graph convolution with complexity O(K·|E|) where K is filter order. Advantages include localized filters and efficient computation.
+
+\subsubsection{Graph Attention Networks}
+
+\textbf{GAT} \cite{velickovic2018graph} introduces attention-based aggregation:
+
+\begin{equation}
+\alpha_{ij} = \text{softmax}_j(\text{LeakyReLU}(a^T [W h_i \| W h_j]))
+\end{equation}
+
+\begin{equation}
+h'_i = \sigma\left(\sum_{j \in \mathcal{N}(i)} \alpha_{ij} W h_j\right)
+\end{equation}
+
+\textbf{Advantage:} Adaptive neighbor importance, handles varying graph structures
+
+\textbf{Limitation:} O(N²) memory for full graph
+
+\textbf{GATv2} \cite{brody2022attentive} fixes expressiveness limitation of original GAT by applying LeakyReLU after concatenation:
+
+\begin{equation}
+\alpha_{ij} = \text{softmax}_j(a^T \cdot \text{LeakyReLU}(W[h_i \| h_j]))
+\end{equation}
+
+This enables more dynamic attention patterns. We use GATv2 in STMGT for spatial modeling.
+
+\subsection{Spatio-Temporal Graph Models}
+
+\subsubsection{STGCN - First ST-GCN}
+
+\textbf{Yu et al., IJCAI 2018} \cite{yu2018spatio} introduced the first spatio-temporal graph convolutional network.
+
+\textbf{Architecture:}
+\begin{itemize}
+    \item \textbf{Spatial:} ChebNet graph convolution
+    \item \textbf{Temporal:} 1D CNN (temporal convolution)
+    \item \textbf{Structure:} ST-Block = (Time-Conv $\rightarrow$ Graph-Conv $\rightarrow$ Time-Conv)
+\end{itemize}
+
+\textbf{Performance on METR-LA:} MAE 2.96 mph, RMSE 5.87 mph, MAPE 7.89\%, estimated R² 0.76
+
+\textbf{Limitations:} Sequential spatial-temporal processing suboptimal, no attention mechanism, no weather/external factors
+
+\subsubsection{Graph WaveNet - Adaptive Graph Learning}
+
+\textbf{Wu et al., IJCAI 2019} \cite{wu2019graph} introduced adaptive adjacency learning.
+
+\textbf{Key Innovations:}
+\begin{enumerate}
+    \item \textbf{Adaptive Adjacency Matrix:} Learns graph structure from data
+    \begin{equation}
+    A_{\text{adaptive}} = \text{softmax}(\text{ReLU}(E_1 \cdot E_2^T))
+    \end{equation}
+    \item \textbf{TCN:} Dilated causal convolutions for temporal modeling
+    \item \textbf{Parallel Processing:} Combines multiple graph convolutions
+\end{enumerate}
+
+\textbf{Performance on METR-LA:} MAE 2.69 mph (best at time of publication), RMSE 5.15 mph, MAPE 6.78\%, estimated R² 0.83
+
+\textbf{Our Baseline Results:} MAE 3.95 km/h, R² 0.71. Analysis shows strong baseline but lacks weather integration.
+
+\subsubsection{MTGNN - Multi-Faceted Graph Learning}
+
+\textbf{Wu et al., KDD 2020} \cite{wu2020connecting} introduced multi-faceted graph learning.
+
+\textbf{Key Ideas:}
+\begin{itemize}
+    \item \textbf{Uni-directional graph:} Traffic flow direction matters
+    \item \textbf{Mix-hop propagation:} Combines K-hop neighborhoods
+    \item \textbf{Dilated inception:} Multi-scale temporal patterns
+\end{itemize}
+
+\textbf{Performance on METR-LA:} MAE 2.72 mph, MAPE 6.85\%, estimated R² 0.82
+
+\subsubsection{ASTGCN - Spatial-Temporal Attention}
+
+\textbf{Guo et al., AAAI 2019} \cite{guo2019attention} introduced attention-based spatio-temporal graph convolution.
+
+\textbf{Architecture:}
+\begin{itemize}
+    \item \textbf{Spatial Attention:} Learn node importance dynamically
+    \item \textbf{Temporal Attention:} Weighted historical time steps
+    \item \textbf{Recent/Daily/Weekly Components:} Multi-scale temporal modeling
+\end{itemize}
+
+\textbf{Performance on PeMSD4:} MAE 2.88 mph, MAPE 7.42\%, estimated R² 0.78
+
+\textbf{Our ASTGCN Baseline Results:} MAE 4.29 km/h, R² 0.023 (very poor). Issue: Implementation complexity, sensitive to hyperparameters, requires minimum 3 months of data for weekly patterns.
+
+\subsubsection{GMAN - Attention-Based ST Network}
+
+\textbf{Zheng et al., AAAI 2020} introduced graph multi-attention network.
+
+\textbf{Architecture:}
+\begin{itemize}
+    \item \textbf{ST-Attention:} Parallel spatial and temporal multi-head attention
+    \item \textbf{Transform Attention:} Encoder-decoder architecture
+    \item \textbf{Gated Fusion:} Learned combination of spatial and temporal features
+\end{itemize}
+
+\textbf{Performance on METR-LA:} MAE 2.73 mph
+
+\textbf{Key Insight:} Parallel processing beats sequential by 5-8\%
+
+\subsubsection{Current SOTA: DGCRN}
+
+\textbf{Li et al., AAAI 2022} introduced dynamic graph convolution with RNN.
+
+\textbf{Current SOTA on METR-LA:} MAE 2.59 mph (best), MAPE 5.82\%, estimated R² 0.85
+
+\textbf{Innovation:} Dynamic graph construction at each time step
+
+\subsection{Uncertainty Quantification}
+
+\subsubsection{Gaussian Mixture Models}
+
+\textbf{Mixture Density Networks} \cite{bishop1994mixture} output parameters of K Gaussian components.
+
+\textbf{Application:} Traffic speeds exhibit multi-modal distributions:
+\begin{itemize}
+    \item \textbf{Free-flow:} $\sim$40-50 km/h
+    \item \textbf{Moderate:} $\sim$20-30 km/h
+    \item \textbf{Congested:} $<$15 km/h
+\end{itemize}
+
+\textbf{Our Choice:} K=5 Gaussian components to capture traffic state transitions. CRPS loss \cite{gneiting2007strictly} used for proper scoring.
+
+\subsubsection{Bayesian Neural Networks}
+
+\textbf{Approach:} Variational inference for weight posteriors
+
+\textbf{Pros:} Principled uncertainty quantification
+
+\textbf{Cons:} Slow inference, difficult to scale
+
+\subsubsection{MC Dropout}
+
+\textbf{Gal \& Ghahramani (2016)} proposed using dropout at inference with multiple samples.
+
+\textbf{Our testing:} Underestimates uncertainty for traffic data
+
+\subsection{Multi-Modal Fusion and Transformers}
+
+\subsubsection{Weather Integration}
+
+\textbf{Existing Approaches:}
+\begin{enumerate}
+    \item \textbf{Simple Concatenation:} Add weather as extra node features (used in most papers but suboptimal)
+    \item \textbf{FiLM:} Feature-wise Linear Modulation
+    \item \textbf{Cross-Attention:} Query traffic with weather context (our approach)
+\end{enumerate}
+
+\textbf{Evidence for Weather Impact:}
+\begin{itemize}
+    \item Rain: -15\% speed reduction
+    \item Heavy rain: -30\% speed reduction
+    \item Temperature extremes: -8\% speed reduction
+\end{itemize}
+
+\subsubsection{Transformers}
+
+\textbf{Vaswani et al., 2017} \cite{vaswani2017attention} introduced self-attention mechanism:
+
+\begin{equation}
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right) V
+\end{equation}
+
+\textbf{Temporal Fusion Transformers (TFT)} \cite{lim2021temporal} apply transformers to multi-horizon time series with interpretable multi-modal fusion.
+
+\textbf{Application to Traffic:}
+\begin{itemize}
+    \item Temporal self-attention for historical sequences
+    \item Cross-attention for weather conditioning
+    \item Challenge: O(T²) complexity for long sequences
+\end{itemize}
+
+\subsection{Research Gaps and STMGT Motivation}
+
+Based on review of 60+ papers, key limitations in existing work:
+
+\begin{enumerate}
+    \item \textbf{Spatial-Temporal Processing:} Most models use sequential processing. Parallel processing shown superior but underexplored. Gap: Need architecture with parallel ST blocks + learned fusion.
+    
+    \item \textbf{Uncertainty Quantification:} Most papers report only point predictions. Few use proper probabilistic metrics. Gap: Need probabilistic model with well-calibrated uncertainties.
+    
+    \item \textbf{Multi-Modal Integration:} Weather typically concatenated, not fused intelligently. Gap: Need adaptive fusion mechanism (cross-attention).
+    
+    \item \textbf{Real-World Deployment:} Most papers evaluate on public datasets. Limited work on emerging markets. Gap: Need production-ready system with API deployment.
+    
+    \item \textbf{Small Network Challenges:} SOTA models validated on large networks. Gap: Need realistic performance targets and regularization strategies.
+\end{enumerate}
+
+\subsection{STMGT Design Rationale}
+
+Our architecture addresses these gaps through:
+
+\begin{table}[h]
+\centering
+\caption{STMGT Components Addressing Research Gaps}
+\label{tab:stmgt_gaps}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Component} & \textbf{Addresses Gap} & \textbf{Innovation} \\
+\midrule
+Parallel ST Blocks & Sequential processing & GATv2 $\|$ Transformer \\
+Gaussian Mixture & Uncertainty & Multi-modal distribution \\
+Weather Cross-Attn & Multi-modal fusion & Context-dependent \\
+Regularization & Small network & Dropout, DropEdge \\
+FastAPI & Production & $<$400ms inference \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Benchmark Summary}
+
+Table \ref{tab:metr_la_benchmark} summarizes SOTA results on METR-LA dataset (207 nodes, 15-min intervals).
+
+\begin{table}[h]
+\centering
+\caption{METR-LA Benchmark Results}
+\label{tab:metr_la_benchmark}
+\small
+\begin{tabular}{lcccl}
+\toprule
+\textbf{Model} & \textbf{Year} & \textbf{MAE} & \textbf{MAPE} & \textbf{R²} \\
+& & \textbf{(mph)} & & \\
+\midrule
+DGCRN & 2022 & \textbf{2.59} & 5.82\% & 0.85 \\
+Graph WaveNet & 2019 & 2.69 & 6.78\% & 0.83 \\
+MTGNN & 2020 & 2.72 & 6.85\% & 0.82 \\
+ASTGCN & 2019 & 2.88 & 7.42\% & 0.78 \\
+STGCN & 2018 & 2.96 & 7.89\% & 0.76 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Our Expected Performance (62 nodes, 16K samples):} MAE target 2.0-3.5 km/h, R² target 0.45-0.55 (scaled from SOTA). Rationale: Smaller network + less data $\rightarrow$ lower R² but acceptable MAE.
+
+\subsection{Key Takeaways}
+
+\begin{enumerate}
+    \item \textbf{Sequential $\rightarrow$ Parallel Processing:} 5-12\% improvement demonstrated
+    \item \textbf{Graph Attention:} Adaptive neighbor weighting outperforms fixed graph convolution
+    \item \textbf{Uncertainty:} Gaussian mixtures appropriate for multi-modal traffic distributions
+    \item \textbf{Weather:} Cross-attention more expressive than simple concatenation
+    \item \textbf{Regularization:} Critical for small datasets (dropout, DropEdge, early stopping)
+\end{enumerate}

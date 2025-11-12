@@ -162,9 +162,9 @@ run_20251102_070015    2025-11-02 07:00:15  node-10.7379-106.7216     node-10.74
   - **Moderate mode:** 15-25 km/h (normal urban traffic)
   - **Congested mode:** <13 km/h (peak hours, 25th percentile)
 
-<!-- FIGURE PLACEHOLDER -->
+![Figure 1: Traffic Speed Distribution](figures/fig01_speed_distribution.png)
 
-**[Figure 1: Traffic Speed Distribution - See FIGURES_SPEC.md]**
+**Figure 1: Traffic Speed Distribution**
 
 ### 5.3.2 Weather Features
 
@@ -233,9 +233,9 @@ run_20251102_070015    2025-11-02 07:00:15  node-10.7379-106.7216     node-10.74
 - **Adjacency:** Binary connection matrix (62×62)
 - **Adaptive Weights:** Learned during training (GATv2 attention)
 
-<!-- FIGURE PLACEHOLDER -->
+![Figure 2: Road Network Topology](figures/fig02_network_topology.png)
 
-**[Figure 2: Road Network Topology - See FIGURES_SPEC.md]**
+**Figure 2: Road Network Topology - 62 Nodes and 144 Edges**
 
 ---
 
