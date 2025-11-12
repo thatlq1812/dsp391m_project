@@ -193,3 +193,4 @@ temps/*
 .tmp.drivedownload/
 .tmp.driveupload/
 desktop.ini
+/archive/
