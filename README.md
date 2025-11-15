@@ -9,22 +9,28 @@
 
 # STMGT Traffic Forecasting System
 
-**Spatio-Temporal Multi-Modal Graph Transformer** for real-time traffic speed forecasting in Ho Chi Minh City.
+**Spatio-Temporal Multi-Modal Graph Transformer** for real-time traffic speed forecasting in Ho Chi Minh City.**Spatio-Temporal Multi-Graph Transformer for traffic speed forecasting in Ho Chi Minh City.**
 
-**Current Performance:** MAE 2.54 km/h (beats SOTA by 36-43%)  
-**Status:** Production-ready with REST API and CLI  
-**Coverage:** 62 nodes, 144 road segments, district-level forecasting  
-**Final Report:** 85 pages, IEEE format ([docs/05_final_report/](docs/05_final_report/))
+🎯 **Current Performance:** MAE 2.54 km/h (beats SOTA by 36-43%)
 
----
+🚀 **Status:** Production-ready with REST API and CLI
 
-## Quick Start
+📊 **Coverage:** 62 nodes, 144 road segments, district-level forecasting---
 
-### 1. Environment Setup
+---## Quick Start
 
-```bash
-# Clone repository
-git clone https://github.com/thatlq1812/dsp391m_project.git
+## Quick Start (5 Minutes)### 1. Environment
+
+### 1. Installation```bash
+
+conda env create -f environment.yml
+
+````bashconda activate dsp
+
+# Clone repositorypip install -e .
+
+git clone https://github.com/thatlq1812/dsp391m_project.git```
+
 cd dsp391m_project
 
 # Create environment
@@ -134,8 +140,8 @@ The trainer loads configuration through `traffic_forecast/core/config_loader.py`
 
 ### Quick Access
 
-**[Final Report](docs/05_final_report/DSP391m_final_report_V3.pdf)** - Complete 85-page IEEE format report  
-**[Project Status](PROJECT_STATUS.txt)** - Current verification status  
+**[Final Report](docs/05_final_report/DSP391m_final_report_V3.pdf)** - Complete 85-page IEEE format report
+**[Project Status](PROJECT_STATUS.txt)** - Current verification status
 **[Changelog](docs/CHANGELOG.md)** - Complete project history (4900+ lines)
 
 ### For Users
@@ -355,8 +361,8 @@ python scripts/evaluation/evaluate_model.py \
 
 ## Requirements
 
-**Python:** 3.10+  
-**Hardware:** NVIDIA GPU recommended (CPU supported)  
+**Python:** 3.10+
+**Hardware:** NVIDIA GPU recommended (CPU supported)
 **OS:** Linux, macOS, Windows (Git Bash)
 
 **Key Dependencies:**
@@ -416,9 +422,9 @@ MIT License - See LICENSE file for details
 
 ## Support
 
-**Issues:** Open GitHub issue at [thatlq1812/dsp391m_project](https://github.com/thatlq1812/dsp391m_project)  
-**Documentation:** See [docs/](docs/) directory  
-**Final Report:** [docs/05_final_report/DSP391m_final_report_V3.pdf](docs/05_final_report/DSP391m_final_report_V3.pdf)  
+**Issues:** Open GitHub issue at [thatlq1812/dsp391m_project](https://github.com/thatlq1812/dsp391m_project)
+**Documentation:** See [docs/](docs/) directory
+**Final Report:** [docs/05_final_report/DSP391m_final_report_V3.pdf](docs/05_final_report/DSP391m_final_report_V3.pdf)
 **Contact:** THAT Le Quang - thatlq1812
 
 ---
@@ -431,3 +437,4 @@ MIT License - See LICENSE file for details
 - **Research Community** - Graph neural networks and spatio-temporal modeling
 
 ---
+````
