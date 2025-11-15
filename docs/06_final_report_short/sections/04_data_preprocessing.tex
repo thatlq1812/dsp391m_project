@@ -1,0 +1,35 @@
+\section{Data Cleaning \& Preprocessing}
+
+\subsection{Data Cleaning and Normalization}
+
+Raw data (206,450 samples) cleaned by removing 530 outliers (0.26\%): speed $<$0 or $>$120 km/h, temperature outside 15--45°C. Forward-fill applied to weather, missing speeds dropped. Result: 205,920 clean samples.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig04_normalization.png}
+\caption{Normalization Effects showing Z-score standardization improves distribution for neural network training.}
+\label{fig:normalization}
+\end{figure}
+
+Normalization using training set statistics only (prevent leakage): Speed Z-score $v_{\text{norm}} = (v - 19.83)/6.42$; Temperature Z-score $(T - 27.49)/2.15$; Precipitation log+Z-score $[\log(P+1) - 0.82]/1.15$; Wind min-max $W/8.5$.
+
+\subsection{Graph Construction and Sequence Creation}
+
+Road network extracted from OSM via Overpass API (7 central HCMC districts). Adjacency matrix $A \in \{0,1\}^{62 \times 62}$: 144 edges, 3.75\% density, avg degree 4.65, diameter 12 hops, avg path 5.2 hops. Edge distances 0.5--3.2 km (mean 1.12 km).
+
+Sliding window sequences: 12 timesteps input (3 hours historical), 12 timesteps output (3 hours forecast), stride 1. Input $X \in \mathbb{R}^{12 \times 62 \times 4}$, target $Y \in \mathbb{R}^{12 \times 62}$.
+
+\subsection{Augmentation and Splitting}
+
+Augmentation (training only): time jitter ($\pm$1 step), node masking (10\%). Temporal split (70/15/15): Train Oct 1--21, Val Oct 22--25, Test Oct 26--29. Chronological ordering prevents data leakage from autocorrelation.
+
+\subsection{Preprocessing Pipeline}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig03_preprocessing_flow.png}
+\caption{Pipeline: Collection $\to$ Cleaning $\to$ Normalization $\to$ Graph $\to$ Sequences $\to$ Augmentation $\to$ Split $\to$ PyTorch.}
+\label{fig:preprocessing_flow}
+\end{figure}
+
+Eight stages: API collection, outlier removal, normalization (Z-score/log), adjacency matrix, sliding windows, augmentation, temporal split, batching. Output: 205,920 sequences in \texttt{all\_runs\_extreme\_augmented.parquet}.

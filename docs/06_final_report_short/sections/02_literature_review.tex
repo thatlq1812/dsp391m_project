@@ -1,0 +1,62 @@
+% Section 2: Literature Review
+% Maintainer: THAT Le Quang (thatlq1812)
+
+\section{Literature Review}
+
+\subsection{Classical and Early Deep Learning Methods}
+
+\textbf{ARIMA} and \textbf{Kalman Filters} provide interpretable univariate forecasting (MAE $\sim$5-8 km/h) but fail on non-linear patterns and spatial dependencies. \textbf{LSTM} \cite{hochreiter1997long} captures temporal patterns (our baseline: MAE 4.85 km/h, $R^2$ 0.64) but treats roads independently without spatial modeling.
+
+\subsection{Graph Neural Networks}
+
+\textbf{GCN} \cite{kipf2017semi} enables message passing on graphs but lacks temporal modeling. \textbf{GAT} \cite{velickovic2018graph} introduces attention for adaptive neighbor importance. \textbf{GATv2} \cite{brody2022attentive} improves expressiveness with dynamic attention patterns, which we adopt for spatial modeling.
+
+\subsection{Spatio-Temporal Graph Models}
+
+\textbf{STGCN} \cite{yu2018spatio} (IJCAI 2018) pioneered ST-GCN with sequential processing (METR-LA: MAE 2.96 mph, $R^2$ 0.76). \textbf{Graph WaveNet} \cite{wu2019graph} (IJCAI 2019) introduced adaptive adjacency learning and TCN (MAE 2.69 mph, $R^2$ 0.83; our baseline: MAE 3.95 km/h). \textbf{GMAN} (AAAI 2020) demonstrated parallel ST-attention beats sequential by 5-8\%. \textbf{DGCRN} (AAAI 2022) achieves current SOTA with dynamic graph construction (MAE 2.59 mph, $R^2$ 0.85).
+
+\subsection{Uncertainty Quantification and Multi-Modal Fusion}
+
+\textbf{Gaussian Mixture Models} \cite{bishop1994mixture} capture multi-modal traffic distributions (free-flow, moderate, congested). We use K=5 components with CRPS loss \cite{gneiting2007strictly}. \textbf{Transformers} \cite{vaswani2017attention} enable self-attention for temporal dependencies. Weather integration typically uses concatenation, but cross-attention provides adaptive fusion for weather impacts (rain: -15\% speed, heavy rain: -30\%).
+
+\subsection{Research Gaps and STMGT Design}
+
+Key gaps: (1) Most models use sequential ST processing, (2) Limited uncertainty quantification, (3) Weather concatenation suboptimal, (4) Few production deployments, (5) SOTA validated on large networks only. Our STMGT addresses these through:
+
+\begin{table}[h]
+\centering
+\caption{STMGT Components Addressing Research Gaps}
+\label{tab:stmgt_gaps}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Component} & \textbf{Addresses Gap} & \textbf{Innovation} \\
+\midrule
+Parallel ST Blocks & Sequential processing & GATv2 $\|$ Transformer \\
+Gaussian Mixture & Uncertainty & Multi-modal distribution \\
+Weather Cross-Attn & Multi-modal fusion & Context-dependent \\
+Regularization & Small network & Dropout, DropEdge \\
+FastAPI & Production & $<$400ms inference \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Benchmark Summary}
+
+\begin{table}[h]
+\centering
+\caption{METR-LA Benchmark (207 nodes)}
+\label{tab:metr_la_benchmark}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Model} & \textbf{Year} & \textbf{MAE (mph)} & \textbf{$R^2$} \\
+\midrule
+DGCRN & 2022 & \textbf{2.59} & 0.85 \\
+Graph WaveNet & 2019 & 2.69 & 0.83 \\
+STGCN & 2018 & 2.96 & 0.76 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Our targets (62 nodes, 16K samples): MAE 2.0-3.5 km/h, $R^2$ 0.45-0.55. Key insights: parallel processing beats sequential (5-12\%), graph attention outperforms fixed convolution, Gaussian mixtures capture traffic multi-modality, cross-attention superior to concatenation, regularization critical for small networks.

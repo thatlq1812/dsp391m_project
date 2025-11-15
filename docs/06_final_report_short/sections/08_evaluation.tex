@@ -1,0 +1,76 @@
+\section{Model Evaluation \& Fine-Tuning}
+
+\subsection{Evaluation Metrics}
+
+\begin{table}[h]
+\centering
+\caption{STMGT Test Set Performance}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Metric} & \textbf{Value} & \textbf{Interpretation} \\
+\midrule
+MAE & 2.54 km/h & Avg error (excellent for 10--30 km/h range) \\
+RMSE & 4.08 km/h & Penalizes outliers \\
+$R^2$ & 0.85 & Explains 85\% variance \\
+MAPE & 19.13\% & Higher at low speeds \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Probabilistic: CRPS 1.94, Coverage@80 81.94\% (near-optimal), well-calibrated.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig18_calibration_plot.png}
+\caption{Calibration plot: 80\% intervals contain truth 81.94\% of time (near-optimal).}
+\label{fig:calibration_plot}
+\end{figure}
+\subsection{Hyperparameter Tuning}
+
+Grid search selected: hidden\_dim 96, mixture\_K 5, blocks 3, dropout 0.25, LR $10^{-3}$ (val MAE 2.16). Key findings: 96 dim gave 10\% MAE improvement (+50\% params needed for 62-node complexity); K=5 improved CRPS 21\% and coverage 78\%$\to$81.94\% (captures 3 traffic regimes); dropout 0.25 reduced train-val gap 15\%$\to$8\%, $R^2$ 0.78$\to$0.85.
+
+\subsection{Validation and Early Stopping}
+
+Temporal split (70/15/15, Oct 1-21/22-25/26-29) prevents leakage. Early stopping: patience 20, best epoch 24 (val MAE 2.16), trained 39 total.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig13_training_curves.png}
+\caption{Training curves: early stopping at epoch 24 prevents overfitting (train MAE decreasing, val plateaus).}
+\label{fig:training_curves}
+\end{figure}
+
+\subsection{Ablation Studies}
+
+\begin{table}[h]
+\centering
+\caption{Ablation Study Results}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Configuration} & \textbf{MAE} & \textbf{RMSE} & \textbf{$R^2$} & \textbf{$\Delta$ MAE} \\
+\midrule
+\textbf{Full STMGT V3} & \textbf{2.54} & \textbf{4.08} & \textbf{0.85} & \textbf{baseline} \\
+- Weather cross-attn & 2.85 & 4.40 & 0.82 & +12.2\% \\
+- Gated fusion (concat) & 3.03 & 4.61 & 0.79 & +19.3\% \\
+- GMM (use MSE) & 2.70 & 4.21 & 0.84 & +6.3\% \\
+Sequential (GAT$\to$Trans) & 2.90 & 4.45 & 0.81 & +14.2\% \\
+- GATv2 (use GCN) & 2.79 & 4.35 & 0.83 & +9.8\% \\
+- Transformer (use LSTM) & 2.98 & 4.52 & 0.80 & +17.3\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig14_ablation_study.png}
+\caption{Ablation: weather cross-attn (+12\%), gated fusion (+19\%), parallel processing (+14\%), GATv2 over GCN (+10\%), Transformer over LSTM (+17\%).}
+\label{fig:ablation_study}
+\end{figure}
+
+\subsection{Learning Curve}
+
+40\% data achieves 80\% performance (MAE 3.85 vs 2.54 final). Curve not saturated; 20K+ samples could reach MAE $\sim$2.7. Bottleneck: dataset size (29 days) not model capacity.
+
+\subsection{Regularization, Latency, Error Analysis, Robustness}
+
+Dropout 0.25 optimal (train-val gap 11\%, test MAE 2.54). Weight decay $1.5 \times 10^{-4}$ best. Inference: 395ms (single), meets $<$500ms target. Error: mean -0.12 km/h (near-zero bias), std 4.08, 95\% CI [-8.5, +8.3], outliers $<$2\%. By regime: congested MAE 2.35 (MAPE 25\%), moderate 2.43 (15\%), free-flow 2.90 (12\%). Weather: clear 2.35, light rain 2.57, heavy rain 3.03 km/h (29\% degradation, acceptable). Time: morning 2.43, evening 2.62, off-peak 2.82--3.17 km/h.

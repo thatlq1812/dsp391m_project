@@ -1,0 +1,36 @@
+% Section 1: Introduction
+% Maintainer: THAT Le Quang (thatlq1812)
+
+\section{Introduction}
+
+\subsection{Background and Motivation}
+
+Traffic congestion in Ho Chi Minh City costs \$1.2 billion USD annually and increases commute times by 35\%. Accurate forecasting enables intelligent route planning (15-20\% time reduction), proactive traffic management, and data-driven urban planning. This project develops a deep learning-based traffic speed forecasting system for HCMC.
+
+\subsection{Research Objectives}
+
+\begin{enumerate}
+    \item Predict traffic speeds for 15 minutes to 3 hours ahead (target MAE $<$ 5 km/h)
+    \item Provide uncertainty quantification for risk-aware decision-making
+    \item Integrate weather conditions with spatial-temporal patterns
+    \item Deploy production-ready API with $<$500ms latency
+    \item Benchmark against LSTM, GCN, and GraphWaveNet baselines
+\end{enumerate}
+
+\subsection{Technical Approach}
+
+Traditional methods (ARIMA, Kalman filters) struggle with non-linear patterns and complex spatial dependencies. \textbf{Graph Neural Networks} model road networks as graphs, capturing spatial dependencies through message passing. \textbf{Transformers} enable self-attention mechanisms for long-range temporal dependencies and parallel sequence processing.
+
+\subsection{System Overview}
+
+Our system leverages Google Directions API (traffic data), OpenWeatherMap API (weather), and OpenStreetMap (topology), collecting data every 15 minutes during peak hours (7-9 AM, 5-7 PM). HCMC's network spans 3,200+ km roads, serving 8+ million motorcycles and 600,000+ cars across a metropolitan area of 13 million people.
+
+\subsection{Contributions}
+
+\begin{enumerate}
+    \item Novel parallel spatio-temporal architecture with GATv2 and Transformer blocks
+    \item Weather-aware cross-attention for multi-modal integration
+    \item Gaussian Mixture Model outputs for calibrated uncertainty quantification
+    \item Comprehensive ablation studies and systematic benchmarking
+    \item Production deployment achieving sub-400ms inference latency
+\end{enumerate}

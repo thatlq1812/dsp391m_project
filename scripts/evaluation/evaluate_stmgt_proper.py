@@ -129,7 +129,7 @@ def main():
     
     model.eval()
     
-    print(f"✓ Model loaded successfully")
+    print("[OK] Model loaded successfully")
     print(f"  Device: {device}")
     print(f"  Parameters: {sum(p.numel() for p in model.parameters()):,}")
     
@@ -173,7 +173,7 @@ def main():
             }
         }, f, indent=2)
     
-    print(f"✓ Results saved to {output_file}")
+    print(f"[OK] Results saved to {output_file}")
     
     # Compare with saved test_results.json if exists
     saved_test = args.model.parent / 'test_results.json'
@@ -188,7 +188,7 @@ def main():
         print(f"  Difference: {abs(results['test']['mae'] - saved_metrics['mae']):.4f}")
         
         if abs(results['test']['mae'] - saved_metrics['mae']) < 0.01:
-            print("  ✓ MATCHES! Evaluation is correct.")
+            print("  [OK] MATCHES! Evaluation is correct.")
         else:
             print("  ⚠ DIFFERS! Check if model/data changed.")
     

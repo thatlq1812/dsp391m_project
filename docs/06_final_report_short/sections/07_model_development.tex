@@ -1,0 +1,49 @@
+\section{Model Development}
+
+\subsection{STMGT Architecture}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig11_stmgt_architecture.png}
+\caption{STMGT: Input embedding $\to$ Parallel GATv2/Transformer $\to$ Gated fusion $\to$ Weather cross-attention $\to$ GMM head. Specs: 680K params, hidden dim 96, 3 ST-blocks, 4 heads, 5 mixture components, 12-step I/O, dropout 0.25, dropedge 0.15.}
+\label{fig:stmgt_architecture}
+\end{figure}
+
+\subsection{Architecture Components}
+
+Input embedding: $\mathbf{h}^{(0)} = \text{LayerNorm}(\mathbf{W}_{\text{emb}} \mathbf{x} + \mathbf{b}_{\text{emb}})$, $\mathbf{x} \in \mathbb{R}^{B \times 12 \times 62 \times 4} \to \mathbb{R}^{B \times 12 \times 62 \times 96}$.
+
+GATv2~\cite{brody2022gatv2}: $\alpha_{ij} = \exp(e_{ij})/\sum_k \exp(e_{ik})$, $e_{ij} = \mathbf{a}^T \cdot \text{LeakyReLU}(\mathbf{W} [\mathbf{h}_i \| \mathbf{h}_j])$. Multi-head (4): $\mathbf{h}_i^{\text{spatial}} = \|_{m=1}^{4} \sum_{j \in \mathcal{N}(i)} \alpha_{ij}^{(m)} \mathbf{W}^{(m)} \mathbf{h}_j$. Residual: $\text{LayerNorm}(\mathbf{h}_i + \text{Dropout}(\mathbf{h}_i^{\text{spatial}}))$.
+
+Transformer: Positional encoding $\text{PE}(t, 2i) = \sin(t / 10000^{2i/D})$, self-attention $\text{softmax}(\mathbf{Q}\mathbf{K}^T/\sqrt{d_k}) \mathbf{V}$, FFN $\mathbf{W}_2 \cdot \text{GELU}(\mathbf{W}_1 \mathbf{h} + \mathbf{b}_1) + \mathbf{b}_2$, residuals with LayerNorm.
+
+Gated fusion: $\alpha = \sigma(\mathbf{W}_{\alpha} [\mathbf{h}_{\text{spatial}} \| \mathbf{h}_{\text{temporal}}] + \mathbf{b}_{\alpha})$, $\mathbf{h}_{\text{fused}} = \alpha \odot \mathbf{h}_{\text{spatial}} + (1 - \alpha) \odot \mathbf{h}_{\text{temporal}}$. Adaptive weighting per sample.
+
+Weather cross-attention: $\mathbf{w}_{\text{enc}} = \text{MLP}([T, W, P])$, $\mathbf{h}_{\text{context}} = \text{CrossAttn}(\mathbf{Q} = \mathbf{h}_{\text{fused}}, \mathbf{K,V} = \mathbf{w}_{\text{enc}})$, +12\% over concatenation.
+
+GMM head: $\mu_k = \mathbf{W}_{\mu} \mathbf{h}_{\text{out}} + \mathbf{b}_{\mu}$, $\sigma_k = \exp(\mathbf{W}_{\sigma} \mathbf{h}_{\text{out}}) + 0.01$, $\pi_k = \text{Softmax}(\mathbf{W}_{\pi} \mathbf{h}_{\text{out}})$. Distribution: $p(y|\mathbf{x}) = \sum_{k=1}^{5} \pi_k \mathcal{N}(y | \mu_k, \sigma_k^2)$. Point: $\hat{y} = \sum_k \pi_k \mu_k$. Uncertainty: $F_{\text{GMM}}^{-1}(p)$.
+
+\subsection{Forward Pass}
+
+Forward: Embed $\to$ 3 ST-blocks (GATv2 $\parallel$ Transformer $\to$ Fusion) $\to$ Weather cross-attn $\to$ GMM head. Output $[B, 12, 62, 15]$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig12_attention_visualization.png}
+\caption{Attention: (a) Spatial GATv2, (b) temporal self-attention, (c) weather cross-attention, (d) gated fusion.}
+\label{fig:attention_mechanisms}
+\end{figure}
+
+\subsection{Training}
+
+Loss NLL: $\mathcal{L}_{\text{NLL}} = -\frac{1}{BTN} \sum_{b,t,i} \log \left( \sum_{k=1}^{5} \pi_k \mathcal{N}(y_{b,t,i} | \mu_k, \sigma_k^2) \right)$ with log-sum-exp stability. Regularization: $\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{NLL}} + \lambda_1 \mathcal{L}_{\text{var}} + \lambda_2 \mathcal{L}_{\text{ent}}$ ($\lambda_1=0.01$, $\lambda_2=0.001$).
+
+AdamW~\cite{loshchilov2018adamw}: $\eta = 10^{-3}$, weight decay $1.5 \times 10^{-4}$, $\beta_1 = 0.9$, $\beta_2 = 0.999$. Cosine annealing: $\eta_t = \eta_{\min} + \frac{1}{2}(\eta_{\max} - \eta_{\min})(1 + \cos(T_{\text{cur}}/T_0 \pi))$, $T_0=10$, $\eta_{\max}=10^{-3}$, $\eta_{\min}=10^{-6}$. Hyperparams: batch 32, dropout 0.25, dropedge 0.15, max 200 epochs (stopped 24), patience 20, grad clip 1.0.
+
+Training loop: forward $\to$ loss $\to$ backprop $\to$ grad clip $\to$ AdamW step $\to$ LR adjust $\to$ validate $\to$ checkpoint.
+
+\subsection{Implementation}
+
+Hardware: NVIDIA RTX 3060 (6GB), Intel i7, 16GB RAM. Software: PyTorch 2.0.1, PyTorch Geometric 2.3.1, Python 3.10, CUDA 11.7.
+
+Training time: 25s/epoch, 39 epochs, best epoch 24 (val MAE 2.16 km/h), $\sim$15 min total. Model: 680K params, 2.76 MB file, 1.2 GB training memory.

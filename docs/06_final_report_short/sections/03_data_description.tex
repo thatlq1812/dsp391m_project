@@ -1,0 +1,69 @@
+% Section 3: Data Description  
+% Maintainer: THAT Le Quang (thatlq1812)
+
+\section{Data Description}
+
+\subsection{Data Sources}
+
+Traffic data was collected from three APIs: Google Directions (traffic speeds every 15 minutes, 7-9 AM and 5-7 PM), OpenWeatherMap (temperature, wind, precipitation hourly), and OpenStreetMap (road network topology). The dataset covers 62 intersections and 144 road segments in HCMC's central districts. Speed is calculated as distance/duration $\times$ 3.6 (km/h). Graph structure: 62 nodes, 144 edges, 4 node features (speed, temperature, wind, precipitation).
+
+\subsection{Dataset Statistics}
+
+\begin{table}[h]
+\centering
+\caption{Processed Dataset Statistics}
+\label{tab:dataset_stats}
+\begin{tabular}{ll}
+\toprule
+\textbf{Attribute} & \textbf{Value} \\
+\midrule
+Total Records & 205,920 \\
+Date Range & Oct 3 - Nov 2, 2025 (29 days) \\
+Collection Hours & 7-9 AM, 5-7 PM \\
+Temporal Resolution & 15 minutes \\
+Spatial Coverage & 62 intersections, 144 segments \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Data Distribution}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig01_speed_distribution.png}
+\caption{Traffic Speed Distribution showing multi-modal characteristics with three regimes: congested (13 km/h, 35\%), moderate (22 km/h, 45\%), and free-flow (35 km/h, 20\%).}
+\label{fig:speed_distribution}
+\end{figure}
+
+Speed statistics: mean 19.8 km/h, median 18.5 km/h, std 6.4 km/h, range 8.2--52.8 km/h. Multi-modal distribution justifies GMM approach. Weather: temperature 24--32°C (mean 27.5°C), precipitation 72\% clear/20\% light rain/8\% heavy rain, wind 0--8.5 m/s (mean 3.2 m/s).
+
+\subsection{Spatial and Temporal Coverage}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig02_network_topology.png}
+\caption{Road Network Topology: 62 intersections across 7 HCMC districts (Districts 1, 3, 4, 5, 10, Binh Thanh, Phu Nhuan). Road types: 35\% primary, 45\% secondary, 20\% tertiary.}
+\label{fig:network_topology}
+\end{figure}
+
+Data collected peak hours only (7--9 AM, 5--7 PM) over 29 days, limiting off-peak applicability.
+
+\subsection{Data Quality and Splits}
+
+\begin{table}[h]
+\centering
+\caption{Missing Data and Train/Val/Test Split}
+\label{tab:missing_data}
+\begin{tabular}{lcc|lcc}
+\toprule
+\textbf{Feature} & \textbf{\%} & \textbf{Handle} & \textbf{Split} & \textbf{\%} & \textbf{Dates} \\
+\midrule
+Speed & 2.3 & Drop & Train & 70 & Oct 3-24 \\
+Temperature & 0.5 & Ffill & Val & 15 & Oct 25-29 \\
+Precip. & 0.8 & Ffill & Test & 15 & Oct 30-Nov 2 \\
+Wind & 0.6 & Ffill & & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Outliers: 17 speed samples ($<$0 or $>$120 km/h) removed (0.008\%). Temporal split prevents data leakage. Augmentation (time shift, noise, masking) expanded training from 11K to $\sim$17K samples.

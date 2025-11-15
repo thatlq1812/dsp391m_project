@@ -1,0 +1,59 @@
+\section{Exploratory Data Analysis}
+
+\subsection{Speed Distribution Analysis}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig05_eda_speed_hist.png}
+\caption{Speed distribution with GMM fit: congested (13 km/h, 35\%), moderate (22 km/h, 45\%), free-flow (35 km/h, 20\%). Mean 19.8, median 18.5, std 6.4, range 8.2--52.8 km/h.}
+\label{fig:eda_speed_hist}
+\end{figure}
+
+Multi-modal distribution (3 regimes) justifies GMM-based uncertainty quantification in STMGT.
+
+\subsection{Temporal Patterns}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig06_hourly_pattern.png}
+\caption{Hourly speed patterns: morning rush (7--9 AM) 12.5 km/h, evening rush (5--7 PM) 11.8 km/h, free-flow (9 PM--6 AM) 28--35 km/h.}
+\label{fig:hourly_pattern}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig07_weekly_pattern.png}
+\caption{Weekly patterns: weekdays 18 km/h (tight IQR), weekends 21--24 km/h (wider variance).}
+\label{fig:weekly_pattern}
+\end{figure}
+
+Diurnal cycles validate time-of-day encoding. Weekday/weekend separation justifies day-of-week feature.
+
+\subsection{Spatial-Temporal and Weather Analysis}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig08_spatial_corr.png}
+\caption{Heatmap: Top 20 dynamic edges show rush hour slowdowns (red), midday recovery, late evening free-flow. Edge heterogeneity validates gated fusion.}
+\label{fig:spatial_corr}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig09_temp_speed.png}
+\caption{Temperature vs speed: weak correlation $\rho = -0.18$ (narrow 24--32°C range).}
+\label{fig:temp_speed}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig10_weather_box.png}
+\caption{Precipitation impact: clear 21.8 km/h, light rain -16.5\%, heavy rain -31.7\%.}
+\label{fig:weather_box}
+\end{figure}
+
+Non-linear rain impact validates weather cross-attention. Temperature minimal effect; precipitation dominant weather factor.
+
+\subsection{Key Findings}
+
+Four critical insights inform STMGT design: (1) Multi-modal distribution (3 regimes) motivates GMM; (2) Strong temporal patterns justify Transformer; (3) Spatial correlation $\rho \approx 0.8$ (adjacent), decaying after 3 hops, validates 2--3 GNN layers; (4) Precipitation impact (15--30\% reduction) motivates weather cross-attention.

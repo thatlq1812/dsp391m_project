@@ -1,0 +1,39 @@
+\section{Methodology}
+
+\subsection{Model Selection Rationale}
+
+GNNs model road networks naturally (62 nodes, 144 edges) via message passing~\cite{kipf2017gcn}. Traffic exhibits spatial dependencies ($\rho \approx 0.8$ adjacent) and temporal dynamics (diurnal cycles). Parallel spatial-temporal processing improves 5--12\% over sequential~\cite{li2020mtgnn}.
+
+\begin{table}[h]
+\centering
+\caption{Comparison of Model Capabilities}
+\label{tab:model_comparison}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Spatial} & \textbf{Temporal} & \textbf{Weather} & \textbf{Uncertainty} \\
+\midrule
+LSTM & \xmark & \cmark (RNN) & \cmark (concat) & \xmark \\
+GCN & \cmark (GCN) & \xmark & \cmark (concat) & \xmark \\
+GraphWaveNet & \cmark (adaptive) & \cmark (TCN) & \xmark & \xmark \\
+\textbf{STMGT} & \cmark (GATv2) & \cmark (Transf.) & \cmark (cross-attn) & \cmark (GMM) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+STMGT advantages: parallel ST processing, weather cross-attention~\cite{vaswani2017attention}, GMM uncertainty~\cite{bishop1994mixture}, GATv2 adaptive learning~\cite{brody2022gatv2}.
+
+\subsection{Data Splitting Strategy}
+
+Temporal split (70/15/15): Train Oct 1--21, Val Oct 22--25, Test Oct 26--29. No shuffling prevents data leakage from autocorrelation. Single holdout validation (k-fold requires shuffling). Early stopping: patience 10 epochs, monitor validation MAE.
+
+\subsection{Feature Engineering}
+
+Node features $\mathbf{x}_i^{(t)} \in \mathbb{R}^4$: speed (Z-score), temperature (Z-score), wind (min-max), precipitation (log+Z-score). Graph $\mathcal{G} = (\mathcal{V}, \mathcal{E})$, $|\mathcal{V}|=62$, $|\mathcal{E}|=144$. Temporal: sinusoidal hour encoding $h_{\sin/\cos} = \sin/\cos(2\pi h/24)$, day-of-week embedding, rush hour indicator. Weather projected to hidden dim 96: $\mathbf{w}_{\text{enc}} = \text{MLP}([T_{\text{norm}}, W_{\text{norm}}, P_{\text{norm}}])$. Features selected based on EDA: speed ($\rho > 0.7$), precipitation (15--30\% impact), hour/day-of-week (diurnal patterns).
+
+\subsection{Sequence Representation}
+
+Input: $\mathbf{X} \in \mathbb{R}^{B \times T_{\text{in}} \times N \times F}$ where $B=32$ (batch), $T_{\text{in}}=12$ (3hr history), $N=62$ (nodes), $F=4$ (features). Output: GMM with 5 components, $\mathbf{Y} \in \mathbb{R}^{B \times 12 \times 62 \times 15}$ (15 params: $\{\mu_k, \sigma_k, \pi_k\}_{k=1}^5$). Point prediction: $\hat{v} = \sum_{k=1}^{5} \pi_k \mu_k$. Uncertainty: confidence intervals via $F^{-1}_{\text{GMM}}(p)$.
+
+\subsection{Model Architecture Overview}
+
+STMGT components: (1) Parallel branches: GATv2 spatial~\cite{brody2022gatv2}, Transformer temporal~\cite{vaswani2017attention}, 4 heads each; (2) Gated fusion: $\alpha = \sigma(\text{MLP}([\mathbf{h}_{\text{spatial}} \| \mathbf{h}_{\text{temporal}}]))$, $\mathbf{h}_{\text{fused}} = \alpha \odot \mathbf{h}_{\text{spatial}} + (1-\alpha) \odot \mathbf{h}_{\text{temporal}}$; (3) Weather cross-attention: $\mathbf{h}_{\text{context}} = \text{Attention}(\mathbf{Q} = \mathbf{h}_{\text{fused}}, \mathbf{K} = \mathbf{w}_{\text{enc}}, \mathbf{V} = \mathbf{w}_{\text{enc}})$; (4) GMM head: $\mu_k, \sigma_k, \pi_k$ via linear projections with $\exp$ and softmax; (5) Loss: $\mathcal{L} = -\frac{1}{N} \sum_{i=1}^{N} \log\left(\sum_{k=1}^{5} \pi_k \mathcal{N}(y_i | \mu_k, \sigma_k^2)\right)$.

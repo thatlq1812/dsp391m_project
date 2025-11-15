@@ -1,0 +1,25 @@
+\section{Conclusion \& Recommendations}
+
+\subsection{Summary}
+
+STMGT achieved MAE 2.54, $R^2$ 0.85 (exceeds METR-LA scaled expectation 0.48), improves 36\% over GraphWaveNet, 43\% over LSTM. Novel: parallel ST-processing (+14.2\%), weather cross-attention (+12.2\%), GMM K=5 (Coverage@80 81.94\%), API <400ms. RQs answered: parallel beats sequential, GMM well-calibrated, cross-attention effective, small network $R^2$ 0.85, generalization strong (train-val gap 11\%). Deployed: FastAPI, CUDA-optimized, 4 baselines, 60+ papers reviewed.
+
+\subsection{Applications}
+
+Traffic management: route guidance (15--20\% time savings), signal optimization, incident detection. Public transit: bus schedule/route optimization. Urban planning: infrastructure investment, policy evaluation. Commercial: logistics routing, ride-hailing surge prediction.
+
+\subsection{Limitations}
+
+Data: 1 month (no seasonality), peak hours only, 62 nodes (small). Model: no accidents/events, weather forecast dependency, fixed graph. Deployment: GPU required (395ms), 3hr cold start. Mitigations: expand collection 24/7, 150+ nodes target, incident integration, FP16 quantization, dynamic graph learning.
+
+\subsection{Recommendations}
+
+Immediate (1--3mo): 24/7 collection, 150 nodes, monitoring dashboard, FP16 quantization (2--3x speedup). Short-term (3--6mo): incident data integration, event calendar, multi-horizon models, mobile app. Long-term (6--12mo): dynamic graph learning, multi-city expansion (Hanoi, Da Nang), multi-modal fusion (bus/metro/parking), causal modeling for policy what-if.
+
+\subsection{Lessons \& Future Work}
+
+Lessons: iterative development effective, data quality critical (historical bug impact > tuning), literature review essential (60+ papers), production deployment reveals bugs, uncertainty quantification adds value. Challenges overcome: limited data (regularization), historical bug (fixed loading), API limits (retry logic). Future: TCN (2--3x speedup), attention visualization, multi-task learning, probe vehicle data, satellite imagery, social media sentiment, edge deployment (<100ms), federated learning, active learning.
+
+\subsection{Concluding Remarks}
+
+STMGT demonstrates state-of-the-art forecasting achievable with limited data. Impact: 15--20\% commute time reduction, data-driven infrastructure decisions, proactive traffic management. This work bridges research-practice gap, enabling smarter, more livable cities through advanced AI deployed in real-world HCMC traffic management.

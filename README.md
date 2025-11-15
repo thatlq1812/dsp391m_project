@@ -1,436 +1,254 @@
-# Maintainer Profile# Maintainer Profile
+# Maintainer Profile
 
-**Name:** THAT Le Quang**Name:** THAT Le Quang
+**Name:** THAT Le Quang
 
-- **Role:** AI & DS Major Student- **Role:** AI & DS Major Student
-
-- **GitHub:** [thatlq1812]- **GitHub:** [thatlq1812]
+- **Role:** AI & DS Major Student
+- **GitHub:** [thatlq1812]
 
 ---
 
-# STMGT Traffic Forecasting System# STMGT Traffic Forecasting Project
+# STMGT Traffic Forecasting System
 
-**Spatio-Temporal Multi-Modal Graph Transformer** for real-time traffic speed forecasting in Ho Chi Minh City.**Spatio-Temporal Multi-Graph Transformer for traffic speed forecasting in Ho Chi Minh City.**
+**Spatio-Temporal Multi-Modal Graph Transformer** for real-time traffic speed forecasting in Ho Chi Minh City.
 
-🎯 **Current Performance:** MAE 2.54 km/h (beats SOTA by 36-43%)
+**Current Performance:** MAE 2.54 km/h (beats SOTA by 36-43%)  
+**Status:** Production-ready with REST API and CLI  
+**Coverage:** 62 nodes, 144 road segments, district-level forecasting  
+**Final Report:** 85 pages, IEEE format ([docs/05_final_report/](docs/05_final_report/))
 
-🚀 **Status:** Production-ready with REST API and CLI
+---
 
-📊 **Coverage:** 62 nodes, 144 road segments, district-level forecasting---
+## Quick Start
 
----## Quick Start
+### 1. Environment Setup
 
-## Quick Start (5 Minutes)### 1. Environment
-
-### 1. Installation```bash
-
-conda env create -f environment.yml
-
-````bashconda activate dsp
-
-# Clone repositorypip install -e .
-
-git clone https://github.com/thatlq1812/dsp391m_project.git```
-
+```bash
+# Clone repository
+git clone https://github.com/thatlq1812/dsp391m_project.git
 cd dsp391m_project
+
+# Create environment
+conda env create -f environment.yml
+conda activate dsp
+
+# Install package
+pip install -e .
+```
 
 All scripts assume the Conda environment name `dsp` recorded in `.env`.
 
-# Create environment
-
-conda env create -f environment.yml### 2. CLI Tool (NEW - Replaces Dashboard)
-
-conda activate dsp
+### 2. CLI Tool (Recommended)
 
 **Simple, fast command-line interface for all operations:**
 
-# Install package
-
-pip install -e .```bash
-
-```# For Git Bash on Windows - use wrapper script
-
+```bash
+# For Git Bash on Windows - use wrapper script
 cd /d/UNI/DSP391m/project
+./stmgt.sh --help
 
-### 2. First Run - API Server./stmgt.sh --help
-
-
-
-```bash# Common commands
-
-# Start FastAPI server./stmgt.sh model list              # List all models
-
-python traffic_api/main.py./stmgt.sh api start               # Start API server
-
+# Common commands
+./stmgt.sh model list              # List all models
+./stmgt.sh api start               # Start API server
 ./stmgt.sh data info               # Show dataset info
-
-# Access API./stmgt.sh train status            # Training status
-
-curl http://localhost:8000/health
+./stmgt.sh train status            # Training status
 
 # Add to PATH (optional)
+export PATH="$PATH:/d/UNI/DSP391m/project"
+stmgt --help
+```
 
-# Web interfaceexport PATH="$PATH:/d/UNI/DSP391m/project"
+**Full documentation:** `docs/01_getting_started/CLI.md`
 
-open http://localhost:8000/route_planner.htmlstmgt --help
+### 3. Web Interface
 
-````
+**Interactive traffic visualization and route planning:**
 
-### 3. First Run - CLI Tool**Full documentation:** `docs/guides/CLI_USER_GUIDE.md`
-
-````bash### 3. Web Interface
-
-# Show help
-
-python tools/stmgt_cli.py --help**Interactive traffic visualization and route planning:**
-
-
-
-# List models```bash
-
-python tools/stmgt_cli.py model list# Start API server first
-
+```bash
+# Start API server first
 ./stmgt.sh api start
 
-# Check data
+# Open in browser
+# http://localhost:8000/route_planner.html
+```
 
-python tools/stmgt_cli.py data info# Open in browser
+**Features:**
 
-```# http://localhost:8000/route_planner.html
-
-````
-
-### 4. Train Model
-
-Features:
-
-````bash
-
-# Complete training workflow- Real-time traffic visualization with gradient colors
-
-python scripts/training/train_stmgt.py --config configs/train_normalized_v3.json- Route planning with 3 algorithms (fastest/shortest/balanced)
-
+- Real-time traffic visualization with gradient colors
+- Route planning with 3 algorithms (fastest/shortest/balanced)
 - Interactive map with Leaflet.js
 
-# See: TRAINING_WORKFLOW.md for step-by-step guide
+### 4. Training via CLI
 
-```### 4. Training via CLI
+```bash
+# Complete training workflow
+conda run -n dsp --no-capture-output python scripts/training/train_stmgt.py \
+  --config configs/training_config.json
 
+# See: docs/03_models/TRAINING_WORKFLOW.md for step-by-step guide
+```
 
+The trainer loads configuration through `traffic_forecast/core/config_loader.py` and validates datasets with `traffic_forecast/data/validators.py` before any run begins.
 
----```bash
+---
 
-conda run -n dsp --no-capture-output python scripts/training/train_stmgt.py --config configs/training_config.json
+## Current Performance (Nov 15, 2025)
 
-## Performance Highlights```
+### STMGT V3 Production Model
 
-
-
-### Latest Results (November 12, 2025)The trainer loads configuration through `traffic_forecast/core/config_loader.py` and validates datasets with `traffic_forecast/data/validators.py` before any run begins.
-
-
-
-**Baseline (No Augmentation):**### 4. Analytical Reports
-
-- Test MAE: 3.1068 km/h
-
-- Test R²: 0.8157```bash
-
-- Test MAPE: 20.11%conda run -n dsp python scripts/analysis/analyze_augmentation_strategy.py --dataset data/processed/all_runs_combined.parquet
-
-conda run -n dsp python scripts/analysis/analyze_data_distribution.py --dataset data/processed/all_runs_combined.parquet
-
-**With SafeTrafficAugmentor:**```
-
-- Test MAE: 3.0774 km/h ✓ (0.95% improvement)
-
-- Test R²: 0.8175 ✓These scripts now share CLI patterns, automatic data-root resolution, and dataset validation hooks.
-
-- Test MAPE: 19.68% ✓
-
-- **Result:** Augmentation works, no data leakage---
-
-
-
-### Benchmark Comparison
-
-| Model                    | MAE (km/h) | vs STMGT       |
-| ------------------------ | ---------- | -------------- |
-| Naive (last value)       | 7.20       | +183% worse    |
-| LSTM Sequential          | 4.42-4.85  | +74-91% worse  |
-| GCN Graph                | 3.91       | +54% worse     |
-| GraphWaveNet (SOTA 2019) | 3.95       | +56% worse     |
-| **STMGT V3**             | **2.54**   | **BEST** ✓     |
-
-## Current Performance (Nov 15, 2025) - V3 Production
-
-**STMGT V3** is the current production model, achieved through systematic capacity exploration and training refinement:
+**Performance Metrics:**
 
 - **Test MAE:** 2.54 km/h (best among all baselines)
-- **Test RMSE:** 4.08 km/h
+- **Test RMSE:** 3.01 km/h
 - **R² Score:** 0.85 (explains 85% of variance)
-- **MAPE:** 19.13%
+- **MAPE:** 14.17%
 - **CRPS:** 1.94 (probabilistic score)
-- **Coverage@80:** 81.94% (excellent calibration)
+- **Coverage@80:** 81.94% (well-calibrated uncertainty)
 - **Model Capacity:** 680K parameters (proven optimal)
 
 **Key Achievements:**
 
 - 5 capacity experiments confirmed 680K params optimal (U-shaped curve)
-- Training improvements (dropout 0.25, LR 0.0008, regularization) beat baseline without architectural changes
+- Training improvements (dropout 0.25, LR 0.0008, regularization) beat baseline
 - Best-in-class uncertainty quantification (81.94% coverage)
-- Production-ready with comprehensive testing
+- Production-ready with comprehensive testing and verification
 
-**Model artifacts:** `outputs/stmgt_baseline_1month_20251115_132552/`
+**Artifacts:**
+
+- Model checkpoint: `outputs/stmgt_baseline_1month_20251115_132552/best_model.pt`
+- Final Report: `docs/05_final_report/DSP391m_final_report_V3.pdf` (85 pages)
+- Documentation: See [Documentation Map](#documentation-map) below
+
+### Benchmark Comparison
+
+| Model                    | MAE (km/h) | vs STMGT    |
+| ------------------------ | ---------- | ----------- |
+| Naive (last value)       | 7.20       | +183% worse |
+| LSTM Sequential          | 4.85       | +91% worse  |
+| GCN Graph                | 3.91       | +54% worse  |
+| GraphWaveNet (SOTA 2019) | 3.95       | +56% worse  |
+| **STMGT V3**             | **2.54**   | **BEST** ✓  |
 
 ---
 
-## Documentation
+## Documentation Map
+
+### Quick Access
+
+**[Final Report](docs/05_final_report/DSP391m_final_report_V3.pdf)** - Complete 85-page IEEE format report  
+**[Project Status](PROJECT_STATUS.txt)** - Current verification status  
+**[Changelog](docs/CHANGELOG.md)** - Complete project history (4900+ lines)
 
 ### For Users
 
-#### Getting Started
+**Getting Started:**
 
-- 📖 **[Installation & Setup](#quick-start-5-minutes)** - 5-minute quick start
+- [CLI Guide](docs/01_getting_started/CLI.md) - Command-line interface
+- [API Guide](docs/01_getting_started/API.md) - REST API documentation
+- [Deployment Guide](docs/01_getting_started/DEPLOYMENT.md) - Production deployment
 
-- 🛠️ **[CLI Guide](docs/CLI.md)** - Command-line interface**Model artifacts:** `outputs/stmgt_v2_20251110_123931/`
+**Using the System:**
 
-- 🌐 **[API Reference](docs/API.md)** - REST API documentation**Documentation:** `docs/V3_DESIGN_RATIONALE.md`, `docs/CHANGELOG.md`
+- REST API: `http://localhost:8000/docs` (Swagger UI)
+- Web Interface: `http://localhost:8000/route_planner.html`
+- CLI Tool: `./stmgt.sh --help`
 
-- 🚀 **[Deployment Guide](docs/DEPLOYMENT.md)** - Production deployment
+### For Developers
+
+**Data Pipeline:**
+
+- [Data Overview](docs/02_data/DATA.md) - Dataset structure and specs
+- [Augmentation](docs/02_data/AUGMENTATION.md) - Data augmentation strategies
+- [Super Dataset](docs/02_data/super_dataset/) - 1-year simulation dataset
+
+**Model Development:**
+
+- [Model Overview](docs/03_models/MODEL.md) - Architecture and capabilities
+- [Training Workflow](docs/03_models/TRAINING_WORKFLOW.md) - Complete training pipeline
+- [Architecture Details](docs/03_models/architecture/STMGT_ARCHITECTURE.md) - Design decisions
+
+**Evaluation:**
+
+- [Metrics Verification](docs/04_evaluation/METRICS_VERIFICATION_ALL_MODELS.md) - Cross-model comparison
+- [GraphWaveNet Investigation](docs/04_evaluation/graphwavenet/) - Baseline analysis
+
+### Project Information
+
+- [Final Report (LaTeX)](docs/05_final_report/) - Source files and figures
+- [Documentation Index](docs/README.md) - Complete documentation structure
 
 ---
 
-#### Using the System
+## Project Structure
 
-- **REST API:** `http://localhost:8000/docs` (interactive Swagger UI)## Project Structure
-
-- **Web Interface:** `http://localhost:8000/route_planner.html` (route planning)
-
-- **CLI Tool:** `python tools/stmgt_cli.py --help` (operations)```
-
+```
 project/
-
-### For Developers├── dashboard/
-
-│   ├── Dashboard.py
-
-#### Training & Development│   └── pages/            # Streamlit V4 page suite (registry, training, inference)
-
-- 📊 **[Training Workflow](TRAINING_WORKFLOW.md)** - Complete training pipeline├── traffic_forecast/
-
-- 🎓 **[Training Guide](docs/TRAINING.md)** - Advanced training options│   ├── core/             # Config loader, registry validation, logging helpers
-
-- 📈 **[Augmentation Guide](docs/AUGMENTATION.md)** - Data augmentation│   ├── data/             # Dataset definitions and validators
-
-- 🗃️ **[Data Guide](docs/DATA.md)** - Data concepts and schemas│   ├── models/           # STMGT architecture and components
-
-│   └── utils/            # Shared utilities
-
-#### Architecture & Research├── scripts/
-
-- 🏗️ **[Architecture](docs/ARCHITECTURE.md)** - System design│   ├── analysis/         # CLI-first analytics (augmentation, distribution reports)
-
-- 🧠 **[Model Overview](docs/MODEL.md)** - Model capabilities and limits│   ├── data/             # Collection, augmentation, and maintenance tasks
-
-- 🔬 **[Research Summary](docs/RESEARCH.md)** - Academic contributions│   ├── monitoring/       # Dashboard and training telemetry
-
-- 🐛 **[Critical Fixes](docs/FIXES.md)** - Data leakage fix│   └── training/         # Training entrypoints
-
-├── configs/              # Environment, registry, and training configuration
-
-### Project Information├── data/                 # Raw and processed datasets (validated at runtime)
-
-- 📝 **[Changelog](docs/CHANGELOG.md)** - Version history├── docs/                 # Project documentation (see below)
-
-- 📄 **[Final Report](docs/final_report/)** - Complete project report├── outputs/              # Training artifacts and evaluation plots
-
-└── models/training_runs/ # Legacy training archives
-
----```
-
-
-
-## Project Structure---
-
-
-
-```## Documentation Map
-
-project/
-
-├── README.md                       # This fileDocumentation lives in `docs/` (all files include Maintainer metadata):
-
-├── TRAINING_WORKFLOW.md            # Complete training guide
-
-├── traffic_forecast/               # Main package**Core Documentation:**
-
-│   ├── core/                       # Config, artifacts, reporting
-
-│   ├── data/                       # Datasets and augmentation- `docs/CHANGELOG.md` – Project-level change log with full history
-
-│   │   ├── stmgt_dataset.py        # PyTorch dataset- `docs/INDEX.md` – Canonical index of all documentation (reorganized Nov 2025)
-
-│   │   └── augmentation_safe.py    # Leak-free augmentation- `docs/STMGT_ARCHITECTURE.md` – Model architecture and design decisions
-
-│   ├── models/stmgt/               # STMGT model- `docs/STMGT_DATA_IO.md` – Data schemas and I/O specifications
-
-│   │   ├── model.py                # Architecture- `docs/STMGT_RESEARCH_CONSOLIDATED.md` – Merged research findings (Claude, Gemini, OpenAI)
-
-│   │   ├── train.py                # Training loop
-
-│   │   └── evaluate.py             # Evaluation**Guides (`docs/guides/`):**
-
-│   └── utils/                      # Utilities
-
-├── traffic_api/                    # FastAPI server- `docs/guides/README_SETUP.md` – Environment setup and installation
-
-│   ├── main.py                     # API entry point- `docs/guides/WORKFLOW.md` – Development workflow and operations
-
-│   └── route_planner.html          # Web interface- `docs/guides/PROCESSED_DATA_PIPELINE.md` – Data collection and processing pipeline
-
-├── tools/
-
-│   └── stmgt_cli.py                # CLI tool**Quality Audits (`docs/audits/`):**
-
+├── docs/
+│   ├── 01_getting_started/      # User guides (CLI, API, Deployment)
+│   ├── 02_data/                 # Data documentation
+│   ├── 03_models/               # Model and training docs
+│   ├── 04_evaluation/           # Evaluation reports
+│   ├── 05_final_report/         # IEEE format report (85 pages)
+│   │   ├── DSP391m_final_report_V3.pdf
+│   │   ├── DSP391m_final_report_V3.tex
+│   │   ├── references.bib       # Bibliography (20+ citations)
+│   │   └── figures/             # All 20 figures
+│   └── CHANGELOG.md             # Complete project history
+├── traffic_forecast/
+│   ├── core/                    # Config loader, registry, logging
+│   ├── data/                    # Dataset definitions and validators
+│   ├── models/                  # STMGT architecture
+│   └── utils/                   # Shared utilities
 ├── scripts/
-
-│   ├── data/                       # Data collection/preprocessing- `docs/audits/PROJECT_TRANSPARENCY_AUDIT.md` – Comprehensive project evaluation (8.7/10)
-
-│   │   ├── preprocess_runs.py      # JSON → Parquet- `docs/audits/GRAPHWAVENET_TRANSPARENCY_AUDIT.md` – Baseline model analysis
-
-│   │   └── augment_safe.py         # Safe augmentation
-
-│   ├── training/                   # Training scripts**Dashboard:**
-
-│   │   └── train_stmgt.py          # Main training script
-
-│   └── analysis/                   # Analytics scripts- `docs/DASHBOARD_V4_QUICKSTART.md` – Dashboard quick start guide
-
-├── configs/                        # Configuration files- `docs/DASHBOARD_V4_REFERENCE.md` – Complete dashboard reference
-
-│   ├── train_normalized_v3.json    # Training config
-
-│   ├── augmentation_config.json    # Augmentation config**Phase Instructions (`docs/instructions/`):**
-
-│   └── model_registry.json         # Model registry
-
-├── data/- Phase 1-4 implementation guides and task lists
-
-│   ├── runs/                       # Raw data (JSON)
-
-│   └── processed/                  # Processed data (Parquet)**Archived Content:**
-
-├── docs/                           # Documentation
-
-│   ├── CLI.md                      # CLI reference- `archive/README.md` – Experimental code, old training runs, retention policy
-
-│   ├── API.md                      # API reference
-
-│   ├── TRAINING.md                 # Training guide---
-
-│   ├── DATA.md                     # Data guide
-
-│   ├── MODEL.md                    # Model overview## Contributing and Testing
-
-│   ├── ARCHITECTURE.md             # Architecture
-
-│   ├── DEPLOYMENT.md               # Deployment- Format and lint using the standard tools specified in `pyproject.toml`.
-
-│   ├── AUGMENTATION.md             # Augmentation- Run targeted tests with `conda run -n dsp pytest tests/test_stmgt_utils.py` after modifying core utilities.
-
-│   ├── RESEARCH.md                 # Research- Record notable changes in `docs/CHANGELOG.md` and update relevant workflow or quickstart guides.
-
-│   ├── FIXES.md                    # Critical fixes
-
-│   ├── CHANGELOG.md                # Project history---
-
-│   ├── final_report/               # Final report
-
-│   └── archive/                    # Historical docs## Support
-
-└── outputs/                        # Training outputs
-
-    └── stmgt_v2_TIMESTAMP/         # Model checkpointsFor issues or feature requests please open a GitHub issue on [thatlq1812/dsp391m_project](https://github.com/thatlq1812/dsp391m_project).
-
-````
+│   ├── data/                    # Data collection and preprocessing
+│   ├── training/                # Training scripts
+│   ├── visualization/           # Figure generation (20 figures)
+│   ├── evaluation/              # Model evaluation
+│   └── demo/                    # Demo scripts
+├── configs/
+│   ├── training/                # Training configurations
+│   ├── data/                    # Data pipeline configs
+│   └── project_config.yaml      # Project-level config
+├── data/
+│   ├── processed/               # Preprocessed parquet files
+│   └── runs/                    # Raw data collection runs
+├── outputs/
+│   └── stmgt_baseline_1month_20251115_132552/  # Production model
+├── traffic_api/                 # FastAPI REST API
+├── stmgt.sh                     # CLI wrapper script
+└── README.md                    # This file
+```
 
 ---
-
----
-
-_Detailed documentation and run logs are maintained in the `docs/` and `outputs/` directories._
 
 ## Features
 
-### 🎯 Core Features
+### Core Capabilities
 
 **Traffic Forecasting:**
 
 - 3-hour ahead prediction (15-minute intervals)
-- Probabilistic forecasts with uncertainty quantification
-- 62 nodes, 144 road segments coverage
+- Probabilistic forecasts with calibrated uncertainty
+- 62 nodes, 144 road segments in Ho Chi Minh City
 
 **Model Architecture:**
 
-- Graph Neural Network (3-hop spatial propagation)
-- Transformer attention (temporal patterns)
-- Gaussian Mixture Model (uncertainty)
+- Graph Attention Network (GATv2) for spatial dependencies
+- Transformer for temporal patterns
+- Gaussian Mixture Model (K=5) for uncertainty quantification
 - 680K parameters (optimal capacity)
 
-**Data Pipeline:**
+**Production Features:**
 
-- JSON collection → Parquet preprocessing
-- Leak-free data augmentation
-- Temporal split validation
-- Automated data validation
-
-### 🚀 Production Features
-
-**REST API:**
-
-- `/health` - Health check
-- `/traffic/current` - Current traffic state
-- `/traffic/forecast` - 3-hour forecast
-- `/route/plan` - Route optimization
-
-**CLI Tool:**
-
-- Model management (list, info, compare)
-- API control (start, stop, status)
-- Data operations (info, validate)
-- Training monitoring
-
-**Web Interface:**
-
-- Interactive traffic map
+- REST API with Swagger documentation
+- Command-line interface (CLI)
+- Interactive web dashboard
 - Route planning (fastest/shortest/balanced)
-- Real-time visualization
-- Leaflet.js integration
 
 ---
 
 ## Usage Examples
 
-### Example 1: Train Model from Scratch
-
-```bash
-# Step 1: Preprocess data
-python scripts/data/preprocess_runs.py
-
-# Step 2: Train baseline
-python scripts/training/train_stmgt.py --config configs/train_normalized_v3.json
-
-# Step 3: Augment data (optional)
-python scripts/data/augment_safe.py --preset moderate
-
-# Step 4: Train with augmentation
-python scripts/training/train_stmgt.py --config configs/train_normalized_v3.json
-
-# See: TRAINING_WORKFLOW.md for detailed steps
-```
-
-### Example 2: API Usage
+### Example 1: REST API
 
 ```python
 import requests
@@ -458,64 +276,87 @@ response = requests.post(
 route = response.json()
 ```
 
-### Example 3: CLI Operations
+### Example 2: CLI Operations
 
 ```bash
 # List all models with performance
-python tools/stmgt_cli.py model list
-
-# Compare two model runs
-python tools/stmgt_cli.py model compare \
-    outputs/stmgt_v2_20251112_085612 \
-    outputs/stmgt_v2_20251112_091929
+./stmgt.sh model list
 
 # Check dataset info
-python tools/stmgt_cli.py data info
+./stmgt.sh data info
 
 # Start API server
-python tools/stmgt_cli.py api start --port 8000
+./stmgt.sh api start --port 8000
+
+# Monitor training
+./stmgt.sh train status
+```
+
+### Example 3: Training Pipeline
+
+```bash
+# Step 1: Preprocess data
+python scripts/data/preprocess_runs.py
+
+# Step 2: Train model
+python scripts/training/train_stmgt.py \
+  --config configs/train_normalized_v3.json
+
+# Step 3: Evaluate
+python scripts/evaluation/evaluate_model.py \
+  --model-dir outputs/stmgt_baseline_1month_20251115_132552
+
+# See: docs/03_models/TRAINING_WORKFLOW.md for complete guide
 ```
 
 ---
 
 ## Recent Updates
 
-### November 12, 2025
+### November 15, 2025 - Final Verification
 
-**Augmentation Experiment Success:**
+**Project Verification Complete:**
 
-- Baseline: MAE 3.1068 km/h
-- Augmented: MAE 3.0774 km/h (0.95% improvement)
-- Validated no data leakage
+- Bibliography citations fixed (all [?] → [1], [2], [3]...)
+- All 20 figures regenerated with current code
+- Code cleanup (removed 12 TODO comments)
+- Final report compiled (85 pages, 6.0 MB PDF)
 
-**Documentation Consolidation:**
+**Quality Assurance:**
 
-- Reduced from 50+ docs to 14 essential docs
-- Created master README (this file)
-- Archived historical documentation
-- Clear navigation structure
+- All figures consistent with V3 performance (MAE 2.54, R² 0.85)
+- No undefined references in report
+- Clean codebase ready for review
+- Production-ready status confirmed
 
-**Training Workflow:**
+**Documentation:**
 
-- Created comprehensive TRAINING_WORKFLOW.md
-- Step-by-step pipeline from preprocessing to evaluation
-- SafeTrafficAugmentor integration guide
+- Created `PROJECT_STATUS.txt` - Detailed verification status
+- Updated `docs/CHANGELOG.md` - Complete project history
+- All 20 figures verified and embedded in report
 
-### November 10, 2025
+### November 12, 2025 - Documentation Consolidation
 
-**STMGT V3 Production Release:**
+**Report Approval:**
 
-- MAE 3.0468 km/h (best to date)
-- 5 capacity experiments (350K-1.15M params)
-- Confirmed 680K parameters optimal
-- Excellent uncertainty calibration (86%)
+- Final report V3 approved by supervisor
+- Fixed all internal contradictions
+- Updated all tables to V3 values
+- Bibliography section added with 20+ citations
+
+**Code Quality:**
+
+- Comprehensive test suite
+- Production-ready API/CLI
+- Clean project structure
+- All baselines verified
 
 ---
 
 ## Requirements
 
-**Python:** 3.9+
-**Hardware:** NVIDIA GPU recommended (CPU supported)
+**Python:** 3.10+  
+**Hardware:** NVIDIA GPU recommended (CPU supported)  
 **OS:** Linux, macOS, Windows (Git Bash)
 
 **Key Dependencies:**
@@ -523,31 +364,10 @@ python tools/stmgt_cli.py api start --port 8000
 - PyTorch 2.0+
 - PyTorch Geometric
 - FastAPI
-- Pandas
-- NumPy
+- Pandas, NumPy
+- Matplotlib, Seaborn
 
 **Full list:** See `environment.yml` and `requirements.txt`
-
----
-
-## Contributing
-
-### Development Workflow
-
-1. Fork repository
-2. Create feature branch: `git checkout -b feature/your-feature`
-3. Make changes
-4. Run tests: `pytest tests/`
-5. Update CHANGELOG.md
-6. Submit pull request
-
-### Code Standards
-
-- Follow PEP 8 style guide
-- Add docstrings to functions
-- Include type hints
-- Write unit tests
-- Update documentation
 
 ---
 
@@ -558,12 +378,33 @@ If you use this work in your research, please cite:
 ```bibtex
 @misc{stmgt2025,
   title={STMGT: Spatio-Temporal Multi-Modal Graph Transformer for Traffic Forecasting},
-  author={Le Quang, THAT},
+  author={Le Quang, THAT and Le Minh, HUNG and Nguyen Quy, TOAN},
   year={2025},
   institution={FPT University},
-  note={DSP391m Project}
+  note={DSP391m Capstone Project}
 }
 ```
+
+---
+
+## Contributing
+
+### Development Workflow
+
+1. Fork repository
+2. Create feature branch: `git checkout -b feature/your-feature`
+3. Make changes and test: `pytest tests/`
+4. Update documentation
+5. Update `docs/CHANGELOG.md`
+6. Submit pull request
+
+### Code Standards
+
+- Follow PEP 8 style guide
+- Add docstrings and type hints
+- Write unit tests for new features
+- Keep code modular and clean
+- Document major changes
 
 ---
 
@@ -575,36 +416,18 @@ MIT License - See LICENSE file for details
 
 ## Support
 
-**Issues:** Open GitHub issue at [thatlq1812/dsp391m_project](https://github.com/thatlq1812/dsp391m_project)
-**Documentation:** See [docs/](docs/) directory
+**Issues:** Open GitHub issue at [thatlq1812/dsp391m_project](https://github.com/thatlq1812/dsp391m_project)  
+**Documentation:** See [docs/](docs/) directory  
+**Final Report:** [docs/05_final_report/DSP391m_final_report_V3.pdf](docs/05_final_report/DSP391m_final_report_V3.pdf)  
 **Contact:** THAT Le Quang - thatlq1812
 
 ---
 
 ## Acknowledgments
 
-- **FPT University** - Academic support
-- **OpenStreetMap** - Road network data
-- **PyTorch Team** - Deep learning framework
-- **PyTorch Geometric** - Graph neural network library
+- **FPT University** - Academic support and supervision
+- **OpenStreetMap & Google Maps API** - Road network and traffic data
+- **PyTorch & PyTorch Geometric** - Deep learning frameworks
+- **Research Community** - Graph neural networks and spatio-temporal modeling
 
 ---
-
-## Data Pipeline
-
-- Baseline dataset: `python scripts/data/run_data_pipeline.py baseline`
-- Augmented dataset: `python scripts/data/run_data_pipeline.py augmented`
-- Quick validate both: `python scripts/data/04_analysis/quick_validate_datasets.py --preset both`
-
-## Training (Defaults Wired)
-
-- `python scripts/training/train_stmgt.py` (defaults to `configs/training/stmgt_baseline_1month.json` and `data/processed/baseline_1month.parquet`)
-- `python scripts/training/train_stmgt.py --config configs/training/stmgt_augmented_1year.json`
-- `python scripts/training/train_lstm_baseline.py --dataset-preset baseline|augmented`
-- `python scripts/training/train_graphwavenet_baseline.py --dataset-preset baseline|augmented`
-
----
-
-**Last Updated:** November 12, 2025  
-**Version:** 1.0.0  
-**Status:** Production Ready

@@ -1,0 +1,82 @@
+\section{Results \& Visualization}
+
+\subsection{Final Performance}
+
+STMGT V3: MAE 2.54, RMSE 4.08, $R^2$ 0.85, MAPE 19.13\%, CRPS 1.94, Coverage@80 81.94\%. Training: 39 epochs (stopped 24), 15 min, 680K params (2.76 MB), val MAE 2.16.
+
+\subsection{Baseline Comparison}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig15_model_comparison.png}
+\caption{STMGT best: MAE 2.54, $R^2$ 0.85. Improves 36\% over GraphWaveNet, 43\% over LSTM.}
+\label{fig:model_comparison}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\caption{Performance Comparison on Test Set}
+\label{tab:baseline_comparison}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Model} & \textbf{MAE} & \textbf{RMSE} & \textbf{$R^2$} & \textbf{MAPE} & \textbf{Params} \\
+\midrule
+\textbf{STMGT V3} & \textbf{2.54} & \textbf{4.08} & \textbf{0.85} & \textbf{19.13\%} & 680K \\
+GraphWaveNet & 3.95 & 5.12 & 0.71 & 24.58\% & 600K \\
+GCN & 3.91 & 5.0 & 0.72 & 25\% & 340K \\
+LSTM & 4.42--4.85 & 6.08--6.23 & 0.18--0.64 & 20.6--28.9\% & 800K \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+STMGT vs baselines: GraphWaveNet -36\% MAE (+20\% $R^2$), GCN -35\% MAE (+18\% $R^2$), LSTM -43\% MAE (+359\% $R^2$). Statistical significance: $p < 0.001$ (paired t-test), Cohen's d $\approx$ 0.65.
+
+\subsection{Prediction Examples}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig16_good_prediction.png}
+\caption{Good prediction: clear weather, morning rush, error 0.43 km/h, tight confidence intervals.}
+\label{fig:good_prediction}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig17_bad_prediction.png}
+\caption{Challenging: heavy rain, sudden drop 22$\to$12 km/h, pred 15.8$\pm$4.5 (wider uncertainty).}
+\label{fig:bad_prediction}
+\end{figure}
+
+Horizon analysis: 15min MAE 2.35 ($R^2$ 0.87), 1hr 2.54 (0.85), 3hr 3.42 (0.76). Strong up to 1hr, acceptable 3hr.
+
+\subsection{Uncertainty \& Calibration}
+
+Coverage@80: 81.94\% (near-optimal). By regime: congested 85\%, moderate 83\%, free-flow 81\%. GMM weights: primary 0.32, secondary 0.28, tertiary 0.22. Most predictions use 2--3 components, K=5 captures multi-modal distribution.
+
+\subsection{Spatial Analysis}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig20_spatial_heatmap.png}
+\caption{Spatial MAE: range 1.71--4.41 km/h, median 2.43. High-error at on-ramps/construction, low-error CBD.}
+\label{fig:spatial_mae_heatmap}
+\end{figure}
+
+\subsection{Temporal and Weather Analysis}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig19_error_by_hour.png}
+\caption{Error by hour: peak 2.43--2.62, off-peak 2.82--3.17 km/h. Weekday $R^2$ 0.86, weekend 0.82.}
+\label{fig:error_by_hour}
+\end{figure}
+
+Weather impact: clear MAE 2.35, light rain 2.57, heavy rain 3.03 (+29\%). Cross-attention improves 12.2\% over concatenation, increases uncertainty during adverse conditions.
+
+\subsection{Feature Importance and Deployment}
+
+Feature ranking: historical speed (baseline), hour-of-day (rel 0.65, +0.42 MAE), precipitation (0.42, +0.28), temperature (0.28, +0.15), day-of-week (0.22, +0.12). Scaled comparison: METR-LA $R^2$ expectation 0.48, achieved 0.85. Production latency 395ms ($<$500ms target). Critical fix: proper temporal variation (std 3.50) enabled realistic predictions 12.9--39.2 km/h. Key insights: parallel +14.2\%, cross-attention +12.2\%, GMM captures multi-modal distribution, GATv2 learns dynamic attention.
+
+\subsection{Limitations}
+
+1 month data (no seasonality), peak hours only, 62 nodes (small), weather API dependent. Edge cases: accidents/holidays/extreme weather. Mitigations: wider intervals, fallback to persistence, regular retraining.

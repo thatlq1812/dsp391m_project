@@ -127,9 +127,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Cache / temp
-cache/
-.cache/
 
 # Logs (project)
 logs/
@@ -193,3 +190,7 @@ temps/*
 .tmp.drivedownload/
 .tmp.driveupload/
 /archive/
+
+# Env
+.env
+.env.*
