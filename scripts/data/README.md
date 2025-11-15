@@ -11,23 +11,133 @@
 
 Scripts for generating and processing traffic datasets.
 
-## Super Dataset Generator
+---
+
+## 📊 Overview
+
+This directory contains scripts for:
+
+1. **Real Data Collection & Processing** - Working with actual traffic data
+2. **Monthly Baseline Generation** - Extending 4-day data to 1-month realistic dataset
+3. **Super Dataset Generation** - Creating 1-year challenging simulation dataset
+
+---
+
+## 🚀 Quick Start
+
+### Generate 1-Month Baseline Dataset
+
+```bash
+# Step 1: Generate 2,880 synthetic runs from 4-day collection
+python scripts/data/03_generation/generate_baseline_1month.py \
+  --runs-dir data/runs \
+  --output-dir data/runs \
+  --reference-run run_20251102_110036
+
+# Step 2: Combine all runs into parquet
+python scripts/data/02_preprocessing/combine_baseline_runs.py \
+  --runs-dir data/runs \
+  --output-file data/processed/baseline_1month.parquet
+
+# Result: 424K records, 1.59 MB, 30 days coverage
+```
+
+### Generate 1-Year Augmented Dataset
+
+```bash
+# Full 1-year challenging augmented dataset
+python scripts/data/03_generation/generate_augmented_1year.py \
+  --config configs/super_dataset_config.yaml \
+  --output data/processed/augmented_1year.parquet \
+  --visualize
+```
+
+---
+
+## 📁 Scripts Overview
+
+### Real Data Collection
+
+**`preprocess_runs.py`** - Convert JSON runs to Parquet
+
+- Loads JSON runs from `data/runs/`
+- Adds derived features
+- Caches to Parquet for fast loading
+
+**`combine_runs.py`** - Combine multiple runs
+
+- Merges all runs into single dataset
+- Validates data quality
+- Legacy script (replaced by `combine_monthly_runs.py`)
+
+### Monthly Baseline Generation
+
+**`03_generation/generate_baseline_1month.py`**
+
+- **Purpose:** Extend 4-day collection to 1-month realistic dataset
+- **Input:** Existing runs in `data/runs/`
+- **Output:** 2,880 synthetic runs (15-min intervals)
+- **Features:**
+  - Pattern analysis from existing data
+  - Realistic speed generation (rush hours, weekends)
+  - Weather simulation (temp, humidity, rain)
+  - Random incidents (5% chance)
+  - Randomized seconds for realism
+
+**Example:**
+
+```bash
+python scripts/data/03_generation/generate_baseline_1month.py \
+  --random-seed 42
+```
+
+**Output:**
+
+- 2,880 run directories: `data/runs/run_YYYYMMDD_HHMMSS/`
+- Manifest: `data/runs/generated_runs_manifest.json`
+- Date range: 2025-10-03 to 2025-11-02
+
+**`02_preprocessing/combine_baseline_runs.py`**
+
+- **Purpose:** Combine all monthly runs into single parquet
+- **Input:** Runs from `data/runs/`
+- **Output:** `data/processed/all_runs_monthly.parquet` (1.59 MB)
+- **Features:**
+  - Encoding-safe JSON loading
+  - Progress tracking with tqdm
+  - Handles dict/list weather formats
+  - Comprehensive statistics
+
+**Example:**
+
+```bash
+python scripts/data/02_preprocessing/combine_baseline_runs.py
+```
+
+**Output Statistics:**
+
+- Total: 424,224 records
+- Edges: 144 unique
+- Speed: 19.05 ± 7.83 km/h
+- Range: [3.00, 52.84] km/h
+
+## Augmented 1-Year Dataset Generator
 
 ### Overview
 
-`generate_super_dataset.py` creates a challenging 1-year traffic simulation dataset designed to prevent autocorrelation exploitation and test true spatio-temporal learning.
+`03_generation/generate_augmented_1year.py` creates a challenging 1-year traffic simulation dataset designed to prevent autocorrelation exploitation and test true spatio-temporal learning.
 
 ### Quick Start
 
 ```bash
 # Dry run (test configuration)
-python scripts/data/generate_super_dataset.py --dry-run
+python scripts/data/03_generation/generate_augmented_1year.py --dry-run
 
 # Generate full dataset
-python scripts/data/generate_super_dataset.py \
-    --config configs/super_dataset_config.yaml \
-    --output data/processed/super_dataset_1year.parquet \
-    --visualize
+python scripts/data/03_generation/generate_augmented_1year.py \
+  --config configs/super_dataset_config.yaml \
+  --output data/processed/augmented_1year.parquet \
+  --visualize
 ```
 
 ### Features

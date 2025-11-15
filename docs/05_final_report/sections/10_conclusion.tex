@@ -9,7 +9,7 @@ This project successfully developed and deployed STMGT (Spatio-Temporal Multi-Mo
 \textbf{1. Outstanding Model Performance:}
 \begin{itemize}
     \item MAE: 3.08 km/h (best among all baselines)
-    \item R²: 0.82 (explains 82\% of variance)
+    \item $R^2$: 0.82 (explains 82\% of variance)
     \item Improvement: 22\% better than GraphWaveNet, 36\% better than LSTM
     \item Exceeded expectations for small network (62 nodes, 16K samples)
 \end{itemize}
@@ -54,11 +54,11 @@ This project successfully developed and deployed STMGT (Spatio-Temporal Multi-Mo
 
 \textbf{RQ4: What is the realistic performance ceiling for small networks?}
 
-\textbf{Answer:} R² = 0.82 achieved, significantly exceeding expectations. Scaling from METR-LA benchmarks suggested expected R² of 0.45--0.55, but actual performance of 0.82 demonstrates that aggressive regularization combined with architectural innovation enables strong performance even with limited data.
+\textbf{Answer:} $R^2$ = 0.82 achieved, significantly exceeding expectations. Scaling from METR-LA benchmarks suggested expected $R^2$ of 0.45--0.55, but actual performance of 0.82 demonstrates that aggressive regularization combined with architectural innovation enables strong performance even with limited data.
 
 \textbf{RQ5: Can the model generalize to unseen traffic patterns?}
 
-\textbf{Answer:} Yes, with proper regularization. Test set R² = 0.82 with train-val gap of only 8\% demonstrates strong generalization. Dropout 0.2, weight decay $10^{-4}$, and early stopping proved effective. Recommendation: Retrain every 1--2 weeks to maintain performance as traffic patterns evolve.
+\textbf{Answer:} Yes, with proper regularization. Test set $R^2$ = 0.82 with train-val gap of only 8\% demonstrates strong generalization. Dropout 0.2, weight decay $10^{-4}$, and early stopping proved effective. Recommendation: Retrain every 1--2 weeks to maintain performance as traffic patterns evolve.
 
 \subsection{Practical Applications}
 
@@ -312,7 +312,7 @@ This project successfully developed and deployed STMGT (Spatio-Temporal Multi-Mo
 \textbf{1. Iterative Development:}
 \begin{itemize}
     \item Started with simple baselines (LSTM, GCN)
-    \item Systematically added complexity (GraphWaveNet, ASTGCN, STMGT)
+    \item Systematically added complexity (GraphWaveNet, STMGT)
     \item Each iteration informed by experiments and literature
 \end{itemize}
 
@@ -355,10 +355,10 @@ This project successfully developed and deployed STMGT (Spatio-Temporal Multi-Mo
     \item Result: Realistic predictions (12.9--39.2 km/h)
 \end{itemize}
 
-\textbf{3. Baseline Implementation:}
+	extbf{3. Baseline Implementation:}
 \begin{itemize}
-    \item Challenge: ASTGCN performed very poorly (R² = 0.023)
-    \item Learning: Complex architectures sensitive to hyperparameters
+    \item Challenge: Some complex baselines performed poorly on limited data
+    \item Learning: Complex architectures can be sensitive to hyperparameters
     \item Decision: Focus on robust, well-tested components
 \end{itemize}
 

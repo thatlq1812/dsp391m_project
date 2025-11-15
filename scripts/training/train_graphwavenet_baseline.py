@@ -18,6 +18,7 @@ import pandas as pd
 import numpy as np
 import json
 from datetime import datetime
+import torch
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -36,8 +37,16 @@ def parse_args():
     parser.add_argument(
         '--dataset',
         type=str,
-        default='data/processed/all_runs_gapfilled_week.parquet',
-        help='Path to dataset parquet file (default: data/processed/all_runs_gapfilled_week.parquet)'
+        default='data/processed/baseline_1month.parquet',
+        help='Path to dataset parquet file (default: data/processed/baseline_1month.parquet)'
+    )
+
+    parser.add_argument(
+        '--dataset-preset',
+        type=str,
+        choices=['baseline', 'augmented'],
+        default=None,
+        help="Quick preset to select dataset: 'baseline' -> baseline_1month.parquet, 'augmented' -> augmented_1year.parquet. Overrides --dataset if provided."
     )
     
     parser.add_argument(
@@ -146,15 +155,24 @@ def main():
     args = parse_args()
     random.seed(args.seed)
     np.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(args.seed)
     try:
         import tensorflow as tf  # type: ignore
         tf.random.set_seed(args.seed)
     except ImportError:
         pass
     
+    # Setup device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("=" * 80)
     print("GRAPHWAVENET BASELINE TRAINING")
     print("=" * 80)
+    print(f"\nDevice: {device.type.upper()}")
+    if device.type == "cuda":
+        print(f"GPU: {torch.cuda.get_device_name(0)}")
+        print(f"Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
     print("\nObjective: Spatial-temporal baseline with adaptive graph learning")
     print("Expected MAE: ~3.5-4.0 km/h (between LSTM and STMGT)")
     print("\nThis baseline learns adjacency matrix from data and uses")
@@ -169,9 +187,16 @@ def main():
     
     print(f"\nOutput directory: {run_dir}")
     
+    # Resolve dataset from preset if provided
+    if args.dataset_preset == 'baseline':
+        dataset_path = Path('data/processed/baseline_1month.parquet')
+    elif args.dataset_preset == 'augmented':
+        dataset_path = Path('data/processed/augmented_1year.parquet')
+    else:
+        dataset_path = Path(args.dataset)
+
     # Load dataset
-    print(f"\n[1/7] Loading dataset: {args.dataset}")
-    dataset_path = Path(args.dataset)
+    print(f"\n[1/7] Loading dataset: {dataset_path}")
     
     if not dataset_path.exists():
         print(f"[!] Dataset not found: {dataset_path}")
@@ -282,7 +307,7 @@ def main():
     split_metrics = {}
     split_metrics_dict = {}
     for split_name, split_data in evaluator.splits.items():
-        preds, _ = model.predict(split_data, device='cpu')
+        preds, _ = model.predict(split_data, device=device.type)
         metrics = evaluator.calculate_metrics(
             split_data['speed'].values,
             preds

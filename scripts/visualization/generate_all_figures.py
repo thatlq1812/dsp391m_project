@@ -26,7 +26,7 @@ def main():
         spec.loader.exec_module(data_figs)
         data_figs.main()
     except Exception as e:
-        print(f"  ⚠️  Error in data figures: {e}")
+        print(f"  WARNING: Error in data figures: {e}")
         import traceback
         traceback.print_exc()
     
@@ -37,7 +37,7 @@ def main():
         spec.loader.exec_module(prep_flow)
         prep_flow.main()
     except Exception as e:
-        print(f"  ⚠️  Error in preprocessing flow: {e}")
+        print(f"  WARNING: Error in preprocessing flow: {e}")
         import traceback
         traceback.print_exc()
     
@@ -48,7 +48,7 @@ def main():
         spec.loader.exec_module(eda_figs)
         eda_figs.main()
     except Exception as e:
-        print(f"  ⚠️  Error in EDA figures: {e}")
+        print(f"  WARNING: Error in EDA figures: {e}")
         import traceback
         traceback.print_exc()
     
@@ -59,14 +59,14 @@ def main():
         spec.loader.exec_module(results_figs)
         results_figs.main()
     except Exception as e:
-        print(f"  ⚠️  Error in results figures: {e}")
+        print(f"  WARNING: Error in results figures: {e}")
         import traceback
         traceback.print_exc()
     
     print("\n" + "="*60)
     print("FIGURE GENERATION COMPLETE")
     print("="*60)
-    print(f"\n✓ All figures saved to: {FIGURE_DIR}")
+    print(f"\nAll figures saved to: {FIGURE_DIR}")
     print("\nFigures generated:")
     print("  - Fig 1-4: Data & Preprocessing")
     print("  - Fig 5-10: EDA")

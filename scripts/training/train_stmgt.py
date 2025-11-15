@@ -67,7 +67,12 @@ MODEL_KEY = "stmgt_v2"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train STMGT v2 model")
-    parser.add_argument("--config", type=Path, default=None, help="Path to dashboard-generated config JSON")
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/training/stmgt_baseline_1month.json"),
+        help="Path to training config JSON (default: configs/training/stmgt_baseline_1month.json)",
+    )
     parser.add_argument("--output-dir", type=Path, default=None, help="Optional override for output directory")
     return parser.parse_args()
 
@@ -119,7 +124,7 @@ def main() -> None:
     if candidate_path.exists():
         data_path = candidate_path
     else:
-        fallback = get_data_root() / "all_runs_gapfilled_week.parquet"
+        fallback = get_data_root() / "baseline_1month.parquet"
         if fallback.exists() and fallback != candidate_path:
             print(f"WARNING: {candidate_path.name} missing, falling back to {fallback.name}")
             data_path = fallback

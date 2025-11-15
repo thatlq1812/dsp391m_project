@@ -47,34 +47,31 @@
 
 **Table 1: Performance Comparison of All Models on Test Set**
 
-| Model         | MAE (km/h) | RMSE (km/h) | R²         | MAPE         | Params | Architecture          |
-| ------------- | ---------- | ----------- | ---------- | ------------ | ------ | --------------------- |
-| **STMGT V2**  | **3.08**   | **4.53**    | **0.82**   | **19.26%**   | 680K   | Parallel ST + GMM     |
-| GraphWaveNet  | 3.95       | 5.12        | 0.71       | 24.58%       | ~600K  | Adaptive + TCN        |
-| GCN Baseline  | 3.91       | ~5.0        | ~0.72      | ~25%         | 340K   | Graph Conv            |
-| LSTM Baseline | 4.42-4.85  | 6.08-6.23   | 0.185-0.64 | 20.62-28.91% | ~800K  | Sequential RNN        |
-| ASTGCN        | 4.29       | ~6.2        | 0.023      | 92%          | ~900K  | ST Attention (failed) |
+| Model         | MAE (km/h) | RMSE (km/h) | R²         | MAPE         | Params | Architecture      |
+| ------------- | ---------- | ----------- | ---------- | ------------ | ------ | ----------------- |
+| **STMGT V2**  | **3.08**   | **4.53**    | **0.82**   | **19.26%**   | 680K   | Parallel ST + GMM |
+| GraphWaveNet  | 3.95       | 5.12        | 0.71       | 24.58%       | ~600K  | Adaptive + TCN    |
+| GCN Baseline  | 3.91       | ~5.0        | ~0.72      | ~25%         | 340K   | Graph Conv        |
+| LSTM Baseline | 4.42-4.85  | 6.08-6.23   | 0.185-0.64 | 20.62-28.91% | ~800K  | Sequential RNN    |
 
 **Key Findings:**
 
 1. **STMGT achieves best performance** across all metrics
 2. **GraphWaveNet and GCN are strong baselines** (MAE 3.95 and 3.91 respectively)
 3. **LSTM shows high variance** (MAE 4.42-4.85 across runs, training instability)
-4. **ASTGCN catastrophic failure** (R²=0.023, MAPE=92%, didn't converge on 29-day dataset)
 
 **Improvement Over Baselines:**
 
 - vs GraphWaveNet: **-22% MAE** (3.95 → 3.08), **+15% R²** (0.71 → 0.82)
 - vs GCN: **-21% MAE** (3.91 → 3.08), **+14% R²** (0.72 → 0.82)
 - vs LSTM (best run): **-30% MAE** (4.42 → 3.08), **+343% R²** (0.185 → 0.82)
-- vs ASTGCN: **-28% MAE** (4.29 → 3.08), **+3,465% R²** (0.023 → 0.82)
 
 **Analysis:**
 
 - GCN and GraphWaveNet perform similarly (3.91 vs 3.95), adaptive adjacency provides marginal benefit
 - STMGT's parallel processing and weather cross-attention provide consistent 20%+ improvement
 - LSTM's sequential architecture fails to capture spatial dependencies effectively
-- ASTGCN's multi-component (recent/daily/weekly) design requires longer time series (>29 days)
+- Spatial-temporal models (GCN, GraphWaveNet) significantly outperform temporal-only LSTM
 
 ### 11.2.2 Statistical Significance
 

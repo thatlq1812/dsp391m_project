@@ -1,0 +1,256 @@
+# Traffic Forecasting Configuration v5.1
+# Production configuration with adaptive scheduling
+# 3-day collection: ~$63 total (25% savings vs constant interval)
+
+project:
+  name: traffic-forecast-production
+  version: v5.1
+  timezone: Asia/Ho_Chi_Minh
+  bbox: [10.67, 106.60, 10.90, 106.84]
+
+# Adaptive Collection Scheduler v5.1
+# Cost-optimized: 25% savings vs constant interval
+# Target: ~$21/day for 3-day production run = $63 total
+scheduler:
+  enabled: true
+  mode: adaptive # Use 'fixed' for constant interval
+
+  # Fixed interval mode (legacy - for testing only)
+  fixed_interval_minutes: 60
+
+  # Adaptive mode v5.1 - optimized for Vietnam traffic patterns
+  adaptive:
+    # Peak hours - Critical traffic patterns (30 min intervals)
+    # Vietnam rush hours: morning school/work, lunch, evening rush
+    peak_hours:
+      enabled: true
+      time_ranges:
+        # Morning rush (6:30-8 AM) - School & work commute
+        - start: "06:30"
+          end: "08:00"
+        # Lunch rush (10:30-11:30 AM) - Lunch time traffic
+        - start: "10:30"
+          end: "11:30"
+        # Evening rush (4-7 PM) - Return home traffic
+        - start: "16:00"
+          end: "19:00"
+      interval_minutes: 30 # Every 30 minutes for peak patterns
+
+    # Off-peak hours - Stable traffic (120 min intervals)
+    # Lower frequency to reduce API costs
+    offpeak:
+      enabled: true
+      time_ranges:
+        # Mid-morning (8 AM-10:30 AM)
+        - start: "08:00"
+          end: "10:30"
+        # Afternoon (11:30 AM-4 PM)
+        - start: "11:30"
+          end: "16:00"
+        # Evening (7-10 PM)
+        - start: "19:00"
+          end: "22:00"
+      interval_minutes: 120 # Every 120 minutes (2 hours)
+
+    # Night hours - Stable traffic (120 min intervals)
+    # Minimal sampling for night baseline
+    night:
+      enabled: true
+      time_ranges:
+        - start: "22:00"
+          end: "06:30"
+      interval_minutes: 120 # Every 120 minutes (2 hours)
+      skip: false # Keep minimal night data
+
+    # Weekend - Same as weekday (no special handling)
+    weekend:
+      enabled: false
+      use_offpeak_only: false
+      interval_minutes: 15
+
+globals:
+  area:
+    mode: point_radius
+    center: [106.697794, 10.772465]
+    radius_m: 4096 # Wider coverage area for better data quality
+    node_spacing_m: 200
+  output_base: data_runs
+
+# Node Selection Configuration v5.0
+node_selection:
+  min_degree: 3 # 3+ roads meeting at intersection
+  min_importance_score: 17.5 # Balanced threshold for ~64 nodes
+  max_nodes: 64 # Target number of nodes
+  min_distance_meters: 200 # Maintain spacing between nodes
+  road_type_filter:
+    - motorway
+    - trunk
+    - primary
+  require_street_names: true
+  min_street_name_count: 2 # Minimum unique street names
+
+data:
+  parquet_dir: ./data/parquet
+  json_dir: ./data
+  cache_dir: ./cache
+
+collectors:
+  # Overpass - Static topology data v5.1
+  # Cache permanently (topology doesn't change)
+  overpass:
+    enabled: true
+    url: https://overpass-api.de/api/interpreter
+    query_timeout: 120
+
+    # Permanent caching (only fetch once)
+    use_cache: true
+    cache_expiry_days: 30 # Re-fetch monthly for safety
+    cache_file: cache/overpass_topology.json
+    force_cache: true # Never re-fetch if cache exists
+
+    # Smart cache validation
+    validate_cache:
+      enabled: true
+      min_nodes: 50 # Ensure cache has enough data
+      required_fields: [id, lat, lon, tags]
+
+    area:
+      mode: point_radius
+      center: [106.697794, 10.772465]
+      radius_m: 4096
+
+  # Open-Meteo Weather API v5.1
+  # Optimized: Grid-based caching (1 call per 1km² instead of 78 calls)
+  open_meteo:
+    enabled: true
+    base_url: https://api.open-meteo.com/v1/forecast
+    current_params: [temperature_2m, precipitation, wind_speed_10m]
+    forecast_params: [temperature_2m, precipitation, wind_speed_10m]
+    horizons_min: [5, 15, 30, 60]
+
+    # Smart caching strategy
+    use_cache: true
+    cache_expiry_minutes: 30 # Weather stable for 30min in same area
+    cache_file: cache/weather_latest.json
+
+    # Grid-based weather sharing (1km² cells)
+    # Instead of 1 API call per node, use 1 call per grid cell
+    grid_cache:
+      enabled: true
+      cell_size_meters: 1000 # 1km x 1km cells
+      # Coverage area 4096m radius ≈ 16 cells (4x4 grid)
+      # Reduces weather API calls by 95%!
+
+    area:
+      mode: point_radius
+      center: [106.697794, 10.772465]
+      radius_m: 4096
+
+  # Google Directions API - REAL API ONLY (NO MOCK)
+  google_directions:
+    enabled: true
+    api_key_env: GOOGLE_MAPS_API_KEY
+    use_real_api_only: true # NEW: Force real API, no mock fallback
+    rate_limit_requests_per_minute: 2800
+    radius_km: 4.096 # Match radius_m = 4096m
+    k_neighbors: 3
+    limit_nodes: 128
+    retry_on_failure: 3 # NEW: Retry failed requests
+    timeout_seconds: 10
+    area:
+      mode: point_radius
+      center: [106.697794, 10.772465]
+      radius_m: 4096
+
+api:
+  title: Traffic Forecast API
+  description: API serving node-level traffic forecasts
+  predictions_file: data/predictions.json
+  port: 8000
+
+pipelines:
+  preprocess:
+    features_file: data/features_nodes_v2.json
+    output_dir: data/processed
+    target_column: avg_speed_kmh
+
+    feature_columns:
+      # Current traffic
+      - avg_speed_kmh
+      - congestion_level
+
+      # Current weather
+      - temperature_c
+      - rain_mm
+      - wind_speed_kmh
+
+      # Weather forecasts
+      - forecast_temp_t5_c
+      - forecast_temp_t15_c
+      - forecast_temp_t30_c
+      - forecast_temp_t60_c
+      - forecast_rain_t5_mm
+      - forecast_rain_t15_mm
+      - forecast_rain_t30_mm
+      - forecast_rain_t60_mm
+      - forecast_wind_t5_kmh
+      - forecast_wind_t15_kmh
+      - forecast_wind_t30_kmh
+      - forecast_wind_t60_kmh
+
+      # Traffic lag features
+      - speed_lag_5min
+      - speed_lag_15min
+      - speed_lag_30min
+      - speed_lag_60min
+      - congestion_lag_5min
+      - congestion_lag_15min
+      - congestion_lag_30min
+      - congestion_lag_60min
+
+    outlier_std_multiplier: 3
+
+  training:
+    test_size: 0.2
+    val_size: 0.1
+    random_state: 42
+    cv_folds: 5 # NEW: Cross-validation folds
+
+models:
+  lstm:
+    hidden_units: 64
+    num_layers: 2
+    dropout: 0.2
+    sequence_length: 12 # 3 hours at 15-min intervals
+
+  atscgn:
+    gcn_units: 64
+    temporal_units: 64
+    num_layers: 3
+    dropout: 0.3
+    sequence_length: 12
+
+  training:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 0.001
+    early_stopping_patience: 10
+    validation_split: 0.2
+
+visualization:
+  enabled: true
+  save_plots: true
+  output_dir: data/plots
+  plot_types:
+    - feature_importance
+    - residuals
+    - predictions_vs_actual
+    - time_series
+    - distributions
+    - correlations
+
+traffic_history:
+  enabled: true
+  db_path: data/traffic_history.db
+  retention_days: 30
+  lag_minutes: [5, 15, 30, 60]

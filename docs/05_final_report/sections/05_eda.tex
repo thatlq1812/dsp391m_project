@@ -70,27 +70,25 @@ Weekly patterns exhibited systematic differences between weekdays and weekends:
 
 The clear separation between weekday and weekend distributions justifies the inclusion of day-of-week as a categorical feature in the model. Weekday traffic shows more consistent patterns due to regular commuter behavior, while weekends exhibit higher variance from diverse leisure activities.
 
-\subsection{Spatial Correlation Analysis}
+\subsection{Spatio-Temporal Pattern Heatmap}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.48\textwidth]{figures/fig08_spatial_corr.png}
-\caption{Spatial Correlation Heatmap (62$\times$62) showing pairwise correlations between node speeds. Block-diagonal structure indicates within-district correlations are stronger than cross-district.}
+\caption{Traffic Speed Patterns across Top 20 Dynamic Edges by Hour of Day. Colors indicate mean speed (km/h) per hour for each edge (green = fast, red = slow). Vertical dashed lines mark morning and evening rush hours.}
 \label{fig:spatial_corr}
 \end{figure}
 
-We computed pairwise Pearson correlation coefficients between all 62 nodes to quantify spatial dependencies in traffic speeds. The correlation structure revealed clear distance-dependent patterns:
+To provide a more interpretable view of spatial and temporal structure, we select the 20 most dynamic edges (highest speed variance) and compute the average speed for each hour of day. The resulting heatmap reveals clear diurnal patterns across many edges:
 
 \begin{itemize}
-    \item \textbf{Adjacent nodes (1-hop):} High correlation, $\rho = 0.72$--$0.88$
-    \item \textbf{2-hop neighbors:} Moderate correlation, $\rho = 0.45$--$0.65$
-    \item \textbf{Distant nodes ($>5$ hops):} Low correlation, $\rho < 0.25$
-    \item \textbf{Cross-district:} Weak correlation, $\rho = 0.15$--$0.30$
+    \item \textbf{Rush hours (7--9 AM, 5--7 PM):} Widespread slowdowns (red bands) across most edges
+    \item \textbf{Midday recovery (11 AM--2 PM):} Moderate speeds (yellow/green) indicate partial relief
+    \item \textbf{Late evening (after 9 PM):} Predominantly free-flow conditions (green)
+    \item \textbf{Edge heterogeneity:} Some edges remain consistently slow due to bottlenecks, others fluctuate strongly with demand
 \end{itemize}
 
-\textbf{Interpretation:} The decay of correlation with graph distance provides strong empirical justification for Graph Neural Network (GNN) architectures. Adjacent roads influence each other through shared traffic flow, while distant locations are largely independent. This spatial dependency structure suggests that 2--3 layers of graph convolution should be sufficient for effective message passing, as correlations become negligible beyond 3 hops.
-
-The spatial correlation heatmap (Figure~8) shows block-diagonal structure corresponding to district boundaries, indicating that traffic patterns are more strongly correlated within districts than across district boundaries. This suggests potential for hierarchical graph modeling in future work.
+	extbf{Implication for Modeling:} The pronounced time-of-day structure and edge-specific heterogeneity support the use of a model that captures both temporal dependencies (Transformer) and spatial variation (GATv2), with a mechanism (gated fusion) to adaptively combine them.
 
 \subsection{Weather Impact Analysis}
 

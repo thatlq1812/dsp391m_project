@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-Super Dataset Generator - 1 Year Traffic Simulation
+Augmented 1-Year Dataset Generator
 
-Generates challenging traffic dataset with:
+Generates challenging augmented traffic dataset with:
 - Realistic base patterns (rush hour, weekends)
-- Seasonal variations (school, holidays)
+- Seasonal variations (school cycles, holidays)
 - Random incidents (accidents, breakdowns)
 - Construction zones (long-term disruptions)
 - Weather events (rain, fog)
 - Special events (concerts, sports, festivals)
 
 Usage:
-    python scripts/data/generate_super_dataset.py \\
-        --config configs/super_dataset_config.yaml \\
-        --output data/processed/super_dataset_1year.parquet \\
+    python scripts/data/03_generation/generate_augmented_1year.py \
+        --config configs/super_dataset_config.yaml \
+        --output data/processed/augmented_1year.parquet \
         --visualize
 """
 
@@ -848,20 +848,20 @@ class SuperDatasetGenerator:
         print(f"[OK] Dataset saved: {output_path.stat().st_size / 1e6:.1f} MB")
         
         # Save metadata
-        meta_path = output_path.parent / "super_dataset_metadata.json"
+        meta_path = output_path.parent / "augmented_1year_metadata.json"
         with open(meta_path, 'w') as f:
             json.dump(self.metadata, f, indent=2, default=str)
         print(f"[OK] Metadata saved: {meta_path}")
         
         # Save statistics
-        stats_path = output_path.parent / "super_dataset_statistics.json"
+        stats_path = output_path.parent / "augmented_1year_statistics.json"
         with open(stats_path, 'w') as f:
             json.dump(stats, f, indent=2)
         print(f"[OK] Statistics saved: {stats_path}")
         
         # Generate splits
         splits = self.create_splits(df)
-        splits_path = output_path.parent / "super_dataset_splits.json"
+        splits_path = output_path.parent / "augmented_1year_splits.json"
         with open(splits_path, 'w') as f:
             json.dump(splits, f, indent=2, default=str)
         print(f"[OK] Splits saved: {splits_path}")
@@ -1035,7 +1035,7 @@ Date Range:
         plt.tight_layout()
         
         # Save
-        viz_path = output_dir / 'super_dataset_analysis.png'
+        viz_path = output_dir / 'augmented_1year_analysis.png'
         plt.savefig(viz_path, dpi=150, bbox_inches='tight')
         print(f"  Saved: {viz_path}")
         
@@ -1047,13 +1047,13 @@ def main():
     parser.add_argument(
         '--config',
         type=str,
-        default='configs/super_dataset_config.yaml',
+        default='configs/data/augmented_1year.yaml',
         help='Path to configuration file'
     )
     parser.add_argument(
         '--output',
         type=str,
-        default='data/processed/super_dataset_1year.parquet',
+        default='data/processed/augmented_1year.parquet',
         help='Output parquet file path'
     )
     parser.add_argument(

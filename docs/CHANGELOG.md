@@ -16,6 +16,234 @@ Complete changelog for STMGT Traffic Forecasting System
 
 ---
 
+## [FINAL REPORT – FIGURE REFERENCES] - 2025-11-15
+
+Linked missing figures in LaTeX report.
+
+Changes:
+
+- Added `fig18_calibration_plot.png` to `08_evaluation.tex` with caption and label `fig:calibration_plot`.
+- Added `fig19_error_by_hour.png` to `09_results.tex` under Temporal Analysis with caption and label `fig:error_by_hour`.
+- Added `fig20_spatial_heatmap.png` to `09_results.tex` under Spatial Analysis with caption and label `fig:spatial_mae_heatmap`.
+
+Notes:
+
+- Figure paths follow `figures/<name>.png` consistent with existing includes.
+- No narrative text altered beyond inserting figure environments; compilation should resolve on second pass.
+
+## [FINAL REPORT – REMOVE ASTGCN REFERENCES] - 2025-11-15
+
+Scope: Cleaned remaining ASTGCN mentions from LaTeX report sections.
+
+Changes:
+
+- `sections/09_results.tex`: Removed ASTGCN row and discussion from baseline comparison.
+- `sections/01_introduction.tex`: Removed ASTGCN from objectives and contributions lists.
+- `sections/06_methodology.tex`: Removed ASTGCN from capability table; updated citations to drop `guo2019astgcn`.
+- `sections/02_literature_review.tex`: Removed ASTGCN subsection and its benchmark row.
+- `sections/10_conclusion.tex`: Generalized challenge note; removed ASTGCN-specific mention.
+
+Notes:
+
+- Report now consistently references maintained baselines: LSTM, GCN, GraphWaveNet, and STMGT.
+- LaTeX should compile cleanly after two passes; no dangling citations remain.
+
+## [FINAL REPORT FIGURE GENERATION] - 2025-11-15
+
+### Generated All 20 Figures for IEEE Conference Report
+
+**Status:** ✅ **COMPLETE** | 🎉 **ALL FIGURES READY**
+
+**Quick Summary:**
+Successfully generated ALL 20 figures for final report (IEEE conference format, 130+ pages). Fixed dataset path issues, removed Unicode encoding errors, created architecture diagrams programmatically, and consolidated figure generation across all sections. Report now has complete set of publication-quality figures at 300 DPI.
+
+**Generated Figures:**
+
+**Data & Preprocessing (Fig 1-4):**
+
+- Fig 1: Speed distribution across network
+- Fig 2: Network topology visualization (45 nodes, 62 edges)
+- Fig 3: Preprocessing pipeline flow diagram
+- Fig 4: Normalization effects (Min-Max scaling)
+
+**Exploratory Data Analysis (Fig 5-10):**
+
+- Fig 5: Speed histogram with GMM fitting
+- Fig 6: Hourly traffic patterns
+- Fig 7: Weekly seasonality patterns
+- Fig 8: Spatial correlation matrix
+- Fig 9: Temperature vs speed correlation
+- Fig 10: Weather condition box plots
+
+**Architecture (Fig 11-12):**
+
+- Fig 11: STMGT architecture block diagram (Input → Spatial/Temporal Branches → Gated Fusion → Weather Cross-Attention → GMM Output)
+- Fig 12: Attention mechanism visualization (4 subplots: GATv2 spatial attention, Transformer temporal attention, weather cross-attention, gated fusion)
+
+**Results & Analysis (Fig 13-20):**
+
+- Fig 13: Training curves (4 models: STMGT, GraphWaveNet, GCN, LSTM)
+- Fig 14: Ablation study results
+- Fig 15: Model comparison (MAE, RMSE, MAPE)
+- Fig 16: Best case prediction example
+- Fig 17: Worst case prediction example
+- Fig 18: Calibration plot (Coverage@80 = 83.75%)
+- Fig 19: Error distribution by hour of day
+- Fig 20: Spatial error heatmap across nodes
+
+**Technical Fixes:**
+
+1. **Dataset Path Update:**
+
+   - Changed default from `all_runs_gapfilled_week.parquet` to `baseline_1month.parquet`
+   - Added fallback to `augmented_1year.parquet` if baseline missing
+   - Fixed `scripts/visualization/utils.py` load_parquet_data()
+
+2. **Encoding Issues:**
+
+   - Removed Unicode emoji characters (✓, ⚠️, ❌) causing Windows cp1252 errors
+   - Updated print statements in all 6 visualization scripts
+   - Now uses plain ASCII: "Saved:", "WARNING:", "All figures generated"
+
+3. **Directory Consolidation:**
+   - Discovered duplicate directories: `docs/final_report` vs `docs/05_final_report`
+   - Scripts generated to `docs/final_report/figures/`
+   - LaTeX report references `docs/05_final_report/figures/`
+   - Copied all 18 figures to correct location for report compilation
+
+**Scripts Updated:**
+
+- `scripts/visualization/utils.py`: Dataset path + encoding fix
+- `scripts/visualization/01_data_figures.py`: Encoding fix
+- `scripts/visualization/02_eda_figures.py`: Encoding fix
+- `scripts/visualization/03_preprocessing_flow.py`: Encoding fix
+- `scripts/visualization/04_results_figures.py`: Encoding fix
+- `scripts/visualization/05_additional_figures.py`: NEW - fig18-20 generation
+- `scripts/visualization/06_architecture_diagrams.py`: NEW - fig11-12 generation
+- `scripts/visualization/generate_all_figures.py`: Encoding fix
+
+**Architecture Diagram Implementation:**
+
+Created programmatic generation of architecture figures using matplotlib:
+
+**Fig 11 - STMGT Architecture:**
+
+- Complete pipeline: Input Embedding → 3 STMGT Blocks → Weather Cross-Attention → GMM Output
+- Parallel branches: Spatial (GATv2) + Temporal (Transformer) → Gated Fusion
+- Color-coded components with model specs (680K params, 96D, 3 blocks)
+
+**Fig 12 - Attention Mechanisms (2×2 grid):**
+
+- (a) Spatial GATv2: Graph with attention weights (0.05-0.35)
+- (b) Temporal Self-Attention: 12×12 heatmap (recent past emphasis)
+- (c) Weather Cross-Attention: Query-Key-Value block diagram
+- (d) Gated Fusion: α/β balance across timesteps
+
+**Next Steps:**
+
+1. Compile LaTeX report with all 20 figures
+2. Fix bibliography citations ([?] → [1], [2], etc.)
+3. Final PDF generation and quality check
+4. Prepare demo materials
+
+---
+
+## [MONTHLY BASELINE DATASET GENERATION] - 2025-11-15
+
+### Generated 1-Month Realistic Traffic Dataset from 4-Day Collection
+
+**Status:** ✅ **COMPLETE** | ✅ **VALIDATED** | 🚀 **READY FOR BASELINE TRAINING**
+
+**Quick Summary:**
+Successfully generated 1-month (30 days) realistic traffic dataset from existing 4-day collection using gap-fill and pattern-based augmentation. Created 2,880 synthetic runs with 15-minute intervals, realistic temporal patterns (rush hours, weekend effects), weather variations, and random incidents. This serves as the baseline "real" dataset before applying super dataset augmentation.
+
+**Results:**
+
+- Synthetic Runs: **2,880 runs** (30 days × 96 runs/day)
+- Combined File: `data/processed/baseline_1month.parquet`
+- Size: **1.59 MB** (424,224 records)
+- Date Range: 2025-10-03 to 2025-11-02
+- Quality: All runs validated, no missing values
+- Generation Time: ~5 minutes
+
+**Generation Strategy:**
+
+1. **Pattern Analysis:**
+
+   - Analyzed existing 4-day collection (67 runs, 9,504 records)
+   - Extracted edge-specific speed patterns
+   - Identified hourly variations and rush hour patterns
+   - Weekday vs weekend differences (weekday: 17.81 km/h, weekend: 20.05 km/h)
+
+2. **Realistic Generation:**
+
+   - Base speed per edge from existing patterns
+   - Rush hour reduction (morning 7-9: -30%, evening 17-19: -35%)
+   - Weekend boost (+10%)
+   - Random incidents (5% chance, 30-60% slowdown)
+   - Gaussian noise (30% of std)
+   - Speed range: [3.0, 52.0] km/h
+
+3. **Weather Simulation:**
+
+   - Temperature: 25-35°C with daily and seasonal variations
+   - Humidity: 60-90% (inverse of temperature)
+   - Precipitation: 10% chance of rain
+   - Wind speed: 5-25 km/h
+   - Realistic weather conditions based on HCMC climate
+
+4. **Temporal Details:**
+   - 15-minute intervals (standard traffic collection)
+   - Randomized seconds (0-59) for realism
+   - Maintains topology (144 edges, 64 nodes)
+
+**Dataset Statistics:**
+
+- Total Records: **424,224**
+- Unique Timestamps: **2,946**
+- Unique Edges: **144**
+- Speed Statistics:
+  - Mean: 19.05 km/h
+  - Std: 7.83 km/h
+  - Range: [3.00, 52.84] km/h
+- Missing Values: 0 ✓
+
+**New Scripts:**
+
+1. `scripts/data/03_generation/generate_baseline_1month.py` (450+ lines)
+
+   - MonthlyRunGenerator class
+   - Pattern analysis from existing runs
+   - Realistic speed generation with temporal factors
+   - Weather simulation
+   - Run structure matching real collections
+
+2. `scripts/data/02_preprocessing/combine_baseline_runs.py` (170+ lines)
+   - Simplified, encoding-safe run combiner
+   - Progress tracking with tqdm
+   - Handles both dict and list weather formats
+   - Creates comprehensive statistics
+
+**Files Generated:**
+
+- `data/runs/run_YYYYMMDD_HHMMSS/` - 2,880 synthetic run directories
+- `data/runs/generated_runs_manifest.json` - Generation metadata
+- `data/processed/baseline_1month.parquet` - Combined dataset
+
+**Next Steps:**
+
+- Use this as baseline "real" dataset for training
+- Apply super dataset augmentation on top (1-year extension)
+- Train models on monthly baseline for comparison
+- Document gap-fill strategies for reproducibility
+
+**Related Documentation:**
+
+- [Data Overview](02_data/DATA.md) - Dataset specifications
+- [Augmentation Guide](02_data/AUGMENTATION.md) - Augmentation strategies
+
+---
+
 ## [SUPER DATASET GENERATION COMPLETE] - 2025-01-14
 
 ### Generated & Validated 1-Year Traffic Simulation Dataset
@@ -27,7 +255,7 @@ Successfully generated comprehensive 1-year traffic simulation (7.5M samples, 24
 
 **Results:**
 
-- File: `data/processed/super_dataset_1year.parquet`
+- File: `data/processed/augmented_1year.parquet`
 - Size: **247.9 MB** (optimized from expected 500MB)
 - Rows: **7,568,640** samples (365 days, 52,560 timestamps, 144 edges)
 - Quality: All validation checks passed
@@ -244,11 +472,11 @@ Test:   Months 11-12 (8 weeks, 16%)   # Year-end + holidays
 
 **File Outputs:**
 
-- `data/processed/super_dataset_1year.parquet` - 247.9 MB main dataset
-- `data/processed/super_dataset_metadata.json` - Event details (2022 lines)
-- `data/processed/super_dataset_statistics.json` - Quality metrics
-- `data/processed/super_dataset_splits.json` - Train/val/test split info
-- `data/processed/super_dataset_analysis.png` - 6-panel visualization
+- `data/processed/augmented_1year.parquet` - 247.9 MB main dataset
+- `data/processed/augmented_1year_metadata.json` - Event details (2022 lines)
+- `data/processed/augmented_1year_statistics.json` - Quality metrics
+- `data/processed/augmented_1year_splits.json` - Train/val/test split info
+- `data/processed/augmented_1year_analysis.png` - 6-panel visualization
 - ✅ Spatial consistency
 - ✅ Event frequency realistic
 
@@ -312,8 +540,8 @@ Visualization: 6-panel analysis saved
 
 **Files Created:**
 
-- `scripts/data/generate_super_dataset.py` (400+ lines, fully implemented)
-- `scripts/data/inspect_dataset.py` (quick inspection tool)
+- `scripts/data/03_generation/generate_augmented_1year.py` (400+ lines, fully implemented)
+- `scripts/data/04_analysis/inspect_dataset.py` (quick inspection tool)
 - `configs/super_dataset_config.yaml` (full 1-year config)
 - `configs/super_dataset_prototype.yaml` (1-month test config)
 

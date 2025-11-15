@@ -105,8 +105,8 @@ All datasets use Apache Parquet format for efficiency:
 ```python
 import pandas as pd
 
-# Load dataset
-df = pd.read_parquet('data/processed/super_dataset_1year.parquet')
+# Load augmented 1-year dataset
+df = pd.read_parquet('data/processed/augmented_1year.parquet')
 
 # Columns
 # - timestamp: datetime
@@ -128,12 +128,11 @@ df = pd.read_parquet('data/processed/super_dataset_1year.parquet')
 ```
 data/
 ├── processed/
-│   ├── all_runs_gapfilled_week.parquet    # Original 1-week
-│   ├── super_dataset_prototype.parquet     # 1-month test
-│   ├── super_dataset_1year.parquet         # Full 1-year
-│   ├── super_dataset_metadata.json         # Event metadata
-│   ├── super_dataset_statistics.json       # Quality metrics
-│   └── super_dataset_splits.json           # Train/val/test splits
+│   ├── baseline_1month.parquet             # Real baseline 1-month
+│   ├── augmented_1year.parquet             # Augmented 1-year
+│   ├── augmented_1year_metadata.json       # Event metadata (augmented)
+│   ├── augmented_1year_statistics.json     # Quality metrics (augmented)
+│   └── augmented_1year_splits.json         # Train/val/test splits (augmented)
 └── runs/
     └── [raw collection data]
 ```

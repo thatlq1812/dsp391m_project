@@ -20,7 +20,7 @@
     "num_workers": 0,
     "use_amp": true,
     "accumulation_steps": 1,
-    "data_source": "super_dataset_1year.parquet",
+    "data_source": "augmented_1year.parquet",
     "pin_memory": false,
     "persistent_workers": false,
     "prefetch_factor": null,

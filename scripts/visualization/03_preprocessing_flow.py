@@ -104,7 +104,7 @@ def main():
     """Generate preprocessing flow figure"""
     print(f"Output directory: {FIGURE_DIR}\n")
     generate_fig3_preprocessing_flow()
-    print(f"\n✓ Preprocessing flow figure generated in: {FIGURE_DIR}")
+    print(f"\nPreprocessing flow figure generated in: {FIGURE_DIR}")
 
 if __name__ == "__main__":
     main()

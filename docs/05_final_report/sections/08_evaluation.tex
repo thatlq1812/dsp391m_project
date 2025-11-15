@@ -15,7 +15,7 @@ The final STMGT model achieved the following performance on the held-out test se
 \midrule
 MAE & 3.08 km/h & Average prediction error \\
 RMSE & 4.53 km/h & Penalizes large errors \\
-R² & 0.82 & Explains 82\% of variance \\
+$R^2$ & 0.82 & Explains 82\% of variance \\
 MAPE & 19.26\% & Relative error \\
 \bottomrule
 \end{tabular}
@@ -25,7 +25,7 @@ MAPE & 19.26\% & Relative error \\
 \begin{itemize}
     \item \textbf{MAE 3.08 km/h:} On average, predictions deviate by approximately 3 km/h from ground truth, which is excellent for urban traffic forecasting where typical speeds range from 10--30 km/h.
     
-    \item \textbf{R² 0.82:} The model explains 82\% of the variance in traffic speeds, demonstrating strong predictive power. The remaining 18\% likely represents stochastic fluctuations, accidents, or other unmodeled events.
+    \item \textbf{$R^2$ 0.82:} The model explains 82\% of the variance in traffic speeds, demonstrating strong predictive power. The remaining 18\% likely represents stochastic fluctuations, accidents, or other unmodeled events.
     
     \item \textbf{MAPE 19.26\%:} Percentage error is higher during low-speed conditions (congestion) where absolute errors translate to larger percentage deviations.
 \end{itemize}
@@ -52,6 +52,12 @@ Calibration & Well-calibrated & Observed freq $\approx$ predicted prob \\
 
 \textbf{Coverage Analysis:} The 80\% confidence intervals contain the true value 83.75\% of the time, indicating slight conservatism. This over-coverage is preferable for safety-critical applications like traffic management.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig18_calibration_plot.png}
+\caption{Calibration (Reliability) Diagram. The observed coverage closely follows the ideal diagonal with slight over-coverage at the 80\% interval (83.75\%), indicating conservative yet well-calibrated uncertainty.}
+\label{fig:calibration_plot}
+\end{figure}
 \subsection{Hyperparameter Tuning}
 
 \subsubsection{Tuning Process}
@@ -93,7 +99,7 @@ learning\_rate & [$10^{-4}$, $10^{-3}$, $5 \times 10^{-3}$] & $10^{-3}$ & 3.21 k
 \textbf{Dropout (0.1 $\to$ 0.2):}
 \begin{itemize}
     \item Overfitting reduction: Train-val gap reduced from 15\% to 8\%
-    \item Test generalization: R² improved from 0.78 to 0.82
+    \item Test generalization: $R^2$ improved from 0.78 to 0.82
     \item Rationale: Aggressive regularization needed for 16K sample dataset
 \end{itemize}
 
@@ -161,7 +167,7 @@ We systematically removed or replaced STMGT components to quantify their individ
 \caption{Ablation Study Results}
 \begin{tabular}{lcccc}
 \toprule
-\textbf{Configuration} & \textbf{MAE} & \textbf{RMSE} & \textbf{R²} & \textbf{$\Delta$ MAE} \\
+\textbf{Configuration} & \textbf{MAE} & \textbf{RMSE} & \textbf{$R^2$} & \textbf{$\Delta$ MAE} \\
 \midrule
 \textbf{Full STMGT} & \textbf{3.08} & \textbf{4.53} & \textbf{0.82} & \textbf{baseline} \\
 - Weather cross-attn & 3.45 & 4.89 & 0.78 & +12.0\% \\
@@ -206,7 +212,7 @@ We evaluated model performance as a function of training data size by training o
 \caption{Learning Curve: Performance vs Training Data Size}
 \begin{tabular}{ccccc}
 \toprule
-\textbf{Samples} & \textbf{\% Full} & \textbf{MAE} & \textbf{R²} & \textbf{Comment} \\
+\textbf{Samples} & \textbf{\% Full} & \textbf{MAE} & \textbf{$R^2$} & \textbf{Comment} \\
 \midrule
 1,443 & 10\% & 5.68 & 0.32 & Severe underfitting \\
 2,886 & 20\% & 4.52 & 0.58 & High variance \\
@@ -259,7 +265,7 @@ Optimal: Dropout = 0.2 balances train-val gap (11\%) and test performance (3.08 
 \caption{Weight Decay Comparison}
 \begin{tabular}{ccc}
 \toprule
-\textbf{Weight Decay} & \textbf{Test MAE} & \textbf{Test R²} \\
+\textbf{Weight Decay} & \textbf{Test MAE} & \textbf{Test $R^2$} \\
 \midrule
 0.0 & 3.35 & 0.79 \\
 \textbf{$10^{-4}$} & \textbf{3.08} & \textbf{0.82} \\

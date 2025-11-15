@@ -19,6 +19,7 @@ import pandas as pd
 import numpy as np
 import json
 from datetime import datetime
+import torch
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -37,8 +38,16 @@ def parse_args():
     parser.add_argument(
         '--dataset',
         type=str,
-        default='data/processed/all_runs_gapfilled_week.parquet',
-        help='Path to dataset parquet file (default: data/processed/all_runs_gapfilled_week.parquet)'
+        default='data/processed/baseline_1month.parquet',
+        help='Path to dataset parquet file (default: data/processed/baseline_1month.parquet)'
+    )
+
+    parser.add_argument(
+        '--dataset-preset',
+        type=str,
+        choices=['baseline', 'augmented'],
+        default=None,
+        help="Quick preset to select dataset: 'baseline' -> baseline_1month.parquet, 'augmented' -> augmented_1year.parquet. Overrides --dataset if provided."
     )
     
     parser.add_argument(
@@ -112,9 +121,15 @@ def main():
     """Main training function."""
     args = parse_args()
     
+    # Setup device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("=" * 80)
     print("LSTM BASELINE TRAINING")
     print("=" * 80)
+    print(f"\nDevice: {device.type.upper()}")
+    if device.type == "cuda":
+        print(f"GPU: {torch.cuda.get_device_name(0)}")
+        print(f"Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
     print("\nObjective: Establish temporal-only baseline (no spatial info)")
     print("Expected MAE: 4.0-5.5 km/h (worse than STMGT)")
     print("\nThis baseline shows the value of spatial modeling in STMGT.")
@@ -128,9 +143,16 @@ def main():
     
     print(f"\nOutput directory: {run_dir}")
     
+    # Resolve dataset from preset if provided
+    if args.dataset_preset == 'baseline':
+        dataset_path = Path('data/processed/baseline_1month.parquet')
+    elif args.dataset_preset == 'augmented':
+        dataset_path = Path('data/processed/augmented_1year.parquet')
+    else:
+        dataset_path = Path(args.dataset)
+
     # Load dataset
-    print(f"\n[1/6] Loading dataset: {args.dataset}")
-    dataset_path = Path(args.dataset)
+    print(f"\n[1/6] Loading dataset: {dataset_path}")
     
     if not dataset_path.exists():
         print(f"[!] Dataset not found: {dataset_path}")

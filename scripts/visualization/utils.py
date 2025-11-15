@@ -47,12 +47,18 @@ def save_figure(fig, filename, **kwargs):
     
     output_path = FIGURE_DIR / f"{filename}.{config['format']}"
     fig.savefig(output_path, **savefig_params)
-    print(f"✓ Saved: {output_path}")
+    print(f"Saved: {output_path}")
     plt.close(fig)
 
-def load_parquet_data(filename="all_runs_gapfilled_week.parquet"):
+def load_parquet_data(filename="baseline_1month.parquet"):
     """Load processed traffic data"""
     data_path = Path(__file__).parents[2] / "data" / "processed" / filename
+    if not data_path.exists():
+        # Fallback to augmented if baseline not found
+        fallback = Path(__file__).parents[2] / "data" / "processed" / "augmented_1year.parquet"
+        if fallback.exists():
+            print(f"Warning: {filename} not found, using augmented_1year.parquet")
+            data_path = fallback
     return pd.read_parquet(data_path)
 
 def load_model_results(model_dir):

@@ -139,7 +139,7 @@ def main():
     generate_fig2_network_topology()
     generate_fig4_normalization()
     
-    print(f"\n✓ All data figures generated in: {FIGURE_DIR}")
+    print(f"\nAll data figures generated in: {FIGURE_DIR}")
 
 if __name__ == "__main__":
     main()

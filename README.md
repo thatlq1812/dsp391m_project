@@ -585,6 +585,21 @@ MIT License - See LICENSE file for details
 
 ---
 
+## Data Pipeline
+
+- Baseline dataset: `python scripts/data/run_data_pipeline.py baseline`
+- Augmented dataset: `python scripts/data/run_data_pipeline.py augmented`
+- Quick validate both: `python scripts/data/04_analysis/quick_validate_datasets.py --preset both`
+
+## Training (Defaults Wired)
+
+- `python scripts/training/train_stmgt.py` (defaults to `configs/training/stmgt_baseline_1month.json` and `data/processed/baseline_1month.parquet`)
+- `python scripts/training/train_stmgt.py --config configs/training/stmgt_augmented_1year.json`
+- `python scripts/training/train_lstm_baseline.py --dataset-preset baseline|augmented`
+- `python scripts/training/train_graphwavenet_baseline.py --dataset-preset baseline|augmented`
+
+---
+
 **Last Updated:** November 12, 2025  
 **Version:** 1.0.0  
 **Status:** Production Ready

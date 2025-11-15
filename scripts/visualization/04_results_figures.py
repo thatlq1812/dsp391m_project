@@ -296,7 +296,7 @@ def main():
     generate_fig16_good_prediction()
     generate_fig17_bad_prediction()
     
-    print(f"\n✓ All results figures generated in: {FIGURE_DIR}")
+    print(f"\nAll results figures generated in: {FIGURE_DIR}")
 
 if __name__ == "__main__":
     main()

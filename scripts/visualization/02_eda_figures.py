@@ -113,29 +113,44 @@ def generate_fig7_weekly_pattern():
     save_figure(fig, 'fig07_weekly_pattern')
 
 def generate_fig8_spatial_correlation():
-    """Figure 8: Spatial Correlation Heatmap"""
-    print("Generating Figure 8: Spatial Correlation...")
+    """Figure 8: Traffic Flow Heatmap Over Time"""
+    print("Generating Figure 8: Traffic Flow Heatmap...")
     
     df = load_parquet_data()
     
     # Create edge identifier
     df['edge_id'] = df['node_a_id'].astype(str) + '-' + df['node_b_id'].astype(str)
+    df['hour'] = pd.to_datetime(df['timestamp']).dt.hour
     
-    # Pivot to wide format (nodes as columns)
-    speed_matrix = df.pivot_table(index='timestamp', columns='edge_id', values='speed_kmh')
+    # Select top 20 busiest edges by average speed variance
+    edge_variance = df.groupby('edge_id')['speed_kmh'].std().sort_values(ascending=False)
+    top_edges = edge_variance.head(20).index
     
-    # Compute correlation matrix
-    corr_matrix = speed_matrix.corr()
+    df_top = df[df['edge_id'].isin(top_edges)]
     
-    fig, ax = plt.subplots(figsize=(12, 10))
+    # Aggregate by hour and edge
+    heatmap_data = df_top.pivot_table(index='edge_id', columns='hour', 
+                                       values='speed_kmh', aggfunc='mean')
     
-    # Heatmap
-    sns.heatmap(corr_matrix, cmap='RdBu_r', center=0, vmin=-1, vmax=1, 
-                square=True, linewidths=0, cbar_kws={'label': 'Correlation'}, ax=ax)
+    # Sort by average speed
+    heatmap_data = heatmap_data.loc[heatmap_data.mean(axis=1).sort_values(ascending=False).index]
     
-    ax.set_title('Spatial Correlation Between Traffic Edges')
-    ax.set_xlabel('Edge ID')
-    ax.set_ylabel('Edge ID')
+    fig, ax = plt.subplots(figsize=(14, 8))
+    
+    # Heatmap with better color scheme
+    sns.heatmap(heatmap_data, cmap='RdYlGn', center=20, vmin=5, vmax=35,
+                linewidths=0.5, cbar_kws={'label': 'Speed (km/h)'}, ax=ax)
+    
+    ax.set_title('Traffic Speed Patterns: Top 20 Dynamic Edges by Hour', fontsize=14, fontweight='bold')
+    ax.set_xlabel('Hour of Day', fontsize=11)
+    ax.set_ylabel('Edge ID', fontsize=11)
+    ax.set_yticklabels(ax.get_yticklabels(), fontsize=8, rotation=0)
+    
+    # Add rush hour annotations
+    ax.axvline(x=7, color='blue', linestyle='--', linewidth=1.5, alpha=0.5)
+    ax.axvline(x=17, color='blue', linestyle='--', linewidth=1.5, alpha=0.5)
+    ax.text(7, -1.5, 'Morning\nRush', ha='center', fontsize=9, color='blue')
+    ax.text(17, -1.5, 'Evening\nRush', ha='center', fontsize=9, color='blue')
     
     save_figure(fig, 'fig08_spatial_corr')
 
@@ -209,7 +224,7 @@ def main():
     generate_fig9_temp_speed()
     generate_fig10_weather_box()
     
-    print(f"\n✓ All EDA figures generated in: {FIGURE_DIR}")
+    print(f"\nAll EDA figures generated in: {FIGURE_DIR}")
 
 if __name__ == "__main__":
     main()

@@ -143,17 +143,6 @@ MAPE:                 24.58%
 
 **Source:** Previous training session documented in research reports.
 
-### ASTGCN Baseline
-
-```
-MAE:                  4.29 km/h
-RMSE:                 ~6.2 km/h (estimated from R²)
-R²:                   0.023 (very poor fit)
-MAPE:                 92% (extreme failure)
-```
-
-**Note:** ASTGCN failed to converge on HCMC dataset. Possible causes: Multi-component architecture mismatch, insufficient data for weekly patterns, overly complex for 29-day dataset.
-
 ---
 
 ## 7. STMGT V2 Final Metrics
@@ -177,20 +166,18 @@ Training:
 
 ## 8. Comparison Summary
 
-| Model        | MAE (km/h) | RMSE     | R²       | MAPE       | Params | Notes              |
-| ------------ | ---------- | -------- | -------- | ---------- | ------ | ------------------ |
-| **STMGT V2** | **3.08**   | **4.53** | **0.82** | **19.26%** | 680K   | Best overall       |
-| GraphWaveNet | 3.95       | 5.12     | 0.71     | 24.58%     | ~600K  | Strong baseline    |
-| GCN          | 3.91       | ~5.0     | ~0.72    | ~25%       | 340K   | Simple, stable     |
-| LSTM         | 4.42       | 6.08     | 0.185    | 20.62%     | ~800K  | Training unstable  |
-| ASTGCN       | 4.29       | ~6.2     | 0.023    | 92%        | ~900K  | Failed to converge |
+| Model        | MAE (km/h) | RMSE     | R²       | MAPE       | Params | Notes             |
+| ------------ | ---------- | -------- | -------- | ---------- | ------ | ----------------- |
+| **STMGT V2** | **3.08**   | **4.53** | **0.82** | **19.26%** | 680K   | Best overall      |
+| GraphWaveNet | 3.95       | 5.12     | 0.71     | 24.58%     | ~600K  | Strong baseline   |
+| GCN          | 3.91       | ~5.0     | ~0.72    | ~25%       | 340K   | Simple, stable    |
+| LSTM         | 4.42       | 6.08     | 0.185    | 20.62%     | ~800K  | Training unstable |
 
 **Improvements:**
 
 - STMGT vs GraphWaveNet: -22% MAE, +15% R²
 - STMGT vs GCN: -21% MAE, +14% R²
 - STMGT vs LSTM: -30% MAE, +343% R² (LSTM poor fit)
-- STMGT vs ASTGCN: -28% MAE, +3,465% R² (ASTGCN catastrophic failure)
 
 ---
 

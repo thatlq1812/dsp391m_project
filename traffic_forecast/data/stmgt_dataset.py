@@ -33,7 +33,7 @@ class STMGTDataset(Dataset):
     
     def __init__(
         self,
-        data_path='data/processed/all_runs_combined.parquet',
+        data_path='data/processed/baseline_1month.parquet',
         graph_path='cache/overpass_topology.json',
         seq_len=12,  # History length (3 hours @ 15min)
         pred_len=12,  # Prediction length (3 hours @ 15min)
@@ -45,9 +45,20 @@ class STMGTDataset(Dataset):
         self.pred_len = pred_len
         self.split = split
         
-        # Load data
-        print(f"Loading data from {data_path}...")
-        df = pd.read_parquet(data_path)
+        # Load data (with fallback to known datasets)
+        candidate_path = Path(data_path)
+        if not candidate_path.exists():
+            # Try new standard datasets
+            for alt in (
+                Path('data/processed/baseline_1month.parquet'),
+                Path('data/processed/augmented_1year.parquet'),
+            ):
+                if alt.exists():
+                    print(f"WARNING: {candidate_path} not found; falling back to {alt}")
+                    candidate_path = alt
+                    break
+        print(f"Loading data from {candidate_path}...")
+        df = pd.read_parquet(candidate_path)
         
         # Sort by timestamp
         df = df.sort_values('timestamp').reset_index(drop=True)
@@ -284,7 +295,7 @@ def collate_fn_stmgt(batch, num_nodes=None, edge_index=None):
 
 
 def create_stmgt_dataloaders(
-    data_path='data/processed/all_runs_combined.parquet',
+    data_path='data/processed/baseline_1month.parquet',
     graph_path='cache/overpass_topology.json',
     batch_size=16,
     num_workers=0,

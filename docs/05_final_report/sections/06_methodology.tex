@@ -23,7 +23,7 @@ Traffic exhibits dual characteristics requiring specialized modeling:
     \item \textbf{Temporal dynamics:} Traffic patterns evolve over time with strong diurnal cycles (rush hours, weekends)
 \end{itemize}
 
-Traditional approaches model these dimensions sequentially (e.g., graph convolution followed by RNN), but recent work has shown that parallel processing of spatial and temporal dimensions improves performance by 5--12\%~\cite{guo2019astgcn,li2020mtgnn}. Our STMGT architecture adopts this parallel design paradigm.
+Traditional approaches model these dimensions sequentially (e.g., graph convolution followed by RNN), but recent work has shown that parallel processing of spatial and temporal dimensions improves performance by 5--12\%~\cite{li2020mtgnn}. Our STMGT architecture adopts this parallel design paradigm.
 
 \subsubsection{Why STMGT Over Baseline Models?}
 
@@ -40,7 +40,6 @@ Table~\ref{tab:model_comparison} compares STMGT against baseline approaches acro
 LSTM & \xmark & \cmark (RNN) & \cmark (concat) & \xmark \\
 GCN & \cmark (GCN) & \xmark & \cmark (concat) & \xmark \\
 GraphWaveNet & \cmark (adaptive) & \cmark (TCN) & \xmark & \xmark \\
-ASTGCN & \cmark (attn) & \cmark (attn) & \xmark & \xmark \\
 \textbf{STMGT} & \cmark (GATv2) & \cmark (Transf.) & \cmark (cross-attn) & \cmark (GMM) \\
 \bottomrule
 \end{tabular}
@@ -49,7 +48,7 @@ ASTGCN & \cmark (attn) & \cmark (attn) & \xmark & \xmark \\
 \textbf{Key Advantages of STMGT:}
 
 \begin{enumerate}
-    \item \textbf{Parallel ST Processing:} Independent spatial and temporal branches (5--12\% improvement over sequential architectures~\cite{guo2019astgcn,li2020mtgnn})
+    \item \textbf{Parallel ST Processing:} Independent spatial and temporal branches (5--12\% improvement over sequential architectures~\cite{li2020mtgnn})
     \item \textbf{Weather Cross-Attention:} Context-dependent weather effects (rain impact varies by location and time~\cite{vaswani2017attention})
     \item \textbf{Gaussian Mixture Output:} Probabilistic predictions with calibrated uncertainty quantification~\cite{bishop1994mixture,liu2023uncertain})
     \item \textbf{Adaptive Graph Learning:} GATv2~\cite{brody2022gatv2} dynamically learns neighbor importance rather than using fixed adjacency

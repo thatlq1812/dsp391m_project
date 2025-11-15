@@ -15,7 +15,7 @@ The production model (\texttt{outputs/stmgt\_v2\_20251109\_195802/best\_model.pt
 \midrule
 MAE & 3.08 km/h & Average prediction error \\
 RMSE & 4.53 km/h & Penalizes large errors more \\
-R² & 0.82 & Explains 82\% of variance \\
+$R^2$ & 0.82 & Explains 82\% of variance \\
 MAPE & 19.26\% & Relative error \\
 CRPS & 2.23 & Probabilistic score \\
 Coverage@80 & 83.75\% & Confidence interval accuracy \\
@@ -38,7 +38,7 @@ Coverage@80 & 83.75\% & Confidence interval accuracy \\
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.48\textwidth]{figures/fig15_model_comparison.png}
-\caption{Baseline Model Comparison showing STMGT achieves best performance (MAE 3.08 km/h, R² 0.82) across all metrics, outperforming GraphWaveNet by 22\%, LSTM by 36\%.}
+\caption{Baseline Model Comparison showing STMGT achieves best performance (MAE 3.08 km/h, $R^2$ 0.82) across all metrics, outperforming GraphWaveNet by 22\%, LSTM by 36\%.}
 \label{fig:model_comparison}
 \end{figure}
 
@@ -50,13 +50,12 @@ Table~\ref{tab:baseline_comparison} presents a comprehensive comparison of STMGT
 \label{tab:baseline_comparison}
 \begin{tabular}{lccccc}
 \toprule
-\textbf{Model} & \textbf{MAE} & \textbf{RMSE} & \textbf{R²} & \textbf{MAPE} & \textbf{Params} \\
+\textbf{Model} & \textbf{MAE} & \textbf{RMSE} & \textbf{$R^2$} & \textbf{MAPE} & \textbf{Params} \\
 \midrule
 \textbf{STMGT V2} & \textbf{3.08} & \textbf{4.53} & \textbf{0.82} & \textbf{19.26\%} & 680K \\
 GraphWaveNet & 3.95 & 5.12 & 0.71 & 24.58\% & $\sim$600K \\
 GCN Baseline & 3.91 & $\sim$5.0 & $\sim$0.72 & $\sim$25\% & 340K \\
 LSTM Baseline & 4.42--4.85 & 6.08--6.23 & 0.185--0.64 & 20.62--28.91\% & $\sim$800K \\
-ASTGCN & 4.29 & $\sim$6.2 & 0.023 & 92\% & $\sim$900K \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -64,25 +63,25 @@ ASTGCN & 4.29 & $\sim$6.2 & 0.023 & 92\% & $\sim$900K \\
 \textbf{Key Findings:}
 
 \begin{enumerate}
-    \item \textbf{STMGT achieves best performance} across all metrics with MAE of 3.08 km/h and R² of 0.82
+    \item \textbf{STMGT achieves best performance} across all metrics with MAE of 3.08 km/h and $R^2$ of 0.82
     
     \item \textbf{GraphWaveNet and GCN are strong baselines} with MAE of 3.95 and 3.91 km/h respectively, demonstrating the effectiveness of graph-based approaches
     
     \item \textbf{LSTM shows high variance} (MAE range 4.42--4.85) across different runs, indicating training instability for sequential architectures on graph data
     
-    \item \textbf{ASTGCN catastrophic failure} (R² = 0.023, MAPE = 92\%) on the 29-day dataset, likely due to insufficient data for its multi-component (recent/daily/weekly) design that requires longer time series
+    % Removed ASTGCN-specific note per report scope update
 \end{enumerate}
 
 \textbf{Improvement Over Baselines:}
 
 \begin{itemize}
-    \item vs GraphWaveNet: \textbf{-22\% MAE} (3.95 $\to$ 3.08), \textbf{+15\% R²} (0.71 $\to$ 0.82)
-    \item vs GCN: \textbf{-21\% MAE} (3.91 $\to$ 3.08), \textbf{+14\% R²} (0.72 $\to$ 0.82)
-    \item vs LSTM (best run): \textbf{-30\% MAE} (4.42 $\to$ 3.08), \textbf{+343\% R²} (0.185 $\to$ 0.82)
-    \item vs ASTGCN: \textbf{-28\% MAE} (4.29 $\to$ 3.08), \textbf{+3,465\% R²} (0.023 $\to$ 0.82)
+    \item vs GraphWaveNet: \textbf{-22\% MAE} (3.95 $\to$ 3.08), \textbf{+15\% $R^2$} (0.71 $\to$ 0.82)
+    \item vs GCN: \textbf{-21\% MAE} (3.91 $\to$ 3.08), \textbf{+14\% $R^2$} (0.72 $\to$ 0.82)
+    \item vs LSTM (best run): \textbf{-30\% MAE} (4.42 $\to$ 3.08), \textbf{+343\% $R^2$} (0.185 $\to$ 0.82)
+    % Removed ASTGCN comparison per report scope update
 \end{itemize}
 
-\textbf{Analysis:} GCN and GraphWaveNet perform similarly (MAE 3.91 vs 3.95), suggesting that adaptive adjacency learning provides marginal benefit over fixed graph structure on this dataset. STMGT's parallel processing and weather cross-attention provide consistent 20\%+ improvement. LSTM's sequential architecture fails to capture spatial dependencies effectively. ASTGCN's failure highlights the importance of dataset-appropriate model selection.
+	extbf{Analysis:} GCN and GraphWaveNet perform similarly (MAE 3.91 vs 3.95), suggesting that adaptive adjacency learning provides marginal benefit over fixed graph structure on this dataset. STMGT's parallel processing and weather cross-attention provide consistent 20\%+ improvement. LSTM's sequential architecture fails to capture spatial dependencies effectively.
 
 \subsubsection{Statistical Significance}
 
@@ -139,7 +138,7 @@ Performance degrades gracefully with increasing prediction horizon:
 \caption{Performance by Prediction Horizon}
 \begin{tabular}{lccc}
 \toprule
-\textbf{Horizon} & \textbf{MAE (km/h)} & \textbf{R²} & \textbf{Comment} \\
+\textbf{Horizon} & \textbf{MAE (km/h)} & \textbf{$R^2$} & \textbf{Comment} \\
 \midrule
 15 min (t+1) & 2.85 & 0.84 & Best accuracy \\
 1 hour (t+4) & 3.08 & 0.82 & Still excellent \\
@@ -227,6 +226,13 @@ Network-wide error analysis reveals spatial patterns:
     \item Standard Deviation: 0.87 km/h (moderate spatial variability)
 \end{itemize}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig20_spatial_heatmap.png}
+\caption{Spatial MAE Heatmap. Node-wise MAE aggregated over the evaluation period reveals high-error segments concentrated around key intersections and freeway merge points.}
+\label{fig:spatial_mae_heatmap}
+\end{figure}
+
 \subsection{Temporal Analysis}
 
 \subsubsection{Error by Hour of Day}
@@ -243,6 +249,13 @@ Network-wide error analysis reveals spatial patterns:
     \item Reason: Less training data (data collection prioritized peak hours), more variable traffic patterns
 \end{itemize}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig19_error_by_hour.png}
+\caption{Error Distribution by Hour. Boxplots of MAE across hours show wider dispersion during morning and evening rush hours, indicating higher variability under congested conditions.}
+\label{fig:error_by_hour}
+\end{figure}
+
 \subsubsection{Day-of-Week Analysis}
 
 \begin{table}[h]
@@ -250,7 +263,7 @@ Network-wide error analysis reveals spatial patterns:
 \caption{Performance by Day Type}
 \begin{tabular}{lccc}
 \toprule
-\textbf{Day Type} & \textbf{MAE (km/h)} & \textbf{R²} & \textbf{Sample Count} \\
+\textbf{Day Type} & \textbf{MAE (km/h)} & \textbf{$R^2$} & \textbf{Sample Count} \\
 \midrule
 Weekday (Mon--Fri) & 3.02 & 0.83 & $\sim$2,000 \\
 Weekend (Sat--Sun) & 3.28 & 0.79 & $\sim$400 \\
@@ -258,7 +271,7 @@ Weekend (Sat--Sun) & 3.28 & 0.79 & $\sim$400 \\
 \end{tabular}
 \end{table}
 
-Weekday performance is slightly better due to regular commute patterns, while weekend traffic is more unpredictable due to leisure activities. The model achieves strong R² $> 0.79$ on both regimes.
+Weekday performance is slightly better due to regular commute patterns, while weekend traffic is more unpredictable due to leisure activities. The model achieves strong $R^2$ $> 0.79$ on both regimes.
 
 \subsection{Weather Impact Validation}
 
@@ -325,16 +338,16 @@ Historical speed is the dominant signal (expected for autoregressive models), wh
 
 \subsubsection{METR-LA Benchmark (Scaled)}
 
-State-of-the-art models on METR-LA (207 nodes, 34K samples) achieve MAE $\approx$ 4.17 km/h and R² = 0.85. Our HCMC network (62 nodes, 16K samples) achieves MAE = 3.08 km/h and R² = 0.82.
+State-of-the-art models on METR-LA (207 nodes, 34K samples) achieve MAE $\approx$ 4.17 km/h and $R^2$ = 0.85. Our HCMC network (62 nodes, 16K samples) achieves MAE = 3.08 km/h and $R^2$ = 0.82.
 
 \textbf{Scaled Comparison:}
 
-Expected R² (scaled by network size and data):
+Expected $R^2$ (scaled by network size and data):
 \begin{equation}
-R²_{\text{expected}} = 0.85 \times \frac{62}{207} \times \frac{16000}{34000} \approx 0.48
+R^2_{\text{expected}} = 0.85 \times \frac{62}{207} \times \frac{16000}{34000} \approx 0.48
 \end{equation}
 
-Our actual R² = 0.82 significantly exceeds the scaled expectation of 0.48, demonstrating that the model outperforms expectations given the small network and limited data.
+Our actual $R^2$ = 0.82 significantly exceeds the scaled expectation of 0.48, demonstrating that the model outperforms expectations given the small network and limited data.
 
 \subsection{Production Deployment Results}
 
@@ -380,7 +393,7 @@ This critical bug fix enabled successful production deployment.
 \subsubsection{Data Insights}
 
 \begin{enumerate}
-    \item \textbf{Small Network Challenge:} Achieved R² = 0.82 with only 16K samples (strong result)
+    \item \textbf{Small Network Challenge:} Achieved $R^2$ = 0.82 with only 16K samples (strong result)
     \item \textbf{Weather Impact Significant:} Heavy rain causes 30\% speed reduction
     \item \textbf{Temporal Patterns Strong:} Hour-of-day is 2nd most important feature
     \item \textbf{Spatial Correlation High:} Adjacent nodes correlation $\rho = 0.7$--$0.9$

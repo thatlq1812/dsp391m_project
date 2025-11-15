@@ -18,6 +18,13 @@ The STMGT (Spatio-Temporal Multi-Modal Graph Transformer) architecture represent
     \item \textbf{DropEdge Rate:} 0.05
 \end{itemize}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig11_stmgt_architecture.png}
+\caption{STMGT Architecture Overview. Input embedding feeds parallel spatial (GATv2) and temporal (Transformer) branches whose outputs are fused by a learnable gate. Weather is integrated via cross-attention, and a Gaussian Mixture head outputs probabilistic forecasts.}
+\label{fig:stmgt_architecture}
+\end{figure}
+
 \subsection{Detailed Architecture Components}
 
 \subsubsection{Input Embedding Layer}
@@ -194,6 +201,13 @@ The complete STMGT forward pass consists of:
 \end{enumerate}
 
 The output tensor has shape $[B, T_{\text{out}}, N, 15]$ where 15 parameters represent 5 Gaussian components $\times$ 3 parameters ($\mu, \sigma, \pi$).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/fig12_attention_visualization.png}
+\caption{Attention mechanisms in STMGT. (a) Spatial attention weights (GATv2), (b) temporal self-attention heatmap across 12 steps, (c) weather cross-attention where traffic queries weather context, and (d) gated fusion showing spatial vs temporal balance over time.}
+\label{fig:attention_mechanisms}
+\end{figure}
 
 \subsection{Training Procedure}
 

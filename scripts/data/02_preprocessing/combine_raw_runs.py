@@ -102,15 +102,15 @@ def load_run_data(run_dir: Path) -> Optional[List[dict]]:
         return None
     
     # Load traffic data
-    with open(files['traffic']) as f:
+    with open(files['traffic'], encoding='utf-8') as f:
         traffic_data = json.load(f)
     
     # Load weather data
-    with open(files['weather']) as f:
+    with open(files['weather'], encoding='utf-8') as f:
         weather_data = json.load(f)
     
     # Load nodes for coordinates
-    with open(files['nodes']) as f:
+    with open(files['nodes'], encoding='utf-8') as f:
         nodes_data = json.load(f)
         nodes_dict = {node['node_id']: node for node in nodes_data}
     
