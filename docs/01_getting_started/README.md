@@ -16,14 +16,17 @@ Quick start guides for using the STMGT Traffic Forecasting System.
 ## 📖 Available Guides
 
 ### [CLI Guide](CLI.md)
+
 Command-line interface for training, evaluation, and prediction.
 
 **Use Cases:**
+
 - Training models from scratch
 - Running evaluations on test sets
 - Making predictions via terminal
 
 **Quick Example:**
+
 ```bash
 # Train STMGT
 traffic-forecast train --config configs/train_normalized_v3.json
@@ -36,14 +39,17 @@ traffic-forecast predict --input data/test.parquet
 ```
 
 ### [API Guide](API.md)
+
 REST API endpoints for integration with other systems.
 
 **Use Cases:**
+
 - Production deployments
 - Real-time predictions
 - Integration with dashboards
 
 **Quick Example:**
+
 ```bash
 # Start API server
 uvicorn traffic_api.main:app --host 0.0.0.0 --port 8000
@@ -55,14 +61,17 @@ curl -X POST http://localhost:8000/predict \
 ```
 
 ### [Deployment Guide](DEPLOYMENT.md)
+
 Production deployment instructions for various platforms.
 
 **Use Cases:**
+
 - Docker containerization
 - Cloud deployment (AWS, GCP, Azure)
 - Kubernetes orchestration
 
 **Quick Example:**
+
 ```bash
 # Build Docker image
 docker build -t traffic-forecast:latest .
@@ -129,16 +138,19 @@ python -m traffic_api.main
 ## 📚 Next Steps
 
 **For New Users:**
+
 - Read [Data Overview](../02_data/DATA.md) to understand dataset structure
 - Review [Model Overview](../03_models/MODEL.md) to understand architectures
 - Check [Training Workflow](../03_models/TRAINING_WORKFLOW.md) for best practices
 
 **For Developers:**
+
 - Explore [STMGT Architecture](../03_models/architecture/STMGT_ARCHITECTURE.md)
 - Review [API Guide](API.md) for integration details
 - Check [Deployment Guide](DEPLOYMENT.md) for production setup
 
 **For Researchers:**
+
 - Read [Final Report](../05_final_report/final_report.pdf)
 - Review [Super Dataset Design](../02_data/super_dataset/SUPER_DATASET_DESIGN.md)
 - Analyze [Metrics Verification](../04_evaluation/METRICS_VERIFICATION_ALL_MODELS.md)
@@ -155,6 +167,7 @@ python -m traffic_api.main
 4. **Data not found:** Verify dataset paths in config files
 
 **Getting Help:**
+
 - Check [CHANGELOG](../CHANGELOG.md) for recent updates
 - Review error logs in `outputs/*/logs/`
 - Open an issue on GitHub

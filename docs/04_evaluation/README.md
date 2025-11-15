@@ -18,6 +18,7 @@ Model verification, metrics analysis, and investigation reports.
 This section contains comprehensive evaluation documentation, including metrics verification, model audits, and investigation reports.
 
 **Key Topics:**
+
 - Performance metrics across all models
 - GraphWaveNet investigation and bug fixes
 - ASTGCN verification
@@ -28,23 +29,28 @@ This section contains comprehensive evaluation documentation, including metrics 
 ## 📖 Available Documentation
 
 ### [Metrics Verification](METRICS_VERIFICATION_ALL_MODELS.md)
+
 Comprehensive metrics comparison across all models.
 
 **Contents:**
+
 - MAE, RMSE, MAPE definitions
 - Evaluation methodology
 - Cross-model comparison
 - Statistical significance tests
 
 **Key Metrics:**
+
 - **MAE (Mean Absolute Error):** Primary metric, km/h
 - **RMSE (Root Mean Squared Error):** Penalizes large errors
 - **MAPE (Mean Absolute Percentage Error):** Relative accuracy
 
 ### [GraphWaveNet Investigation](graphwavenet/)
+
 Complete investigation of GraphWaveNet's suspicious performance.
 
 **Timeline:**
+
 1. Initial suspicion (MAE 0.0198 km/h - too good)
 2. Normalization bug fix (MAE 0.25 km/h - still suspicious)
 3. Root cause: Autocorrelation exploitation (correlation 0.999988)
@@ -52,6 +58,7 @@ Complete investigation of GraphWaveNet's suspicious performance.
 5. Validation: Prototype test (MAE 1.46 km/h - genuine learning)
 
 **Available Reports:**
+
 - **[Initial Audit](graphwavenet/GRAPHWAVENET_AUDIT.md)** - First investigation
 - **[Bug Fix](graphwavenet/GRAPHWAVENET_NORMALIZATION_FIX.md)** - Fixed normalization
 - **[Verification Plan](graphwavenet/GRAPHWAVENET_VERIFICATION_PLAN.md)** - Testing strategy
@@ -59,9 +66,11 @@ Complete investigation of GraphWaveNet's suspicious performance.
 - **[Complete Investigation](graphwavenet/)** - All 9 investigation files
 
 ### [ASTGCN Verification](astgcn/)
+
 ASTGCN model verification and validation.
 
 **Available Reports:**
+
 - **[Verification Report](astgcn/ASTGCN_VERIFICATION_REPORT.md)** - Complete analysis
 
 ---
@@ -72,22 +81,22 @@ ASTGCN model verification and validation.
 
 Based on prototype testing (1-month subset):
 
-| Model | MAE | RMSE | MAPE | Rank |
-|-------|-----|------|------|------|
-| STMGT | 3.24 | 5.12 | 11.2% | 🥇 1st |
+| Model        | MAE  | RMSE | MAPE  | Rank   |
+| ------------ | ---- | ---- | ----- | ------ |
+| STMGT        | 3.24 | 5.12 | 11.2% | 🥇 1st |
 | GraphWaveNet | 4.87 | 7.34 | 15.8% | 🥈 2nd |
-| ASTGCN | 5.43 | 8.21 | 17.3% | 🥉 3rd |
-| LSTM | 6.12 | 9.05 | 19.7% | 4th |
+| ASTGCN       | 5.43 | 8.21 | 17.3% | 🥉 3rd |
+| LSTM         | 6.12 | 9.05 | 19.7% | 4th    |
 
-*Note: Full 1-year training in progress. Results will be updated.*
+_Note: Full 1-year training in progress. Results will be updated._
 
 ### Original 1-Week Dataset
 
-| Model | MAE | Notes |
-|-------|-----|-------|
-| GraphWaveNet (buggy) | 0.0198 | Missing normalization |
-| GraphWaveNet (norm fixed) | 0.25 | Autocorrelation exploit |
-| GraphWaveNet (super dataset) | 1.46 | Genuine learning ✓ |
+| Model                        | MAE    | Notes                   |
+| ---------------------------- | ------ | ----------------------- |
+| GraphWaveNet (buggy)         | 0.0198 | Missing normalization   |
+| GraphWaveNet (norm fixed)    | 0.25   | Autocorrelation exploit |
+| GraphWaveNet (super dataset) | 1.46   | Genuine learning ✓      |
 
 ---
 
@@ -96,25 +105,30 @@ Based on prototype testing (1-month subset):
 ### Problem Discovery
 
 **Initial Observation:**
+
 - MAE 0.0198 km/h on 1-week dataset
 - Suspiciously perfect performance
 
 **First Hypothesis:**
+
 - Missing data normalization
 - Trained on raw speeds [3, 52] km/h
 
 **First Fix:**
+
 - Added StandardScaler normalization
 - Result: MAE 0.25 km/h (still too good)
 
 ### Root Cause Analysis
 
 **Deep Investigation:**
+
 - Correlation between predictions[t] and inputs[t-12]: **0.999988**
 - Model learns identity mapping: `output = input[t-12] - 0.25 km/h`
 - Exploits autocorrelation in 1-week dataset (autocorr 0.999)
 
 **Why This Happens:**
+
 - 1-week dataset has extreme regularity
 - Same patterns repeat every 144 timesteps (1 day)
 - Model takes shortcut: "just copy yesterday's speed"
@@ -122,11 +136,13 @@ Based on prototype testing (1-month subset):
 ### Solution: Super Dataset
 
 **Design Goals:**
+
 - Reduce autocorrelation from 0.999 to ~0.6
 - Force genuine spatial-temporal learning
 - Realistic disruptions prevent shortcuts
 
 **Implementation:**
+
 - 365 days, 52,560 timestamps
 - 171 incidents (Poisson λ=3/week)
 - 8 construction zones
@@ -135,6 +151,7 @@ Based on prototype testing (1-month subset):
 - Vietnamese holidays
 
 **Results:**
+
 - Autocorr lag-12: 0.5864 ✓
 - GraphWaveNet on prototype: MAE 1.46 km/h
 - No correlation exploit (predictions are genuine)
@@ -153,6 +170,7 @@ Based on prototype testing (1-month subset):
 ### Dataset Splits
 
 **Super Dataset 1-Year:**
+
 ```
 Train:      67% (4,971,072 samples, days 1-240)
 Gap:        14 days (prevents leakage)
@@ -163,16 +181,19 @@ Test:       16% (1,211,424 samples, days 302-365)
 ### Metrics Calculation
 
 **MAE (Mean Absolute Error):**
+
 ```python
 mae = np.mean(np.abs(y_true - y_pred))
 ```
 
 **RMSE (Root Mean Squared Error):**
+
 ```python
 rmse = np.sqrt(np.mean((y_true - y_pred)**2))
 ```
 
 **MAPE (Mean Absolute Percentage Error):**
+
 ```python
 mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 ```

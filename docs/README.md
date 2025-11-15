@@ -20,6 +20,7 @@ Comprehensive documentation for STMGT Traffic Forecasting System.
 ## 📚 Documentation Structure
 
 ### [01. Getting Started](01_getting_started/)
+
 Quick start guides for using the system.
 
 - **[CLI Guide](01_getting_started/CLI.md)** - Command-line interface usage
@@ -27,6 +28,7 @@ Quick start guides for using the system.
 - **[Deployment](01_getting_started/DEPLOYMENT.md)** - Production deployment guide
 
 ### [02. Data](02_data/)
+
 Dataset documentation and preprocessing.
 
 - **[Data Overview](02_data/DATA.md)** - Dataset structure and specifications
@@ -37,6 +39,7 @@ Dataset documentation and preprocessing.
   - [Generation Report](02_data/super_dataset/SUPER_DATASET_GENERATION_COMPLETE.md)
 
 ### [03. Models](03_models/)
+
 Model architecture and training documentation.
 
 - **[Model Overview](03_models/MODEL.md)** - STMGT, GraphWaveNet, LSTM baselines
@@ -47,6 +50,7 @@ Model architecture and training documentation.
   - [ELI5 Explanation](03_models/architecture/ARCHITECTURE_ELI5.md)
 
 ### [04. Evaluation](04_evaluation/)
+
 Model evaluation, verification, and comparison reports.
 
 - **[Metrics Verification](04_evaluation/METRICS_VERIFICATION_ALL_MODELS.md)** - Cross-model comparison
@@ -59,6 +63,7 @@ Model evaluation, verification, and comparison reports.
   - [Verification Report](04_evaluation/astgcn/ASTGCN_VERIFICATION_REPORT.md)
 
 ### [05. Final Report](05_final_report/)
+
 Official project report in IEEE conference format.
 
 - **[Final Report PDF](05_final_report/final_report.pdf)** - Complete project documentation
@@ -66,9 +71,11 @@ Official project report in IEEE conference format.
 - **[Build Guide](05_final_report/BUILD_GUIDE.md)** - Compilation instructions
 
 ### [CHANGELOG](CHANGELOG.md)
+
 Complete project changelog with version history and updates.
 
 ### [Archive](archive/)
+
 Deprecated and outdated documentation files.
 
 ---
@@ -76,16 +83,19 @@ Deprecated and outdated documentation files.
 ## 🚀 Quick Navigation
 
 **For New Users:**
+
 1. Start with [CLI Guide](01_getting_started/CLI.md)
 2. Read [Data Overview](02_data/DATA.md)
 3. Review [Model Overview](03_models/MODEL.md)
 
 **For Developers:**
+
 1. [Training Workflow](03_models/TRAINING_WORKFLOW.md)
 2. [STMGT Architecture](03_models/architecture/STMGT_ARCHITECTURE.md)
 3. [API Guide](01_getting_started/API.md)
 
 **For Researchers:**
+
 1. [Final Report](05_final_report/final_report.pdf)
 2. [Super Dataset Design](02_data/super_dataset/SUPER_DATASET_DESIGN.md)
 3. [Metrics Verification](04_evaluation/METRICS_VERIFICATION_ALL_MODELS.md)
@@ -95,12 +105,14 @@ Deprecated and outdated documentation files.
 ## 📊 Project Status
 
 **Latest Achievements:**
+
 - ✅ Super Dataset 1-Year generated (7.5M samples, 247.9 MB)
 - ✅ GraphWaveNet autocorrelation issue identified and documented
 - ✅ STMGT V3 architecture optimized (680K params, MAE 3.08 km/h on easy dataset)
 - 🔄 Training all models on challenging super dataset (in progress)
 
 **Expected Results on Super Dataset:**
+
 - GraphWaveNet: MAE 4-6 km/h (no autocorrelation shortcuts)
 - LSTM: MAE 5-7 km/h (temporal only)
 - STMGT: MAE 3-4 km/h (maintains spatial-temporal advantage)
