@@ -59,6 +59,12 @@ final_report/
     ├── ... (12 files total)
 ```
 
+## Demo Workflow Update
+
+- Demo script now supports optional static map (Figure 3) via `--include-map` flag; map is not required for main results or presentation.
+- Google baseline metrics use real data if available (`duration_in_traffic`, `distance_km`, or `google_speed_kmh`); otherwise, synthetic baseline is used for comparison figures.
+- CLI usage and output files updated; see demo README for details.
+
 ## Current Status
 
 **Progress:** 3/10 sections completed (30%)

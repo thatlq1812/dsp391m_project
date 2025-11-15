@@ -15,18 +15,11 @@
 
 **Production Model:** `outputs/stmgt_v2_20251109_195802/best_model.pt`
 
-| Metric          | Value         | Interpretation               |
-| --------------- | ------------- | ---------------------------- |
-| **MAE**         | **3.08 km/h** | Average prediction error     |
-| **RMSE**        | 4.53 km/h     | Penalizes large errors more  |
-| **R²**          | 0.82          | Explains 82% of variance     |
-| **MAPE**        | 19.26%        | Relative error               |
-| **CRPS**        | 2.23          | Probabilistic score          |
-| **Coverage@80** | 83.75%        | Confidence interval accuracy |
+| **R²** | 0.82 | Explains 82% of variance |
+| **MAPE** | 19.26% | Relative error |
+| **CRPS** | 2.23 | Probabilistic score |
+| **Coverage@80** | 83.75% | Confidence interval accuracy |
 
-**Training Details:**
-
-- **Epochs:** 24 (early stopped at epoch 9)
 - **Training Time:** ~10 minutes
 - **Model Size:** 680K parameters (2.76 MB)
 - **Best Val MAE:** 3.21 km/h (epoch 9)
@@ -47,12 +40,11 @@
 
 **Table 1: Performance Comparison of All Models on Test Set**
 
-| Model         | MAE (km/h) | RMSE (km/h) | R²         | MAPE         | Params | Architecture      |
 | ------------- | ---------- | ----------- | ---------- | ------------ | ------ | ----------------- |
-| **STMGT V2**  | **3.08**   | **4.53**    | **0.82**   | **19.26%**   | 680K   | Parallel ST + GMM |
-| GraphWaveNet  | 3.95       | 5.12        | 0.71       | 24.58%       | ~600K  | Adaptive + TCN    |
-| GCN Baseline  | 3.91       | ~5.0        | ~0.72      | ~25%         | 340K   | Graph Conv        |
-| LSTM Baseline | 4.42-4.85  | 6.08-6.23   | 0.185-0.64 | 20.62-28.91% | ~800K  | Sequential RNN    |
+| **STMGT V2** | **3.08** | **4.53** | **0.82** | **19.26%** | 680K | Parallel ST + GMM |
+| GraphWaveNet | 3.95 | 5.12 | 0.71 | 24.58% | ~600K | Adaptive + TCN |
+| GCN Baseline | 3.91 | ~5.0 | ~0.72 | ~25% | 340K | Graph Conv |
+| LSTM Baseline | 4.42-4.85 | 6.08-6.23 | 0.185-0.64 | 20.62-28.91% | ~800K | Sequential RNN |
 
 **Key Findings:**
 
@@ -63,10 +55,6 @@
 **Improvement Over Baselines:**
 
 - vs GraphWaveNet: **-22% MAE** (3.95 → 3.08), **+15% R²** (0.71 → 0.82)
-- vs GCN: **-21% MAE** (3.91 → 3.08), **+14% R²** (0.72 → 0.82)
-- vs LSTM (best run): **-30% MAE** (4.42 → 3.08), **+343% R²** (0.185 → 0.82)
-
-**Analysis:**
 
 - GCN and GraphWaveNet perform similarly (3.91 vs 3.95), adaptive adjacency provides marginal benefit
 - STMGT's parallel processing and weather cross-attention provide consistent 20%+ improvement

@@ -3,6 +3,7 @@
 ## Current Situation
 
 **PDF Status:** ✅ Successfully generated
+
 - File: `final_report.pdf`
 - Size: 5.0 MB
 - Last updated: Nov 12, 2025 14:45
@@ -11,17 +12,21 @@
 ## Known Issues
 
 ### 1. MiKTeX Path Warning (Non-Critical)
+
 ```
 MiKTeX cannot retrieve attributes for 'C:\Program Files\Microsoft VS Code\Code.exe\'
 ```
+
 - **Impact:** None - PDF still compiles successfully
 - **Cause:** MiKTeX bug with VS Code integrated terminal
 - **Workaround:** Ignore warning or run from cmd.exe instead
 
 ### 2. Bibliography Citations Not Resolved
+
 ```
 Citations show as [?] instead of [1], [2], etc.
 ```
+
 - **Cause:** Biber/Bibtex not running successfully
 - **Fix needed:** Run bibliography processor manually
 - **Status:** IN PROGRESS
@@ -37,6 +42,8 @@ Citations show as [?] instead of [1], [2], etc.
 7. ✅ Cross-references working
 8. ✅ Table of Contents generated
 9. ✅ List of Figures/Tables generated
+
+10. ✅ Demo script updated: Figure 3 (map) is optional, Google baseline uses real data if available
 
 ## What Needs Fixing ⚠️
 
@@ -59,7 +66,7 @@ xdg-open final_report.pdf # Linux
 cd D:\UNI\DSP391m\project\docs\final_report
 pdflatex final_report.tex
 bibtex final_report
-pdflatex final_report.tex  
+pdflatex final_report.tex
 pdflatex final_report.tex
 ```
 

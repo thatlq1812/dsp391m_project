@@ -7,6 +7,11 @@
 
 Successfully converted all 12 markdown documentation files into a complete IEEE-format LaTeX final report with modular structure.
 
+## November 2025 Demo System Update
+
+- Demo script now supports optional static map (Figure 3) via CLI flag; map is not required for main results.
+- Google baseline metrics use real data if available, otherwise synthetic overlay is used in comparison figures.
+
 ## Completed Work
 
 ### All 10 Sections Created (3,680 lines total)

@@ -118,4 +118,9 @@ Cite in sections using: `\cite{ref_key}`
 
 ---
 
+## Demo Figure Notes
+
+- Figure 3 (static map) is now optional and generated only if `--include-map` is set in the demo script. It is not required for main results or PowerPoint.
+- Google baseline metrics use real data columns if present; otherwise, synthetic values are used for comparison figures.
+
 Last Updated: November 12, 2025

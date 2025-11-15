@@ -1,22 +1,65 @@
-# Git-Based Deployment Scripts
+# Deployment Scripts
 
-New scripts for Git-based workflow (recommended).
+Scripts for VM deployment and demo data collection.
 
-## Quick Reference
+## Quick Start (Demo VM)
 
 ```bash
-# Deploy changes
-./scripts/deployment/deploy_git.sh
+# 1. Deploy VM on GCP
+./scripts/deployment/deploy_demo_vm.sh
 
-# Check status
-./scripts/deployment/status.sh
+# 2. SSH and configure
+gcloud compute ssh traffic-demo-collector --zone=asia-southeast1-a
+cd ~/traffic-demo
+nano .env  # Add API keys
 
-# Monitor logs
-./scripts/deployment/monitor_logs.sh
+# 3. Build topology
+conda activate dsp
+python scripts/data/01_collection/build_topology.py
 
-# Download data
-./scripts/data/download_latest.sh
+# 4. Start collection
+sudo systemctl enable traffic-collector.timer
+sudo systemctl start traffic-collector.timer
+
+# 5. Wait 3-5 days, then download data
+gcloud compute scp traffic-demo-collector:/opt/traffic_data/traffic_data_*.parquet ./data/demo/
 ```
+
+## Scripts Overview
+
+### Demo VM Deployment
+
+**`deploy_demo_vm.sh`** - Automated VM deployment (GCP)
+
+- Creates e2-micro instance (FREE tier)
+- Installs Miniconda, Python 3.10
+- Clones repository
+- Sets up systemd timer (every 15 minutes)
+- Usage: `./scripts/deployment/deploy_demo_vm.sh`
+
+**`setup_demo_vm_manual.sh`** - Manual VM setup
+
+- Run ON the VM if auto-deploy fails
+- Step-by-step installation
+- Usage: `bash setup_demo_vm_manual.sh` (on VM)
+
+**`vm_commands.md`** - VM management reference
+
+- All gcloud commands
+- Service management
+- Monitoring and debugging
+- Common issues and solutions
+
+**`traffic_collector.py`** - Data collection script
+
+- Collects traffic every 15 minutes
+- Saves to monthly Parquet files
+- Includes weather data
+- Runs via systemd timer
+
+### Old Scripts (Archived)
+
+See `scripts/archive/deployment/` for old web API deployment scripts.
 
 ## Deployment Scripts (`deployment/`)
 

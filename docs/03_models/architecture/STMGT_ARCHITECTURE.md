@@ -135,6 +135,20 @@ Thiết kế architecture **SONG SONG** khai thác ưu điểm của:
 
 ---
 
+## Related Work (STMGT V1 Core)
+
+This STMGT V1 design composes proven components from compact, directly relevant literature:
+
+- Spatial modeling: Graph attention mechanisms learn adaptive neighbor importance [6, 7].
+- Temporal modeling: Self-attention/transformer encoders capture long-range temporal patterns [8, 9].
+- Spatio-temporal baselines: Core STGNN works for traffic forecasting (DCRNN, STGCN, ASTGCN, Graph WaveNet, MTGNN) provide comparison anchors [10–14].
+- Multi-modal fusion: Attention mechanisms motivate cross-attention for conditioning on exogenous weather signals [8, 9].
+- Probabilistic forecasts: Mixture Density Networks and proper scoring rules justify GMM outputs and calibration metrics (CRPS, coverage) [2, 3].
+
+Scope note: We cite a compact set that directly supports STMGT’s component choices and evaluation protocol. Numerical references correspond to `docs/05_final_report/11_references.md`.
+
+---
+
 ## NOVEL COMPONENTS (Research Contributions)
 
 ### **1. Parallel Spatial-Temporal Encoding**

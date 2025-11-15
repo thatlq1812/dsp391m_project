@@ -16,6 +16,222 @@ Complete changelog for STMGT Traffic Forecasting System
 
 ---
 
+## [DEMO SYSTEM IMPLEMENTATION] - 2025-11-15
+
+Implemented back-prediction demo system, cleaned up old web API approach, added VM deployment automation.
+
+### Created Files
+
+**scripts/deployment/deploy_demo_vm.sh:**
+
+- Automated GCP VM deployment script
+- Creates e2-micro instance (FREE tier or ~$8-15/month)
+- Installs Miniconda and Python 3.10 environment
+- Clones GitHub repository
+- Sets up systemd timer for 15-minute collection intervals
+- Features:
+  - Checks for existing VM and offers to recreate
+  - Configures minimal Python environment (pandas, pyarrow, requests)
+  - Creates /opt/traffic_data directory for data storage
+  - Systemd timer unit (runs collector every 15 minutes)
+  - Systemd service unit (oneshot type for single execution)
+  - Comprehensive post-deployment instructions
+- Usage: `./scripts/deployment/deploy_demo_vm.sh`
+
+**scripts/deployment/setup_demo_vm_manual.sh:**
+
+- Manual VM setup script (fallback if auto-deploy fails)
+- Run ON the VM after SSH connection
+- Steps:
+  1. Updates Ubuntu system packages
+  2. Installs Miniconda
+  3. Clones repository
+  4. Creates Python environment with minimal dependencies
+  5. Creates data directory
+  6. Sets up .env template
+- Includes cron job setup instructions as alternative to systemd
+- Usage: `bash setup_demo_vm_manual.sh` (on VM)
+
+**scripts/deployment/vm_commands.md:**
+
+- Comprehensive VM management reference documentation
+- Sections:
+  - Connection commands (gcloud ssh, aliases)
+  - Service management (systemd timer/service control)
+
+---
+
+## [DOCS] STMGT references consolidation - 2025-11-15
+
+- Clarified STMGT V1 literature mapping to a compact, directly relevant citation set.
+- Added “Related Work (STMGT V1 Core)” subsection to `docs/03_models/architecture/STMGT_ARCHITECTURE.md` mapping claims to [2–3, 6–14].
+- Added brief citation context notes in `docs/05_final_report/06_methodology.md` and `docs/05_final_report/02_literature_review.md` to set expectations and reduce perceived clutter.
+- No change to the numbered reference list (`docs/05_final_report/11_references.md`).
+- Extended references with GMAN [18] and DropEdge [19]; updated verification count/date.
+- Monitoring (logs, disk usage, record counts)
+- Manual collection (testing)
+- Data management (viewing, downloading)
+- Debugging (conda, API keys, resources)
+- VM lifecycle (stop, start, delete)
+- Cost monitoring
+- Backup procedures
+- Quick health check one-liner
+- Common issues and solutions
+- Code updates
+- All commands ready to copy-paste
+
+**scripts/deployment/traffic_collector.py:**
+
+- Continuous traffic data collection for VM deployment
+- Fetches from Google Directions API every 15 minutes
+- Extracts duration and duration_in_traffic (Google's predictions)
+- Appends to monthly Parquet files (e.g., traffic_data_202511.parquet)
+- Includes weather data from OpenWeatherMap API
+- Supports cron job: `*/15 * * * *`
+- Handles rate limiting (10 req/sec)
+- Features:
+  - Loads edges from cache/overpass_topology.json
+  - Calculates current speeds vs normal speeds
+  - Saves compressed Parquet with metadata
+  - Comprehensive logging and error handling
+
+**docs/DEMO_QUICKSTART.md:**
+
+- Complete step-by-step guide from VM deployment to presentation
+- 5 main steps with time estimates:
+  1. Deploy VM (1 hour)
+  2. Wait for data (3-5 days automatic)
+  3. Download data (5 minutes)
+  4. Generate figures (30 minutes)
+  5. Prepare presentation (30 minutes)
+- Sections:
+  - Prerequisites and API keys setup
+  - GCP project configuration
+  - Detailed VM deployment instructions
+  - Data monitoring and verification
+  - Figure generation with example commands
+  - PowerPoint preparation guide
+  - Cleanup procedures (stop/delete VM)
+  - Troubleshooting common issues
+  - TODO list for implementing demo script
+  - Cost estimates ($0-30/month)
+- All commands ready to copy-paste
+
+**scripts/demo/generate_demo_figures.py:**
+
+- Main demo script using back-prediction strategy
+- Generates 4 high-resolution figures (300 DPI):
+  1. Multi-prediction convergence chart (predictions from 14:00, 15:00, 15:30, 16:00)
+  2. Variance and convergence analysis (2 subplots)
+  3. Static accuracy map with Folium (HTML interactive)
+  4. Google Maps baseline comparison (3 subplots)
+- Command-line arguments:
+  - `--data`: Path to Parquet file
+  - `--model`: Path to STMGT checkpoint
+  - `--demo-time`: Current time (e.g., "2025-11-20 17:00")
+  - `--prediction-points`: Comma-separated times (e.g., "14:00,15:00,15:30,16:00")
+  - `--horizons`: Prediction horizons in hours (e.g., "1,2,3")
+  - `--sample-edges`: Number of edges for visualization
+  - `--include-google`: Add Google baseline comparison
+- Outputs metrics.json with raw comparison data
+- Ready for PowerPoint presentation
+
+**scripts/demo/README.md:**
+
+- Complete documentation for demo workflow
+- Back-prediction strategy explanation
+- Usage examples with all options
+- Requirements and setup instructions
+- Google baseline extraction method
+- Example workflow from data collection to presentation
+
+### Updated Files
+
+**docs/DEMO.md:**
+
+- Added deprecation notice at top
+- Marked as outdated approach (requires waiting for future data)
+- Redirects to DEMO_BACKPREDICT.md (back-prediction strategy)
+- Preserved for reference only
+
+**scripts/deployment/README.md:**
+
+- Completely rewritten for demo VM focus
+- Added Quick Start section with 5-step workflow
+- Documented all new deployment scripts
+- Removed outdated web API references
+- Added links to vm_commands.md for detailed management
+
+### Archived
+
+**archive/traffic_api_old/ (moved from traffic_api/):**
+
+- Archived old web API demo (FastAPI, real-time updates, WebSocket)
+- Included files:
+  - FastAPI endpoints (main.py, predictor.py, rate_limit.py)
+  - Static HTML/CSS/JS (index.html, traffic_map.html, etc.)
+  - Auth and schema modules
+  - Model checkpoints and configs
+- Reason: Demo now uses simple script-based approach (no web interface)
+- Old approach required complex infrastructure (PostgreSQL, Redis, Docker)
+- New approach: One Python script → Static figures → PowerPoint
+
+### Technical Details
+
+**Back-Prediction Strategy:**
+
+- Current time 17:00 → Back to 14:00
+- Multiple prediction points: 14:00, 15:00, 15:30, 16:00
+- Each uses 3-hour lookback window
+- Predictions compared with actual speeds (already collected)
+- Shows convergence and variance analysis
+- No waiting for future data
+
+**Google Baseline:**
+
+- Extracted from existing data (duration_in_traffic field)
+- No additional API calls needed
+- Speed calculation: distance_km / (duration_in_traffic / 3600)
+- Comparison metrics: MAE, RMSE, R², improvement percentage
+
+**Data Pipeline:**
+
+```
+VM Collection (every 15min)
+    ↓
+Monthly Parquet files (compressed)
+    ↓
+Demo Script (back-prediction)
+    ↓
+4 Figures (PNG 300 DPI + HTML)
+    ↓
+PowerPoint Presentation
+```
+
+### TODO Items
+
+Items marked in generate_demo_figures.py:
+
+- [ ] Implement actual STMGT model loading
+- [ ] Implement prediction logic with lookback windows
+- [ ] Calculate real metrics (MAE, RMSE, R², variance)
+- [ ] Add node/edge data to Folium map
+- [ ] Extract Google baseline from Parquet files
+
+### Timeline
+
+- VM setup: 2 days
+- Data collection: 3-5 days minimum
+- Figure generation: 1 day
+- Presentation prep: 1 day
+- Total: ~10 days (18-27h active work)
+
+### Cost Estimate
+
+- GCP e2-small: $15-25/month
+- GCP e2-micro: FREE (under quota)
+- Spot instance: ~$8/month
+
 ## [FINAL REPORT – FIGURE REFERENCES] - 2025-11-15
 
 Linked missing figures in LaTeX report.
@@ -55,11 +271,6 @@ Notes:
 **Status:** ✅ **COMPLETE** | 🎉 **ALL FIGURES READY**
 
 **Quick Summary:**
-Successfully generated ALL 20 figures for final report (IEEE conference format, 130+ pages). Fixed dataset path issues, removed Unicode encoding errors, created architecture diagrams programmatically, and consolidated figure generation across all sections. Report now has complete set of publication-quality figures at 300 DPI.
-
-**Generated Figures:**
-
-**Data & Preprocessing (Fig 1-4):**
 
 - Fig 1: Speed distribution across network
 - Fig 2: Network topology visualization (45 nodes, 62 edges)
@@ -71,38 +282,25 @@ Successfully generated ALL 20 figures for final report (IEEE conference format, 
 - Fig 5: Speed histogram with GMM fitting
 - Fig 6: Hourly traffic patterns
 - Fig 7: Weekly seasonality patterns
-- Fig 8: Spatial correlation matrix
-- Fig 9: Temperature vs speed correlation
-- Fig 10: Weather condition box plots
 
 **Architecture (Fig 11-12):**
 
 - Fig 11: STMGT architecture block diagram (Input → Spatial/Temporal Branches → Gated Fusion → Weather Cross-Attention → GMM Output)
 - Fig 12: Attention mechanism visualization (4 subplots: GATv2 spatial attention, Transformer temporal attention, weather cross-attention, gated fusion)
 
-**Results & Analysis (Fig 13-20):**
-
 - Fig 13: Training curves (4 models: STMGT, GraphWaveNet, GCN, LSTM)
 - Fig 14: Ablation study results
 - Fig 15: Model comparison (MAE, RMSE, MAPE)
-- Fig 16: Best case prediction example
-- Fig 17: Worst case prediction example
 - Fig 18: Calibration plot (Coverage@80 = 83.75%)
 - Fig 19: Error distribution by hour of day
 - Fig 20: Spatial error heatmap across nodes
+  **Technical Fixes:**
 
-**Technical Fixes:**
-
-1. **Dataset Path Update:**
-
-   - Changed default from `all_runs_gapfilled_week.parquet` to `baseline_1month.parquet`
-   - Added fallback to `augmented_1year.parquet` if baseline missing
-   - Fixed `scripts/visualization/utils.py` load_parquet_data()
+  - Added fallback to `augmented_1year.parquet` if baseline missing
+  - Fixed `scripts/visualization/utils.py` load_parquet_data()
 
 2. **Encoding Issues:**
 
-   - Removed Unicode emoji characters (✓, ⚠️, ❌) causing Windows cp1252 errors
-   - Updated print statements in all 6 visualization scripts
    - Now uses plain ASCII: "Saved:", "WARNING:", "All figures generated"
 
 3. **Directory Consolidation:**
