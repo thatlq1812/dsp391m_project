@@ -192,5 +192,4 @@ temps/*
 # Google Drive included
 .tmp.drivedownload/
 .tmp.driveupload/
-desktop.ini
 /archive/
