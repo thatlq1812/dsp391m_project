@@ -66,7 +66,7 @@ class STMGTPredictor:
                 data_path = Path(self.config['metadata']['data_path'])
             else:
                 # Try common paths
-                data_path = checkpoint_path.parents[1] / "data" / "processed" / "all_runs_extreme_augmented.parquet"
+                data_path = checkpoint_path.parents[1] / "data" / "processed" / "all_runs_gapfilled_week.parquet"
         
         self.data_path = data_path
         

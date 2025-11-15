@@ -173,43 +173,34 @@ class TemporalAttention(layers.Layer):
 
 
 class SpatialAttention(layers.Layer):
-    """Spatial attention mechanism."""
+    """Spatial attention mechanism that produces node-to-node weights."""
 
     def __init__(self, units: int, **kwargs):
         super().__init__(**kwargs)
         self.units = units
-
-    def build(self, input_shape):
-        self.W = self.add_weight(
-            name='spatial_W',
-            shape=(input_shape[-1], self.units),
-            initializer='glorot_uniform',
-            trainable=True
-        )
-        self.b = self.add_weight(
-            name='spatial_b',
-            shape=(self.units,),
-            initializer='zeros',
-            trainable=True
-        )
-        self.V = self.add_weight(
-            name='spatial_V',
-            shape=(self.units, 1),
-            initializer='glorot_uniform',
-            trainable=True
-        )
+        self.query_dense = layers.Dense(units, use_bias=False)
+        self.key_dense = layers.Dense(units, use_bias=False)
 
     def call(self, inputs):
-        batch_size = tf.shape(inputs)[0]
-        time_steps = tf.shape(inputs)[1]
-        num_nodes = tf.shape(inputs)[2]
+        shape = tf.shape(inputs)
+        batch_size = shape[0]
+        time_steps = shape[1]
+        num_nodes = shape[2]
 
-        inputs_reshaped = tf.reshape(inputs, [-1, inputs.shape[-1]])
-        scores = tf.matmul(tf.nn.tanh(tf.matmul(inputs_reshaped, self.W) + self.b), self.V)
-        scores = tf.reshape(scores, [batch_size, time_steps, num_nodes])
+        # Merge batch and time so we can compute attention per timestep
+        bt = batch_size * time_steps
+        features = shape[3]
+        x = tf.reshape(inputs, (bt, num_nodes, features))
 
-        attention_weights = tf.nn.softmax(scores, axis=2)
-        return attention_weights
+        queries = self.query_dense(x)  # (bt, nodes, units)
+        keys = self.key_dense(x)       # (bt, nodes, units)
+
+        scale = tf.math.sqrt(tf.cast(self.units, tf.float32))
+        logits = tf.matmul(queries, keys, transpose_b=True) / scale  # (bt, nodes, nodes)
+        attention = tf.nn.softmax(logits, axis=-1)
+
+        attention = tf.reshape(attention, (batch_size, time_steps, num_nodes, num_nodes))
+        return attention
 
 
 class ChebGraphConv(layers.Layer):
@@ -249,11 +240,11 @@ class ChebGraphConv(layers.Layer):
 
         outputs = []
         for poly, kernel in zip(self.cheb_polynomials, self.kernels):
-            poly_expanded = tf.expand_dims(poly, axis=0)
-            poly_expanded = poly_expanded * spatial_attention
+            poly_expanded = tf.reshape(poly, (1, 1, num_nodes, num_nodes))
+            weighted_poly = poly_expanded * spatial_attention
 
             x_transformed = tf.matmul(inputs, kernel)
-            x_graph = tf.matmul(poly_expanded, x_transformed)
+            x_graph = tf.matmul(weighted_poly, x_transformed)
             outputs.append(x_graph)
 
         output = tf.add_n(outputs)
@@ -296,14 +287,10 @@ class ASTGCNBlock(layers.Layer):
 
         # Expand attention weights to match input dimensions
         temporal_att = tf.expand_dims(temporal_att, axis=-1)  # [batch, time, nodes, 1]
-        
         x = inputs * temporal_att
         x = self.cheb_conv(x, spatial_att, training=training)
 
-        x = tf.expand_dims(x, axis=-1)
         x = self.temporal_conv(x)
-        x = tf.squeeze(x, axis=-1)
-
         x = self.batch_norm(x, training=training)
         x = self.dropout(x, training=training)
 
@@ -380,7 +367,7 @@ class ASTGCNTrafficModel:
                 name=f'{name}_block_{block_idx}'
             )(x)
 
-        x = layers.GlobalAveragePooling1D(name=f'{name}_pool')(x)
+    x = layers.GlobalAveragePooling2D(name=f'{name}_pool')(x)
 
         return input_layer, x
 

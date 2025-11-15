@@ -1,0 +1,63 @@
+{
+  "model": {
+    "seq_len": 12,
+    "pred_len": 12,
+    "hidden_dim": 96,
+    "num_heads": 4,
+    "num_blocks": 3,
+    "mixture_components": 5,
+    "num_nodes": 62,
+    "dropout": 0.25,
+    "drop_edge_rate": 0.15
+  },
+  "training": {
+    "batch_size": 32,
+    "learning_rate": 0.0008,
+    "weight_decay": 0.00015,
+    "max_epochs": 50,
+    "patience": 15,
+    "drop_edge_p": 0.15,
+    "num_workers": 0,
+    "use_amp": true,
+    "accumulation_steps": 1,
+    "data_source": "super_dataset_1year.parquet",
+    "pin_memory": false,
+    "persistent_workers": false,
+    "prefetch_factor": null,
+    "matmul_precision": "medium",
+    "mse_loss_weight": 0.35,
+    "gradient_clip_val": 1.0,
+    "label_smoothing": 0.02,
+    "use_lr_scheduler": true,
+    "scheduler_type": "cosine",
+    "scheduler_params": {
+      "T_max": 50,
+      "eta_min": 1e-6
+    }
+  },
+  "metadata": {
+    "label": "stmgt_super_dataset_1year",
+    "description": "STMGT training on 1-year super dataset (7.5M samples). Dataset includes realistic disruptions: 171 incidents, 8 construction zones, 79 weather events, 24 special events, Vietnamese holidays. Designed to prevent autocorrelation exploitation and test genuine spatial-temporal learning.",
+    "dataset_info": {
+      "name": "super_dataset_1year",
+      "duration": "365 days",
+      "samples": "7,568,640 rows",
+      "timestamps": "52,560 (10-min intervals)",
+      "edges": 144,
+      "nodes": 62,
+      "size": "247.9 MB",
+      "autocorr_lag12": "0.5864 (challenging level)"
+    },
+    "expected_results": {
+      "val_mae": "3.0-4.0 km/h (genuine spatial-temporal learning)",
+      "val_rmse": "4.5-5.5 km/h",
+      "r2_score": "0.75-0.82",
+      "note": "Higher MAE than easy 1-week dataset (1.88 km/h) due to realistic challenges"
+    },
+    "comparison_targets": {
+      "graphwavenet": "Expected 4-6 km/h (no autocorrelation shortcuts)",
+      "lstm": "Expected 5-7 km/h (temporal only)",
+      "stmgt": "Expected 3-4 km/h (spatial-temporal advantage)"
+    }
+  }
+}

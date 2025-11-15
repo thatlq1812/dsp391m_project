@@ -20,7 +20,7 @@
     "num_workers": 0,
     "use_amp": true,
     "accumulation_steps": 1,
-    "data_source": "all_runs_extreme_augmented.parquet",
+  "data_source": "all_runs_gapfilled_week.parquet",
     "pin_memory": false,
     "persistent_workers": false,
     "prefetch_factor": null,

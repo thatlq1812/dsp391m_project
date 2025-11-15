@@ -1,0 +1,86 @@
+{
+  "comparison_table": [
+    {
+      "Model": "STMGT V3",
+      "MAE (km/h)": 1.878031611442566,
+      "RMSE (km/h)": 3.0683412551879883,
+      "R\u00b2": 0.8910405039787292,
+      "MAPE (%)": 12.938931584358215,
+      "CRPS": 1.349293828010559,
+      "Split": "test"
+    },
+    {
+      "Model": "LSTM Baseline",
+      "MAE (km/h)": 4.42309358672756,
+      "RMSE (km/h)": 6.016838714942255,
+      "R\u00b2": -0.05993372106056305,
+      "MAPE (%)": 24.72898679201904,
+      "CRPS": NaN,
+      "Split": "test"
+    }
+  ],
+  "improvements": {
+    "vs_LSTM": {
+      "mae_reduction": 2.5450619752849937,
+      "percentage": 57.540314835797226
+    }
+  },
+  "summary": {
+    "num_models": 2,
+    "best_model": "STMGT V3",
+    "best_mae": 1.878031611442566
+  },
+  "models": [
+    {
+      "model": "LSTM Baseline",
+      "metrics": {
+        "train": {
+          "mae": 4.345701479964792,
+          "rmse": 5.919404660071741,
+          "r2": 0.18141682987039165,
+          "mape": 23.961571859412032
+        },
+        "val": {
+          "mae": 4.276588479037843,
+          "rmse": 5.839847572298612,
+          "r2": -0.0004200792745596704,
+          "mape": 23.85010237658874
+        },
+        "test": {
+          "mae": 4.42309358672756,
+          "rmse": 6.016838714942255,
+          "r2": -0.05993372106056305,
+          "mape": 24.72898679201904
+        }
+      },
+      "config": {
+        "sequence_length": 12,
+        "lstm_units": [
+          128,
+          64
+        ],
+        "dropout": 0.2,
+        "learning_rate": 0.001,
+        "epochs": 100,
+        "batch_size": 32
+      },
+      "source": "outputs\\final_comparison\\run_20251114_190346\\lstm_baseline\\run_20251114_190353\\results.json"
+    },
+    {
+      "model": "STMGT V3",
+      "metrics": {
+        "test": {
+          "loss": 0.16528499201883243,
+          "mae": 1.878031611442566,
+          "rmse": 3.0683412551879883,
+          "r2": 0.8910405039787292,
+          "mape": 12.938931584358215,
+          "crps": 1.349293828010559,
+          "coverage_80": 0.8604362607002258
+        }
+      },
+      "config": {},
+      "source": "outputs\\final_comparison\\run_20251114_190346\\stmgt_v3\\test_results.json"
+    }
+  ]
+}

@@ -362,7 +362,7 @@ def data_info():
     try:
         import pandas as pd
         
-        data_file = PROJECT_ROOT / "data" / "processed" / "all_runs_extreme_augmented.parquet"
+        data_file = PROJECT_ROOT / "data" / "processed" / "all_runs_gapfilled_week.parquet"
         
         if not data_file.exists():
             console.print("[red]Data file not found[/red]")
@@ -371,7 +371,7 @@ def data_info():
         df = pd.read_parquet(data_file)
         
         info_text = f"""
-[cyan]Dataset:[/cyan] all_runs_extreme_augmented.parquet
+[cyan]Dataset:[/cyan] all_runs_gapfilled_week.parquet
 
 [yellow]Shape:[/yellow]
   Rows:    {len(df):,}

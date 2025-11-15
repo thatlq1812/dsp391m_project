@@ -13,7 +13,7 @@ echo "========================================"
 echo ""
 
 # Check data exists
-DATA_FILE="data/processed/all_runs_extreme_augmented.parquet"
+DATA_FILE="data/processed/all_runs_gapfilled_week.parquet"
 if [ ! -f "$DATA_FILE" ]; then
     echo "Error: Data file not found: $DATA_FILE"
     exit 1

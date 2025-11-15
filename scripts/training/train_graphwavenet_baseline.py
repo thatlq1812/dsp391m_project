@@ -12,6 +12,7 @@ Usage:
 
 import argparse
 import sys
+import random
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -35,8 +36,8 @@ def parse_args():
     parser.add_argument(
         '--dataset',
         type=str,
-        default='data/processed/all_runs_combined.parquet',
-        help='Path to dataset parquet file'
+        default='data/processed/all_runs_gapfilled_week.parquet',
+        help='Path to dataset parquet file (default: data/processed/all_runs_gapfilled_week.parquet)'
     )
     
     parser.add_argument(
@@ -115,6 +116,27 @@ def parse_args():
         default=0.15,
         help='Validation set ratio (default: 0.15)'
     )
+
+    parser.add_argument(
+        '--max-interp-gap',
+        type=int,
+        default=3,
+        help='Max consecutive missing timestamps to interpolate (default: 3)'
+    )
+
+    parser.add_argument(
+        '--imputation-noise',
+        type=float,
+        default=0.3,
+        help='Noise ratio applied to imputed values (default: 0.3)'
+    )
+
+    parser.add_argument(
+        '--seed',
+        type=int,
+        default=42,
+        help='Random seed for preprocessing and training (default: 42)'
+    )
     
     return parser.parse_args()
 
@@ -122,6 +144,13 @@ def parse_args():
 def main():
     """Main training function."""
     args = parse_args()
+    random.seed(args.seed)
+    np.random.seed(args.seed)
+    try:
+        import tensorflow as tf  # type: ignore
+        tf.random.set_seed(args.seed)
+    except ImportError:
+        pass
     
     print("=" * 80)
     print("GRAPHWAVENET BASELINE TRAINING")
@@ -158,7 +187,7 @@ def main():
         train_ratio=args.train_ratio,
         val_ratio=args.val_ratio,
         test_ratio=1 - args.train_ratio - args.val_ratio,
-        seed=42
+        seed=args.seed
     )
     
     # Get splits
@@ -169,6 +198,29 @@ def main():
     print(f"Train: {len(train_data):,} samples")
     print(f"Val:   {len(val_data):,} samples")
     print(f"Test:  {len(test_data):,} samples")
+
+    # Diagnose timestamp gaps (minutes)
+    ts_diffs = (
+        train_data['timestamp']
+        .sort_values()
+        .diff()
+        .dropna()
+        .dt.total_seconds()
+        / 60
+    )
+    if not ts_diffs.empty:
+        top_gaps = ts_diffs.round().value_counts().head(5)
+        median_gap = ts_diffs.median()
+        interp_limit_minutes = args.max_interp_gap * median_gap
+        print("\n[INFO] Most common timestamp gaps in training set (minutes):")
+        for gap, count in top_gaps.items():
+            print(f"  {int(gap):>3d} min : {count:>6} occurrences")
+        max_gap = ts_diffs.max()
+        print(f"  Max observed gap: {max_gap:.1f} minutes")
+        if interp_limit_minutes > 0 and max_gap > interp_limit_minutes:
+            print(
+                f"  NOTE: Some gaps exceed interpolation limit ({args.max_interp_gap} steps ≈ {interp_limit_minutes:.1f} min)."
+            )
     
     # Create model
     print(f"\n[3/7] Creating GraphWaveNet model")
@@ -180,6 +232,7 @@ def main():
     print(f"  Dropout: {args.dropout}")
     print(f"  Learning rate: {args.learning_rate}")
     print(f"  Note: Adjacency matrix learned from data")
+    print(f"  Preprocess: max gap {args.max_interp_gap} steps, noise {args.imputation_noise}")
     
     model = GraphWaveNetWrapper(
         sequence_length=args.sequence_length,
@@ -187,7 +240,10 @@ def main():
         hidden_channels=args.hidden_channels,
         kernel_size=args.kernel_size,
         dropout_rate=args.dropout,
-        learning_rate=args.learning_rate
+        learning_rate=args.learning_rate,
+        max_interp_gap=args.max_interp_gap,
+        imputation_noise=args.imputation_noise,
+        seed=args.seed,
     )
     
     print("GraphWaveNet wrapper initialized (model will be built after data loading)")
@@ -209,32 +265,45 @@ def main():
     
     print("\n[OK] Training complete")
     
-    # Extract metrics from history
-    print(f"\n[5/7] Extracting metrics from training history")
+    # Extract metrics from history (normalized scale - for reference only)
+    print(f"\n[5/8] Training history summary")
     print("-" * 80)
     
-    train_mae = history.history['mae'][-1]
-    val_mae = history.history['val_mae'][-1]
+    train_mae_hist = history.history['mae'][-1]
+    val_mae_hist = history.history['val_mae'][-1]
     
-    # Get scaler std for denormalization
-    scaler_std = model.model.scaler_std
+    print("\nFinal epoch metrics (normalized scale - reference only):")
+    print(f"  Train MAE: {train_mae_hist:.4f}")
+    print(f"  Val   MAE: {val_mae_hist:.4f}")
+    print("\nNote: Metrics below are computed on original scale (km/h)")
     
-    # Denormalize MAE
-    train_mae_kmh = train_mae * scaler_std
-    val_mae_kmh = val_mae * scaler_std
-    
-    print(f"\nTrain MAE (normalized): {train_mae:.4f}")
-    print(f"Train MAE (km/h): {train_mae_kmh:.4f}")
-    print(f"\nVal MAE (normalized): {val_mae:.4f}")
-    print(f"Val MAE (km/h): {val_mae_kmh:.4f}")
-    
+    # Evaluate on temporal splits
+    print(f"\n[6/8] Evaluating on temporal splits")
+    split_metrics = {}
+    split_metrics_dict = {}
+    for split_name, split_data in evaluator.splits.items():
+        preds, _ = model.predict(split_data, device='cpu')
+        metrics = evaluator.calculate_metrics(
+            split_data['speed'].values,
+            preds
+        )
+        split_metrics[split_name] = metrics
+        split_metrics_dict[split_name] = metrics.to_dict()
+        print(
+            f"  {split_name.upper():5s} - MAE {metrics.mae:.3f} km/h | RMSE {metrics.rmse:.3f} | R² {metrics.r2:.3f}"
+        )
+
+    train_eval_mae = split_metrics['train'].mae
+    val_eval_mae = split_metrics['val'].mae
+    test_eval_mae = split_metrics['test'].mae
+
     # Save model
-    print(f"\n[6/7] Saving model...")
+    print(f"\n[7/8] Saving model...")
     model.save(run_dir)
     print(f"[OK] Model saved to {run_dir}")
     
     # Save results
-    print(f"\n[7/7] Saving results...")
+    print(f"\n[8/8] Saving results...")
     
     results = {
         'model': 'GraphWaveNet',
@@ -256,11 +325,11 @@ def main():
             'train_ratio': args.train_ratio,
             'val_ratio': args.val_ratio
         },
+        'results': split_metrics_dict,
         'final_metrics': {
-            'train_mae_normalized': float(train_mae),
-            'train_mae_kmh': float(train_mae_kmh),
-            'val_mae_normalized': float(val_mae),
-            'val_mae_kmh': float(val_mae_kmh)
+            'train_mae_kmh': float(train_eval_mae),
+            'val_mae_kmh': float(val_eval_mae),
+            'test_mae_kmh': float(test_eval_mae)
         },
         'training_history': {
             'train_loss': [float(x) for x in history.history['loss']],
@@ -286,22 +355,23 @@ def main():
         total_params = sum([np.prod(p.shape) for p in model.model.model.trainable_weights])
         print(f"Parameters: {total_params:,}")
     
-    print(f"\nPerformance:")
-    print(f"  Train MAE:   {train_mae_kmh:.4f} km/h")
-    print(f"  Val MAE:     {val_mae_kmh:.4f} km/h")
+    print(f"\nEvaluation performance (km/h):")
+    print(f"  Train MAE:   {train_eval_mae:.4f}")
+    print(f"  Val MAE:     {val_eval_mae:.4f}")
+    print(f"  Test MAE:    {test_eval_mae:.4f}")
     
     # Compare to benchmarks
     print(f"\nComparison to benchmarks:")
     print(f"  LSTM baseline:  3.94 km/h")
-    print(f"  GraphWaveNet:   {val_mae_kmh:.2f} km/h")
+    print(f"  GraphWaveNet:   {val_eval_mae:.2f} km/h")
     print(f"  STMGT:          3.69 km/h")
     
-    if val_mae_kmh < 3.94:
-        improvement = ((3.94 - val_mae_kmh) / 3.94) * 100
+    if val_eval_mae < 3.94:
+        improvement = ((3.94 - val_eval_mae) / 3.94) * 100
         print(f"\nGraphWaveNet improves over LSTM by {improvement:.1f}%")
     
-    if val_mae_kmh > 3.69:
-        gap = ((val_mae_kmh - 3.69) / 3.69) * 100
+    if val_eval_mae > 3.69:
+        gap = ((val_eval_mae - 3.69) / 3.69) * 100
         print(f"STMGT improves over GraphWaveNet by {gap:.1f}%")
     
     print(f"\nOutput directory: {run_dir}")

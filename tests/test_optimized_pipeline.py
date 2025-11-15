@@ -14,7 +14,7 @@ print("="*60)
 print("\n1. Dataset Creation (optimized):")
 start = time.time()
 train_dataset = STMGTDataset(
-    data_path=Path("data/processed/all_runs_extreme_augmented.parquet"),
+    data_path=Path("data/processed/all_runs_gapfilled_week.parquet"),
     seq_len=12,
     pred_len=12,
     split='train'

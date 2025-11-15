@@ -28,14 +28,13 @@ echo "========================================================================"
 echo "TRAINING ALL MODELS FOR FINAL REPORT COMPARISON"
 echo "========================================================================"
 echo ""
-echo "This script trains 4 models with identical conditions:"
+echo "This script trains 3 models with identical conditions:"
 echo "  1. STMGT V3 (current best)"
 echo "  2. LSTM Baseline (temporal only)"
 echo "  3. GraphWaveNet (adaptive graph + temporal)"
-echo "  4. ASTGCN (spatial-temporal with attention)"
 echo ""
 echo "All models use:"
-echo "  - Same dataset: data/processed/all_runs_extreme_augmented.parquet"
+echo "  - Same dataset: data/processed/all_runs_gapfilled_week.parquet"
 echo "  - Same split: 70/15/15 train/val/test"
 echo "  - Same epochs: 100 with early stopping"
 echo "  - Same evaluation metrics"
@@ -43,7 +42,7 @@ echo "========================================================================"
 echo ""
 
 # Configuration
-DATASET="data/processed/all_runs_extreme_augmented.parquet"
+DATASET="data/processed/all_runs_gapfilled_week.parquet"
 EPOCHS=100
 BATCH_SIZE=32
 OUTPUT_BASE="outputs/final_comparison"
@@ -73,7 +72,6 @@ Models:
 1. STMGT V3 - Multi-modal spatial-temporal with Gaussian mixture
 2. LSTM Baseline - Temporal only (no spatial information)
 3. GraphWaveNet - Adaptive graph learning + dilated convolutions
-4. ASTGCN - Attention-based spatial-temporal GCN
 
 Timestamp: $TIMESTAMP
 ================================================
@@ -90,17 +88,26 @@ check_success() {
     if [ -f "$output_dir/results.json" ] || [ -f "$output_dir/test_results.json" ]; then
         echo "[✓] $model_name training completed successfully"
         return 0
-    else
-        echo "[✗] $model_name training failed"
-        return 1
     fi
+
+    local latest_run
+    latest_run=$(ls -td "$output_dir"/run_* 2>/dev/null | head -n1 || true)
+    if [ -n "$latest_run" ]; then
+        if [ -f "$latest_run/results.json" ] || [ -f "$latest_run/test_results.json" ]; then
+            echo "[✓] $model_name training completed successfully ($(basename "$latest_run"))"
+            return 0
+        fi
+    fi
+
+    echo "[✗] $model_name training failed"
+    return 1
 }
 
 # ============================================================================
 # 1. Train LSTM Baseline
 # ============================================================================
 echo "========================================================================"
-echo "[1/4] Training LSTM Baseline"
+echo "[1/3] Training LSTM Baseline"
 echo "========================================================================"
 echo ""
 
@@ -123,7 +130,7 @@ echo ""
 # 2. Train GraphWaveNet
 # ============================================================================
 echo "========================================================================"
-echo "[2/4] Training GraphWaveNet"
+echo "[2/3] Training GraphWaveNet"
 echo "========================================================================"
 echo ""
 
@@ -145,35 +152,10 @@ check_success "GraphWaveNet" "$GWNET_OUTPUT"
 echo ""
 
 # ============================================================================
-# 3. Train ASTGCN
+# 3. Train STMGT V3
 # ============================================================================
 echo "========================================================================"
-echo "[3/4] Training ASTGCN"
-echo "========================================================================"
-echo ""
-
-ASTGCN_OUTPUT="$COMPARISON_DIR/astgcn"
-
-python scripts/training/train_astgcn_baseline.py \
-    --data-path "$DATASET" \
-    --output-dir "$ASTGCN_OUTPUT" \
-    --epochs $EPOCHS \
-    --batch-size $BATCH_SIZE \
-    --window 12 \
-    --cheb-order 3 \
-    --spatial-filters 64 \
-    --temporal-filters 64 \
-    --dropout 0.2 \
-    --learning-rate 0.001
-
-check_success "ASTGCN" "$ASTGCN_OUTPUT"
-echo ""
-
-# ============================================================================
-# 4. Train STMGT V3
-# ============================================================================
-echo "========================================================================"
-echo "[4/4] Training STMGT V3"
+echo "[3/3] Training STMGT V3"
 echo "========================================================================"
 echo ""
 

@@ -1,0 +1,41 @@
+{
+  "model": "LSTM-Baseline",
+  "timestamp": "20251114_190353",
+  "config": {
+    "sequence_length": 12,
+    "lstm_units": [
+      128,
+      64
+    ],
+    "dropout": 0.2,
+    "learning_rate": 0.001,
+    "epochs": 100,
+    "batch_size": 32
+  },
+  "dataset": {
+    "path": "data\\processed\\all_runs_gapfilled_week.parquet",
+    "n_train": 67680,
+    "n_val": 14400,
+    "n_test": 14688
+  },
+  "results": {
+    "train": {
+      "mae": 4.345701479964792,
+      "rmse": 5.919404660071741,
+      "r2": 0.18141682987039165,
+      "mape": 23.961571859412032
+    },
+    "val": {
+      "mae": 4.276588479037843,
+      "rmse": 5.839847572298612,
+      "r2": -0.0004200792745596704,
+      "mape": 23.85010237658874
+    },
+    "test": {
+      "mae": 4.42309358672756,
+      "rmse": 6.016838714942255,
+      "r2": -0.05993372106056305,
+      "mape": 24.72898679201904
+    }
+  }
+}

@@ -2,7 +2,7 @@
 # Traffic Forecasting System - Deep Learning Dependencies
 # ═══════════════════════════════════════════════════════════════════
 # Author: thatlq1812
-# Focus: LSTM & ASTGCN Deep Learning Models
+# Focus: STMGT + LSTM/GraphWaveNet Baselines
 # ═══════════════════════════════════════════════════════════════════
 
 # Core Data Science

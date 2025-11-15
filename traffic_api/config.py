@@ -64,9 +64,9 @@ if outputs_dir.exists():
                         config.data_path = Path(model_config['metadata']['data_path'])
                         print(f"Auto-detected data: {config.data_path}")
             
-            # Fallback data paths (prefer extreme_augmented)
+            # Fallback data paths (prefer gap-filled weekly dataset)
             if config.data_path is None or not config.data_path.exists():
-                for data_file in ['all_runs_extreme_augmented.parquet', 'all_runs_augmented.parquet', 'all_runs_combined.parquet']:
+                for data_file in ['all_runs_gapfilled_week.parquet', 'all_runs_extreme_augmented.parquet', 'all_runs_augmented.parquet', 'all_runs_combined.parquet']:
                     test_path = config.project_root / "data" / "processed" / data_file
                     if test_path.exists():
                         config.data_path = test_path

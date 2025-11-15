@@ -1,0 +1,279 @@
+# Super Dataset Generation Configuration
+
+# Base patterns
+base_patterns:
+  weekday_morning_rush: [6, 9] # hours
+  weekday_evening_rush: [16, 19] # hours
+  weekend_leisure: [9, 18] # hours
+  night_speed_multiplier: 1.15 # 15% faster at night
+  rush_hour_reduction: 0.65 # 35% slower during rush
+
+  # Speed ranges by edge type (km/h)
+  highway_speed_range: [35, 52]
+  main_road_range: [25, 45]
+  local_road_range: [15, 35]
+
+  # Noise levels
+  base_noise_std: 3.0 # km/h standard deviation
+  temporal_smoothing: 3 # moving average window
+
+# Spatial configuration
+spatial:
+  topology_file: data/processed/all_runs_gapfilled_week.parquet
+  use_existing_edges: true
+  num_edges: 144
+  num_nodes: 62
+
+  # Propagation parameters
+  incident_propagation:
+    direct_impact: [0.7, 0.9] # 70-90% speed reduction
+    hop_1_impact: [0.3, 0.5] # neighbors
+    hop_2_impact: [0.1, 0.2] # 2 hops away
+    hop_3_impact: [0.0, 0.05] # minimal
+
+  construction_spillover:
+    adjacent_impact: [0.2, 0.3] # 20-30% on neighbors
+
+# Temporal configuration
+temporal:
+  start_date: "2024-01-01"
+  duration_days: 365
+  interval_minutes: 10
+  total_timestamps: 52560 # 365 * 24 * 6
+
+# Incidents (random disruptions)
+incidents:
+  enabled: true
+  rate_per_week: 3 # Poisson lambda
+
+  types:
+    - name: minor_accident
+      probability: 0.5
+      duration_range: [30, 60] # minutes
+      severity_range: [0.6, 0.8] # speed reduction
+
+    - name: major_accident
+      probability: 0.3
+      duration_range: [60, 180]
+      severity_range: [0.8, 0.95]
+
+    - name: vehicle_breakdown
+      probability: 0.2
+      duration_range: [20, 45]
+      severity_range: [0.3, 0.5]
+
+  recovery_time: 30 # minutes for gradual recovery
+  peak_hours_multiplier: 1.5 # more likely during rush
+
+# Construction zones
+construction:
+  enabled: true
+  num_zones_per_year: 8
+
+  duration_range: [14, 56] # days per zone
+  active_hours: [9, 17] # weekdays only
+  speed_reduction: [0.4, 0.6] # 40-60% slower
+
+  # Rotation strategy
+  quarters:
+    Q1: [0, 2] # zone IDs
+    Q2: [2, 4]
+    Q3: [4, 6]
+    Q4: [6, 8]
+
+# Weather events
+weather:
+  enabled: true
+
+  rain:
+    probability_by_month: # rainy season
+      1: 0.05 # Jan (dry)
+      2: 0.05
+      3: 0.10
+      4: 0.15
+      5: 0.25 # May (transition)
+      6: 0.30 # Jun (rainy)
+      7: 0.35
+      8: 0.35
+      9: 0.30 # Sep (transition)
+      10: 0.25
+      11: 0.10
+      12: 0.05 # Dec (dry)
+
+    light_rain:
+      duration_range: [60, 120] # minutes
+      speed_reduction: [0.1, 0.15]
+      probability: 0.7
+
+    heavy_rain:
+      duration_range: [30, 90]
+      speed_reduction: [0.3, 0.4]
+      probability: 0.3
+
+  fog:
+    probability: 0.05 # 5% of days
+    hours: [6, 9] # morning only
+    speed_reduction: [0.2, 0.3]
+
+# Special events (predictable)
+special_events:
+  enabled: true
+  per_month: 2
+
+  types:
+    - name: concert
+      probability: 0.3
+      duration: 180 # minutes (3 hours)
+      congestion_multiplier: 1.5 # 50% more traffic
+      affected_radius: 2 # hops from venue
+      hours: [18, 21] # evening
+
+    - name: sports_match
+      probability: 0.3
+      duration: 150
+      congestion_multiplier: 1.8
+      affected_radius: 2
+      hours: [19, 22]
+
+    - name: festival
+      probability: 0.2
+      duration: 300 # 5 hours
+      congestion_multiplier: 1.3
+      affected_radius: 3
+      hours: [14, 19]
+
+    - name: parade
+      probability: 0.2
+      duration: 120
+      congestion_multiplier: 2.0 # heavy impact
+      affected_radius: 1
+      hours: [9, 12] # morning
+
+  # Venue locations (edge indices)
+  venues:
+    - edges: [10, 15, 20] # District 1 (CBD)
+    - edges: [50, 55, 60] # District 7
+    - edges: [100, 105, 110] # District 10
+
+# Public holidays (Vietnamese calendar)
+holidays:
+  enabled: true
+
+  # Fixed dates
+  fixed:
+    - name: "New Year"
+      date: "01-01"
+      duration: 1
+      traffic_reduction: 0.5 # 50% less traffic
+
+    - name: "Reunification Day"
+      date: "04-30"
+      duration: 1
+      traffic_reduction: 0.7
+
+    - name: "Labour Day"
+      date: "05-01"
+      duration: 1
+      traffic_reduction: 0.7
+
+    - name: "National Day"
+      date: "09-02"
+      duration: 1
+      traffic_reduction: 0.7
+
+  # Lunar calendar (approximate)
+  lunar:
+    - name: "Tet Holiday"
+      approximate_date: "02-10" # varies by year
+      duration: 7
+      traffic_reduction: 0.8 # 80% reduction
+      pre_holiday_days: 7
+      pre_holiday_increase: 0.3 # 30% more traffic (shopping)
+      post_holiday_days: 3
+      post_holiday_increase: 0.2
+
+    - name: "Hung Kings Festival"
+      approximate_date: "04-15"
+      duration: 1
+      traffic_reduction: 0.3
+
+  # Long weekends
+  long_weekends:
+    friday_evening_increase: 0.5 # 50% more traffic
+    sunday_evening_increase: 0.5
+    saturday_reduction: 0.3 # CBD area
+
+# Seasonal patterns
+seasonal:
+  enabled: true
+
+  school_calendar:
+    school_year: [[9, 1], [5, 31]] # Sep 1 - May 31
+    morning_rush_increase: 0.25 # 25% more intense
+    afternoon_pickup: [15, 16] # school pickup time
+    summer_reduction: 0.2 # 20% less traffic
+
+  economic_cycles:
+    month_end_increase: 0.15 # days 25-31
+    quarter_end_increase: 0.2 # last week of Q1-Q4
+    affected_areas: [0, 30] # CBD edge indices
+
+# Quality control
+validation:
+  min_speed: 3.0 # km/h
+  max_speed: 52.0
+  max_jump_per_timestep: 15.0 # max speed change (km/h)
+  min_autocorr_lag12: 0.70 # not too unpredictable
+  max_autocorr_lag12: 0.95 # not too predictable
+  spatial_correlation_threshold: 0.5 # neighbors should correlate
+
+# Output configuration
+output:
+  format: parquet
+  compression: snappy
+  chunk_size: 10000 # rows per chunk
+
+  columns:
+    - timestamp
+    - node_a_id
+    - node_b_id
+    - speed_kmh
+    - is_incident
+    - is_construction
+    - weather_condition
+    - is_holiday
+    - event_type
+    - temperature_c
+    - precipitation_mm
+    - wind_speed_kmh
+    - humidity_percent
+
+  metadata_files:
+    - super_dataset_metadata.json # events, holidays
+    - super_dataset_statistics.json # validation metrics
+    - super_dataset_splits.json # train/val/test
+
+# Train/val/test split
+splits:
+  strategy: temporal_with_gap
+
+  train:
+    start_month: 1
+    end_month: 8
+    percentage: 0.67
+
+  gap:
+    duration_weeks: 2 # prevent leakage
+
+  val:
+    start_month: 9
+    end_month: 10
+    percentage: 0.17
+
+  test:
+    start_month: 11
+    end_month: 12
+    percentage: 0.16
+
+# Random seed
+random_seed: 42

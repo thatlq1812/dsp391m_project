@@ -10,11 +10,15 @@ Reference: Graph WaveNet for Deep Spatial-Temporal Graph Modeling
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
+from tensorflow.keras.utils import register_keras_serializable
 import numpy as np
 from pathlib import Path
 from typing import Optional
+import joblib
+from sklearn.preprocessing import StandardScaler
 
 
+@register_keras_serializable(package="traffic_forecast")
 class GraphWaveNetLayer(layers.Layer):
     """
     Graph WaveNet layer with adaptive adjacency learning.
@@ -120,7 +124,19 @@ class GraphWaveNetLayer(layers.Layer):
         
         return x, skip_out
 
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            'num_nodes': self.num_nodes,
+            'hidden_channels': self.hidden_channels,
+            'kernel_size': self.kernel_size,
+            'dilation': self.dilation,
+            'dropout': self.dropout_rate,
+        })
+        return config
 
+
+@register_keras_serializable(package="traffic_forecast")
 class GraphWaveNet(keras.Model):
     """
     Graph WaveNet model for traffic speed prediction.
@@ -147,6 +163,8 @@ class GraphWaveNet(keras.Model):
         self.sequence_length = sequence_length
         self.num_layers = num_layers
         self.hidden_channels = hidden_channels
+        self.kernel_size = kernel_size
+        self.dropout_rate = dropout
         
         # Input projection
         self.input_proj = layers.Dense(hidden_channels)
@@ -223,6 +241,22 @@ class GraphWaveNet(keras.Model):
         
         return output
 
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            'num_nodes': self.num_nodes,
+            'sequence_length': self.sequence_length,
+            'num_layers': self.num_layers,
+            'hidden_channels': self.hidden_channels,
+            'kernel_size': self.kernel_size,
+            'dropout': self.dropout_rate,
+        })
+        return config
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
+
 
 class GraphWaveNetTrafficPredictor:
     """
@@ -263,6 +297,11 @@ class GraphWaveNetTrafficPredictor:
             metrics=['mae']
         )
         
+        # Initialize scalers for data normalization
+        self.scaler_X = StandardScaler()
+        self.scaler_y = StandardScaler()
+        
+        # Legacy attributes (kept for backward compatibility)
         self.scaler_mean = None
         self.scaler_std = None
         
@@ -277,7 +316,7 @@ class GraphWaveNetTrafficPredictor:
         verbose: int = 1
     ):
         """
-        Train the model.
+        Train the model with proper data normalization.
         
         Args:
             X_train: (N, seq_len, num_nodes, 1) training sequences
@@ -288,28 +327,53 @@ class GraphWaveNetTrafficPredictor:
             batch_size: Batch size
             verbose: Verbosity level
         """
-        # Store normalization params
+        # Normalize training data
+        n_samples, seq_len, n_nodes, n_features = X_train.shape
+        
+        # Reshape X for scaling: (N * seq_len * num_nodes, 1) -> scale -> reshape back
+        X_train_2d = X_train.reshape(-1, n_features)
+        X_train_scaled = self.scaler_X.fit_transform(X_train_2d)
+        X_train_scaled = X_train_scaled.reshape(n_samples, seq_len, n_nodes, n_features)
+        
+        # Reshape y for scaling: (N * num_nodes, 1) -> scale -> reshape back
+        y_train_2d = y_train.reshape(-1, 1)
+        y_train_scaled = self.scaler_y.fit_transform(y_train_2d)
+        y_train_scaled = y_train_scaled.reshape(y_train.shape)
+        
+        # Store legacy params for backward compatibility
         self.scaler_mean = np.mean(y_train)
         self.scaler_std = np.std(y_train)
         
+        # Normalize validation data if provided
+        validation_data = None
+        if X_val is not None and y_val is not None:
+            X_val_2d = X_val.reshape(-1, n_features)
+            X_val_scaled = self.scaler_X.transform(X_val_2d)
+            X_val_scaled = X_val_scaled.reshape(X_val.shape)
+            
+            y_val_2d = y_val.reshape(-1, 1)
+            y_val_scaled = self.scaler_y.transform(y_val_2d)
+            y_val_scaled = y_val_scaled.reshape(y_val.shape)
+            
+            validation_data = (X_val_scaled, y_val_scaled)
+        
         callbacks = [
             keras.callbacks.EarlyStopping(
-                monitor='val_loss' if X_val is not None else 'loss',
+                monitor='val_loss' if validation_data is not None else 'loss',
                 patience=10,
                 restore_best_weights=True
             ),
             keras.callbacks.ReduceLROnPlateau(
-                monitor='val_loss' if X_val is not None else 'loss',
+                monitor='val_loss' if validation_data is not None else 'loss',
                 factor=0.5,
                 patience=5,
                 min_lr=1e-6
             )
         ]
         
-        validation_data = (X_val, y_val) if X_val is not None else None
-        
+        # Train on normalized data
         history = self.model.fit(
-            X_train, y_train,
+            X_train_scaled, y_train_scaled,
             validation_data=validation_data,
             epochs=epochs,
             batch_size=batch_size,
@@ -320,18 +384,46 @@ class GraphWaveNetTrafficPredictor:
         return history
     
     def predict(self, X: np.ndarray) -> np.ndarray:
-        """Make predictions."""
-        return self.model.predict(X, verbose=0)
+        """
+        Make predictions with proper denormalization.
+        
+        Args:
+            X: (N, seq_len, num_nodes, 1) input sequences
+            
+        Returns:
+            predictions: (N, num_nodes, 1) predicted speeds in original scale
+        """
+        # Normalize input
+        n_samples, seq_len, n_nodes, n_features = X.shape
+        X_2d = X.reshape(-1, n_features)
+        X_scaled = self.scaler_X.transform(X_2d)
+        X_scaled = X_scaled.reshape(n_samples, seq_len, n_nodes, n_features)
+        
+        # Predict on normalized data
+        y_pred_scaled = self.model.predict(X_scaled, verbose=0)
+        
+        # Denormalize output
+        y_pred_2d = y_pred_scaled.reshape(-1, 1)
+        y_pred = self.scaler_y.inverse_transform(y_pred_2d)
+        y_pred = y_pred.reshape(y_pred_scaled.shape)
+        
+        return y_pred
     
     def save(self, save_dir: Path):
-        """Save model to directory."""
+        """Save model and scalers to directory."""
         save_dir = Path(save_dir)
         save_dir.mkdir(parents=True, exist_ok=True)
         
         # Save model
         self.model.save(save_dir / 'graphwavenet_model.keras')
         
-        # Save scaler params
+        # Save scalers using joblib
+        if self.scaler_X is not None:
+            joblib.dump(self.scaler_X, save_dir / 'scaler_X.pkl')
+        if self.scaler_y is not None:
+            joblib.dump(self.scaler_y, save_dir / 'scaler_y.pkl')
+        
+        # Save legacy scaler params for backward compatibility
         np.savez(
             save_dir / 'scaler.npz',
             mean=self.scaler_mean,
@@ -342,19 +434,44 @@ class GraphWaveNetTrafficPredictor:
     
     @classmethod
     def load(cls, load_dir: Path):
-        """Load model from directory."""
+        """Load model and scalers from directory."""
         load_dir = Path(load_dir)
         
         # Load model
-        model = keras.models.load_model(load_dir / 'graphwavenet_model.keras')
-        
-        # Load scaler
-        scaler = np.load(load_dir / 'scaler.npz')
+        model = keras.models.load_model(
+            load_dir / 'graphwavenet_model.keras',
+            custom_objects={
+                'GraphWaveNet': GraphWaveNet,
+                'GraphWaveNetLayer': GraphWaveNetLayer,
+            }
+        )
         
         # Create predictor instance
         predictor = cls.__new__(cls)
         predictor.model = model
-        predictor.scaler_mean = scaler['mean']
-        predictor.scaler_std = scaler['std']
+        
+        # Load scalers
+        scaler_x_path = load_dir / 'scaler_X.pkl'
+        scaler_y_path = load_dir / 'scaler_y.pkl'
+        
+        if scaler_x_path.exists():
+            predictor.scaler_X = joblib.load(scaler_x_path)
+        else:
+            predictor.scaler_X = StandardScaler()
+            
+        if scaler_y_path.exists():
+            predictor.scaler_y = joblib.load(scaler_y_path)
+        else:
+            predictor.scaler_y = StandardScaler()
+        
+        # Load legacy scaler params for backward compatibility
+        scaler_npz_path = load_dir / 'scaler.npz'
+        if scaler_npz_path.exists():
+            scaler = np.load(scaler_npz_path)
+            predictor.scaler_mean = scaler['mean']
+            predictor.scaler_std = scaler['std']
+        else:
+            predictor.scaler_mean = None
+            predictor.scaler_std = None
         
         return predictor

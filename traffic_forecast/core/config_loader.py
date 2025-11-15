@@ -42,7 +42,7 @@ class TrainingConfig:
     num_workers: int = -1
     use_amp: bool = True
     accumulation_steps: int = 1
-    data_source: str = "all_runs_extreme_augmented.parquet"
+    data_source: str = "all_runs_gapfilled_week.parquet"
     pin_memory: bool = True
     persistent_workers: bool = True
     prefetch_factor: Optional[int] = 2

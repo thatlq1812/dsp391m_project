@@ -62,7 +62,7 @@ echo ""
 
 # Step 3: Data Validation
 echo -e "${YELLOW}[3/7] Validating training data...${NC}"
-DATA_PATH="data/processed/all_runs_extreme_augmented.parquet"
+DATA_PATH="data/processed/all_runs_gapfilled_week.parquet"
 if [ ! -f "$DATA_PATH" ]; then
     echo -e "${RED}ERROR: Training data not found at $DATA_PATH${NC}"
     exit 1

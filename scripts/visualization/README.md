@@ -74,7 +74,7 @@ pip install matplotlib seaborn pandas numpy scipy scikit-learn networkx
 
 **Solution:** Ensure you have:
 
-- `data/processed/all_runs_extreme_augmented.parquet`
+- `data/processed/all_runs_gapfilled_week.parquet`
 - `cache/overpass_topology.json`
 - `cache/adjacency_matrix.npy`
 - `outputs/stmgt_v2_20251112_091929/`

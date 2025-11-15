@@ -3,7 +3,8 @@ Train LSTM baseline model for comparison with STMGT.
 
 This script trains a simple LSTM model (temporal only, no spatial info)
 to establish a performance baseline. The goal is NOT to achieve SOTA
-performance, but to show that spatial modeling (ASTGCN, STMGT) adds value.
+performance, but to show that spatial modeling (GraphWaveNet, STMGT)
+adds value.
 
 Expected performance: MAE 4.0-5.5 km/h
 
@@ -36,8 +37,8 @@ def parse_args():
     parser.add_argument(
         '--dataset',
         type=str,
-        default='data/processed/all_runs_combined.parquet',
-        help='Path to dataset parquet file'
+        default='data/processed/all_runs_gapfilled_week.parquet',
+        help='Path to dataset parquet file (default: data/processed/all_runs_gapfilled_week.parquet)'
     )
     
     parser.add_argument(
@@ -289,7 +290,7 @@ def main():
     print(f"\nModel saved to: {run_dir}")
     print("\nNext steps:")
     print("1. Compare with STMGT results")
-    print("2. Train ASTGCN baseline")
+    print("2. Train GraphWaveNet baseline")
     print("3. Create comparison visualizations")
     
     return run_dir

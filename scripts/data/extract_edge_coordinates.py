@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Paths
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-DATA_FILE = PROJECT_ROOT / 'data' / 'processed' / 'all_runs_extreme_augmented.parquet'
+DATA_FILE = PROJECT_ROOT / 'data' / 'processed' / 'all_runs_gapfilled_week.parquet'
 OUTPUT_FILE = PROJECT_ROOT / 'cache' / 'edge_coordinates.json'
 
 

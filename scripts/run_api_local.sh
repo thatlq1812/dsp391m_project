@@ -56,11 +56,11 @@ fi
 
 # Check data
 echo -e "${YELLOW}[4/4] Checking data...${NC}"
-if [ -f "data/processed/all_runs_extreme_augmented.parquet" ]; then
+if [ -f "data/processed/all_runs_gapfilled_week.parquet" ]; then
     echo -e "  ${GREEN}✓ Data file found${NC}"
 else
     echo -e "  ${RED}✗ Data file not found${NC}"
-    echo "  Looking in: data/processed/all_runs_extreme_augmented.parquet"
+    echo "  Looking in: data/processed/all_runs_gapfilled_week.parquet"
     exit 1
 fi
 

@@ -13,7 +13,7 @@ Validate a specific file with custom required columns:
 
 ```
 python scripts/data/validate_processed_dataset.py \
-    --dataset data/processed/all_runs_extreme_augmented.parquet \
+    --dataset data/processed/all_runs_gapfilled_week.parquet \
     --require run_id timestamp node_a_id node_b_id speed_kmh mae
 ```
 """
@@ -41,10 +41,10 @@ def _build_parser() -> argparse.ArgumentParser:
         description="Validate processed parquet datasets before training or analysis.",
     )
     parser.add_argument(
-        "--dataset",
-        type=Path,
-        default=Path("data/processed/all_runs_combined.parquet"),
-        help="Path to the parquet dataset to validate (default: data/processed/all_runs_combined.parquet).",
+    "--dataset",
+    type=Path,
+    default=Path("data/processed/all_runs_gapfilled_week.parquet"),
+    help="Path to the parquet dataset to validate (default: data/processed/all_runs_gapfilled_week.parquet).",
     )
     parser.add_argument(
         "--require",

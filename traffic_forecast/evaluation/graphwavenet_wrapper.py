@@ -33,12 +33,15 @@ class GraphWaveNetWrapper(ModelWrapper):
     
     def __init__(
         self,
-        sequence_length: int = 12,
-        num_layers: int = 4,
-        hidden_channels: int = 32,
-        kernel_size: int = 2,
-        dropout_rate: float = 0.2,
-        learning_rate: float = 0.001
+    sequence_length: int = 12,
+    num_layers: int = 4,
+    hidden_channels: int = 32,
+    kernel_size: int = 2,
+    dropout_rate: float = 0.2,
+    learning_rate: float = 0.001,
+    max_interp_gap: int = 3,
+    imputation_noise: float = 0.3,
+        seed: int = 42,
     ):
         """
         Initialize GraphWaveNet wrapper.
@@ -50,6 +53,9 @@ class GraphWaveNetWrapper(ModelWrapper):
             kernel_size: Temporal convolution kernel size
             dropout_rate: Dropout for regularization
             learning_rate: Adam learning rate
+            max_interp_gap: Max consecutive missing timestamps to interpolate
+            imputation_noise: Noise ratio applied to imputed values
+            seed: Random seed for data prep and training reproducibility
         """
         self.sequence_length = sequence_length
         self.num_layers = num_layers
@@ -62,12 +68,30 @@ class GraphWaveNetWrapper(ModelWrapper):
         self.num_nodes = None  # Number of unique edges
         self.edge_to_idx = None  # Edge ID mapping
         self._trained = False
+
+        # Data preparation parameters
+        self.max_interp_gap = max(0, max_interp_gap)
+        self.imputation_noise = max(0.0, imputation_noise)
+        self.seed = seed
+        self._rng = np.random.default_rng(seed)
+
+        # Cached metadata for consistent preprocessing across splits
+        self.edge_order = None
+        self.edge_means = None
+        self.edge_stds = None
+        self.global_speed_mean = None
         
     def _create_edge_id(self, row):
         """Create edge ID from node pair."""
         return f"{row['node_a_id']}_{row['node_b_id']}"
     
-    def _prepare_sequences(self, data: pd.DataFrame, speed_col: str):
+    def _prepare_sequences(
+        self,
+        data: pd.DataFrame,
+        speed_col: str,
+        add_noise: bool = False,
+        return_metadata: bool = False
+    ):
         """
         Prepare sequences for GraphWaveNet.
         
@@ -78,39 +102,48 @@ class GraphWaveNetWrapper(ModelWrapper):
             X: (num_sequences, seq_len, num_edges, 1)
             y: (num_sequences, num_edges, 1)
         """
-        # Create edge IDs
+        # Create edge IDs and pivot to timestamp x edge matrix
         data = data.copy()
         data['edge_id'] = data.apply(self._create_edge_id, axis=1)
+        pivot = (
+            data.pivot_table(
+                index='timestamp',
+                columns='edge_id',
+                values=speed_col,
+                aggfunc='mean'
+            )
+            .sort_index()
+        )
+
+        if pivot.empty:
+            raise ValueError("Dataset slice is empty. Cannot prepare GraphWaveNet sequences.")
+
+        pivot = self._ensure_edge_order(pivot, data, speed_col)
+        filled, imputed_mask = self._fill_missing_values(pivot)
+
+        if add_noise and self.imputation_noise > 0 and self.edge_stds is not None:
+            std_vector = np.array([self.edge_stds.get(edge, 1.0) for edge in self.edge_order])
+            noise = self._rng.normal(
+                loc=0.0,
+                scale=std_vector * self.imputation_noise,
+                size=filled.shape
+            )
+            filled = filled + noise * imputed_mask
+
+        speed_matrix = filled.to_numpy()
+        timestamps = filled.index.to_list()
+        num_edges = speed_matrix.shape[1]
         
-        # Get unique edges
-        unique_edges = sorted(data['edge_id'].unique())
-        num_edges = len(unique_edges)
-        
-        if self.edge_to_idx is None:
-            self.edge_to_idx = {edge: idx for idx, edge in enumerate(unique_edges)}
-            self.num_nodes = num_edges
-            print(f"[GraphWaveNet] Initialized with {num_edges} edges as nodes")
-        
-        # Get unique timestamps
-        timestamps = sorted(data['timestamp'].unique())
-        
-        # Build speed matrix: (num_timestamps, num_edges)
-        speed_matrix = np.zeros((len(timestamps), num_edges))
-        for t_idx, ts in enumerate(timestamps):
-            ts_data = data[data['timestamp'] == ts]
-            for _, row in ts_data.iterrows():
-                edge_id = row['edge_id']
-                if edge_id in self.edge_to_idx:
-                    edge_idx = self.edge_to_idx[edge_id]
-                    speed_matrix[t_idx, edge_idx] = row[speed_col]
+        if np.isnan(speed_matrix).any():
+            raise ValueError("Speed matrix still contains NaNs after imputation")
         
         # Create sequences
         X_list = []
         y_list = []
         
         for i in range(len(timestamps) - self.sequence_length):
-            X_seq = speed_matrix[i:i+self.sequence_length]  # (seq_len, num_edges)
-            y_target = speed_matrix[i+self.sequence_length]  # (num_edges,)
+            X_seq = speed_matrix[i:i + self.sequence_length]  # (seq_len, num_edges)
+            y_target = speed_matrix[i + self.sequence_length]  # (num_edges,)
             
             X_list.append(X_seq)
             y_list.append(y_target)
@@ -127,7 +160,70 @@ class GraphWaveNetWrapper(ModelWrapper):
         
         print(f"[GraphWaveNet] Prepared sequences: X={X.shape}, y={y.shape}")
         
+        if return_metadata:
+            metadata = {
+                'timestamps': filled.index.to_numpy()
+            }
+            return X, y, metadata
+        
         return X, y
+
+    def _ensure_edge_order(self, pivot: pd.DataFrame, data: pd.DataFrame, speed_col: str) -> pd.DataFrame:
+        """
+        Ensure consistent edge ordering and cache statistics.
+        
+        Note: Statistics are calculated from the entire training split.
+        This is acceptable for offline baseline model comparison as statistics
+        are applied consistently across all splits. For real-time deployment,
+        consider using per-sequence or rolling window statistics.
+        """
+        if self.edge_order is None:
+            self.edge_order = sorted(pivot.columns.tolist())
+            self.edge_to_idx = {edge: idx for idx, edge in enumerate(self.edge_order)}
+            self.num_nodes = len(self.edge_order)
+            print(f"[GraphWaveNet] Initialized with {self.num_nodes} edges as nodes")
+            
+            self.global_speed_mean = float(data[speed_col].mean())
+            means = pivot.mean(skipna=True).reindex(self.edge_order)
+            global_mean = self.global_speed_mean if not np.isnan(self.global_speed_mean) else 0.0
+            self.edge_means = means.fillna(global_mean)
+            stds = pivot.std(skipna=True).reindex(self.edge_order)
+            global_std = float(data[speed_col].std())
+            if np.isnan(global_std) or global_std == 0:
+                global_std = 1.0
+            self.edge_stds = stds.fillna(global_std).replace(0, global_std)
+        
+        pivot = pivot.reindex(columns=self.edge_order)
+        return pivot
+
+    def _fill_missing_values(self, pivot: pd.DataFrame) -> Tuple[pd.DataFrame, np.ndarray]:
+        """
+        Fill missing edge values with limited interpolation and cached stats.
+        
+        Methodology:
+        1. Time-based interpolation (limited to max_interp_gap)
+        2. Forward fill (limited to max_interp_gap)
+        3. Fallback to edge means (calculated from training split)
+        
+        Note: Edge means are global statistics from training data, which is
+        acceptable for baseline model comparison. This ensures consistent
+        imputation across train/val/test splits.
+        """
+        pivot = pivot.sort_index()
+        missing_mask = pivot.isna().to_numpy(dtype=float)
+        filled = pivot.copy()
+
+        if len(filled.index) > 1:
+            filled = filled.interpolate(method='time', limit=self.max_interp_gap, limit_direction='forward')
+        filled = filled.ffill(limit=self.max_interp_gap)
+        
+        if self.edge_means is not None:
+            filled = filled.fillna(self.edge_means)
+        if self.global_speed_mean is not None:
+            filled = filled.fillna(self.global_speed_mean)
+        
+        filled = filled.fillna(0.0)
+        return filled, missing_mask
     
     def load_checkpoint(self, checkpoint_path: str):
         """Load model from checkpoint directory."""
@@ -165,22 +261,44 @@ class GraphWaveNetWrapper(ModelWrapper):
             raise ValueError(f"Speed column not found. Available: {data.columns.tolist()}")
         
         try:
-            # Prepare sequences
-            X, _ = self._prepare_sequences(data, speed_col)
+            # Prepare sequences (capture timestamp metadata for alignment)
+            X, _, metadata = self._prepare_sequences(
+                data,
+                speed_col,
+                add_noise=False,
+                return_metadata=True
+            )
             
             # Make predictions
             predictions = self.model.predict(X)  # (num_seq, num_edges, 1)
+            pred_matrix = np.squeeze(predictions, axis=-1)
             
-            # Flatten back to match original data structure
-            # Note: predictions are shorter than input due to sequence creation
-            predictions_flat = predictions.reshape(-1)
+            # Map predictions back to timestamps/edges
+            timestamps = metadata['timestamps']
+            target_timestamps = timestamps[self.sequence_length:]
+            pred_df = pd.DataFrame(
+                pred_matrix,
+                index=pd.Index(target_timestamps, name='timestamp'),
+                columns=self.edge_order
+            )
+            pred_long = (
+                pred_df.stack()
+                .rename('pred_speed')
+                .reset_index()
+                .rename(columns={'level_1': 'edge_id'})
+            )
             
-            # Pad to match input length
-            n_missing = len(data) - len(predictions_flat)
-            predictions_full = np.concatenate([
-                np.full(n_missing, np.nan),
-                predictions_flat
-            ])
+            # Align with original data order
+            aligned = data.copy()
+            aligned['_row_id'] = np.arange(len(aligned))
+            aligned['edge_id'] = aligned.apply(self._create_edge_id, axis=1)
+            merged = aligned.merge(
+                pred_long,
+                on=['timestamp', 'edge_id'],
+                how='left'
+            ).sort_values('_row_id')
+            
+            predictions_full = merged['pred_speed'].to_numpy()
             
             return predictions_full, None
             
@@ -228,10 +346,10 @@ class GraphWaveNetWrapper(ModelWrapper):
         print(f"\n[GraphWaveNet Wrapper] Preparing training sequences...")
         
         # Prepare train sequences
-        X_train, y_train = self._prepare_sequences(train_data, speed_col)
+        X_train, y_train = self._prepare_sequences(train_data, speed_col, add_noise=True)
         
         # Prepare validation sequences
-        X_val, y_val = self._prepare_sequences(val_data, speed_col)
+        X_val, y_val = self._prepare_sequences(val_data, speed_col, add_noise=False)
         
         # Build model now that we know num_nodes
         if self.model is None:
@@ -290,7 +408,14 @@ class GraphWaveNetWrapper(ModelWrapper):
             'learning_rate': self.learning_rate,
             'model_name': self.model_name,
             'num_nodes': self.num_nodes,
-            'edge_to_idx': self.edge_to_idx
+            'edge_to_idx': self.edge_to_idx,
+            'edge_order': self.edge_order,
+            'edge_means': self.edge_means.to_dict() if self.edge_means is not None else None,
+            'edge_stds': self.edge_stds.to_dict() if self.edge_stds is not None else None,
+            'global_speed_mean': self.global_speed_mean,
+            'max_interp_gap': self.max_interp_gap,
+            'imputation_noise': self.imputation_noise,
+            'seed': self.seed,
         }
         
         with open(save_dir / 'config.json', 'w') as f:
@@ -315,12 +440,24 @@ class GraphWaveNetWrapper(ModelWrapper):
             hidden_channels=config['hidden_channels'],
             kernel_size=config['kernel_size'],
             dropout_rate=config['dropout_rate'],
-            learning_rate=config['learning_rate']
+            learning_rate=config['learning_rate'],
+            max_interp_gap=config.get('max_interp_gap', 6),
+            imputation_noise=config.get('imputation_noise', 0.05),
+            seed=config.get('seed', 42),
         )
-        
+
         wrapper.num_nodes = config.get('num_nodes')
         wrapper.edge_to_idx = config.get('edge_to_idx')
-        
+        wrapper.edge_order = config.get('edge_order')
+        if wrapper.edge_order and wrapper.edge_to_idx is None:
+            wrapper.edge_to_idx = {edge: idx for idx, edge in enumerate(wrapper.edge_order)}
+        if config.get('edge_means'):
+            wrapper.edge_means = pd.Series(config['edge_means']).reindex(wrapper.edge_order)
+        if config.get('edge_stds'):
+            wrapper.edge_stds = pd.Series(config['edge_stds']).reindex(wrapper.edge_order)
+        wrapper.global_speed_mean = config.get('global_speed_mean')
+        wrapper._rng = np.random.default_rng(wrapper.seed)
+
         # Load model
         wrapper.load_checkpoint(checkpoint_path)
         

@@ -569,12 +569,14 @@ STMGT V4 (with events): MAE 2.0-2.3 km/h  (-25-35% improvement)
 **Cost Factors:**
 
 1. **Data Collection Infrastructure ($5,000-15,000/year):**
+
    - API subscriptions (Google Calendar, Eventbrite, Waze)
    - Web scraping servers (AWS/Azure)
    - Real-time data streaming (Kafka, Redis)
    - Storage (external events database)
 
 2. **Human Resources ($30,000-50,000):**
+
    - Data engineer (API integration, scrapers)
    - Domain experts (traffic engineers for validation)
    - System maintenance (6 months minimum)
@@ -589,12 +591,14 @@ STMGT V4 (with events): MAE 2.0-2.3 km/h  (-25-35% improvement)
 ### Current Project Scope (Academic):
 
 **STMGT V3 is sufficient for:**
+
 - ✅ Academic requirements
 - ✅ Proof of concept
 - ✅ Baseline performance (MAE 3.08 km/h)
 - ✅ Publication/thesis
 
 **V4 would be valuable for:**
+
 - 💼 Production deployment
 - 💼 Commercial traffic system
 - 💼 Smart city integration

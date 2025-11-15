@@ -50,7 +50,7 @@ def save_figure(fig, filename, **kwargs):
     print(f"✓ Saved: {output_path}")
     plt.close(fig)
 
-def load_parquet_data(filename="all_runs_extreme_augmented.parquet"):
+def load_parquet_data(filename="all_runs_gapfilled_week.parquet"):
     """Load processed traffic data"""
     data_path = Path(__file__).parents[2] / "data" / "processed" / filename
     return pd.read_parquet(data_path)

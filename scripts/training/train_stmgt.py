@@ -119,7 +119,7 @@ def main() -> None:
     if candidate_path.exists():
         data_path = candidate_path
     else:
-        fallback = get_data_root() / "all_runs_augmented.parquet"
+        fallback = get_data_root() / "all_runs_gapfilled_week.parquet"
         if fallback.exists() and fallback != candidate_path:
             print(f"WARNING: {candidate_path.name} missing, falling back to {fallback.name}")
             data_path = fallback
