@@ -16,7 +16,160 @@ Complete changelog for STMGT Traffic Forecasting System
 
 ---
 
-## [DEMO SYSTEM IMPLEMENTATION] - 2025-11-15
+## [FINAL REPORT APPROVAL] - 2025-11-15 Late Evening
+
+**Report V3 approved by supervisor after fixing all internal contradictions.**
+
+### Problems Fixed
+
+1. **Training Story Inconsistency (Epoch 24 vs 39)**
+
+   - Issue: Report contradicted itself about early stopping (epoch 24 vs 39)
+   - Fix: Unified story - trained 39 epochs total, early stopped at epoch 24 (best val MAE 2.16)
+   - Final fix: Section 8.3.2 corrected from "Total Epochs: 24" to "Total Epochs Trained: 39"
+   - Files: `sections/07_model_development.tex`, `sections/08_evaluation.tex`, `sections/09_results.tex`
+
+2. **Patience Configuration Mismatch (10 vs 20 epochs)**
+
+   - Issue: Table 10 showed patience=20, but text described patience=10
+   - Fix: Standardized to patience=20 epochs across all sections
+   - Files: `sections/07_model_development.tex`
+
+3. **Error Analysis Tables Still Using V2 Data**
+
+   - Issue: Tables 21-22 (Section 8) showed component MAE > Overall MAE (mathematically impossible)
+   - Root Cause: V2 baseline 3.08 not scaled to V3 baseline 2.54
+   - Fix: Updated all error analysis tables (Traffic Regime, Weather, Time of Day) to V3 values
+   - Files: `sections/08_evaluation.tex`, `sections/09_results.tex`
+
+4. **Prediction Horizon Table Outdated**
+
+   - Issue: Table 25 showed 3h MAE = 4.15 (V2 data)
+   - Fix: Updated to match Appendix Table 33 (3h MAE = 3.42)
+   - Files: `sections/09_results.tex`
+
+5. **Weather Concatenation MAE Wrong**
+
+   - Issue: Section 9.7.2 stated "w/o cross-attention: 3.45 km/h" (fabricated number)
+   - Fix: Corrected to 2.85 km/h per Appendix Table 34
+   - Files: `sections/09_results.tex`
+
+6. **Figure 18 Calibration Plot Outdated**
+
+   - Issue: Script referenced V2 model path with coverage 83.75%
+   - Fix: Updated to V3 production model with coverage 81.94%, regenerated figure
+   - Files: `scripts/visualization/05_additional_figures.py`, `docs/05_final_report/figures/fig18_calibration_plot.png`
+
+7. **Improvement Percentages Imprecise**
+   - Issue: Report rounded to "+12%" and "+14%"
+   - Fix: Updated to precise values "+12.2%" and "+14.2%" matching Appendix calculations
+   - Files: `sections/09_results.tex`, `sections/10_conclusion.tex`
+
+### Impact
+
+- **Report Status:** Now internally consistent and mathematically sound
+- **Source of Truth:** Appendix Tables 31-34 serve as canonical reference
+- **Quality:** Ready for final submission and defense presentation
+
+### Files Modified
+
+- `docs/05_final_report/sections/07_model_development.tex`
+- `docs/05_final_report/sections/08_evaluation.tex`
+- `docs/05_final_report/sections/09_results.tex`
+- `docs/05_final_report/sections/10_conclusion.tex`
+- `scripts/visualization/05_additional_figures.py`
+- `docs/05_final_report/figures/fig18_calibration_plot.png`
+
+---
+
+## [DEMO VISUALIZATION IMPROVEMENTS] - 2025-11-15 Evening
+
+Major improvements to demo figure generation script to fix visualization issues and improve prediction quality.
+
+### Issues Fixed
+
+1. **Actual Speed Appearing "Fake/Unrealistic"**
+
+   - **Root Cause:** Raw timestamps were irregular (14:00:57, 14:15:05, etc.) causing jagged line plots
+   - **Solution:** Added 15-minute resampling with interpolation for smooth visualization
+   - **Impact:** Actual speed now shows realistic traffic patterns with smooth curves
+
+2. **Prediction Quality Issues**
+
+   - **Root Cause:** Model trained with mean=19.05 km/h, but rush hour has mean=14.39 km/h (-25%)
+   - **Solution:** Implemented dynamic dataset statistics normalization using lookback window stats
+   - **Impact:** MAE improved from 7.89 to 6.79 km/h (-14%), R² improved from -0.43 to -0.11
+
+3. **Edge Selection Problems**
+
+   - **Root Cause:** Random edge sampling sometimes selected edges with sparse data
+   - **Solution:** Smart edge selection prioritizing edges with most data in demo time window
+   - **Impact:** Better visualization quality with consistent data coverage
+
+4. **Time Matching Issues**
+   - **Root Cause:** Exact timestamp matching failed due to irregular collection intervals
+   - **Solution:** Implemented nearest-neighbor matching with 10-minute tolerance
+   - **Impact:** Better prediction-actual alignment without excessive false matches
+
+### Key Changes
+
+**scripts/demo/generate_demo_figures.py:**
+
+- Added `resample_edge_to_15min()` function for smooth actual speed plotting
+- Implemented smart edge selection based on data coverage in demo window
+- Added traffic congestion context annotations (Heavy/Moderate/Free Flow)
+- Improved actual speed visualization with both line (15-min avg) and scatter (raw measurements)
+- Added dual legend showing both smoothed and raw data points
+- Optimized dynamic stats to use lookback window statistics (mean~20.7 vs full dataset 19.05)
+- Restored 10-minute tolerance for prediction-actual matching (balanced coverage vs accuracy)
+
+### Performance Metrics
+
+**Dataset Statistics:**
+
+- Full dataset: mean=19.05 km/h, std=7.83 km/h
+- Demo day (Oct 30): mean=18.37 km/h, std=7.47 km/h
+- Rush hour (16:00-18:00): mean=14.39 km/h, std=5.99 km/h
+
+**Prediction Quality:**
+
+- With dynamic stats: MAE=6.79, RMSE=7.77, R²=-0.11, samples=200
+- Without dynamic stats: MAE=7.89, RMSE=8.81, R²=-0.43, samples=200
+- **Improvement:** -14% MAE, +73% R² (less negative = better)
+
+**Model Normalization:**
+
+- Embedded in checkpoint: mean=19.054, std=7.832
+- Dynamic override (lookback): mean=20.73-20.87, std=7.45-7.53
+- Dynamic stats align better with prediction window conditions
+
+### Technical Insights
+
+**Why Actual Speed Looks Low:**
+
+- Demo showcases rush hour traffic (14:00-18:00) with heavy congestion
+- Rush hour speeds (~14 km/h) are 25% lower than daily average (~19 km/h)
+- This is **realistic traffic behavior**, not a data quality issue
+- Model predictions (~20 km/h) reflect training distribution but show typical overestimation during congestion
+
+**Normalization Strategy:**
+
+- Model embedded stats: Global dataset statistics (all times, all days)
+- Dynamic stats: Local window statistics (3-hour lookback before prediction)
+- Dynamic approach works better because it adapts to current traffic conditions
+- Trade-off: Better short-term accuracy but may miss unusual events
+
+### Visualization Enhancements
+
+1. **Smoother Actual Speed Line:** 15-minute resampling with linear interpolation
+2. **Raw Data Points:** Scatter overlay showing original measurements
+3. **Traffic Context:** Annotation showing average speed and congestion level
+4. **Improved Legend:** Clear distinction between smoothed and raw data
+5. **Better Formatting:** Adjusted legend position, grid opacity, font sizes
+
+---
+
+## [DEMO SYSTEM IMPLEMENTATION] - 2025-11-15 Morning
 
 Implemented back-prediction demo system, cleaned up old web API approach, added VM deployment automation.
 

@@ -14,8 +14,8 @@ The STMGT (Spatio-Temporal Multi-Modal Graph Transformer) architecture represent
     \item \textbf{Mixture Components:} 5 Gaussian components
     \item \textbf{Input Sequence Length:} 12 timesteps (3 hours)
     \item \textbf{Prediction Horizon:} 12 timesteps (3 hours)
-    \item \textbf{Dropout Rate:} 0.2
-    \item \textbf{DropEdge Rate:} 0.05
+    \item \textbf{Dropout Rate:} 0.25
+    \item \textbf{DropEdge Rate:} 0.15
 \end{itemize}
 
 \begin{figure}[h]
@@ -277,17 +277,17 @@ where $T_0 = 10$ epochs (restart period), $\eta_{\max} = 10^{-3}$, $\eta_{\min} 
 \midrule
 Batch Size & 32 & Fits in 6GB GPU memory \\
 Learning Rate & $10^{-3}$ & Standard for AdamW with LR scheduling \\
-Weight Decay & $10^{-4}$ & Prevent overfitting (small dataset) \\
-Dropout & 0.2 & Aggressive regularization \\
-DropEdge & 0.05 & Random edge dropping for robustness \\
-Max Epochs & 100 & Early stopping typically at $\sim$24 \\
-Early Stopping Patience & 10 & Stop if val MAE no improvement \\
+Weight Decay & $1.5 \times 10^{-4}$ & Prevent overfitting (small dataset) \\
+Dropout & 0.25 & Aggressive regularization \\
+DropEdge & 0.15 & Random edge dropping for robustness \\
+Max Epochs & 200 & Trained 39 epochs, stopped at 24 \\
+Early Stopping Patience & 20 & Stop if val MAE no improvement \\
 Gradient Clipping & 1.0 & Prevent exploding gradients \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Early Stopping:} Training monitored validation MAE every epoch. If no improvement for 10 consecutive epochs, training stopped and best model weights were restored.
+\textbf{Early Stopping:} Training monitored validation MAE every epoch. If no improvement for 20 consecutive epochs, training stopped and best model weights were restored.
 
 \subsubsection{Training Loop}
 
@@ -334,9 +334,9 @@ The training procedure followed standard supervised learning:
 
 \textbf{Total Training:}
 \begin{itemize}
-    \item Best model: 9 epochs (epoch with lowest validation MAE)
-    \item Early stopping: 24 epochs (after 10 epochs with no improvement)
-    \item Wall time: $\sim$10 minutes
+    \item Best model: Epoch 24 (lowest validation MAE: 2.16 km/h)
+    \item Total epochs trained: 39 (stopped due to no improvement after patience=20)
+    \item Wall time: $\sim$15 minutes
 \end{itemize}
 
 \subsubsection{Model Size}

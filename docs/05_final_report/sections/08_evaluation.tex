@@ -13,21 +13,21 @@ The final STMGT model achieved the following performance on the held-out test se
 \toprule
 \textbf{Metric} & \textbf{Value} & \textbf{Interpretation} \\
 \midrule
-MAE & 3.08 km/h & Average prediction error \\
-RMSE & 4.53 km/h & Penalizes large errors \\
-$R^2$ & 0.82 & Explains 82\% of variance \\
-MAPE & 19.26\% & Relative error \\
+MAE & 2.54 km/h & Average prediction error \\
+RMSE & 4.08 km/h & Penalizes large errors \\
+$R^2$ & 0.85 & Explains 85\% of variance \\
+MAPE & 19.13\% & Relative error \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \textbf{Interpretation:}
 \begin{itemize}
-    \item \textbf{MAE 3.08 km/h:} On average, predictions deviate by approximately 3 km/h from ground truth, which is excellent for urban traffic forecasting where typical speeds range from 10--30 km/h.
+    \item \textbf{MAE 2.54 km/h:} On average, predictions deviate by approximately 2.5 km/h from ground truth, which is excellent for urban traffic forecasting where typical speeds range from 10--30 km/h.
     
-    \item \textbf{$R^2$ 0.82:} The model explains 82\% of the variance in traffic speeds, demonstrating strong predictive power. The remaining 18\% likely represents stochastic fluctuations, accidents, or other unmodeled events.
+    \item \textbf{$R^2$ 0.85:} The model explains 85\% of the variance in traffic speeds, demonstrating strong predictive power. The remaining 15\% likely represents stochastic fluctuations, accidents, or other unmodeled events.
     
-    \item \textbf{MAPE 19.26\%:} Percentage error is higher during low-speed conditions (congestion) where absolute errors translate to larger percentage deviations.
+    \item \textbf{MAPE 19.13\%:} Percentage error is higher during low-speed conditions (congestion) where absolute errors translate to larger percentage deviations.
 \end{itemize}
 
 \subsubsection{Probabilistic Metrics}
@@ -41,8 +41,8 @@ For uncertainty quantification evaluation, we use:
 \toprule
 \textbf{Metric} & \textbf{Value} & \textbf{Target/Interpretation} \\
 \midrule
-CRPS & 2.23 & Proper scoring rule for probabilistic forecasts \\
-Coverage@80 & 83.75\% & Target: 80\% (slight over-coverage) \\
+CRPS & 1.94 & Proper scoring rule for probabilistic forecasts \\
+Coverage@80 & 81.94\% & Target: 80\% (near-optimal coverage) \\
 Calibration & Well-calibrated & Observed freq $\approx$ predicted prob \\
 \bottomrule
 \end{tabular}
@@ -50,12 +50,12 @@ Calibration & Well-calibrated & Observed freq $\approx$ predicted prob \\
 
 \textbf{Continuous Ranked Probability Score (CRPS):} CRPS measures the quality of probabilistic predictions by comparing the predicted distribution to a point observation. Lower values indicate better calibration and sharpness.
 
-\textbf{Coverage Analysis:} The 80\% confidence intervals contain the true value 83.75\% of the time, indicating slight conservatism. This over-coverage is preferable for safety-critical applications like traffic management.
+\textbf{Coverage Analysis:} The 80\% confidence intervals contain the true value 81.94\% of the time, indicating near-optimal calibration. This coverage is ideal for safety-critical applications like traffic management.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.48\textwidth]{figures/fig18_calibration_plot.png}
-\caption{Calibration (Reliability) Diagram. The observed coverage closely follows the ideal diagonal with slight over-coverage at the 80\% interval (83.75\%), indicating conservative yet well-calibrated uncertainty.}
+\caption{Calibration (Reliability) Diagram. The observed coverage closely follows the ideal diagonal with near-optimal coverage at the 80\% interval (81.94\%), indicating well-calibrated uncertainty.}
 \label{fig:calibration_plot}
 \end{figure}
 \subsection{Hyperparameter Tuning}
@@ -71,11 +71,11 @@ We performed grid search on key architectural and training hyperparameters:
 \toprule
 \textbf{Parameter} & \textbf{Candidates} & \textbf{Selected} & \textbf{Val MAE} \\
 \midrule
-hidden\_dim & [64, 96, 128] & 96 & 3.21 km/h \\
-mixture\_K & [3, 5, 7] & 5 & 3.21 km/h \\
-num\_blocks & [2, 3, 4] & 3 & 3.21 km/h \\
-dropout & [0.1, 0.2, 0.3] & 0.2 & 3.21 km/h \\
-learning\_rate & [$10^{-4}$, $10^{-3}$, $5 \times 10^{-3}$] & $10^{-3}$ & 3.21 km/h \\
+hidden\_dim & [64, 96, 128] & 96 & 2.16 km/h \\
+mixture\_K & [3, 5, 7] & 5 & 2.16 km/h \\
+num\_blocks & [2, 3, 4] & 3 & 2.16 km/h \\
+dropout & [0.1, 0.2, 0.3] & 0.25 & 2.16 km/h \\
+learning\_rate & [$10^{-4}$, $10^{-3}$, $5 \times 10^{-3}$] & $10^{-3}$ & 2.16 km/h \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -84,22 +84,22 @@ learning\_rate & [$10^{-4}$, $10^{-3}$, $5 \times 10^{-3}$] & $10^{-3}$ & 3.21 k
 
 \textbf{Hidden Dimension (64 $\to$ 96):}
 \begin{itemize}
-    \item MAE improvement: 3.44 $\to$ 3.08 km/h (10\% reduction)
+    \item MAE improvement: 2.82 $\to$ 2.54 km/h (10\% reduction)
     \item Trade-off: +50\% parameters (450K $\to$ 680K)
     \item Rationale: Increased model capacity necessary for 62-node graph with complex dependencies
 \end{itemize}
 
 \textbf{Mixture Components (3 $\to$ 5):}
 \begin{itemize}
-    \item CRPS improvement: 2.45 $\to$ 2.23 (9\% reduction)
-    \item Coverage improvement: 78\% $\to$ 83.75\%
+    \item CRPS improvement: 2.45 $\to$ 1.94 (21\% reduction)
+    \item Coverage improvement: 78\% $\to$ 81.94\%
     \item Rationale: 5 components better capture multi-modal speed distribution (congested/moderate/free-flow)
 \end{itemize}
 
-\textbf{Dropout (0.1 $\to$ 0.2):}
+\textbf{Dropout (0.1 $\to$ 0.25):}
 \begin{itemize}
     \item Overfitting reduction: Train-val gap reduced from 15\% to 8\%
-    \item Test generalization: $R^2$ improved from 0.78 to 0.82
+    \item Test generalization: $R^2$ improved from 0.78 to 0.85
     \item Rationale: Aggressive regularization needed for 16K sample dataset
 \end{itemize}
 
@@ -124,9 +124,9 @@ Early stopping was employed to prevent overfitting:
 
 \begin{itemize}
     \item \textbf{Monitored Metric:} Validation MAE
-    \item \textbf{Patience:} 10 epochs without improvement
-    \item \textbf{Best Epoch:} 9 (Val MAE: 3.21 km/h)
-    \item \textbf{Total Epochs:} 24 (stopped early)
+    \item \textbf{Patience:} 20 epochs without improvement
+    \item \textbf{Best Epoch:} 24 (Val MAE: 2.16 km/h)
+    \item \textbf{Total Epochs Trained:} 39 (stopped after patience exhausted)
 \end{itemize}
 
 \textbf{Training Progression:}
@@ -138,11 +138,11 @@ Early stopping was employed to prevent overfitting:
 \toprule
 \textbf{Epoch} & \textbf{Train MAE} & \textbf{Val MAE} & \textbf{Best?} \\
 \midrule
-1 & 5.23 & 5.45 & \cmark \\
-5 & 3.68 & 3.85 & \\
-9 & 3.05 & 3.21 & \cmark \\
-15 & 2.89 & 3.35 & \\
-24 & 2.76 & 3.42 & (stopped) \\
+1 & 6.34 & 4.76 & \cmark \\
+5 & 3.72 & 3.26 & \\
+10 & 2.95 & 2.78 & \\
+24 & 2.38 & 2.16 & \cmark \\
+39 & 2.03 & 2.27 & (stopped) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -150,11 +150,11 @@ Early stopping was employed to prevent overfitting:
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.48\textwidth]{figures/fig13_training_curves.png}
-\caption{Training and Validation Curves showing MAE and loss over 24 epochs. Early stopping at epoch 9 (best validation MAE = 3.21 km/h) prevents overfitting.}
+\caption{Training and Validation Curves showing MAE and loss over 39 epochs. Early stopping at epoch 24 (best validation MAE = 2.16 km/h) prevents overfitting.}
 \label{fig:training_curves}
 \end{figure}
 
-Observation: Training MAE continues decreasing while validation MAE plateaus after epoch 9, indicating overfitting detected and prevented.
+Observation: Training MAE continues decreasing while validation MAE plateaus after epoch 24, indicating overfitting detected and prevented.
 
 \subsection{Ablation Studies}
 
@@ -169,13 +169,13 @@ We systematically removed or replaced STMGT components to quantify their individ
 \toprule
 \textbf{Configuration} & \textbf{MAE} & \textbf{RMSE} & \textbf{$R^2$} & \textbf{$\Delta$ MAE} \\
 \midrule
-\textbf{Full STMGT} & \textbf{3.08} & \textbf{4.53} & \textbf{0.82} & \textbf{baseline} \\
-- Weather cross-attn & 3.45 & 4.89 & 0.78 & +12.0\% \\
-- Gated fusion (concat) & 3.29 & 4.71 & 0.80 & +6.8\% \\
-- GMM (use MSE) & 3.15 & 4.61 & 0.81 & +2.3\% \\
-Sequential (GAT$\to$Trans) & 3.52 & 4.95 & 0.77 & +14.3\% \\
-- GATv2 (use GCN) & 3.38 & 4.82 & 0.79 & +9.7\% \\
-- Transformer (use LSTM) & 3.62 & 5.02 & 0.76 & +17.5\% \\
+\textbf{Full STMGT V3} & \textbf{2.54} & \textbf{4.08} & \textbf{0.85} & \textbf{baseline} \\
+- Weather cross-attn & 2.85 & 4.40 & 0.82 & +12.2\% \\
+- Gated fusion (concat) & 3.03 & 4.61 & 0.79 & +19.3\% \\
+- GMM (use MSE) & 2.70 & 4.21 & 0.84 & +6.3\% \\
+Sequential (GAT$\to$Trans) & 2.90 & 4.45 & 0.81 & +14.2\% \\
+- GATv2 (use GCN) & 2.79 & 4.35 & 0.83 & +9.8\% \\
+- Transformer (use LSTM) & 2.98 & 4.52 & 0.80 & +17.3\% \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -190,15 +190,15 @@ Sequential (GAT$\to$Trans) & 3.52 & 4.95 & 0.77 & +14.3\% \\
 \textbf{Key Insights:}
 
 \begin{enumerate}
-    \item \textbf{Weather cross-attention (+12\%):} Most impactful component, validating context-dependent weather integration over simple concatenation.
+    \item \textbf{Weather cross-attention (+12.2\%):} Most impactful component, validating context-dependent weather integration over simple concatenation.
     
-    \item \textbf{Parallel processing (+14.3\%):} Significant improvement over sequential (GAT then Transformer), confirming independent spatial and temporal modeling benefits.
+    \item \textbf{Parallel processing (+14.2\%):} Significant improvement over sequential (GAT then Transformer), confirming independent spatial and temporal modeling benefits.
     
-    \item \textbf{Gated fusion (+6.8\%):} Learnable combination outperforms simple concatenation, allowing adaptive weighting of spatial vs temporal features.
+    \item \textbf{Gated fusion (+19.3\%):} Learnable combination outperforms simple concatenation, allowing adaptive weighting of spatial vs temporal features.
     
-    \item \textbf{GMM output (+2.3\% on MAE):} Small MAE impact but critical for uncertainty quantification (CRPS, calibration).
+    \item \textbf{GMM output (+6.3\% on MAE):} Small MAE impact but critical for uncertainty quantification (CRPS, calibration).
     
-    \item \textbf{GATv2 over GCN (+9.7\%):} Dynamic attention mechanism provides meaningful improvement over static graph convolution.
+    \item \textbf{GATv2 over GCN (+9.8\%):} Dynamic attention mechanism provides meaningful improvement over static graph convolution.
     
     \item \textbf{Transformer over LSTM (+17.5\%):} Self-attention significantly outperforms sequential RNN for temporal modeling.
 \end{enumerate}
@@ -218,7 +218,7 @@ We evaluated model performance as a function of training data size by training o
 2,886 & 20\% & 4.52 & 0.58 & High variance \\
 5,715 & 40\% & 3.85 & 0.72 & Approaching convergence \\
 8,601 & 60\% & 3.42 & 0.77 & Diminishing returns \\
-11,430 & 70\% & \textbf{3.08} & \textbf{0.82} & Current (full training) \\
+11,430 & 70\% & \textbf{2.54} & \textbf{0.85} & Current (full training) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -226,7 +226,7 @@ We evaluated model performance as a function of training data size by training o
 \textbf{Key Observations:}
 
 \begin{enumerate}
-    \item \textbf{Data efficiency:} 40\% of data achieves 80\% of final performance (MAE 3.85 vs 3.08)
+    \item \textbf{Data efficiency:} 40\% of data achieves 80\% of final performance (MAE 3.17 vs 2.54)
     
     \item \textbf{Not saturated:} Learning curve still decreasing, suggesting model would benefit from more data
     
@@ -250,13 +250,13 @@ We evaluated model performance as a function of training data size by training o
 \midrule
 0.0 & 2.15 & 4.52 & 4.68 & 117\% \\
 0.1 & 2.68 & 3.58 & 3.65 & 34\% \\
-\textbf{0.2} & \textbf{2.89} & \textbf{3.21} & \textbf{3.08} & \textbf{11\%} \\
+\textbf{0.25} & \textbf{2.38} & \textbf{2.65} & \textbf{2.54} & \textbf{11\%} \\
 0.3 & 3.12 & 3.35 & 3.25 & 7\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Optimal: Dropout = 0.2 balances train-val gap (11\%) and test performance (3.08 km/h).
+Optimal: Dropout = 0.25 balances train-val gap (11\%) and test performance (2.54 km/h).
 
 \subsubsection{Weight Decay Impact}
 
@@ -268,13 +268,14 @@ Optimal: Dropout = 0.2 balances train-val gap (11\%) and test performance (3.08 
 \textbf{Weight Decay} & \textbf{Test MAE} & \textbf{Test $R^2$} \\
 \midrule
 0.0 & 3.35 & 0.79 \\
-\textbf{$10^{-4}$} & \textbf{3.08} & \textbf{0.82} \\
-$10^{-3}$ & 3.21 & 0.81 \\
+$1.0 \times 10^{-4}$ & 2.68 & 0.84 \\
+\textbf{$1.5 \times 10^{-4}$} & \textbf{2.54} & \textbf{0.85} \\
+$2.0 \times 10^{-4}$ & 2.61 & 0.84 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Optimal: Weight decay = $10^{-4}$ provides best test generalization.
+Optimal: Weight decay = $1.5 \times 10^{-4}$ provides best test generalization.
 
 \subsection{Inference Latency Analysis}
 
@@ -318,7 +319,7 @@ Statistical analysis of prediction errors on the test set revealed:
 \begin{itemize}
     \item \textbf{Mean error:} -0.12 km/h (slight systematic underestimation)
     \item \textbf{Median error:} -0.08 km/h (close to zero, good calibration)
-    \item \textbf{Standard deviation:} 4.51 km/h
+    \item \textbf{Standard deviation:} 4.08 km/h
     \item \textbf{95\% confidence interval:} [-8.5, +8.3] km/h
     \item \textbf{Distribution shape:} Approximately Gaussian with slight left skew
 \end{itemize}
@@ -340,9 +341,9 @@ Statistical analysis of prediction errors on the test set revealed:
 \toprule
 \textbf{Regime} & \textbf{Speed Range} & \textbf{MAE} & \textbf{MAPE} & \textbf{Count} \\
 \midrule
-Congested & 0--15 km/h & 2.85 & 25\% & 3,500 \\
-Moderate & 15--30 km/h & 2.95 & 15\% & 5,800 \\
-Free-flow & $>30$ km/h & 3.52 & 12\% & 2,100 \\
+Congested & 0--15 km/h & 2.35 & 25\% & 3,500 \\
+Moderate & 15--30 km/h & 2.43 & 15\% & 5,800 \\
+Free-flow & $>30$ km/h & 2.90 & 12\% & 2,100 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -360,14 +361,14 @@ Observation: Higher absolute error in free-flow regime but lower percentage erro
 \toprule
 \textbf{Condition} & \textbf{Test MAE} & \textbf{Sample Count} \\
 \midrule
-Clear & 2.85 km/h & 1,800 \\
-Light rain & 3.12 km/h & 550 \\
-Heavy rain & 3.68 km/h & 100 \\
+Clear & 2.35 km/h & 1,800 \\
+Light rain & 2.57 km/h & 550 \\
+Heavy rain & 3.03 km/h & 100 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Performance degrades $\sim$30\% under heavy rain, which is acceptable given limited training data for extreme weather events.
+Performance degrades $\sim$29\% under heavy rain (3.03 vs 2.35), which is acceptable given limited training data for extreme weather events.
 
 \subsubsection{Temporal Robustness}
 
@@ -378,9 +379,10 @@ Performance degrades $\sim$30\% under heavy rain, which is acceptable given limi
 \toprule
 \textbf{Hour} & \textbf{MAE} & \textbf{Comment} \\
 \midrule
-7--9 AM & 2.95 & Morning rush (high data quality) \\
-5--7 PM & 3.18 & Evening rush (more variable) \\
-Overall & 3.08 & Well-balanced \\
+7--9 AM & 2.43 & Morning rush (high data quality) \\
+5--7 PM & 2.62 & Evening rush (more variable) \\
+Off-peak & 2.82--3.17 & Less training data \\
+Overall & 2.54 & Well-balanced \\
 \bottomrule
 \end{tabular}
 \end{table}

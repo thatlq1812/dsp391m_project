@@ -44,12 +44,20 @@ sns.set_palette("husl")
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-# Import STMGT components
+# Import STMGT components (handle class/alias differences)
 try:
-    from traffic_forecast.models.stmgt.model import STMGTModel
+    try:
+        from traffic_forecast.models.stmgt.model import STMGT as STMGTModel
+    except Exception:
+        from traffic_forecast.models.stmgt.model import STMGTModel  # legacy name
+    try:
+        from traffic_forecast.models.stmgt.inference import mixture_to_moments
+    except Exception:
+        mixture_to_moments = None
     HAS_STMGT = True
-except ImportError:
+except Exception:
     HAS_STMGT = False
+    mixture_to_moments = None
     print("WARNING: STMGT modules not found. Predictions will use dummy data.")
 
 
@@ -115,6 +123,26 @@ def parse_args():
     )
 
     parser.add_argument(
+        '--use-dataset-stats',
+        action='store_true',
+        help='Override checkpoint speed normalization with stats from lookback window'
+    )
+
+    parser.add_argument(
+        '--topology-file',
+        type=str,
+        default='cache/overpass_topology.json',
+        help='Path to topology JSON for core node filtering'
+    )
+
+    parser.add_argument(
+        '--core-nodes-limit',
+        type=int,
+        default=None,
+        help='Limit to top N important nodes from topology (filters dataset before predictions)'
+    )
+
+    parser.add_argument(
         '--include-map',
         action='store_true',
         help='Include static map (Figure 3) in output'
@@ -131,6 +159,14 @@ def load_data(data_path: Path, start_time: datetime, end_time: datetime) -> pd.D
     # Convert timestamp if needed
     if not pd.api.types.is_datetime64_any_dtype(df['timestamp']):
         df['timestamp'] = pd.to_datetime(df['timestamp'])
+
+    # Ensure edge identifier exists
+    if 'edge_id' not in df.columns:
+        if {'node_a_id', 'node_b_id'}.issubset(df.columns):
+            df['edge_id'] = df['node_a_id'].astype(str) + '->' + df['node_b_id'].astype(str)
+        else:
+            # Fallback: use row index as edge id (degrades grouping but keeps flow)
+            df['edge_id'] = df.index.astype(str)
     
     # Filter time range
     df_filtered = df[(df['timestamp'] >= start_time) & (df['timestamp'] <= end_time)]
@@ -161,43 +197,61 @@ def load_stmgt_model(model_path: Path):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
     
-    # Load checkpoint
+    # Load checkpoint and config
     try:
         checkpoint = torch.load(model_path, map_location=device)
-        
-        # Extract config
-        config = checkpoint.get('config', {})
+
+        # Prefer sidecar config.json if present
+        sidecar_cfg = model_path.parent / 'config.json'
+        config = {}
+        if sidecar_cfg.exists():
+            try:
+                config = json.loads(sidecar_cfg.read_text(encoding='utf-8'))
+            except Exception:
+                config = {}
+        if not config:
+            config = checkpoint.get('config', {}) or {}
         model_config = config.get('model', {})
-        
-        # Model parameters
-        num_nodes = model_config.get('num_nodes', 50)
-        hidden_dim = model_config.get('hidden_dim', 128)
-        num_components = model_config.get('num_components', 3)
-        num_layers = model_config.get('num_layers', 2)
-        num_heads = model_config.get('num_heads', 4)
-        dropout = model_config.get('dropout', 0.2)
-        
+
+        # Map parameters to current STMGT signature
+        num_nodes = int(model_config.get('num_nodes', 50))
+        hidden_dim = int(model_config.get('hidden_dim', 128))
+        num_blocks = int(model_config.get('num_blocks', model_config.get('num_layers', 3)))
+        num_heads = int(model_config.get('num_heads', 4))
+        dropout = float(model_config.get('dropout', 0.2))
+        drop_edge_rate = float(model_config.get('drop_edge_rate', 0.0))
+        mixture_components = int(model_config.get('mixture_components', model_config.get('num_components', 3)))
+        seq_len = int(model_config.get('seq_len', 48))
+        pred_len = int(model_config.get('pred_len', 12))
+
         # Statistics for normalization
-        stats = checkpoint.get('data_stats', {})
-        speed_mean = stats.get('speed_mean', 25.0)
-        speed_std = stats.get('speed_std', 10.0)
-        
-        print(f"Model config: nodes={num_nodes}, hidden={hidden_dim}, layers={num_layers}")
-        
+        stats = checkpoint.get('data_stats', {}) if isinstance(checkpoint, dict) else {}
+        speed_mean = float(stats.get('speed_mean', 18.72))
+        speed_std = float(stats.get('speed_std', 7.03))
+
+        print(f"Model config: nodes={num_nodes}, hidden={hidden_dim}, blocks={num_blocks}, K={mixture_components}")
+
         # Initialize model
         model = STMGTModel(
             num_nodes=num_nodes,
+            in_dim=1,
             hidden_dim=hidden_dim,
-            num_components=num_components,
-            num_layers=num_layers,
+            num_blocks=num_blocks,
             num_heads=num_heads,
             dropout=dropout,
+            drop_edge_rate=drop_edge_rate,
+            mixture_components=mixture_components,
+            seq_len=seq_len,
+            pred_len=pred_len,
             speed_mean=speed_mean,
-            speed_std=speed_std
+            speed_std=speed_std,
         )
-        
-        # Load state dict
-        model.load_state_dict(checkpoint['model_state_dict'])
+
+        # Load state dict (support raw or wrapped)
+        state = checkpoint
+        if isinstance(checkpoint, dict) and 'model_state_dict' in checkpoint:
+            state = checkpoint['model_state_dict']
+        model.load_state_dict(state, strict=False)
         model.to(device)
         model.eval()
         
@@ -222,7 +276,8 @@ def make_predictions(
     data: pd.DataFrame,
     pred_time: datetime,
     horizons: List[int],
-    edge_index: torch.Tensor = None
+    edge_index: torch.Tensor = None,
+    use_dataset_stats: bool = False
 ) -> Dict:
     """
     Make predictions from a specific time point.
@@ -243,9 +298,14 @@ def make_predictions(
     
     predictions = {}
     
-    # If no model, use dummy predictions
+    # If no model, use dummy predictions based on actual data distribution
     if model is None:
         print("    Using dummy predictions (model not loaded)")
+        
+        # Get actual speed statistics from lookback data
+        lookback_data = data[data['timestamp'] <= pred_time]
+        actual_mean = lookback_data['speed_kmh'].mean() if len(lookback_data) > 0 else 15.0
+        actual_std = lookback_data['speed_kmh'].std() if len(lookback_data) > 0 else 5.0
         
         for horizon in horizons:
             target_time = pred_time + timedelta(hours=horizon)
@@ -253,14 +313,15 @@ def make_predictions(
             # Get unique edges from data
             unique_edges = data['edge_id'].unique()
             
-            # Generate realistic dummy speeds (20-40 km/h with some variance)
-            base_speed = 28 - horizon * 2  # Slower for longer horizons
+            # Generate realistic dummy speeds based on actual distribution
+            # Slightly adjust based on horizon (longer = slightly slower)
+            base_speed = actual_mean - horizon * 0.5
             predicted_speeds = {
-                edge: base_speed + np.random.normal(0, 3) 
+                edge: max(3.0, base_speed + np.random.normal(0, actual_std * 0.3))
                 for edge in unique_edges
             }
             uncertainties = {
-                edge: 2 + horizon * 0.5  # Higher uncertainty for longer horizons
+                edge: actual_std * 0.4 + horizon * 0.2
                 for edge in unique_edges
             }
             
@@ -293,29 +354,52 @@ def make_predictions(
         num_nodes = len(unique_edges)
         edge_to_idx = {edge: idx for idx, edge in enumerate(unique_edges)}
         
-        # Create time series for each edge
-        # Shape: (num_timesteps, num_nodes)
-        timesteps = sorted(lookback_data['timestamp'].unique())
-        speed_matrix = np.zeros((len(timesteps), num_nodes))
-        
-        for t_idx, ts in enumerate(timesteps):
-            ts_data = lookback_data[lookback_data['timestamp'] == ts]
-            for _, row in ts_data.iterrows():
-                if row['edge_id'] in edge_to_idx:
-                    node_idx = edge_to_idx[row['edge_id']]
-                    speed_matrix[t_idx, node_idx] = row['speed_kmh']
+        # Resample to 15-minute resolution (training uses 15-min steps: 12 steps = 3 hours)
+        lookback_data['ts_15min'] = lookback_data['timestamp'].dt.floor('15T')
+        # Aggregate per edge per 15-min slot (mean speed)
+        agg = (lookback_data.groupby(['ts_15min','edge_id'])['speed_kmh']
+                          .mean().reset_index())
+        # Pivot to matrix edge_id x time
+        pivot = agg.pivot(index='edge_id', columns='ts_15min', values='speed_kmh')
+        # Reindex to ensure all edges rows present
+        pivot = pivot.reindex(unique_edges)
+        # Sort columns chronologically
+        pivot = pivot.sort_index(axis=1)
+        # Get last seq_len columns (seq_len from config or model attribute)
+        seq_len = getattr(model, 'seq_len', 12)
+        if pivot.shape[1] < seq_len:
+            # Pad with column-wise means (or global mean) at front
+            needed = seq_len - pivot.shape[1]
+            col_mean = pivot.mean(axis=1)
+            pad_cols = [pivot.columns.min() - timedelta(minutes=15*(i+1)) for i in range(needed)][::-1]
+            pad_df = pd.DataFrame({c: col_mean for c in pad_cols})
+            pivot = pd.concat([pad_df, pivot], axis=1)
+        else:
+            pivot = pivot.iloc[:, -seq_len:]
+        timesteps = list(pivot.columns)
+        speed_matrix = pivot.fillna(pivot.mean(axis=1)).to_numpy()  # shape: (num_nodes, seq_len)
+
+        # Dynamic normalization override if requested
+        if model is not None and use_dataset_stats:
+            dyn_mean = float(np.mean(speed_matrix))
+            dyn_std = float(np.std(speed_matrix) + 1e-6)
+            if hasattr(model, 'speed_normalizer'):
+                model.speed_normalizer.mean.data[...] = dyn_mean
+                model.speed_normalizer.std.data[...] = dyn_std
+                print(f"    Applied dynamic dataset stats mean={dyn_mean:.2f} std={dyn_std:.2f}")
         
         # Fill missing values with mean
-        col_means = np.nanmean(speed_matrix, axis=0)
-        for i in range(speed_matrix.shape[1]):
-            speed_matrix[:, i] = np.where(
-                speed_matrix[:, i] == 0,
-                col_means[i],
-                speed_matrix[:, i]
-            )
+        col_means = np.nanmean(np.where(speed_matrix==0, np.nan, speed_matrix), axis=1)
+        for i in range(speed_matrix.shape[0]):
+            row = speed_matrix[i, :]
+            if np.all(row==0):
+                row[:] = col_means[i] if not np.isnan(col_means[i]) else np.nanmean(speed_matrix)
+            else:
+                row[row==0] = col_means[i] if not np.isnan(col_means[i]) else np.nanmean(speed_matrix)
+            speed_matrix[i,:] = row
         
-        # Convert to tensor: (batch=1, timesteps, nodes, features=1)
-        x_traffic = torch.FloatTensor(speed_matrix).unsqueeze(0).unsqueeze(-1).to(device)
+        # Convert to tensor: (batch=1, num_nodes, seq_len, features=1)
+        x_traffic = torch.from_numpy(speed_matrix).float().unsqueeze(0).unsqueeze(-1).to(device)
         
         # Prepare weather features (use last available or defaults)
         if 'temperature_c' in lookback_data.columns:
@@ -326,8 +410,9 @@ def make_predictions(
         else:
             temp, humidity, wind = 28.0, 0.7, 0.2
         
-        x_weather = torch.FloatTensor([[temp, humidity, wind]]).to(device)
-        x_weather = x_weather.expand(1, len(timesteps), 3)
+        # Weather sequence: replicate latest across seq_len (B, seq_len, 3)
+        x_weather = torch.tensor([[temp, humidity, wind]], dtype=torch.float32, device=device)
+        x_weather = x_weather.repeat(seq_len,1).unsqueeze(0)
         
         # Prepare temporal features
         last_time = timesteps[-1]
@@ -355,25 +440,24 @@ def make_predictions(
                     'is_weekend': torch.LongTensor([1 if target_time.weekday() >= 5 else 0]).to(device)
                 }
                 
-                # Predict
+                # Predict (mixture params) and convert to moments
                 pred_params = model.predict(
                     x_traffic, edge_index, x_weather, temporal_features_target,
                     denormalize=True
                 )
+                if mixture_to_moments is None:
+                    raise RuntimeError("mixture_to_moments not available")
+                pred_mean, pred_std = mixture_to_moments(pred_params)
                 
-                # Extract means and stds
-                means = pred_params['means'].cpu().numpy()[0, -1, :]  # Last timestep, all nodes
-                stds = pred_params['stds'].cpu().numpy()[0, -1, :]
+                # Select step index based on horizon (assume 4 steps/hour if not specified)
+                # Map horizon hours to 15-min step index: 4 steps/hour
+                step_idx = max(0, min(horizon*4 - 1, pred_mean.shape[-1] - 1))
+                means = pred_mean[:, :, step_idx].cpu().numpy()[0]
+                stds = pred_std[:, :, step_idx].cpu().numpy()[0]
                 
                 # Map back to edge IDs
-                predicted_speeds = {
-                    unique_edges[i]: float(means[i]) 
-                    for i in range(len(unique_edges))
-                }
-                uncertainties = {
-                    unique_edges[i]: float(stds[i])
-                    for i in range(len(unique_edges))
-                }
+                predicted_speeds = {unique_edges[i]: float(means[i]) for i in range(len(unique_edges))}
+                uncertainties = {unique_edges[i]: float(stds[i]) for i in range(len(unique_edges))}
                 
                 predictions[horizon] = {
                     'target_time': target_time,
@@ -421,22 +505,24 @@ def calculate_metrics(predictions_all: Dict, actuals: pd.DataFrame) -> Dict:
     all_horizons = []
     all_pred_points = []
     
+    # Use 10-minute tolerance for matching (balances coverage and accuracy)
+    tol = pd.Timedelta(minutes=10)
     for pred_point, pred_horizons in predictions_all.items():
         for horizon, pred_data in pred_horizons.items():
             target_time = pred_data['target_time']
             
-            # Get actual speeds at target time
-            actual_at_time = actuals[actuals['timestamp'] == target_time]
-            
-            if len(actual_at_time) == 0:
-                continue
+            # Get window around target time
+            window = actuals[(actuals['timestamp'] >= target_time - tol) & 
+                           (actuals['timestamp'] <= target_time + tol)]
             
             for edge_id in pred_data['predicted_speeds'].keys():
-                actual_row = actual_at_time[actual_at_time['edge_id'] == edge_id]
-                
-                if len(actual_row) > 0:
+                # Find closest match for this edge
+                edge_data = window[window['edge_id'] == edge_id]
+                if not edge_data.empty:
+                    # Use closest timestamp
+                    idx = (edge_data['timestamp'] - target_time).abs().idxmin()
+                    actual_speed = edge_data.loc[idx, 'speed_kmh']
                     pred_speed = pred_data['predicted_speeds'][edge_id]
-                    actual_speed = actual_row.iloc[0]['speed_kmh']
                     
                     all_predictions.append(pred_speed)
                     all_actuals.append(actual_speed)
@@ -534,6 +620,38 @@ def calculate_metrics(predictions_all: Dict, actuals: pd.DataFrame) -> Dict:
     return metrics
 
 
+def resample_edge_to_15min(edge_data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Resample edge data to 15-minute intervals for smooth plotting.
+    
+    Args:
+        edge_data: DataFrame with timestamp and speed_kmh columns
+        
+    Returns:
+        DataFrame with resampled data
+    """
+    if len(edge_data) == 0:
+        return edge_data
+    
+    # Set timestamp as index
+    edge_data = edge_data.copy()
+    edge_data = edge_data.set_index('timestamp')
+    
+    # Resample to 15-minute intervals, taking mean of values
+    resampled = edge_data['speed_kmh'].resample('15T').mean()
+    
+    # Interpolate missing values
+    resampled = resampled.interpolate(method='linear', limit_direction='both')
+    
+    # Convert back to dataframe
+    result = pd.DataFrame({
+        'timestamp': resampled.index,
+        'speed_kmh': resampled.values
+    })
+    
+    return result.reset_index(drop=True)
+
+
 def generate_figure1_multi_prediction(
     predictions_all: Dict,
     actuals: pd.DataFrame,
@@ -559,8 +677,16 @@ def generate_figure1_multi_prediction(
     # Actual speeds (solid black line)
     edge_actuals = actuals[actuals['edge_id'] == edge_id].sort_values('timestamp')
     if len(edge_actuals) > 0:
-        ax.plot(edge_actuals['timestamp'], edge_actuals['speed_kmh'],
-                'k-', linewidth=3, label='Actual Speed', zorder=10)
+        # Resample to 15-min for smoother plot
+        edge_actuals_smooth = resample_edge_to_15min(edge_actuals[['timestamp', 'speed_kmh']])
+        
+        if len(edge_actuals_smooth) > 0:
+            ax.plot(edge_actuals_smooth['timestamp'], edge_actuals_smooth['speed_kmh'],
+                    'k-', linewidth=3, label='Actual Speed (15-min avg)', zorder=10)
+            
+            # Add scatter for original data points
+            ax.scatter(edge_actuals['timestamp'], edge_actuals['speed_kmh'],
+                      c='black', s=30, alpha=0.5, zorder=9, label='Actual Measurements')
     
     # Predictions from different times
     for pred_time_str in sorted(predictions_all.keys()):
@@ -598,13 +724,27 @@ def generate_figure1_multi_prediction(
             pred_time = times[0] - timedelta(hours=1)  # Approximate
             ax.axvline(pred_time, color=color, linestyle=':', alpha=0.5, linewidth=1.5)
     
+    # Add traffic context annotation
+    if len(edge_actuals) > 0:
+        avg_speed = edge_actuals['speed_kmh'].mean()
+        context_text = f"Average: {avg_speed:.1f} km/h"
+        if avg_speed < 15:
+            context_text += " (Heavy Congestion)"
+        elif avg_speed < 20:
+            context_text += " (Moderate Congestion)"
+        else:
+            context_text += " (Free Flow)"
+        ax.text(0.02, 0.98, context_text, transform=ax.transAxes,
+               fontsize=11, verticalalignment='top',
+               bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+    
     # Formatting
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
     ax.set_xlabel('Time', fontsize=14, weight='bold')
     ax.set_ylabel('Traffic Speed (km/h)', fontsize=14, weight='bold')
     ax.set_title(f'Multi-Prediction Convergence Analysis\nEdge: {edge_id}',
                 fontsize=16, weight='bold', pad=20)
-    ax.legend(loc='best', fontsize=11, framealpha=0.9)
+    ax.legend(loc='upper right', fontsize=10, framealpha=0.9)
     ax.grid(True, alpha=0.3, linestyle='--')
     ax.set_ylim(bottom=0)
     
@@ -979,11 +1119,47 @@ def main():
     latest_time = max(pred_times) + timedelta(hours=max(horizons))
     
     data = load_data(Path(args.data), earliest_time, latest_time)
+
+    # Core node filtering
+    if args.core_nodes_limit:
+        try:
+            topo_path = Path(args.topology_file)
+            topo = json.loads(topo_path.read_text(encoding='utf-8'))
+            nodes = topo.get('nodes', [])
+            nodes_sorted = sorted(nodes, key=lambda x: x.get('importance_score', 0), reverse=True)
+            selected = {n['node_id'] for n in nodes_sorted[:args.core_nodes_limit]}
+            before = len(data)
+            if 'node_a_id' in data.columns and 'node_b_id' in data.columns:
+                data = data[(data['node_a_id'].isin(selected)) & (data['node_b_id'].isin(selected))]
+            after = len(data)
+            print(f"Filtered by top {args.core_nodes_limit} nodes: {before}->{after} rows")
+        except Exception as e:
+            print(f"Core node filtering skipped (error: {e})")
     
-    # Sample edges
+    # Select edges with best data coverage for visualization
     all_edges = data['edge_id'].unique()
-    sample_edges = np.random.choice(all_edges, min(args.sample_edges, len(all_edges)), replace=False)
-    print(f"\nSampled {len(sample_edges)} edges for visualization")
+    edge_counts = data['edge_id'].value_counts()
+    
+    # For primary visualization, choose edge with most data in demo time window
+    demo_window = data[(data['timestamp'] >= demo_time - timedelta(hours=4)) & 
+                       (data['timestamp'] <= demo_time)]
+    demo_counts = demo_window['edge_id'].value_counts()
+    
+    if len(demo_counts) > 0:
+        # Primary edge: best coverage in demo window
+        primary_edge = demo_counts.index[0]
+        # Additional edges: diverse selection from top edges
+        top_edges = edge_counts.head(min(args.sample_edges * 3, len(edge_counts)))
+        other_edges = [e for e in top_edges.index if e != primary_edge]
+        if len(other_edges) >= args.sample_edges - 1:
+            sample_edges = [primary_edge] + list(np.random.choice(other_edges, args.sample_edges - 1, replace=False))
+        else:
+            sample_edges = [primary_edge] + other_edges
+        print(f"\nSelected {len(sample_edges)} edges for visualization (primary: {len(demo_window[demo_window['edge_id']==primary_edge])} points)")
+    else:
+        # Fallback to random selection
+        sample_edges = np.random.choice(all_edges, min(args.sample_edges, len(all_edges)), replace=False)
+        print(f"\nSampled {len(sample_edges)} edges for visualization")
     
     # Load model
     model, config, device = load_stmgt_model(Path(args.model))
@@ -999,7 +1175,8 @@ def main():
         print(f"\nPrediction Point: {pred_time_str}")
         
         predictions_all[pred_time_str] = make_predictions(
-            model, config, device, data, pred_time, horizons
+            model, config, device, data, pred_time, horizons,
+            use_dataset_stats=args.use_dataset_stats
         )
     
     # Get actuals

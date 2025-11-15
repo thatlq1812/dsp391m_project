@@ -12,7 +12,7 @@
 
 **Spatio-Temporal Multi-Modal Graph Transformer** for real-time traffic speed forecasting in Ho Chi Minh City.**Spatio-Temporal Multi-Graph Transformer for traffic speed forecasting in Ho Chi Minh City.**
 
-🎯 **Current Performance:** MAE 3.08 km/h (beats SOTA by 21-28%) The repository now reflects Phase 1 completion: dataset validation is enforced across collection, augmentation, and training flows; registry configuration is schema-validated via Pydantic; and the Streamlit dashboard wiring targets the new helper utilities. See the documentation index at `docs/INDEX.md` and the consolidated research at `docs/STMGT_RESEARCH_CONSOLIDATED.md`.
+🎯 **Current Performance:** MAE 2.54 km/h (beats SOTA by 36-43%)
 
 🚀 **Status:** Production-ready with REST API and CLI
 
@@ -152,39 +152,44 @@ conda run -n dsp python scripts/analysis/analyze_data_distribution.py --dataset 
 
 
 
-### Benchmark Comparison## Current Performance (Nov 10, 2025) - V3 Production
+### Benchmark Comparison
 
-
-
-| Model                    | MAE (km/h) | vs STMGT       |**STMGT V3** is the current production model, achieved through systematic capacity exploration and training refinement:
-
+| Model                    | MAE (km/h) | vs STMGT       |
 | ------------------------ | ---------- | -------------- |
+| Naive (last value)       | 7.20       | +183% worse    |
+| LSTM Sequential          | 4.42-4.85  | +74-91% worse  |
+| GCN Graph                | 3.91       | +54% worse     |
+| GraphWaveNet (SOTA 2019) | 3.95       | +56% worse     |
+| **STMGT V3**             | **2.54**   | **BEST** ✓     |
 
-| Naive (last value)       | 7.20       | +134% worse    |- **Test MAE:** 3.0468 km/h (1.1% better than V1)
+## Current Performance (Nov 15, 2025) - V3 Production
 
-| LSTM Sequential          | 4.42-4.85  | +43-57% worse  |- **Test RMSE:** 4.5198 km/h
+**STMGT V3** is the current production model, achieved through systematic capacity exploration and training refinement:
 
-| GCN Graph                | 3.91       | +27% worse     |- **R² Score:** 0.8161
-
-| GraphWaveNet (SOTA 2019) | 3.95       | +28% worse     |- **MAPE:** 18.89%
-
-| **STMGT V1**             | **3.08**   | **BEST** ✓     |- **Coverage@80:** 86.0% (excellent calibration)
-
+- **Test MAE:** 2.54 km/h (best among all baselines)
+- **Test RMSE:** 4.08 km/h
+- **R² Score:** 0.85 (explains 85% of variance)
+- **MAPE:** 19.13%
+- **CRPS:** 1.94 (probabilistic score)
+- **Coverage@80:** 81.94% (excellent calibration)
 - **Model Capacity:** 680K parameters (proven optimal)
-
----
 
 **Key Achievements:**
 
+- 5 capacity experiments confirmed 680K params optimal (U-shaped curve)
+- Training improvements (dropout 0.25, LR 0.0008, regularization) beat baseline without architectural changes
+- Best-in-class uncertainty quantification (81.94% coverage)
+- Production-ready with comprehensive testing
+
+**Model artifacts:** `outputs/stmgt_baseline_1month_20251115_132552/`
+
+---
+
 ## Documentation
 
-- 5 capacity experiments confirmed 680K params optimal (U-shaped curve)
+### For Users
 
-### For Users- Training improvements (dropout, LR, regularization) beat baseline without architectural changes
-
-- Best-in-class uncertainty quantification (86% coverage)
-
-#### Getting Started- Production-ready with comprehensive testing
+#### Getting Started
 
 - 📖 **[Installation & Setup](#quick-start-5-minutes)** - 5-minute quick start
 

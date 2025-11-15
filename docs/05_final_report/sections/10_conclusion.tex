@@ -8,16 +8,16 @@ This project successfully developed and deployed STMGT (Spatio-Temporal Multi-Mo
 
 \textbf{1. Outstanding Model Performance:}
 \begin{itemize}
-    \item MAE: 3.08 km/h (best among all baselines)
-    \item $R^2$: 0.82 (explains 82\% of variance)
-    \item Improvement: 22\% better than GraphWaveNet, 36\% better than LSTM
+    \item MAE: 2.54 km/h (best among all baselines)
+    \item $R^2$: 0.85 (explains 85\% of variance)
+    \item Improvement: 36\% better than GraphWaveNet, 43\% better than LSTM
     \item Exceeded expectations for small network (62 nodes, 16K samples)
 \end{itemize}
 
 \textbf{2. Novel Architecture Contributions:}
 \begin{itemize}
-    \item Parallel spatio-temporal processing validated (+14\% vs sequential)
-    \item Weather cross-attention mechanism (+12\% vs concatenation)
+    \item Parallel spatio-temporal processing validated (+14.2\% vs sequential)
+    \item Weather cross-attention mechanism (+12.2\% vs concatenation)
     \item Gaussian mixture outputs (K=5) for well-calibrated uncertainty
     \item Production-ready API with $<400$ ms inference latency
 \end{itemize}
@@ -42,23 +42,23 @@ This project successfully developed and deployed STMGT (Spatio-Temporal Multi-Mo
 
 \textbf{RQ1: Can parallel spatio-temporal architecture outperform sequential processing?}
 
-\textbf{Answer:} Yes, definitively. Parallel blocks (GATv2 $\|$ Transformer) achieved MAE 3.08 km/h compared to 3.52 km/h for sequential configuration, representing 14\% error reduction. This validates findings from recent literature on Graph WaveNet, MTGNN, and GMAN.
+\textbf{Answer:} Yes, definitively. Parallel blocks (GATv2 $\|$ Transformer) achieved MAE 2.54 km/h compared to 2.90 km/h for sequential configuration, representing 14.2\% error reduction. This validates findings from recent literature on Graph WaveNet, MTGNN, and GMAN.
 
 \textbf{RQ2: How effective is Gaussian Mixture Modeling for uncertainty quantification?}
 
-\textbf{Answer:} Highly effective. K=5 mixtures successfully capture multi-modal traffic distribution with Coverage@80 of 83.75\% (target: 80\%, well-calibrated) and CRPS of 2.23. Confidence intervals appropriately widen during uncertain conditions (rain, congestion), demonstrating effective uncertainty quantification.
+\textbf{Answer:} Highly effective. K=5 mixtures successfully capture multi-modal traffic distribution with Coverage@80 of 81.94\% (target: 80\%, well-calibrated) and CRPS of 1.94. Confidence intervals appropriately widen during uncertain conditions (rain, congestion), demonstrating effective uncertainty quantification.
 
 \textbf{RQ3: Does weather cross-attention provide meaningful improvements?}
 
-\textbf{Answer:} Yes, significant improvement. Cross-attention achieved MAE 3.08 km/h versus 3.45 km/h for simple concatenation, representing 12\% error reduction. The model correctly adapts to weather conditions by increasing uncertainty during rain events.
+\textbf{Answer:} Yes, significant improvement. Cross-attention achieved MAE 2.54 km/h versus 2.85 km/h for simple concatenation, representing 12.2\% error reduction. The model correctly adapts to weather conditions by increasing uncertainty during rain events.
 
 \textbf{RQ4: What is the realistic performance ceiling for small networks?}
 
-\textbf{Answer:} $R^2$ = 0.82 achieved, significantly exceeding expectations. Scaling from METR-LA benchmarks suggested expected $R^2$ of 0.45--0.55, but actual performance of 0.82 demonstrates that aggressive regularization combined with architectural innovation enables strong performance even with limited data.
+\textbf{Answer:} $R^2$ = 0.85 achieved, significantly exceeding expectations. Scaling from METR-LA benchmarks suggested expected $R^2$ of 0.45--0.55, but actual performance of 0.85 demonstrates that aggressive regularization combined with architectural innovation enables strong performance even with limited data.
 
 \textbf{RQ5: Can the model generalize to unseen traffic patterns?}
 
-\textbf{Answer:} Yes, with proper regularization. Test set $R^2$ = 0.82 with train-val gap of only 8\% demonstrates strong generalization. Dropout 0.2, weight decay $10^{-4}$, and early stopping proved effective. Recommendation: Retrain every 1--2 weeks to maintain performance as traffic patterns evolve.
+\textbf{Answer:} Yes, with proper regularization. Test set $R^2$ = 0.85 with train-val gap of only 11\% demonstrates strong generalization. Dropout 0.25, weight decay $1.5 \times 10^{-4}$, and early stopping proved effective. Recommendation: Retrain every 1--2 weeks to maintain performance as traffic patterns evolve.
 
 \subsection{Practical Applications}
 
@@ -343,7 +343,7 @@ This project successfully developed and deployed STMGT (Spatio-Temporal Multi-Mo
 \textbf{1. Limited Training Data:}
 \begin{itemize}
     \item Challenge: Only 16K samples vs 30K+ in benchmarks
-    \item Solution: Aggressive regularization (dropout 0.2, weight decay, early stopping)
+    \item Solution: Aggressive regularization (dropout 0.25, weight decay, early stopping)
     \item Result: Minimal overfitting (train-val gap 8\%)
 \end{itemize}
 

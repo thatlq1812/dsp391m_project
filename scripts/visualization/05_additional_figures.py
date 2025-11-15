@@ -23,14 +23,14 @@ def generate_fig18_calibration_plot():
     
     # Load predictions with uncertainty if available
     outputs_dir = Path(__file__).parents[2] / "outputs"
-    test_results_path = outputs_dir / "stmgt_v2_20251112_091929" / "test_results.json"
+    test_results_path = outputs_dir / "stmgt_baseline_1month_20251115_132552" / "test_results.json"
     
     if test_results_path.exists():
         with open(test_results_path) as f:
             results = json.load(f)
-            coverage_80 = results.get('coverage_80', 0.8375)
+            coverage_80 = results.get('coverage_80', 0.8194)
     else:
-        coverage_80 = 0.8375  # From report
+        coverage_80 = 0.8194  # V3 production model
     
     # Create calibration plot
     fig, ax = plt.subplots(figsize=(8, 8))
